@@ -1,0 +1,66 @@
+# 📁 Lista de Arquivos para Download
+
+Copie estes arquivos para criar seu projeto GitHub + Netlify:
+
+## 📋 Arquivos Principais (OBRIGATÓRIOS)
+
+### 1. Configurações de Projeto
+- `package.json` - Dependências e scripts
+- `tsconfig.json` - Configuração TypeScript  
+- `tailwind.config.ts` - Configuração Tailwind CSS
+- `postcss.config.js` - Configuração PostCSS
+- `vite.config.ts` - Configuração build (Vite)
+- `components.json` - Configuração Shadcn/ui
+
+### 2. Arquivos de Deploy
+- `README.md` - Documentação do projeto
+- `DEPLOY-GUIDE.md` - Guia passo-a-passo
+- `netlify.toml` - Configuração Netlify
+- `vercel.json` - Configuração Vercel (alternativa)
+- `.gitignore` - Arquivos que não vão pro Git
+
+### 3. Código HTML Base
+- `index.html` - Página principal
+- `client/index.html` - Template React
+
+## 📂 Pasta CLIENT (Todo o código React)
+- `client/src/main.tsx` - Ponto de entrada
+- `client/src/App.tsx` - Componente principal
+- `client/src/index.css` - Estilos globais
+
+### Subpastas importantes:
+- `client/src/components/` - Todos os componentes UI
+- `client/src/pages/` - Páginas da aplicação  
+- `client/src/hooks/` - Hooks personalizados
+- `client/src/lib/` - Utilitários e configurações
+- `client/src/types/` - Tipos TypeScript
+
+## 📂 Pasta SHARED
+- `shared/schema.ts` - Tipos compartilhados
+
+## 📂 Pasta SERVER (Opcional - só se quiser servidor)
+- `server/` - Código do servidor Express
+- Mas sua calculadora funciona sem servidor!
+
+## 🎯 Como Baixar:
+
+### Método 1: Copiar arquivo por arquivo
+1. Clique em cada arquivo na lista acima
+2. Copie o conteúdo
+3. Cole em um arquivo local com o mesmo nome
+
+### Método 2: Clonar repositório (se estiver no Git)
+```bash
+git clone SEU_REPOSITORIO
+```
+
+### Método 3: Download ZIP do GitHub
+1. Suba para GitHub primeiro
+2. Clique em "Code" → "Download ZIP"
+
+## ✅ Depois de ter todos os arquivos:
+1. `npm install` - Instalar dependências
+2. `npm run build` - Gerar build para produção  
+3. Upload pasta `dist/public` no Netlify
+
+**Importante**: A pasta `dist/public` é gerada automaticamente quando você roda `npm run build`
