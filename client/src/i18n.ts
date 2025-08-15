@@ -114,7 +114,7 @@ const dicts: Record<Lang, Dict> = {
 
         'home.calculator': 'Calculadora',
     'donate.title': 'Doações',
-    'donate.openloot': 'Doar via OpenLoot',
+    'donate.openloot': 'Creator OL',
     'donate.wallet': 'Carteira EVM',
     'donate.copy': 'Copiar',
     'donate.copied': 'Copiado!',
@@ -229,7 +229,7 @@ const dicts: Record<Lang, Dict> = {
 
         'home.calculator': 'Calculator',
     'donate.title': 'Donations',
-    'donate.openloot': 'Donate via OpenLoot',
+    'donate.openloot': 'Creator OL',
     'donate.wallet': 'EVM Wallet',
     'donate.copy': 'Copy',
     'donate.copied': 'Copied!',
