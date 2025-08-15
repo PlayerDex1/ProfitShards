@@ -7,15 +7,15 @@ export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	
 	const [formData, setFormData] = useState<CalculatorFormData>({
-		investment: 100,
-		gemsPurchased: 14000,
-		gemsRemaining: 443,
-		gemsConsumed: 13557,
-		tokensEquipment: 1096,
-		tokensFarmed: 4566,
-		loadsUsed: 84,
-		tokenPrice: 0.042,
-		gemPrice: 0.0071,
+		investment: 0,
+		gemsPurchased: 0,
+		gemsRemaining: 0,
+		gemsConsumed: 0,
+		tokensEquipment: 0,
+		tokensFarmed: 0,
+		loadsUsed: 0,
+		tokenPrice: 0,
+		gemPrice: 0,
 	});
 
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
