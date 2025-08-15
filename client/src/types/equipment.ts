@@ -12,10 +12,10 @@ export interface EquipmentSession {
 }
 
 export const EQUIPMENT_NAMES: Record<EquipmentType, string> = {
-  weapon: 'Arme',
-  axe: 'Hache',
-  armor: 'Armure',
-  pickaxe: 'Pioche',
+  weapon: 'Arma',
+  axe: 'Machado',
+  armor: 'Armadura',
+  pickaxe: 'Picareta',
 };
 
 export function clampLuck(level: number): number {

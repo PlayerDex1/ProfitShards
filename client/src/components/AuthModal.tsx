@@ -37,12 +37,12 @@ export function AuthModal({ onClose }: AuthModalProps) {
         <CardContent className="space-y-3 pt-0">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label className="block text-xs text-white/70 mb-1">Nick</label>
+              <label className="block text-xs text-white/70 mb-1">Apelido</label>
               <Input
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 className="bg-white/10 border-white/20 text-white h-9"
-                placeholder="Seu nick"
+                placeholder="Seu apelido"
               />
             </div>
             <div>

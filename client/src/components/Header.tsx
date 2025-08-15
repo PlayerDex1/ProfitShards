@@ -59,7 +59,7 @@ export function Header() {
               ) : (
                 <Moon className="h-5 w-5" />
               )}
-              <span className="sr-only">Toggle theme</span>
+              <span className="sr-only">Alternar tema</span>
             </Button>
           </div>
         </div>

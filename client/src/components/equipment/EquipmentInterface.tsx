@@ -2,6 +2,7 @@ import { X, Edit2 } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
 import { useState } from "react";
+import { getCurrentUsername } from "@/hooks/use-auth";
 
 interface EquipmentInterfaceProps {
   session: EquipmentSession;
@@ -12,6 +13,7 @@ interface EquipmentInterfaceProps {
 
 export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentChange }: EquipmentInterfaceProps) {
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
+  const username = getCurrentUsername() ?? 'Convidado';
 
   const handleSaveEquipment = (equipment: Equipment) => {
     if (onEquipmentChange && editingEquipment) {
@@ -53,7 +55,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
       <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-2xl">
         <div className="flex items-center justify-between p-6 border-b border-slate-700">
           <div>
-            <h1 className="text-2xl font-bold text-white">Équipement - Navriix</h1>
+            <h1 className="text-2xl font-bold text-white">Equipamento - {username}</h1>
             <p className="text-gray-400 text-sm mt-1">Configuração de equipamento para esta sessão</p>
           </div>
           {onClose && (
@@ -74,7 +76,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
             </div>
           </div>
           <div className="pt-6 text-right border-t border-slate-700 mt-6">
-            <span className="text-white font-semibold">Total Luck: {totalLuck}</span>
+            <span className="text-white font-semibold">Total de Luck: {totalLuck}</span>
           </div>
         </div>
       </div>
