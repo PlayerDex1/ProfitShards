@@ -97,34 +97,6 @@ ROI = (Lucro Líquido / Investimento) × 100
 - Histórico de cálculos (até 50 entradas)
 - Últimos valores utilizados
 
-## 📱 Compatibilidade
-
-✅ **Desktop** - Chrome, Firefox, Safari, Edge  
-✅ **Mobile** - iOS Safari, Android Chrome  
-✅ **Tablet** - iPad, Android tablets  
-
-## 🔧 Desenvolvimento Local
-
-```bash
-# 1. Clone o repositório
-git clone https://github.com/seu-usuario/worldshards-calculator.git
-
-# 2. Instale as dependências
-npm install
-
-# 3. Execute em modo desenvolvimento
-npm run dev
-
-# 4. Build para produção
-npm run build
-```
-
-## 📝 Licença
-
-MIT License - Sinta-se livre para usar, modificar e distribuir.
-
-## 🤝 Contribuições
-
 Contribuições são bem-vindas! Abra uma issue ou pull request.
 
 ---
