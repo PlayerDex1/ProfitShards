@@ -128,9 +128,18 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
   const handleShareLink = () => {
     try {
       const data = exportBuilds();
-      const payload = btoa(unescape(encodeURIComponent(data)));
-      const link = `${location.origin}${location.pathname}?builds=${encodeURIComponent(payload)}`;
-      navigator.clipboard.writeText(link).catch(() => {});
+      // compress payload using LZ-String (runtime CDN-free: use built-in compression via pako-like approach is heavy)
+      // Minimal base64 approach to reduce length: still big; instead use LZ-based algorithm via dynamic import
+      import('lz-string').then(({ compressToEncodedURIComponent }) => {
+        const compressed = compressToEncodedURIComponent(data);
+        const link = `${location.origin}${location.pathname}?b=${compressed}`;
+        navigator.clipboard.writeText(link).catch(() => {});
+      }).catch(() => {
+        // fallback to previous method
+        const payload = btoa(unescape(encodeURIComponent(data)));
+        const link = `${location.origin}${location.pathname}?builds=${encodeURIComponent(payload)}`;
+        navigator.clipboard.writeText(link).catch(() => {});
+      });
     } catch {}
   };
 

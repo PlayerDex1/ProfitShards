@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
 import { Results } from "@/components/Results";
@@ -7,12 +7,17 @@ import { Sidebar } from "@/components/Sidebar";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
+import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const [activeSection, setActiveSection] = useState('calculator');
 	const { session, totalLuck, isOpen, openEquipment, closeEquipment, updateEquipment } = useEquipment();
 	const { t } = useI18n();
+
+	useEffect(() => {
+		importBuildsFromUrl();
+	}, []);
 
 	const handleSaveToHistory = () => {
 		if (results) {

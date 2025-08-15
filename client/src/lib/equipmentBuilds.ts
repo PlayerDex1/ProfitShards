@@ -58,3 +58,25 @@ export function exportBuilds(): string {
   const builds = getBuilds();
   return JSON.stringify(builds, null, 2);
 }
+
+export function importBuildsFromUrl() {
+	try {
+		const params = new URLSearchParams(location.search);
+		const short = params.get('b');
+		if (short) {
+			// dynamic import to keep bundle lean
+			import('lz-string').then(({ decompressFromEncodedURIComponent }) => {
+				const json = decompressFromEncodedURIComponent(short || '') || '';
+				if (json) importBuilds(json);
+			});
+			return;
+		}
+		const legacy = params.get('builds');
+		if (legacy) {
+			try {
+				const json = decodeURIComponent(escape(atob(legacy)));
+				importBuilds(json);
+			} catch {}
+		}
+	} catch {}
+}
