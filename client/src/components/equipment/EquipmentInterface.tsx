@@ -1,5 +1,5 @@
 import { X, Edit2 } from "lucide-react";
-import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES, RARITY_COLORS, RARITY_LABELS } from "@/types/equipment";
+import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
 import { useState } from "react";
 
@@ -40,12 +40,8 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
         </div>
         <div className="space-y-1">
           <div className="flex justify-between">
-            <span className="text-gray-300">Raridade:</span>
-            <span className={`font-medium ${RARITY_COLORS[equipment.rarity]}`}>{RARITY_LABELS[equipment.rarity]}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-gray-300">Nível de sorte:</span>
-            <span className="text-white font-medium">{equipment.luckLevel}</span>
+            <span className="text-gray-300">Luck:</span>
+            <span className="text-white font-medium">{equipment.luck}</span>
           </div>
         </div>
       </div>

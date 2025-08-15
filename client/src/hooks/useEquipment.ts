@@ -1,13 +1,13 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Equipment, EquipmentSession, Rarity, clampLuck } from "@/types/equipment";
+import { Equipment, EquipmentSession, clampLuck } from "@/types/equipment";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { appendEquipmentLuckSnapshot } from "@/lib/equipmentHistory";
 
 const DEFAULT_EQUIPMENT: EquipmentSession = {
-  weapon: { rarity: 'rare', luckLevel: 12 },
-  axe: { rarity: 'rare', luckLevel: 12 },
-  armor: { rarity: 'uncommon', luckLevel: 11 },
-  pickaxe: { rarity: 'rare', luckLevel: 12 },
+  weapon: { luck: 0 },
+  axe: { luck: 0 },
+  armor: { luck: 0 },
+  pickaxe: { luck: 0 },
 };
 
 function storageKeyForUser(username: string | null): string {
@@ -47,14 +47,14 @@ export function useEquipment() {
   }, [session]);
 
   const totalLuck = useMemo(() => {
-    return session.weapon.luckLevel + session.axe.luckLevel + session.armor.luckLevel + session.pickaxe.luckLevel;
+    return session.weapon.luck + session.axe.luck + session.armor.luck + session.pickaxe.luck;
   }, [session]);
 
   const openEquipment = () => setIsOpen(true);
   const closeEquipment = () => setIsOpen(false);
 
   const updateEquipment = useCallback((field: keyof EquipmentSession, next: Equipment) => {
-    setSession((prev) => ({ ...prev, [field]: { rarity: next.rarity, luckLevel: clampLuck(next.luckLevel) } }));
+    setSession((prev) => ({ ...prev, [field]: { luck: clampLuck(next.luck) } }));
   }, []);
 
   return { session, totalLuck, isOpen, openEquipment, closeEquipment, updateEquipment, setSession };

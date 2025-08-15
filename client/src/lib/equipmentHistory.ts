@@ -24,7 +24,7 @@ export function getEquipmentLuckHistory(): EquipmentLuckSnapshot[] {
 export function appendEquipmentLuckSnapshot(session: EquipmentSession) {
   const key = keyForUser(getCurrentUsername());
   const history: EquipmentLuckSnapshot[] = getEquipmentLuckHistory();
-  const luck = session.weapon.luckLevel + session.axe.luckLevel + session.armor.luckLevel + session.pickaxe.luckLevel;
+  const luck = session.weapon.luck + session.axe.luck + session.armor.luck + session.pickaxe.luck;
   history.push({ timestamp: Date.now(), luck });
   localStorage.setItem(key, JSON.stringify(history.slice(-100)));
   window.dispatchEvent(new CustomEvent('worldshards-equip-history-updated'));
