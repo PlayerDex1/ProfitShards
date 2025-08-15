@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+# Treat images as binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.svg text
+
+# Improve GitHub language stats
+client/src/**/*.ts linguist-detectable=true
+client/src/**/*.tsx linguist-detectable=true
+server/**/*.ts linguist-detectable=true
