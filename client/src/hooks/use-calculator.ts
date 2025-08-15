@@ -1,6 +1,7 @@
-import { useState, useCallback, useMemo, useRef } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername } from '@/hooks/use-auth';
+import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 
 export function useCalculator() {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -17,6 +18,19 @@ export function useCalculator() {
     gemPrice: 0.0071,
   });
 
+  const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
+
+  useEffect(() => {
+    const onWhatIf = (e: Event) => {
+      const custom = e as CustomEvent<{ targetLuck: number; history: number[] }>;
+      const { targetLuck, history } = custom.detail || { targetLuck: 0, history: [] };
+      const m = calculateLuckEffectFromArray(history || [], targetLuck || 0);
+      setLuckMultiplier(m > 0 ? m : 1);
+    };
+    window.addEventListener('worldshards-whatif-luck', onWhatIf);
+    return () => window.removeEventListener('worldshards-whatif-luck', onWhatIf);
+  }, []);
+
   const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
     setFormData(prev => ({
       ...prev,
@@ -30,7 +44,7 @@ export function useCalculator() {
     }
 
     const totalTokens = formData.tokensEquipment + formData.tokensFarmed;
-    const totalTokenValue = totalTokens * formData.tokenPrice;
+    const totalTokenValue = totalTokens * formData.tokenPrice * luckMultiplier;
     const gemsCost = formData.gemsConsumed * formData.gemPrice;
     const grossProfit = totalTokenValue - gemsCost;
     const rebuyCost = formData.gemsConsumed * formData.gemPrice;
@@ -52,7 +66,7 @@ export function useCalculator() {
       roi,
       efficiency,
     };
-  }, [formData]);
+  }, [formData, luckMultiplier]);
 
   const breakdown = useMemo((): CalculationBreakdown[] => {
     if (!results) return [];
@@ -92,7 +106,6 @@ export function useCalculator() {
   }, [results]);
 
   const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
-    // Debounce para evitar múltiplos saves rápidos
     if (debounceTimeoutRef.current) {
       clearTimeout(debounceTimeoutRef.current);
     }
@@ -109,7 +122,6 @@ export function useCalculator() {
       const existingHistory = localStorage.getItem(key);
       const history: HistoryItem[] = existingHistory ? JSON.parse(existingHistory) : [];
       
-      // Evitar duplicatas - comparar timestamp recente (último minuto)
       const lastItem = history[history.length - 1];
       if (lastItem && Date.now() - lastItem.timestamp < 60000) {
         const isDuplicate = JSON.stringify(lastItem.formData) === JSON.stringify(formData);
@@ -118,7 +130,6 @@ export function useCalculator() {
       
       const updatedHistory = [...history, historyItem].slice(-50);
       localStorage.setItem(key, JSON.stringify(updatedHistory));
-      // notificar UI para recarregar o histórico imediatamente
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
       }

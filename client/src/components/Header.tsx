@@ -4,11 +4,13 @@ import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
+import { useI18n } from "@/i18n";
 
 export function Header() {
   const { isDark, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const { lang, setLang, t } = useI18n();
 
   return (
     <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800">
@@ -20,13 +22,22 @@ export function Header() {
                 <Calculator className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">Calculadora de Lucro - Worldshards</h1>
-                <p className="text-sm text-white/70">Configure seus investimentos e calcule o lucro líquido final</p>
+                <h1 className="text-2xl font-bold text-white">{t('header.title')}</h1>
+                <p className="text-sm text-white/70">{t('header.subtitle')}</p>
               </div>
             </div>
           </div>
           
           <div className="flex items-center space-x-2">
+            <select
+              value={lang}
+              onChange={(e) => setLang(e.target.value as 'pt' | 'en')}
+              className="h-10 px-2 rounded bg-white/10 text-white"
+              aria-label={t('header.lang')}
+            >
+              <option className="bg-black text-white" value="pt">Português</option>
+              <option className="bg-black text-white" value="en">English</option>
+            </select>
             {isAuthenticated ? (
               <>
                 <span className="text-white/80 text-sm hidden sm:inline">Olá, {user}</span>
@@ -35,7 +46,7 @@ export function Header() {
                   className="h-10 px-3 rounded-lg text-white hover:bg-white/10"
                   onClick={logout}
                 >
-                  <LogOut className="h-5 w-5 mr-2" /> Sair
+                  <LogOut className="h-5 w-5 mr-2" /> {t('header.logout')}
                 </Button>
               </>
             ) : (
@@ -44,7 +55,7 @@ export function Header() {
                 className="h-10 px-3 rounded-lg text-white hover:bg-white/10"
                 onClick={() => setShowAuth(true)}
               >
-                <LogIn className="h-5 w-5 mr-2" /> Entrar
+                <LogIn className="h-5 w-5 mr-2" /> {t('header.login')}
               </Button>
             )}
             <Button
@@ -53,13 +64,13 @@ export function Header() {
               onClick={toggleTheme}
               data-testid="button-toggle-theme"
               className="h-10 w-10 rounded-lg text-white hover:bg-white/10"
+              aria-label={t('header.theme')}
             >
               {isDark ? (
                 <Sun className="h-5 w-5" />
               ) : (
                 <Moon className="h-5 w-5" />
               )}
-              <span className="sr-only">Alternar tema</span>
             </Button>
           </div>
         </div>
