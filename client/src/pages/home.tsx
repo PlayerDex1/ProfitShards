@@ -21,16 +21,20 @@ export default function Home() {
       case 'equipment':
         return <EquipmentComparison />;
       case 'history':
-        return <Results results={results} breakdown={breakdown} />;
+        return (
+          <div className="space-y-4">
+            <Results results={results} breakdown={breakdown} includeHistory />
+          </div>
+        );
       default:
         return (
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          <div className="space-y-4">
             <Calculator 
               formData={formData}
               onUpdateFormData={updateFormData}
               onSaveToHistory={handleSaveToHistory}
             />
-            <Results results={results} breakdown={breakdown} />
+            <Results results={results} breakdown={breakdown} includeHistory />
           </div>
         );
     }

@@ -9,9 +9,10 @@ import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/c
 interface ResultsProps {
   results: CalculationResults | null;
   breakdown: CalculationBreakdown[];
+  includeHistory?: boolean;
 }
 
-export const Results = memo(function Results({ results, breakdown }: ResultsProps) {
+export const Results = memo(function Results({ results, breakdown, includeHistory = false }: ResultsProps) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
 
@@ -244,81 +245,82 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
         </Card>
       )}
 
-      {/* History Section */}
-      <Card className="bg-black border-gray-800">
-        <CardHeader className="py-3">
-          <div className="flex justify-between items-center">
-            <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
-              <Clock className="w-4 h-4 text-white" />
-              <span>Histórico de Cálculos</span>
-            </CardTitle>
-            <div className="flex space-x-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowHistory(!showHistory)}
-                data-testid="button-toggle-history"
-                className="text-white"
-              >
-                {showHistory ? 'Ocultar' : 'Mostrar'}
-              </Button>
-              {history.length > 0 && (
+      {includeHistory && (
+        <Card className="bg-black border-gray-800">
+          <CardHeader className="py-3">
+            <div className="flex justify-between items-center">
+              <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
+                <Clock className="w-4 h-4 text-white" />
+                <span>Histórico de Cálculos</span>
+              </CardTitle>
+              <div className="flex space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={clearHistory}
+                  onClick={() => setShowHistory(!showHistory)}
+                  data-testid="button-toggle-history"
                   className="text-white"
-                  data-testid="button-clear-history"
                 >
-                  Limpar
+                  {showHistory ? 'Ocultar' : 'Mostrar'}
                 </Button>
-              )}
+                {history.length > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={clearHistory}
+                    className="text-white"
+                    data-testid="button-clear-history"
+                  >
+                    Limpar
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
-        </CardHeader>
-        <CardContent className="pt-0">
-          {showHistory && history.length > 0 ? (
-            <div className="space-y-2">
-              {history.slice(-5).reverse().map((item, index) => (
-                <div key={index} className="border border-gray-800 rounded-lg p-3 bg-white/5">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-1.5">
-                        <span className={`text-xl font-bold font-mono text-white`}>
-                          ${item.results.finalProfit.toFixed(2)}
-                        </span>
-                        <span className="text-xs text-white/70">
-                          {new Date(item.timestamp).toLocaleDateString('pt-BR')} às{' '}
-                          {new Date(item.timestamp).toLocaleTimeString('pt-BR', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-white/80">
-                        <span>Investimento: ${item.formData.investment}</span>
-                        <span>Tokens: {item.results.totalTokens.toLocaleString()}</span>
-                        <span>Eficiência: {item.results.efficiency.toFixed(1)}/carga</span>
-                        <span>ROI: {item.results.roi.toFixed(1)}%</span>
+          </CardHeader>
+          <CardContent className="pt-0">
+            {showHistory && history.length > 0 ? (
+              <div className="space-y-2">
+                {history.slice(-5).reverse().map((item, index) => (
+                  <div key={index} className="border border-gray-800 rounded-lg p-3 bg-white/5">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center space-x-4 mb-1.5">
+                          <span className={`text-xl font-bold font-mono text-white`}>
+                            ${item.results.finalProfit.toFixed(2)}
+                          </span>
+                          <span className="text-xs text-white/70">
+                            {new Date(item.timestamp).toLocaleDateString('pt-BR')} às{' '}
+                            {new Date(item.timestamp).toLocaleTimeString('pt-BR', { 
+                              hour: '2-digit', 
+                              minute: '2-digit' 
+                            })}
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-white/80">
+                          <span>Investimento: ${item.formData.investment}</span>
+                          <span>Tokens: {item.results.totalTokens.toLocaleString()}</span>
+                          <span>Eficiência: {item.results.efficiency.toFixed(1)}/carga</span>
+                          <span>ROI: {item.results.roi.toFixed(1)}%</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          ) : showHistory && history.length === 0 ? (
-            <div className="text-center text-white/70 py-6">
-              <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
-              <p className="text-sm">Nenhum cálculo salvo ainda</p>
-              <p className="text-xs">Seus cálculos aparecerão aqui automaticamente</p>
-            </div>
-          ) : (
-            <p className="text-white/70 text-center py-3 text-sm">
-              Clique em "Mostrar" para ver o histórico
-            </p>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            ) : showHistory && history.length === 0 ? (
+              <div className="text-center text-white/70 py-6">
+                <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
+                <p className="text-sm">Nenhum cálculo salvo ainda</p>
+                <p className="text-xs">Seus cálculos aparecerão aqui automaticamente</p>
+              </div>
+            ) : (
+              <p className="text-white/70 text-center py-3 text-sm">
+                Clique em "Mostrar" para ver o histórico
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 });
