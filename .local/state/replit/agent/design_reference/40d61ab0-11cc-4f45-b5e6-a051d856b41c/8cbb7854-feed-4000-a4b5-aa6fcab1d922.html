@@ -1,0 +1,510 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Lucro - Worldshards</title>
+    <meta name="description" content="Calculadora interativa para calcular custos, lucros e eficiência de equipamentos no jogo Worldshards. Calcule seu retorno de investimento em gemas e tokens.">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'sans': ['DM Sans', 'system-ui', 'sans-serif'],
+                        'mono': ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        'profit': '#22C55E',
+                        'loss': '#EF4444',
+                        'info': '#3B82F6',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/heroicons@2.0.16/outline/index.js" type="module"></script>
+</head>
+<body class="bg-gray-50 font-sans">
+    <!-- @COMPONENT: AppHeader -->
+    <header class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-profit rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Calculadora de Lucro</h1>
+                        <p class="text-sm text-gray-500">Worldshards</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button data-event="click:toggleHistory" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </button>
+                    <button data-event="click:toggleSettings" class="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- @END_COMPONENT: AppHeader -->
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="mb-6">
+            <p class="text-gray-600">Configure seus investimentos e calcule o lucro líquido final após recompra das gemas.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- @COMPONENT: CalculatorForm -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <div class="flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-profit" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                            </svg>
+                            <h2 class="text-lg font-semibold text-gray-900">Configuração de Investimento</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <form data-implementation="Calculator form logic">
+                            <!-- Investment Section -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Investimento Inicial (USD)</label>
+                                    <input type="number" data-bind="investment.initial" value="100" 
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="100">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gems Compradas</label>
+                                    <input type="number" data-bind="gems.purchased" value="14000"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="14000">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gems Restantes</label>
+                                    <input type="number" data-bind="gems.remaining" value="443"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="443">
+                                </div>
+                            </div>
+
+                            <!-- Production Section -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Gems Consumidas</label>
+                                    <input type="number" data-bind="gems.consumed" value="13557"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="13557">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tokens dos Equipamentos</label>
+                                    <input type="number" data-bind="tokens.equipment" value="1096"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="1096">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tokens Farmados</label>
+                                    <input type="number" data-bind="tokens.farmed" value="4565"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="4565">
+                                </div>
+                            </div>
+
+                            <!-- Pricing Section -->
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Cargas Utilizadas</label>
+                                    <input type="number" data-bind="loads.used" value="84"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="84">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Preço Token (USD)</label>
+                                    <input type="number" data-bind="price.token" value="0.042" step="0.001"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="0.042">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Preço Gema (USD)</label>
+                                    <input type="number" data-bind="price.gem" value="0.0071" step="0.0001"
+                                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-profit focus:border-profit transition-colors font-mono"
+                                           placeholder="0.0071">
+                                </div>
+                            </div>
+
+                            <button type="button" data-event="click:calculateProfit" 
+                                    class="w-full bg-profit text-white py-4 px-6 rounded-lg font-semibold text-lg hover:bg-green-600 focus:ring-4 focus:ring-green-200 transition-all duration-200 flex items-center justify-center space-x-2 shadow-lg">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                                </svg>
+                                <span>Calcular Lucro Líquido</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: CalculatorForm -->
+
+            <!-- @COMPONENT: ResultsSidebar -->
+            <div class="space-y-6">
+                <!-- Final Profit Card -->
+                <div class="bg-gradient-to-br from-green-50 to-green-100 rounded-xl border border-green-200 p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <div class="w-8 h-8 bg-profit rounded-full flex items-center justify-center">
+                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-lg font-semibold text-green-900">Lucro Líquido Final</h3>
+                    </div>
+                    <div class="text-4xl font-bold text-green-900 font-mono" data-bind="result.finalProfit">$45.29</div>
+                    <p class="text-green-700 mt-2">Investimento Lucrativo</p>
+                </div>
+
+                <!-- Calculation Summary -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">Resumo dos Cálculos</h3>
+                    </div>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Valor Total dos Tokens:</span>
+                            <span class="font-mono font-semibold text-gray-900" data-bind="result.totalTokenValue">$237.80</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Custo das Gemas:</span>
+                            <span class="font-mono font-semibold text-loss" data-bind="result.gemsCost">-$96.25</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Lucro Bruto:</span>
+                            <span class="font-mono font-semibold text-gray-900" data-bind="result.grossProfit">$141.55</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-gray-600">Custo Recompra Gemas:</span>
+                            <span class="font-mono font-semibold text-loss" data-bind="result.rebuyCost">-$96.25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Efficiency Metrics -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div class="flex items-center space-x-2 mb-4">
+                        <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-900">Métricas de Eficiência</h3>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600 font-mono" data-bind="metrics.totalTokens">5.662</div>
+                            <p class="text-sm text-gray-600">Total de Tokens</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-2xl font-bold text-purple-600 font-mono" data-bind="metrics.tokensPerLoad">54.4</div>
+                            <p class="text-sm text-gray-600">Tokens/Carga</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- @END_COMPONENT: ResultsSidebar -->
+        </div>
+
+        <!-- @COMPONENT: ChartsSection -->
+        <div class="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Performance Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-info" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                    <span>Performance ao Longo do Tempo</span>
+                </h3>
+                <canvas id="performanceChart" data-implementation="Chart.js line chart showing profit evolution over time"></canvas>
+            </div>
+
+            <!-- Efficiency Chart -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                    </svg>
+                    <span>Distribuição de Eficiência</span>
+                </h3>
+                <canvas id="efficiencyChart" data-implementation="Chart.js doughnut chart showing tokens vs loads distribution"></canvas>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: ChartsSection -->
+
+        <!-- @COMPONENT: ExampleDataSection -->
+        <div class="mt-12">
+            <div class="bg-blue-50 rounded-xl border border-blue-200 p-6">
+                <h3 class="text-lg font-semibold text-blue-900 mb-4 flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <span>Dados de Exemplo (seus dados reais):</span>
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
+                    <div class="space-y-2">
+                        <p class="text-blue-700">• Investimento: $100 USD = 14.000 gems</p>
+                        <p class="text-blue-700">• Gems restantes: 443</p>
+                        <p class="text-blue-700">• Gems consumidas: 13.557</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-blue-700">• Tokens dos equipamentos: 1.096</p>
+                        <p class="text-blue-700">• Tokens farmados: 4.565 (com 84 cargas)</p>
+                        <p class="text-blue-700">• Total de tokens: 5.662</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-blue-700">• Preço atual token: $0.042</p>
+                        <p class="text-blue-700">• Preço atual gem: $0.0071</p>
+                        <p class="text-blue-700">• Eficiência: 54.4 tokens/carga</p>
+                    </div>
+                    <div class="space-y-2">
+                        <p class="text-blue-700">• Valor total tokens: $237.80</p>
+                        <p class="text-blue-700">• Custo recompra: $96.25</p>
+                        <p class="text-profit font-semibold">• Lucro final: $45.29</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: ExampleDataSection -->
+
+        <!-- @COMPONENT: HistorySection -->
+        <div class="mt-12">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>Histórico de Cálculos</span>
+                        </h3>
+                        <button data-event="click:clearHistory" class="text-sm text-loss hover:text-red-700 font-medium">
+                            Limpar Histórico
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <!-- @MAP: historyItems.map(item => ( -->
+                    <div class="border border-gray-200 rounded-lg p-4 mb-4 last:mb-0" data-mock="true">
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <div class="flex items-center space-x-4 mb-2">
+                                    <span class="text-2xl font-bold text-profit font-mono">$42.15</span>
+                                    <span class="text-sm text-gray-500">23/01/2024 às 14:30</span>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                                    <span>Investimento: $100</span>
+                                    <span>Tokens: 5.340</span>
+                                    <span>Eficiência: 52.1/carga</span>
+                                    <span>ROI: 42.15%</span>
+                                </div>
+                            </div>
+                            <button data-event="click:loadCalculation" class="text-info hover:text-blue-700 text-sm font-medium ml-4">
+                                Carregar
+                            </button>
+                        </div>
+                    </div>
+                    <!-- @END_MAP )) -->
+                    
+                    <div class="text-center text-gray-500 py-8" data-mock="true">
+                        <svg class="w-12 h-12 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p>Nenhum cálculo salvo ainda</p>
+                        <p class="text-sm">Seus cálculos aparecerão aqui automaticamente</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: HistorySection -->
+    </main>
+
+    <!-- @COMPONENT: Modal for Settings -->
+    <div id="settingsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50" data-implementation="Modal component for settings">
+        <div class="bg-white rounded-xl shadow-lg max-w-md w-full mx-4">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900">Configurações</h3>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-700">Salvar automaticamente</span>
+                    <button class="relative inline-flex h-6 w-11 items-center rounded-full bg-profit">
+                        <span class="translate-x-6 inline-block h-4 w-4 transform rounded-full bg-white transition"></span>
+                    </button>
+                </div>
+                <div class="flex items-center justify-between">
+                    <span class="text-gray-700">Modo escuro</span>
+                    <button class="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200">
+                        <span class="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-white transition"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="p-6 border-t border-gray-200 flex justify-end space-x-3">
+                <button data-event="click:closeModal" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancelar</button>
+                <button data-event="click:saveSettings" class="px-4 py-2 bg-profit text-white rounded-lg hover:bg-green-600">Salvar</button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Modal -->
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // Initialize charts
+            function initializeCharts() {
+                // Performance Chart
+                const performanceCtx = document.getElementById('performanceChart');
+                if (performanceCtx) {
+                    new Chart(performanceCtx, {
+                        type: 'line',
+                        data: {
+                            labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun'],
+                            datasets: [{
+                                label: 'Lucro ($)',
+                                data: [23.45, 34.12, 41.89, 38.76, 42.15, 45.29],
+                                borderColor: '#22C55E',
+                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                                fill: true,
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    display: false
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    grid: {
+                                        color: 'rgba(0, 0, 0, 0.1)'
+                                    }
+                                },
+                                x: {
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+
+                // Efficiency Chart
+                const efficiencyCtx = document.getElementById('efficiencyChart');
+                if (efficiencyCtx) {
+                    new Chart(efficiencyCtx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Tokens dos Equipamentos', 'Tokens Farmados'],
+                            datasets: [{
+                                data: [1096, 4565],
+                                backgroundColor: ['#3B82F6', '#22C55E'],
+                                borderWidth: 0
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        padding: 20,
+                                        usePointStyle: true
+                                    }
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // Modal functionality
+            function initializeModals() {
+                const settingsModal = document.getElementById('settingsModal');
+                
+                // Show modal
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('[data-event="click:toggleSettings"]')) {
+                        settingsModal.classList.remove('hidden');
+                        settingsModal.classList.add('flex');
+                    }
+                });
+
+                // Hide modal
+                document.addEventListener('click', function(e) {
+                    if (e.target.closest('[data-event="click:closeModal"]') || 
+                        (e.target === settingsModal)) {
+                        settingsModal.classList.add('hidden');
+                        settingsModal.classList.remove('flex');
+                    }
+                });
+            }
+
+            // Calculator functionality placeholder
+            function initializeCalculator() {
+                const calculateButton = document.querySelector('[data-event="click:calculateProfit"]');
+                if (calculateButton) {
+                    calculateButton.addEventListener('click', function() {
+                        // TODO: Implement calculation logic
+                        console.log('Calculate profit clicked');
+                        
+                        // Show success message
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-profit text-white px-6 py-3 rounded-lg shadow-lg z-50';
+                        notification.textContent = 'Cálculo atualizado com sucesso!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 3000);
+                    });
+                }
+            }
+
+            // Initialize everything when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeCharts();
+                initializeModals();
+                initializeCalculator();
+            });
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+import { useState, useCallback, useMemo, useRef } from 'react';
+import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
+
+export function useCalculator() {
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const [formData, setFormData] = useState<CalculatorFormData>({
+    investment: 100,
+    gemsPurchased: 14000,
+    gemsRemaining: 443,
+    gemsConsumed: 13557,
+    tokensEquipment: 1096,
+    tokensFarmed: 4566,
+    loadsUsed: 84,
+    tokenPrice: 0.042,
+    gemPrice: 0.0071,
+  });
+
+  const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  }, []);
+
+  const results = useMemo((): CalculationResults | null => {
+    if (formData.investment <= 0 || formData.tokenPrice <= 0 || formData.gemPrice <= 0) {
+      return null;
+    }
+
+    const totalTokens = formData.tokensEquipment + formData.tokensFarmed;
+    const totalTokenValue = totalTokens * formData.tokenPrice;
+    const gemsCost = formData.gemsConsumed * formData.gemPrice;
+    const grossProfit = totalTokenValue - gemsCost;
+    const rebuyCost = formData.gemsConsumed * formData.gemPrice;
+    const finalProfit = grossProfit - rebuyCost;
+    const netProfit = finalProfit;
+    const roi = formData.investment > 0 ? (finalProfit / formData.investment) * 100 : 0;
+    const efficiency = formData.loadsUsed > 0 ? formData.tokensFarmed / formData.loadsUsed : 0;
+
+    return {
+      totalTokens,
+      tokensEquipment: formData.tokensEquipment,
+      tokensFarmed: formData.tokensFarmed,
+      totalTokenValue,
+      gemsCost,
+      grossProfit,
+      rebuyCost,
+      finalProfit,
+      netProfit,
+      roi,
+      efficiency,
+    };
+  }, [formData]);
+
+  const breakdown = useMemo((): CalculationBreakdown[] => {
+    if (!results) return [];
+
+    return [
+      {
+        metric: 'Valor Total dos Tokens',
+        value: `$${results.totalTokenValue.toFixed(2)}`,
+        period: '',
+        status: 'positive'
+      },
+      {
+        metric: 'Custo das Gemas',
+        value: `-$${results.gemsCost.toFixed(2)}`,
+        period: '',
+        status: 'negative'
+      },
+      {
+        metric: 'Lucro Bruto',
+        value: `$${results.grossProfit.toFixed(2)}`,
+        period: '',
+        status: results.grossProfit > 0 ? 'positive' : 'negative'
+      },
+      {
+        metric: 'Custo Recompra Gemas',
+        value: `-$${results.rebuyCost.toFixed(2)}`,
+        period: '',
+        status: 'negative'
+      },
+      {
+        metric: 'ROI',
+        value: `${results.roi.toFixed(1)}%`,
+        period: '',
+        status: results.roi > 30 ? 'excellent' : results.roi > 0 ? 'positive' : 'negative'
+      }
+    ];
+  }, [results]);
+
+  const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
+    // Debounce para evitar múltiplos saves rápidos
+    if (debounceTimeoutRef.current) {
+      clearTimeout(debounceTimeoutRef.current);
+    }
+
+    debounceTimeoutRef.current = setTimeout(() => {
+      const historyItem: HistoryItem = {
+        timestamp: Date.now(),
+        formData,
+        results,
+      };
+
+      const existingHistory = localStorage.getItem('worldshards-history');
+      const history: HistoryItem[] = existingHistory ? JSON.parse(existingHistory) : [];
+      
+      // Evitar duplicatas - comparar timestamp recente (último minuto)
+      const lastItem = history[history.length - 1];
+      if (lastItem && Date.now() - lastItem.timestamp < 60000) {
+        const isDuplicate = JSON.stringify(lastItem.formData) === JSON.stringify(formData);
+        if (isDuplicate) return;
+      }
+      
+      const updatedHistory = [...history, historyItem].slice(-50);
+      localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+    }, 500);
+  }, [debounceTimeoutRef]);
+
+  return {
+    formData,
+    results,
+    breakdown,
+    updateFormData,
+    saveToHistory,
+  };
+}
