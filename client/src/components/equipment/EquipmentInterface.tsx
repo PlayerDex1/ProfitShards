@@ -1,7 +1,7 @@
-import { X, Edit2, Save, Download, Upload, Trash2, Play, RefreshCcw } from "lucide-react";
+import { X, Edit2, Save, Download, Upload, Trash2, Play, RefreshCcw, Share2 } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES, RARITY_LABELS, RARITY_COLORS } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { getBuilds, saveBuild, deleteBuild, exportBuilds, importBuilds, EquipmentBuild } from "@/lib/equipmentBuilds";
 import { calculateLuckEffectFromArray } from "@/lib/luckEffect";
@@ -100,6 +100,40 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
 
   const { t } = useI18n();
 
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleDownloadJson = () => {
+    const data = exportBuilds();
+    const blob = new Blob([data], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'profitshards-builds.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleUploadJson = async (file?: File) => {
+    try {
+      if (!file && fileInputRef.current?.files?.[0]) file = fileInputRef.current.files[0];
+      if (!file) return;
+      const text = await file.text();
+      importBuilds(text);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    } catch {}
+  };
+
+  const handleShareLink = () => {
+    try {
+      const data = exportBuilds();
+      const payload = btoa(unescape(encodeURIComponent(data)));
+      const link = `${location.origin}${location.pathname}?builds=${encodeURIComponent(payload)}`;
+      navigator.clipboard.writeText(link).catch(() => {});
+    } catch {}
+  };
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-4xl">
@@ -129,42 +163,65 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             {/* Favoritos/Builds */}
             <div className="bg-black/30 border border-slate-700 rounded p-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-white font-semibold text-sm">{t('equipment.builds')}</h3>
-                <div className="flex gap-2">
+              <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
+                <div className="flex items-center gap-2 min-w-0 flex-1">
+                  <input
+                    value={buildName}
+                    onChange={(e) => setBuildName(e.target.value)}
+                    placeholder={t('equipment.builds.name')}
+                    className="h-8 px-2 rounded bg-white/10 border border-white/20 text-white text-sm w-full"
+                  />
                   <button
-                    className="h-8 px-3 bg-white text-black text-sm rounded flex items-center gap-2"
+                    className="h-8 px-3 bg-white text-black text-sm rounded flex items-center gap-2 whitespace-nowrap"
                     onClick={() => saveBuild(buildName, session)}
                   >
                     <Save className="h-4 w-4" /> {t('equipment.save')}
                   </button>
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
                   <button
                     className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
                     onClick={() => {
                       const text = exportBuilds();
                       navigator.clipboard.writeText(text).catch(() => {});
                     }}
+                    title={t('equipment.export')}
                   >
                     <Download className="h-4 w-4" /> {t('equipment.export')}
                   </button>
+                  <button
+                    className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
+                    onClick={handleDownloadJson}
+                    title={t('equipment.exportFile')}
+                  >
+                    <Download className="h-4 w-4" /> {t('equipment.exportFile')}
+                  </button>
+                  <button
+                    className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
+                    onClick={() => fileInputRef.current?.click()}
+                    title={t('equipment.importFile')}
+                  >
+                    <Upload className="h-4 w-4" /> {t('equipment.importFile')}
+                  </button>
+                  <input ref={fileInputRef} type="file" accept="application/json" className="hidden" onChange={(e) => handleUploadJson(e.target.files?.[0])} />
                   <button
                     className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
                     onClick={() => {
                       const text = prompt(t('equipment.import.prompt'));
                       if (text) importBuilds(text);
                     }}
+                    title={t('equipment.import')}
                   >
                     <Upload className="h-4 w-4" /> {t('equipment.import')}
                   </button>
+                  <button
+                    className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
+                    onClick={handleShareLink}
+                    title={t('equipment.share')}
+                  >
+                    <Share2 className="h-4 w-4" /> {t('equipment.share')}
+                  </button>
                 </div>
-              </div>
-              <div className="flex gap-2 mb-2">
-                <input
-                  value={buildName}
-                  onChange={(e) => setBuildName(e.target.value)}
-                  placeholder={t('equipment.builds.name')}
-                  className="h-8 px-2 rounded bg-white/10 border border-white/20 text-white text-sm w-full"
-                />
               </div>
               <div className="space-y-2 max-h-48 overflow-auto pr-2">
                 {builds.length === 0 ? (
