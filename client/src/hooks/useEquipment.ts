@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Equipment, EquipmentSession, Rarity, clampLuck } from "@/types/equipment";
 import { getCurrentUsername } from "@/hooks/use-auth";
+import { appendEquipmentLuckSnapshot } from "@/lib/equipmentHistory";
 
 const DEFAULT_EQUIPMENT: EquipmentSession = {
   weapon: { rarity: 'rare', luckLevel: 12 },
@@ -18,7 +19,6 @@ export function useEquipment() {
   const [session, setSession] = useState<EquipmentSession>(DEFAULT_EQUIPMENT);
   const [isOpen, setIsOpen] = useState(false);
 
-  // carregar por usuário
   const loadSession = useCallback(() => {
     const key = storageKeyForUser(getCurrentUsername());
     try {
@@ -40,10 +40,10 @@ export function useEquipment() {
     return () => window.removeEventListener('worldshards-auth-updated', onAuth);
   }, [loadSession]);
 
-  // persistir por usuário
   useEffect(() => {
     const key = storageKeyForUser(getCurrentUsername());
     localStorage.setItem(key, JSON.stringify(session));
+    appendEquipmentLuckSnapshot(session);
   }, [session]);
 
   const totalLuck = useMemo(() => {
