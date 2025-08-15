@@ -31,12 +31,12 @@ export const RARITY_LABELS: Record<Rarity, string> = {
 };
 
 export const RARITY_COLORS: Record<Rarity, string> = {
-  comum: 'text-white',
-  incomum: 'text-white',
-  raro: 'text-white',
-  épico: 'text-white',
-  lendário: 'text-white',
-  mítico: 'text-white',
+  comum: 'text-gray-300',
+  incomum: 'text-green-400',
+  raro: 'text-blue-400',
+  épico: 'text-purple-400',
+  lendário: 'text-yellow-300',
+  mítico: 'text-orange-400',
 };
 
 export function clampLuck(level: number): number {
