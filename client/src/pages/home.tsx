@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
 import { Results } from "@/components/Results";
-import { EquipmentComparison } from "@/components/EquipmentComparison";
+import { EquipmentButton, EquipmentInterface } from "@/components/equipment";
 import { Sidebar } from "@/components/Sidebar";
 import { useCalculator } from "@/hooks/use-calculator";
+import { useEquipment } from "@/hooks/useEquipment";
 
 export default function Home() {
   const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
   const [activeSection, setActiveSection] = useState('calculator');
+  const { session, totalLuck, isOpen, openEquipment, closeEquipment, updateEquipment } = useEquipment();
 
   const handleSaveToHistory = () => {
     if (results) {
@@ -18,8 +20,6 @@ export default function Home() {
 
   const renderContent = () => {
     switch (activeSection) {
-      case 'equipment':
-        return <EquipmentComparison />;
       case 'history':
         return (
           <div className="space-y-4">
@@ -29,6 +29,10 @@ export default function Home() {
       default:
         return (
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Calculadora</h2>
+              <EquipmentButton onClick={openEquipment} totalLuck={totalLuck} />
+            </div>
             <Calculator 
               formData={formData}
               onUpdateFormData={updateFormData}
@@ -59,6 +63,15 @@ export default function Home() {
           </div>
         </div>
       </main>
+
+      {isOpen && (
+        <EquipmentInterface
+          session={session}
+          totalLuck={totalLuck}
+          onClose={closeEquipment}
+          onEquipmentChange={updateEquipment}
+        />
+      )}
     </div>
   );
 }
