@@ -81,7 +81,7 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 						rel="noopener noreferrer"
 						className="block text-center bg-white text-black rounded-lg py-2 text-sm hover:bg-white/90"
 					>
-						Created by Holdboy
+						{t('donate.openloot')}
 					</a>
 					<div className="mt-2 bg-white/5 p-3 rounded-lg">
 						<div className="text-xs text-white/70 mb-1">{t('donate.wallet')}</div>

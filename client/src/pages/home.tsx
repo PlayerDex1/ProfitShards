@@ -67,6 +67,15 @@ export default function Home() {
 				</div>
 			</main>
 
+			<footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
+				<div className="mt-8 text-center text-white/70 text-sm">
+					<p>Created by holdboy</p>
+					<p>
+						<a href="https://x.com/PlayerHold" target="_blank" rel="noopener noreferrer" className="underline text-white">https://x.com/PlayerHold</a>
+					</p>
+				</div>
+			</footer>
+
 			{isOpen && (
 				<EquipmentInterface
 					session={session}
