@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
+import { getCurrentUsername } from '@/hooks/use-auth';
 
 export function useCalculator() {
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -103,7 +104,9 @@ export function useCalculator() {
         results,
       };
 
-      const existingHistory = localStorage.getItem('worldshards-history');
+      const username = getCurrentUsername() ?? 'guest';
+      const key = `worldshards-history-${username}`;
+      const existingHistory = localStorage.getItem(key);
       const history: HistoryItem[] = existingHistory ? JSON.parse(existingHistory) : [];
       
       // Evitar duplicatas - comparar timestamp recente (último minuto)
@@ -114,7 +117,7 @@ export function useCalculator() {
       }
       
       const updatedHistory = [...history, historyItem].slice(-50);
-      localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+      localStorage.setItem(key, JSON.stringify(updatedHistory));
       // notificar UI para recarregar o histórico imediatamente
       if (typeof window !== 'undefined') {
         window.dispatchEvent(new CustomEvent('worldshards-history-updated'));

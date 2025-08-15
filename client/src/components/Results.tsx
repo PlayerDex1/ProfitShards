@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
+import { getCurrentUsername } from "@/hooks/use-auth";
 
 interface ResultsProps {
   results: CalculationResults | null;
@@ -18,17 +19,25 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
 
   useEffect(() => {
     const load = () => {
-      const savedHistory = localStorage.getItem('worldshards-history');
+      const username = getCurrentUsername() ?? 'guest';
+      const key = `worldshards-history-${username}`;
+      const savedHistory = localStorage.getItem(key);
       setHistory(savedHistory ? JSON.parse(savedHistory) : []);
     };
     load();
     const onUpdate = () => load();
     window.addEventListener('worldshards-history-updated', onUpdate);
-    return () => window.removeEventListener('worldshards-history-updated', onUpdate);
+    window.addEventListener('worldshards-auth-updated', onUpdate);
+    return () => {
+      window.removeEventListener('worldshards-history-updated', onUpdate);
+      window.removeEventListener('worldshards-auth-updated', onUpdate);
+    };
   }, [results]);
 
   const clearHistory = () => {
-    localStorage.removeItem('worldshards-history');
+    const username = getCurrentUsername() ?? 'guest';
+    const key = `worldshards-history-${username}`;
+    localStorage.removeItem(key);
     setHistory([]);
   };
 
@@ -190,7 +199,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         </CardHeader>
         <CardContent className="pt-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="text-center p-3 bg-white/5 rounded-xl">
+            <div className="text-center p-3 bg:white/5 rounded-xl">
               <div className="text-xs text-white/70 mb-1">Total de Tokens</div>
               <div className="text-xl font-bold text-white font-mono" data-testid="text-efficiency-total">
                 {results.totalTokens.toLocaleString()}
@@ -206,7 +215,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
 
             <div className="text-center p-3 bg-white/10 border border-white/20 rounded-xl">
               <div className="text-xs text-white/70 mb-1">ROI</div>
-              <div className="text-xl font-bold text-white font-mono" data-testid="text-roi">
+              <div className="text-xl font-bold text:white font-mono" data-testid="text-roi">
                 {results.roi > 0 ? '+' : ''}{results.roi.toFixed(1)}%
               </div>
             </div>
