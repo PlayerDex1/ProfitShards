@@ -1,8 +1,9 @@
-import { X, Edit2 } from "lucide-react";
+import { X, Edit2, Save, Download, Upload, Trash2, Play } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES, RARITY_LABELS, RARITY_COLORS } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { getCurrentUsername } from "@/hooks/use-auth";
+import { getBuilds, saveBuild, deleteBuild, exportBuilds, importBuilds, EquipmentBuild } from "@/lib/equipmentBuilds";
 
 interface EquipmentInterfaceProps {
   session: EquipmentSession;
@@ -15,11 +16,32 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
   const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
   const username = getCurrentUsername() ?? 'Convidado';
 
+  const [builds, setBuilds] = useState<EquipmentBuild[]>([]);
+  const [buildName, setBuildName] = useState("");
+  const [whatIfLuck, setWhatIfLuck] = useState<number>(totalLuck);
+
+  useEffect(() => {
+    const load = () => setBuilds(getBuilds());
+    load();
+    const onUpd = () => load();
+    window.addEventListener('worldshards-equip-builds-updated', onUpd);
+    return () => window.removeEventListener('worldshards-equip-builds-updated', onUpd);
+  }, []);
+
+  useEffect(() => {
+    setWhatIfLuck(totalLuck);
+  }, [totalLuck]);
+
   const handleSaveEquipment = (equipment: Equipment) => {
     if (onEquipmentChange && editingEquipment) {
       onEquipmentChange(editingEquipment, equipment);
     }
     setEditingEquipment(null);
+  };
+
+  const applyBuild = (b: EquipmentBuild) => {
+    if (!onEquipmentChange) return;
+    (Object.keys(b.session) as EquipmentType[]).forEach((k) => onEquipmentChange(k, b.session[k]));
   };
 
   const renderEquipmentItem = (type: EquipmentType, equipment: Equipment) => {
@@ -54,7 +76,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-2xl">
+      <div className="bg-slate-900 border border-slate-700 rounded-lg shadow-2xl w-full max-w-4xl">
         <div className="flex items-center justify-between p-5 border-b border-slate-700">
           <div>
             <h1 className="text-xl font-bold text-white">Equipamento - {username}</h1>
@@ -66,7 +88,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
             </button>
           )}
         </div>
-        <div className="p-5">
+        <div className="p-5 space-y-5">
           <div className="grid grid-cols-2 gap-6">
             <div className="space-y-4">
               {renderEquipmentItem('weapon', session.weapon)}
@@ -77,6 +99,91 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
               {renderEquipmentItem('pickaxe', session.pickaxe)}
             </div>
           </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            {/* Favoritos/Builds */}
+            <div className="bg-black/30 border border-slate-700 rounded p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-white font-semibold text-sm">Builds Salvas</h3>
+                <div className="flex gap-2">
+                  <button
+                    className="h-8 px-3 bg-white text-black text-sm rounded flex items-center gap-2"
+                    onClick={() => saveBuild(buildName, session)}
+                  >
+                    <Save className="h-4 w-4" /> Salvar
+                  </button>
+                  <button
+                    className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
+                    onClick={() => {
+                      const text = exportBuilds();
+                      navigator.clipboard.writeText(text).catch(() => {});
+                    }}
+                  >
+                    <Download className="h-4 w-4" /> Exportar
+                  </button>
+                  <button
+                    className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
+                    onClick={() => {
+                      const text = prompt('Cole o JSON das builds:');
+                      if (text) importBuilds(text);
+                    }}
+                  >
+                    <Upload className="h-4 w-4" /> Importar
+                  </button>
+                </div>
+              </div>
+              <div className="flex gap-2 mb-2">
+                <input
+                  value={buildName}
+                  onChange={(e) => setBuildName(e.target.value)}
+                  placeholder="Nome da build"
+                  className="h-8 px-2 rounded bg-white/10 border border-white/20 text-white text-sm w-full"
+                />
+              </div>
+              <div className="space-y-2 max-h-48 overflow-auto pr-2">
+                {builds.length === 0 ? (
+                  <p className="text-white/60 text-sm">Nenhuma build salva ainda</p>
+                ) : (
+                  builds.map((b) => (
+                    <div key={b.id} className="flex items-center justify-between text-sm bg-white/5 rounded px-2 py-1">
+                      <span className="text-white/90 truncate">{b.name}</span>
+                      <div className="flex items-center gap-2">
+                        <button className="h-7 px-2 bg-white/10 text-white rounded" onClick={() => applyBuild(b)}>Aplicar</button>
+                        <button className="h-7 px-2 bg-white/10 text-white rounded" onClick={() => deleteBuild(b.id)}>
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            {/* What-if de Luck */}
+            <div className="bg-black/30 border border-slate-700 rounded p-3">
+              <h3 className="text-white font-semibold text-sm mb-2">What‑if de Luck</h3>
+              <div className="flex items-center gap-2">
+                <input
+                  type="range"
+                  min={0}
+                  max={12000}
+                  step={10}
+                  value={whatIfLuck}
+                  onChange={(e) => setWhatIfLuck(Number(e.target.value))}
+                  className="w-full"
+                />
+                <span className="text-white text-sm w-16 text-right">{whatIfLuck}</span>
+              </div>
+              <p className="text-white/70 text-xs mt-2">Ajuste para simular total de Luck e ver impacto nos cálculos (aprimoramento futuro).</p>
+            </div>
+
+            {/* Dica/Histórico */}
+            <div className="bg-black/30 border border-slate-700 rounded p-3">
+              <h3 className="text-white font-semibold text-sm mb-2">Dica</h3>
+              <p className="text-white/70 text-sm">Use os presets de raridade e os botões ± para ajustar rapidamente. Suas builds e sessões são salvas por usuário.</p>
+            </div>
+          </div>
+
           <div className="pt-5 text-right border-t border-slate-700 mt-5">
             <span className="text-white font-semibold">Total de Luck: {totalLuck}</span>
           </div>
