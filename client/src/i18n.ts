@@ -102,6 +102,10 @@ const dicts: Record<Lang, Dict> = {
 
     '404.title': '404 Página não encontrada',
     '404.hint': 'Você esqueceu de adicionar a página ao roteador?',
+    'results.tokenLabel': 'Tokens',
+    'results.profitLabel': 'Lucro',
+    'equipment.compareNote': 'A diferença e o efeito são estimativas baseadas apenas no Luck total.',
+    'equipment.import.prompt': 'Cole o JSON das builds:',
   },
   en: {
     'header.title': 'Profit Calculator - Worldshards',
@@ -200,6 +204,10 @@ const dicts: Record<Lang, Dict> = {
 
     '404.title': '404 Page Not Found',
     '404.hint': 'Did you forget to add the page to the router?',
+    'results.tokenLabel': 'Tokens',
+    'results.profitLabel': 'Profit',
+    'equipment.compareNote': 'Difference and effect are estimates based only on total Luck.',
+    'equipment.import.prompt': 'Paste builds JSON:',
   },
 };
 

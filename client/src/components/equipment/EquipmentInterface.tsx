@@ -150,7 +150,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
                   <button
                     className="h-8 px-3 bg-white/10 text-white text-sm rounded flex items-center gap-2"
                     onClick={() => {
-                      const text = prompt(t('equipment.import'));
+                      const text = prompt(t('equipment.import.prompt'));
                       if (text) importBuilds(text);
                     }}
                   >
@@ -234,7 +234,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
                     <RefreshCcw className="h-4 w-4" /> {t('equipment.applyBuildB')}
                   </button>
                 )}
-                <p className="text-white/60 text-xs">A diferença e o efeito são estimativas baseadas apenas no Luck total.</p>
+                <p className="text-white/60 text-xs">{t('equipment.compareNote')}</p>
               </div>
             </div>
 

@@ -86,8 +86,8 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
   }));
 
   const tokenDistribution = [
-    { name: 'Tokens Equipamentos', value: results.tokensEquipment, color: '#ffffff' },
-    { name: 'Tokens Farmados', value: results.tokensFarmed, color: '#cccccc' }
+    { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#ffffff' },
+    { name: t('results.farmedTokens'), value: results.tokensFarmed, color: '#cccccc' }
   ];
 
   return (
@@ -99,13 +99,13 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-black" />
             </div>
-            <h3 className="text-base font-semibold text-white">Lucro Líquido Final</h3>
+            <h3 className="text-base font-semibold text-white">{t('results.finalProfitTitle')}</h3>
           </div>
           <div className="text-3xl font-bold text-white font-mono" data-testid="text-final-profit">
             ${results.finalProfit.toFixed(2)}
           </div>
           <p className="text-white/80 text-sm mt-1">
-            {results.finalProfit > 0 ? 'Investimento Lucrativo' : 'Prejuízo'}
+            {results.finalProfit > 0 ? t('results.profitable') : t('results.loss')}
           </p>
         </CardContent>
       </Card>
@@ -115,7 +115,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
             <BarChart3 className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">Resumo</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">{t('results.summaryTitle')}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-2 pt-0">
@@ -140,7 +140,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
             <PieChart className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">Distribuição de Tokens</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">{t('results.tokenDistribution')}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -196,28 +196,28 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
             <Zap className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">Métricas de Eficiência</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">{t('results.efficiencyMetrics')}</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="text-center p-3 bg:white/5 rounded-xl">
-              <div className="text-xs text-white/70 mb-1">Total de Tokens</div>
+            <div className="text-center p-3 bg-white/5 rounded-xl">
+              <div className="text-xs text-white/70 mb-1">{t('results.totalTokensLabel')}</div>
               <div className="text-xl font-bold text-white font-mono" data-testid="text-efficiency-total">
                 {results.totalTokens.toLocaleString()}
               </div>
             </div>
             
             <div className="text-center p-3 bg-white/5 rounded-xl">
-              <div className="text-xs text-white/70 mb-1">Eficiência Farm</div>
+              <div className="text-xs text-white/70 mb-1">{t('results.farmEfficiency')}</div>
               <div className="text-xl font-bold text-white font-mono" data-testid="text-efficiency-farm">
-                {results.efficiency.toFixed(1)} tokens/carga
+                {results.efficiency.toFixed(1)} {t('results.tokenLabel')}/carga
               </div>
             </div>
 
             <div className="text-center p-3 bg-white/10 border border-white/20 rounded-xl">
-              <div className="text-xs text-white/70 mb-1">ROI</div>
-              <div className="text-xl font-bold text:white font-mono" data-testid="text-roi">
+              <div className="text-xs text-white/70 mb-1">{t('results.roi')}</div>
+              <div className="text-xl font-bold text-white font-mono" data-testid="text-roi">
                 {results.roi > 0 ? '+' : ''}{results.roi.toFixed(1)}%
               </div>
             </div>
@@ -262,7 +262,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             <div className="flex justify-between items-center">
               <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
                 <Clock className="w-4 h-4 text-white" />
-                <span>Histórico de Cálculos</span>
+                <span>{t('results.history.title')}</span>
               </CardTitle>
               <div className="flex space-x-2">
                 <Button
@@ -272,7 +272,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
                   data-testid="button-toggle-history"
                   className="text-white"
                 >
-                  {showHistory ? 'Ocultar' : 'Mostrar'}
+                  {showHistory ? t('results.history.hide') : t('results.history.show')}
                 </Button>
                 {history.length > 0 && (
                   <Button
@@ -282,7 +282,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
                     className="text-white"
                     data-testid="button-clear-history"
                   >
-                    Limpar
+                    {t('results.history.clear')}
                   </Button>
                 )}
               </div>
@@ -326,7 +326,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
               </div>
             ) : (
               <p className="text-white/70 text-center py-3 text-sm">
-                Clique em "Mostrar" para ver o histórico
+                {t('results.history.clickToShow')}
               </p>
             )}
           </CardContent>
