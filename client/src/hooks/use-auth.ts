@@ -34,6 +34,18 @@ export function useAuth() {
 
   useEffect(() => {
     setUser(getCurrentUsername());
+    const onAuthUpdated = () => setUser(getCurrentUsername());
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === CURRENT_USER_KEY) {
+        setUser(getCurrentUsername());
+      }
+    };
+    window.addEventListener("worldshards-auth-updated", onAuthUpdated);
+    window.addEventListener("storage", onStorage);
+    return () => {
+      window.removeEventListener("worldshards-auth-updated", onAuthUpdated);
+      window.removeEventListener("storage", onStorage);
+    };
   }, []);
 
   const isAuthenticated = useMemo(() => Boolean(user), [user]);
