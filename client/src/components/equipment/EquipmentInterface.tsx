@@ -73,7 +73,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
     if (isEditing) {
       return (
         <div key={type} className="space-y-2">
-          <h3 className="text-base font-semibold text-white">{EQUIPMENT_NAMES[type]}</h3>
+          <h3 className="text-base font-semibold text-white">{t(`equipment.slot.${type}`)}</h3>
           <EquipmentEditor equipment={equipment} onSave={handleSaveEquipment} onCancel={() => setEditingEquipment(null)} />
         </div>
       );
@@ -81,17 +81,17 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
     return (
       <div key={type} className="space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-base font-semibold text-white">{EQUIPMENT_NAMES[type]}</h3>
+          <h3 className="text-base font-semibold text-white">{t(`equipment.slot.${type}`)}</h3>
           <button onClick={() => setEditingEquipment(type)} className="text-gray-400 hover:text-white transition-colors p-1 rounded hover:bg-slate-800">
             <Edit2 className="h-4 w-4" />
           </button>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-300">Raridade:</span>
-          <span className={`font-medium ${RARITY_COLORS[equipment.rarity]}`}>{RARITY_LABELS[equipment.rarity]}</span>
+          <span className="text-gray-300">{t('equipment.rarity')}:</span>
+          <span className={`font-medium ${RARITY_COLORS[equipment.rarity]}`}>{t(`equipment.rarity.${equipment.rarity}`)}</span>
         </div>
         <div className="flex items-center justify-between text-sm">
-          <span className="text-gray-300">Luck:</span>
+          <span className="text-gray-300">{t('equipment.luck')}:</span>
           <span className="text-white font-medium">{equipment.luck}</span>
         </div>
       </div>
