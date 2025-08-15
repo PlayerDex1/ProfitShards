@@ -15,7 +15,7 @@ export function useCalculator() {
 		tokensFarmed: 0,
 		loadsUsed: 0,
 		tokenPrice: 0,
-		gemPrice: 0,
+		gemPrice: 0.00714,
 	});
 
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
