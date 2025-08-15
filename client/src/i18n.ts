@@ -112,7 +112,12 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.equipment': 'Equipamentos',
     'sidebar.nav.history': 'Histórico',
 
-    'home.calculator': 'Calculadora',
+        'home.calculator': 'Calculadora',
+    'donate.title': 'Doações',
+    'donate.openloot': 'Doar via OpenLoot',
+    'donate.wallet': 'Carteira EVM',
+    'donate.copy': 'Copiar',
+    'donate.copied': 'Copiado!',
   },
   en: {
     'header.title': 'ProfitShards',
@@ -222,7 +227,12 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.equipment': 'Equipment',
     'sidebar.nav.history': 'History',
 
-    'home.calculator': 'Calculator',
+        'home.calculator': 'Calculator',
+    'donate.title': 'Donations',
+    'donate.openloot': 'Donate via OpenLoot',
+    'donate.wallet': 'EVM Wallet',
+    'donate.copy': 'Copy',
+    'donate.copied': 'Copied!',
   },
 };
 
