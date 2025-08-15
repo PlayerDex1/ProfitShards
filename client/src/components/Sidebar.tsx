@@ -72,6 +72,22 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 						})}
 					</nav>
 				</div>
+
+				{/* Donation compact footer */}
+				<div className="mt-8 border-t border-gray-800 pt-4">
+					<a
+						href="https://openloot.com/ambassador/link?code=HOLDBOY"
+						target="_blank"
+						rel="noopener noreferrer"
+						className="block text-center bg-white text-black rounded-lg py-2 text-sm hover:bg-white/90"
+					>
+						Created by Holdboy
+					</a>
+					<div className="mt-2 bg-white/5 p-3 rounded-lg">
+						<div className="text-xs text-white/70 mb-1">{t('donate.wallet')}</div>
+						<div className="text-white font-mono text-xs break-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

@@ -42,24 +42,6 @@ export default function Home() {
 						/>
 						<Results results={results} breakdown={breakdown} includeHistory />
 
-						{/* Donations below calculator + equipment + history */}
-						<div className="mt-8 space-y-3">
-							<div className="flex items-center gap-2">
-								<h3 className="text-sm font-semibold text-white">{t('donate.title')}</h3>
-							</div>
-							<a
-								href="https://openloot.com/ambassador/link?code=HOLDBOY"
-								target="_blank"
-								rel="noopener noreferrer"
-								className="inline-block text-center bg-white text-black rounded-lg py-2 px-3 text-sm hover:bg-white/90"
-							>
-								{t('donate.openloot')}
-							</a>
-							<div className="bg-white/5 p-3 rounded-lg">
-								<div className="text-xs text-white/70 mb-1">{t('donate.wallet')}</div>
-								<div className="text-white font-mono text-xs break-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
-							</div>
-						</div>
 					</div>
 				);
 		}
