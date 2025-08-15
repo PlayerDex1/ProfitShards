@@ -4,63 +4,63 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(248, 100%, 99%);
-  --foreground: hsl(210, 25%, 8%);
-  --card: hsl(0, 0%, 100%);
-  --card-foreground: hsl(210, 25%, 8%);
-  --popover: hsl(0, 0%, 100%);
-  --popover-foreground: hsl(210, 25%, 8%);
-  --primary: hsl(204, 88%, 53%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(210, 40%, 96%);
-  --secondary-foreground: hsl(210, 25%, 8%);
-  --muted: hsl(210, 40%, 96%);
-  --muted-foreground: hsl(215, 16%, 47%);
-  --accent: hsl(210, 40%, 94%);
-  --accent-foreground: hsl(210, 25%, 8%);
-  --destructive: hsl(0, 84%, 60%);
+  --background: hsl(0, 0%, 0%);
+  --foreground: hsl(0, 0%, 100%);
+  --card: hsl(0, 0%, 0%);
+  --card-foreground: hsl(0, 0%, 100%);
+  --popover: hsl(0, 0%, 0%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --primary: hsl(0, 0%, 100%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(0, 0%, 15%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(0, 0%, 15%);
+  --muted-foreground: hsl(0, 0%, 80%);
+  --accent: hsl(0, 0%, 20%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 0%, 60%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(214, 32%, 91%);
-  --input: hsl(214, 32%, 91%);
-  --ring: hsl(204, 88%, 53%);
-  --profit: hsl(142, 71%, 45%);
-  --loss: hsl(0, 84%, 60%);
-  --info: hsl(204, 88%, 53%);
-  --success: hsl(142, 71%, 45%);
-  --warning: hsl(45, 93%, 47%);
-  --chart-1: hsl(12, 76%, 61%);
-  --chart-2: hsl(173, 58%, 39%);
-  --chart-3: hsl(197, 37%, 24%);
-  --chart-4: hsl(43, 74%, 66%);
-  --chart-5: hsl(27, 87%, 67%);
+  --border: hsl(0, 0%, 20%);
+  --input: hsl(0, 0%, 20%);
+  --ring: hsl(0, 0%, 100%);
+  --profit: hsl(0, 0%, 100%);
+  --loss: hsl(0, 0%, 60%);
+  --info: hsl(0, 0%, 100%);
+  --success: hsl(0, 0%, 100%);
+  --warning: hsl(0, 0%, 80%);
+  --chart-1: hsl(0, 0%, 100%);
+  --chart-2: hsl(0, 0%, 80%);
+  --chart-3: hsl(0, 0%, 60%);
+  --chart-4: hsl(0, 0%, 40%);
+  --chart-5: hsl(0, 0%, 20%);
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: hsl(222, 84%, 5%);
-  --foreground: hsl(210, 40%, 98%);
-  --card: hsl(222, 84%, 10%);
-  --card-foreground: hsl(210, 40%, 98%);
-  --popover: hsl(222, 84%, 10%);
-  --popover-foreground: hsl(210, 40%, 98%);
-  --primary: hsl(204, 88%, 53%);
-  --primary-foreground: hsl(0, 0%, 100%);
-  --secondary: hsl(217, 33%, 17%);
-  --secondary-foreground: hsl(210, 40%, 98%);
-  --muted: hsl(217, 33%, 17%);
-  --muted-foreground: hsl(215, 20%, 65%);
-  --accent: hsl(217, 33%, 17%);
-  --accent-foreground: hsl(210, 40%, 98%);
-  --destructive: hsl(0, 62%, 30%);
+  --background: hsl(0, 0%, 0%);
+  --foreground: hsl(0, 0%, 100%);
+  --card: hsl(0, 0%, 0%);
+  --card-foreground: hsl(0, 0%, 100%);
+  --popover: hsl(0, 0%, 0%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --primary: hsl(0, 0%, 100%);
+  --primary-foreground: hsl(0, 0%, 0%);
+  --secondary: hsl(0, 0%, 15%);
+  --secondary-foreground: hsl(0, 0%, 100%);
+  --muted: hsl(0, 0%, 15%);
+  --muted-foreground: hsl(0, 0%, 80%);
+  --accent: hsl(0, 0%, 20%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 0%, 60%);
   --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(217, 33%, 17%);
-  --input: hsl(217, 33%, 17%);
-  --ring: hsl(204, 88%, 53%);
-  --profit: hsl(142, 71%, 45%);
-  --loss: hsl(0, 84%, 60%);
-  --info: hsl(204, 88%, 53%);
-  --success: hsl(142, 71%, 45%);
-  --warning: hsl(45, 93%, 47%);
+  --border: hsl(0, 0%, 20%);
+  --input: hsl(0, 0%, 20%);
+  --ring: hsl(0, 0%, 100%);
+  --profit: hsl(0, 0%, 100%);
+  --loss: hsl(0, 0%, 60%);
+  --info: hsl(0, 0%, 100%);
+  --success: hsl(0, 0%, 100%);
+  --warning: hsl(0, 0%, 80%);
 }
 
 @layer base {
@@ -75,7 +75,7 @@
 
 @layer utilities {
   .gradient-primary {
-    @apply bg-gradient-to-r from-primary to-blue-600;
+    @apply bg-white;
   }
   
   .text-profit {

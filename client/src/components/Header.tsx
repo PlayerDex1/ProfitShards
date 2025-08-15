@@ -6,17 +6,17 @@ export function Header() {
   const { isDark, toggleTheme } = useTheme();
 
   return (
-    <header className="bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50 w-full border-b border-border">
+    <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
-              <div className="p-3 bg-gradient-to-r from-profit to-blue-500 rounded-xl">
-                <Calculator className="w-6 h-6 text-white" />
+              <div className="p-3 bg-white rounded-xl">
+                <Calculator className="w-6 h-6 text-black" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Calculadora de Lucro - Worldshards</h1>
-                <p className="text-sm text-muted-foreground">Configure seus investimentos e calcule o lucro líquido final</p>
+                <h1 className="text-2xl font-bold text-white">Calculadora de Lucro - Worldshards</h1>
+                <p className="text-sm text-white/70">Configure seus investimentos e calcule o lucro líquido final</p>
               </div>
             </div>
           </div>
@@ -27,7 +27,7 @@ export function Header() {
               size="icon"
               onClick={toggleTheme}
               data-testid="button-toggle-theme"
-              className="h-10 w-10 rounded-lg"
+              className="h-10 w-10 rounded-lg text-white hover:bg-white/10"
             >
               {isDark ? (
                 <Sun className="h-5 w-5" />

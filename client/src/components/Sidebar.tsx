@@ -17,28 +17,28 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 
   return (
     <div className="lg:col-span-3">
-      <div className="bg-card rounded-xl shadow-sm border border-border p-6">
-        <h2 className="text-lg font-semibold text-card-foreground mb-4">Resumo Rápido</h2>
+      <div className="bg-black rounded-xl shadow-sm border border-gray-800 p-6">
+        <h2 className="text-lg font-semibold text-white mb-4">Resumo Rápido</h2>
         
         {/* Quick Stats */}
         <div className="space-y-4">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-4 rounded-lg">
-            <div className="text-sm text-green-600 dark:text-green-400 font-medium">Lucro Total</div>
-            <div className="text-2xl font-bold text-green-700 dark:text-green-300 font-mono" data-testid="text-total-profit">
+          <div className="bg-white/5 p-4 rounded-lg">
+            <div className="text-sm text-white/70 font-medium">Lucro Total</div>
+            <div className="text-2xl font-bold text-white font-mono" data-testid="text-total-profit">
               {results ? `$${results.netProfit.toFixed(2)}` : '$0.00'}
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-4 rounded-lg">
-            <div className="text-sm text-blue-600 dark:text-blue-400 font-medium">ROI</div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 font-mono" data-testid="text-roi">
+          <div className="bg-white/5 p-4 rounded-lg">
+            <div className="text-sm text-white/70 font-medium">ROI</div>
+            <div className="text-2xl font-bold text-white font-mono" data-testid="text-roi">
               {results ? `${results.roi.toFixed(1)}%` : '0.0%'}
             </div>
           </div>
           
-          <div className="bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 p-4 rounded-lg">
-            <div className="text-sm text-purple-600 dark:text-purple-400 font-medium">Eficiência</div>
-            <div className="text-2xl font-bold text-purple-700 dark:text-purple-300 font-mono" data-testid="text-efficiency">
+          <div className="bg-white/5 p-4 rounded-lg">
+            <div className="text-sm text-white/70 font-medium">Eficiência</div>
+            <div className="text-2xl font-bold text-white font-mono" data-testid="text-efficiency">
               {results ? `${results.efficiency.toFixed(1)}/10` : '0.0/10'}
             </div>
           </div>
@@ -59,8 +59,8 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
                   className={cn(
                     "flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg transition-colors",
                     isActive
-                      ? "text-primary bg-primary/10"
-                      : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                      ? "text-black bg-white"
+                      : "text-white/80 hover:text-white hover:bg-white/10"
                   )}
                 >
                   <Icon className="w-4 h-4 mr-3" />

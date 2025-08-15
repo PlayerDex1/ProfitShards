@@ -19,13 +19,13 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
   };
 
   return (
-    <Card className="bg-white dark:bg-card shadow-lg border border-border">
+    <Card className="bg-black text-white shadow-lg border border-gray-800">
       <CardHeader>
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-            <DollarSign className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <div className="p-2 bg-white rounded-lg">
+            <DollarSign className="w-5 h-5 text-black" />
           </div>
-          <CardTitle className="text-xl font-semibold text-card-foreground">
+          <CardTitle className="text-xl font-semibold text-white">
             Configuração de Investimento
           </CardTitle>
         </div>
@@ -35,7 +35,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
           {/* Investment Inputs */}
           <div className="space-y-4">
             <div>
-              <Label htmlFor="investment" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="investment" className="text-sm font-medium text-white/80">
                 Investimento Inicial (USD)
               </Label>
               <Input
@@ -44,12 +44,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.investment}
                 onChange={handleInputChange('investment')}
                 data-testid="input-investment"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="gemsConsumed" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="gemsConsumed" className="text-sm font-medium text-white/80">
                 Gemas Consumidas
               </Label>
               <Input
@@ -58,12 +58,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.gemsConsumed}
                 onChange={handleInputChange('gemsConsumed')}
                 data-testid="input-gems-consumed"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="loadsUsed" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="loadsUsed" className="text-sm font-medium text-white/80">
                 Cargas Utilizadas
               </Label>
               <Input
@@ -72,14 +72,14 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.loadsUsed}
                 onChange={handleInputChange('loadsUsed')}
                 data-testid="input-loads-used"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="gemsPurchased" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="gemsPurchased" className="text-sm font-medium text-white/80">
                 Gemas Compradas
               </Label>
               <Input
@@ -88,12 +88,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.gemsPurchased}
                 onChange={handleInputChange('gemsPurchased')}
                 data-testid="input-gems-purchased"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="tokensEquipment" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="tokensEquipment" className="text-sm font-medium text-white/80">
                 Tokens dos Equipamentos
               </Label>
               <Input
@@ -102,12 +102,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.tokensEquipment}
                 onChange={handleInputChange('tokensEquipment')}
                 data-testid="input-tokens-equipment"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="tokenPrice" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="tokenPrice" className="text-sm font-medium text-white/80">
                 Preço Token (USD)
               </Label>
               <Input
@@ -117,14 +117,14 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.tokenPrice}
                 onChange={handleInputChange('tokenPrice')}
                 data-testid="input-token-price"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
           </div>
 
           <div className="space-y-4">
             <div>
-              <Label htmlFor="gemsRemaining" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="gemsRemaining" className="text-sm font-medium text-white/80">
                 Gemas Restantes
               </Label>
               <Input
@@ -133,12 +133,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.gemsRemaining}
                 onChange={handleInputChange('gemsRemaining')}
                 data-testid="input-gems-remaining"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="tokensFarmed" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="tokensFarmed" className="text-sm font-medium text-white/80">
                 Tokens Farmados
               </Label>
               <Input
@@ -147,12 +147,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.tokensFarmed}
                 onChange={handleInputChange('tokensFarmed')}
                 data-testid="input-tokens-farmed"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
             
             <div>
-              <Label htmlFor="gemPrice" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="gemPrice" className="text-sm font-medium text-white/80">
                 Preço Gema (USD)
               </Label>
               <Input
@@ -162,7 +162,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
                 value={formData.gemPrice}
                 onChange={handleInputChange('gemPrice')}
                 data-testid="input-gem-price"
-                className="font-mono mt-2"
+                className="font-mono mt-2 bg-white/10 border-white/20 text-white placeholder-white/40"
               />
             </div>
           </div>
@@ -171,7 +171,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
         <div className="mt-8">
           <Button 
             onClick={onSaveToHistory}
-            className="w-full bg-gradient-to-r from-profit to-green-600 hover:from-green-600 hover:to-profit text-white font-semibold py-4 px-6 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
+            className="w-full bg-white text-black hover:bg-white/90 font-semibold py-4 px-6 transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl"
             data-testid="button-calculate"
           >
             <div className="flex items-center justify-center gap-3">

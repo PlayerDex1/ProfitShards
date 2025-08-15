@@ -115,6 +115,10 @@ export function useCalculator() {
       
       const updatedHistory = [...history, historyItem].slice(-50);
       localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+      // notificar UI para recarregar o histórico imediatamente
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+      }
     }, 500);
   }, [debounceTimeoutRef]);
 
