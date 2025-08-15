@@ -81,14 +81,6 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 							https://openloot.com/ambassador/link?code=HOLDBOY
 						</a>
 					</div>
-					<a
-						href="https://openloot.com/ambassador/link?code=HOLDBOY"
-						target="_blank"
-						rel="noopener noreferrer"
-						className="block text-center bg-white text-black rounded-lg py-2 text-sm hover:bg-white/90"
-					>
-						{t('donate.openloot')}
-					</a>
 					<div className="mt-2 bg-white/5 p-3 rounded-lg">
 						<div className="text-xs text-white/70 mb-1">{t('donate.wallet')}</div>
 						<div className="text-white font-mono text-xs break-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
