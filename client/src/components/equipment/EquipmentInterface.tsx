@@ -1,9 +1,10 @@
-import { X, Edit2, Save, Download, Upload, Trash2, Play } from "lucide-react";
+import { X, Edit2, Save, Download, Upload, Trash2, Play, RefreshCcw } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, EQUIPMENT_NAMES, RARITY_LABELS, RARITY_COLORS } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
 import { useEffect, useMemo, useState } from "react";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { getBuilds, saveBuild, deleteBuild, exportBuilds, importBuilds, EquipmentBuild } from "@/lib/equipmentBuilds";
+import { calculateLuckEffectFromArray } from "@/lib/luckEffect";
 
 interface EquipmentInterfaceProps {
   session: EquipmentSession;
@@ -19,6 +20,22 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
   const [builds, setBuilds] = useState<EquipmentBuild[]>([]);
   const [buildName, setBuildName] = useState("");
   const [whatIfLuck, setWhatIfLuck] = useState<number>(totalLuck);
+  const [compareA, setCompareA] = useState<string>("");
+  const [compareB, setCompareB] = useState<string>("");
+
+  const buildById = (id: string) => builds.find(b => b.id === id);
+  const luckOfBuild = (b?: EquipmentBuild) => b ? (b.session.weapon.luck + b.session.axe.luck + b.session.armor.luck + b.session.pickaxe.luck) : 0;
+
+  const diff = useMemo(() => {
+    const a = buildById(compareA);
+    const b = buildById(compareB);
+    const luckA = luckOfBuild(a);
+    const luckB = luckOfBuild(b);
+    const delta = luckB - luckA;
+    // aproximação do efeito relativo baseado em média [luckA, luckB]
+    const effect = (luckA && luckB) ? calculateLuckEffectFromArray([luckA, luckB], luckB) : 1.0;
+    return { luckA, luckB, delta, effect };
+  }, [compareA, compareB, builds]);
 
   useEffect(() => {
     const load = () => setBuilds(getBuilds());
@@ -175,6 +192,41 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
                 <span className="text-white text-sm w-16 text-right">{whatIfLuck}</span>
               </div>
               <p className="text-white/70 text-xs mt-2">Ajuste para simular total de Luck e ver impacto nos cálculos (aprimoramento futuro).</p>
+            </div>
+
+            {/* Comparar Builds */}
+            <div className="bg-black/30 border border-slate-700 rounded p-3">
+              <h3 className="text-white font-semibold text-sm mb-2">Comparar Builds</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <select value={compareA} onChange={(e) => setCompareA(e.target.value)} className="bg-white/10 border-white/20 text-white h-8 px-2 rounded w-full">
+                    <option value="" className="bg-black text-white">Selecione Build A</option>
+                    {builds.map((b) => (
+                      <option key={b.id} value={b.id} className="bg-black text-white">{b.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <select value={compareB} onChange={(e) => setCompareB(e.target.value)} className="bg-white/10 border-white/20 text-white h-8 px-2 rounded w-full">
+                    <option value="" className="bg-black text-white">Selecione Build B</option>
+                    {builds.map((b) => (
+                      <option key={b.id} value={b.id} className="bg-black text-white">{b.name}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="text-white/90 text-sm space-y-1">
+                  <div className="flex justify-between"><span>Luck A:</span><span>{diff.luckA}</span></div>
+                  <div className="flex justify-between"><span>Luck B:</span><span>{diff.luckB}</span></div>
+                  <div className="flex justify-between"><span>Diferença:</span><span>{diff.delta > 0 ? `+${diff.delta}` : diff.delta}</span></div>
+                  <div className="flex justify-between"><span>Efeito estimado:</span><span>×{diff.effect.toFixed(2)}</span></div>
+                </div>
+                {buildById(compareB) && (
+                  <button className="h-8 px-3 bg-white text-black text-sm rounded flex items-center gap-2 w-full justify-center" onClick={() => applyBuild(buildById(compareB)!)}>
+                    <RefreshCcw className="h-4 w-4" /> Aplicar Build B
+                  </button>
+                )}
+                <p className="text-white/60 text-xs">A diferença e o efeito são estimativas baseadas apenas no Luck total.</p>
+              </div>
             </div>
 
             {/* Dica/Histórico */}
