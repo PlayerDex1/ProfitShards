@@ -74,30 +74,35 @@ export function useCalculator() {
     return [
       {
         metric: 'Valor Total dos Tokens',
+        key: 'results.totalTokenValue',
         value: `$${results.totalTokenValue.toFixed(2)}`,
         period: '',
         status: 'positive'
       },
       {
         metric: 'Custo das Gemas',
+        key: 'results.gemsCost',
         value: `-$${results.gemsCost.toFixed(2)}`,
         period: '',
         status: 'negative'
       },
       {
         metric: 'Lucro Bruto',
+        key: 'results.grossProfit',
         value: `$${results.grossProfit.toFixed(2)}`,
         period: '',
         status: results.grossProfit > 0 ? 'positive' : 'negative'
       },
       {
         metric: 'Custo Recompra Gemas',
+        key: 'results.rebuyCost',
         value: `-$${results.rebuyCost.toFixed(2)}`,
         period: '',
         status: 'negative'
       },
       {
         metric: 'ROI',
+        key: 'results.roi',
         value: `${results.roi.toFixed(1)}%`,
         period: '',
         status: results.roi > 30 ? 'excellent' : results.roi > 0 ? 'positive' : 'negative'

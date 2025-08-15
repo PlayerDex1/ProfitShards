@@ -47,6 +47,16 @@ const dicts: Record<Lang, Dict> = {
     'equipment.whatif.hint': 'Ajuste para simular total de Luck e ver impacto nos cálculos (aprimoramento futuro).',
 
     'button.delete': 'Excluir',
+    'results.totalTokenValue': 'Valor Total dos Tokens',
+    'results.gemsCost': 'Custo das Gemas',
+    'results.grossProfit': 'Lucro Bruto',
+    'results.rebuyCost': 'Custo Recompra Gemas',
+    'results.roi': 'ROI',
+    'results.no_history': 'Nenhum cálculo salvo ainda',
+    'results.history_will_appear': 'Seus cálculos aparecerão aqui automaticamente',
+
+    '404.title': '404 Página não encontrada',
+    '404.hint': 'Você esqueceu de adicionar a página ao roteador?',
   },
   en: {
     'header.title': 'Profit Calculator - Worldshards',
@@ -90,6 +100,16 @@ const dicts: Record<Lang, Dict> = {
     'equipment.whatif.hint': 'Adjust to simulate total Luck and see impact (future enhancement).',
 
     'button.delete': 'Delete',
+    'results.totalTokenValue': 'Total Token Value',
+    'results.gemsCost': 'Gems Cost',
+    'results.grossProfit': 'Gross Profit',
+    'results.rebuyCost': 'Gems Rebuy Cost',
+    'results.roi': 'ROI',
+    'results.no_history': 'No calculations saved yet',
+    'results.history_will_appear': 'Your calculations will appear here automatically',
+
+    '404.title': '404 Page Not Found',
+    '404.hint': 'Did you forget to add the page to the router?',
   },
 };
 

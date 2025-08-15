@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
 import { getCurrentUsername } from "@/hooks/use-auth";
+import { useI18n } from "@/i18n";
 
 interface ResultsProps {
   results: CalculationResults | null;
@@ -16,6 +17,7 @@ interface ResultsProps {
 export const Results = memo(function Results({ results, breakdown, includeHistory = false }: ResultsProps) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const load = () => {
@@ -48,7 +50,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           <CardContent className="p-4">
             <div className="text-center text-white/80">
               <DollarSign className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
-              <p className="text-white text-sm">Configure os valores e os resultados aparecerão automaticamente</p>
+              <p className="text-white text-sm">{t('header.subtitle')}</p>
             </div>
           </CardContent>
         </Card>
@@ -113,13 +115,13 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
             <BarChart3 className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">Resumo dos Cálculos</CardTitle>
+            <CardTitle className="text-base font-semibold text-white">Resumo</CardTitle>
           </div>
         </CardHeader>
         <CardContent className="space-y-2 pt-0">
           {breakdown.map((item, index) => (
             <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-              <span className="text-white/80 text-sm">{item.metric}:</span>
+              <span className="text-white/80 text-sm">{item.key ? t(item.key) : item.metric}:</span>
               <div className="flex items-center space-x-2">
                 <span className="font-mono font-semibold text-white text-sm">
                   {item.value}
@@ -319,8 +321,8 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             ) : showHistory && history.length === 0 ? (
               <div className="text-center text-white/70 py-6">
                 <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
-                <p className="text-sm">Nenhum cálculo salvo ainda</p>
-                <p className="text-xs">Seus cálculos aparecerão aqui automaticamente</p>
+                <p className="text-sm">{t('results.no_history')}</p>
+                <p className="text-xs">{t('results.history_will_appear')}</p>
               </div>
             ) : (
               <p className="text-white/70 text-center py-3 text-sm">

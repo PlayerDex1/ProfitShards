@@ -29,6 +29,7 @@ export interface CalculationBreakdown {
   value: string;
   period: string;
   status: 'positive' | 'negative' | 'excellent' | 'neutral';
+  key?: string;
 }
 
 export interface HistoryItem {
