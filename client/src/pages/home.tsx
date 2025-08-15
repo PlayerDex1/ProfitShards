@@ -24,7 +24,7 @@ export default function Home() {
         return <Results results={results} breakdown={breakdown} />;
       default:
         return (
-          <div className="space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
             <Calculator 
               formData={formData}
               onUpdateFormData={updateFormData}
@@ -40,15 +40,17 @@ export default function Home() {
     <div className="min-h-screen bg-black text-white">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          <Sidebar 
-            results={results}
-            activeSection={activeSection}
-            onSectionChange={setActiveSection}
-          />
-          
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-3">
+            <Sidebar 
+              results={results}
+              activeSection={activeSection}
+              onSectionChange={setActiveSection}
+            />
+          </div>
+          
+          <div className="lg:col-span-9">
             {renderContent()}
           </div>
         </div>

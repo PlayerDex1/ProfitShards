@@ -33,12 +33,12 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
 
   if (!results) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         <Card className="bg-black border-gray-800">
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             <div className="text-center text-white/80">
-              <DollarSign className="w-12 h-12 mx-auto mb-4 opacity-50 text-white" />
-              <p className="text-white">Configure os valores e os resultados aparecerão automaticamente</p>
+              <DollarSign className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
+              <p className="text-white text-sm">Configure os valores e os resultados aparecerão automaticamente</p>
             </div>
           </CardContent>
         </Card>
@@ -79,20 +79,20 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Final Profit Card */}
       <Card className="bg-black border-gray-800">
-        <CardContent className="p-6">
-          <div className="flex items-center space-x-2 mb-4">
-            <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
+        <CardContent className="p-4">
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-black" />
             </div>
-            <h3 className="text-lg font-semibold text-white">Lucro Líquido Final</h3>
+            <h3 className="text-base font-semibold text-white">Lucro Líquido Final</h3>
           </div>
-          <div className="text-4xl font-bold text-white font-mono" data-testid="text-final-profit">
+          <div className="text-3xl font-bold text-white font-mono" data-testid="text-final-profit">
             ${results.finalProfit.toFixed(2)}
           </div>
-          <p className="text-white/80 mt-2">
+          <p className="text-white/80 text-sm mt-1">
             {results.finalProfit > 0 ? 'Investimento Lucrativo' : 'Prejuízo'}
           </p>
         </CardContent>
@@ -100,21 +100,21 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
 
       {/* Calculation Summary */}
       <Card className="bg-black border-gray-800">
-        <CardHeader>
+        <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
-            <BarChart3 className="w-5 h-5 text-white" />
-            <CardTitle className="text-lg font-semibold text-white">Resumo dos Cálculos</CardTitle>
+            <BarChart3 className="w-4 h-4 text-white" />
+            <CardTitle className="text-base font-semibold text-white">Resumo dos Cálculos</CardTitle>
           </div>
         </CardHeader>
-        <CardContent className="space-y-3">
+        <CardContent className="space-y-2 pt-0">
           {breakdown.map((item, index) => (
-            <div key={index} className="flex justify-between items-center p-4 bg-white/5 rounded-xl">
-              <span className="text-white/80">{item.metric}:</span>
+            <div key={index} className="flex justify-between items-center p-3 bg-white/5 rounded-xl">
+              <span className="text-white/80 text-sm">{item.metric}:</span>
               <div className="flex items-center space-x-2">
-                <span className="font-mono font-semibold text-white">
+                <span className="font-mono font-semibold text-white text-sm">
                   {item.value}
                 </span>
-                <Badge className={getStatusColor(item.status)}>
+                <Badge className={`${getStatusColor(item.status)} text-[10px] py-0.5 px-2`}>
                   {getStatusLabel(item.status)}
                 </Badge>
               </div>
@@ -125,22 +125,22 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
 
       {/* Token Distribution */}
       <Card className="bg-black border-gray-800">
-        <CardHeader>
+        <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
-            <PieChart className="w-5 h-5 text-white" />
-            <CardTitle className="text-lg font-semibold text-white">Distribuição de Tokens</CardTitle>
+            <PieChart className="w-4 h-4 text-white" />
+            <CardTitle className="text-base font-semibold text-white">Distribuição de Tokens</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="h-64">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="h-52">
               <ResponsiveContainer width="100%" height="100%">
                 <RechartsPieChart>
                   <Pie
                     data={tokenDistribution}
                     cx="50%"
                     cy="50%"
-                    outerRadius={80}
+                    outerRadius={70}
                     dataKey="value"
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
                   >
@@ -148,29 +148,29 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value.toLocaleString(), 'Tokens']} />
+                  <Tooltip formatter={(value) => [value.toLocaleString(), 'Tokens']} contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }} />
                 </RechartsPieChart>
               </ResponsiveContainer>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <div className="w-4 h-4 bg-white rounded-full"></div>
-                <span className="text-white/80">Tokens dos Equipamentos</span>
-                <span className="ml-auto font-mono font-semibold text-white" data-testid="text-tokens-equipment">
+                <div className="w-3 h-3 bg-white rounded-full"></div>
+                <span className="text-white/80 text-sm">Tokens dos Equipamentos</span>
+                <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-equipment">
                   {results.tokensEquipment.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <div className="w-4 h-4 bg-white/70 rounded-full"></div>
-                <span className="text-white/80">Tokens Farmados</span>
-                <span className="ml-auto font-mono font-semibold text-white" data-testid="text-tokens-farmed">
+                <div className="w-3 h-3 bg-white/70 rounded-full"></div>
+                <span className="text-white/80 text-sm">Tokens Farmados</span>
+                <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-farmed">
                   {results.tokensFarmed.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/10 border border-white/20 rounded-lg">
-                <div className="w-4 h-4 bg-white rounded-full"></div>
-                <span className="text-white font-medium">Total de Tokens</span>
-                <span className="ml-auto font-mono font-bold text-white text-lg" data-testid="text-total-tokens">
+                <div className="w-3 h-3 bg-white rounded-full"></div>
+                <span className="text-white font-medium text-sm">Total de Tokens</span>
+                <span className="ml-auto font-mono font-bold text-white text-base" data-testid="text-total-tokens">
                   {results.totalTokens.toLocaleString()}
                 </span>
               </div>
@@ -181,31 +181,31 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
 
       {/* Efficiency Metrics */}
       <Card className="bg-black border-gray-800">
-        <CardHeader>
+        <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
-            <Zap className="w-5 h-5 text-white" />
-            <CardTitle className="text-lg font-semibold text-white">Métricas de Eficiência</CardTitle>
+            <Zap className="w-4 h-4 text-white" />
+            <CardTitle className="text-base font-semibold text-white">Métricas de Eficiência</CardTitle>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-white/5 rounded-xl">
-              <div className="text-sm text-white/70 mb-1">Total de Tokens</div>
-              <div className="text-2xl font-bold text-white font-mono" data-testid="text-efficiency-total">
+        <CardContent className="pt-0">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="text-center p-3 bg-white/5 rounded-xl">
+              <div className="text-xs text-white/70 mb-1">Total de Tokens</div>
+              <div className="text-xl font-bold text-white font-mono" data-testid="text-efficiency-total">
                 {results.totalTokens.toLocaleString()}
               </div>
             </div>
             
-            <div className="text-center p-4 bg-white/5 rounded-xl">
-              <div className="text-sm text-white/70 mb-1">Eficiência Farm</div>
-              <div className="text-2xl font-bold text-white font-mono" data-testid="text-efficiency-farm">
+            <div className="text-center p-3 bg-white/5 rounded-xl">
+              <div className="text-xs text-white/70 mb-1">Eficiência Farm</div>
+              <div className="text-xl font-bold text-white font-mono" data-testid="text-efficiency-farm">
                 {results.efficiency.toFixed(1)} tokens/carga
               </div>
             </div>
 
-            <div className="text-center p-4 bg-white/10 border border-white/20 rounded-xl">
-              <div className="text-sm text-white/70 mb-1">ROI</div>
-              <div className="text-2xl font-bold text-white font-mono" data-testid="text-roi">
+            <div className="text-center p-3 bg-white/10 border border-white/20 rounded-xl">
+              <div className="text-xs text-white/70 mb-1">ROI</div>
+              <div className="text-xl font-bold text-white font-mono" data-testid="text-roi">
                 {results.roi > 0 ? '+' : ''}{results.roi.toFixed(1)}%
               </div>
             </div>
@@ -216,14 +216,14 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
       {/* Performance Chart */}
       {history.length > 1 && (
         <Card className="bg-black border-gray-800">
-          <CardHeader>
-            <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
-              <TrendingUp className="w-5 h-5 text-white" />
+          <CardHeader className="py-3">
+            <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
+              <TrendingUp className="w-4 h-4 text-white" />
               <span>Performance ao Longo do Tempo</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="h-64">
+          <CardContent className="pt-0">
+            <div className="h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={performanceData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255, 255, 255, 0.1)" />
@@ -234,7 +234,7 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
                     type="monotone" 
                     dataKey="profit" 
                     stroke="#ffffff" 
-                    strokeWidth={3}
+                    strokeWidth={2}
                     fill="rgba(255, 255, 255, 0.1)"
                   />
                 </LineChart>
@@ -246,10 +246,10 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
 
       {/* History Section */}
       <Card className="bg-black border-gray-800">
-        <CardHeader>
+        <CardHeader className="py-3">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-lg font-semibold text-white flex items-center space-x-2">
-              <Clock className="w-5 h-5 text-white" />
+            <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
+              <Clock className="w-4 h-4 text-white" />
               <span>Histórico de Cálculos</span>
             </CardTitle>
             <div className="flex space-x-2">
@@ -276,18 +276,18 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-0">
           {showHistory && history.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {history.slice(-5).reverse().map((item, index) => (
-                <div key={index} className="border border-gray-800 rounded-lg p-4 bg-white/5">
+                <div key={index} className="border border-gray-800 rounded-lg p-3 bg-white/5">
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-2">
-                        <span className={`text-2xl font-bold font-mono text-white`}>
+                      <div className="flex items-center space-x-4 mb-1.5">
+                        <span className={`text-xl font-bold font-mono text-white`}>
                           ${item.results.finalProfit.toFixed(2)}
                         </span>
-                        <span className="text-sm text-white/70">
+                        <span className="text-xs text-white/70">
                           {new Date(item.timestamp).toLocaleDateString('pt-BR')} às{' '}
                           {new Date(item.timestamp).toLocaleTimeString('pt-BR', { 
                             hour: '2-digit', 
@@ -295,7 +295,7 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
                           })}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-white/80">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-white/80">
                         <span>Investimento: ${item.formData.investment}</span>
                         <span>Tokens: {item.results.totalTokens.toLocaleString()}</span>
                         <span>Eficiência: {item.results.efficiency.toFixed(1)}/carga</span>
@@ -307,13 +307,13 @@ export const Results = memo(function Results({ results, breakdown }: ResultsProp
               ))}
             </div>
           ) : showHistory && history.length === 0 ? (
-            <div className="text-center text-white/70 py-8">
-              <BarChart3 className="w-12 h-12 mx-auto mb-4 opacity-50 text-white" />
-              <p>Nenhum cálculo salvo ainda</p>
-              <p className="text-sm">Seus cálculos aparecerão aqui automaticamente</p>
+            <div className="text-center text-white/70 py-6">
+              <BarChart3 className="w-10 h-10 mx-auto mb-3 opacity-50 text-white" />
+              <p className="text-sm">Nenhum cálculo salvo ainda</p>
+              <p className="text-xs">Seus cálculos aparecerão aqui automaticamente</p>
             </div>
           ) : (
-            <p className="text-white/70 text-center py-4">
+            <p className="text-white/70 text-center py-3 text-sm">
               Clique em "Mostrar" para ver o histórico
             </p>
           )}
