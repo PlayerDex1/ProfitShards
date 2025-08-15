@@ -75,6 +75,12 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 
 				{/* Donation compact footer */}
 				<div className="mt-8 border-t border-gray-800 pt-4">
+					<div className="mb-2">
+						<h4 className="text-white text-sm font-semibold">{t('donate.title')}</h4>
+						<a href="https://openloot.com/ambassador/link?code=HOLDBOY" target="_blank" rel="noopener noreferrer" className="text-white/70 text-xs underline break-all">
+							https://openloot.com/ambassador/link?code=HOLDBOY
+						</a>
+					</div>
 					<a
 						href="https://openloot.com/ambassador/link?code=HOLDBOY"
 						target="_blank"

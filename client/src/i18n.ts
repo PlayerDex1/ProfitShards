@@ -70,6 +70,7 @@ const dicts: Record<Lang, Dict> = {
     'results.no_history': 'Nenhum cálculo salvo ainda',
     'results.history_will_appear': 'Seus cálculos aparecerão aqui automaticamente',
     'results.finalProfitTitle': 'Lucro Líquido Final',
+    'results.finalProfit': 'FinalProfit',
     'results.profitable': 'Investimento Lucrativo',
     'results.loss': 'Prejuízo',
     'results.summaryTitle': 'Resumo',
@@ -112,8 +113,9 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.equipment': 'Equipamentos',
     'sidebar.nav.history': 'Histórico',
 
-        'home.calculator': 'Calculadora',
-    'donate.title': 'Doações',
+    'home.calculator': 'Calculadora',
+
+    'donate.title': 'Doação',
     'donate.openloot': 'Creator OL',
     'donate.wallet': 'Carteira EVM',
     'donate.copy': 'Copiar',
@@ -184,6 +186,7 @@ const dicts: Record<Lang, Dict> = {
     'results.no_history': 'No calculations saved yet',
     'results.history_will_appear': 'Your calculations will appear here automatically',
     'results.finalProfitTitle': 'Final Net Profit',
+    'results.finalProfit': 'FinalProfit',
     'results.profitable': 'Profitable Investment',
     'results.loss': 'Loss',
     'results.summaryTitle': 'Summary',
@@ -227,8 +230,9 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.equipment': 'Equipment',
     'sidebar.nav.history': 'History',
 
-        'home.calculator': 'Calculator',
-    'donate.title': 'Donations',
+    'home.calculator': 'Calculator',
+
+    'donate.title': 'Donation',
     'donate.openloot': 'Creator OL',
     'donate.wallet': 'EVM Wallet',
     'donate.copy': 'Copy',

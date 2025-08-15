@@ -99,7 +99,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             <div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
               <TrendingUp className="w-4 h-4 text-black" />
             </div>
-            <h3 className="text-base font-semibold text-white">{t('results.finalProfitTitle')}</h3>
+            <h3 className="text-base font-semibold text-white">{t('results.finalProfit')}</h3>
           </div>
           <div className="text-3xl font-bold text-white font-mono" data-testid="text-final-profit">
             ${results.finalProfit.toFixed(2)}
