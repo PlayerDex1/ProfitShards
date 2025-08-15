@@ -74,7 +74,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
       return (
         <div key={type} className="space-y-2">
           <h3 className="text-base font-semibold text-white">{t(`equipment.slot.${type}`)}</h3>
-          <EquipmentEditor equipment={equipment} onSave={handleSaveEquipment} onCancel={() => setEditingEquipment(null)} />
+          <EquipmentEditor type={type} equipment={equipment} onSave={handleSaveEquipment} onCancel={() => setEditingEquipment(null)} />
         </div>
       );
     }
@@ -249,7 +249,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
                 <input
                   type="range"
                   min={0}
-                  max={12000}
+                                     max={13000}
                   step={10}
                   value={whatIfLuck}
                   onChange={(e) => setWhatIfLuck(Number(e.target.value))}

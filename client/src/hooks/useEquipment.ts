@@ -4,10 +4,10 @@ import { getCurrentUsername } from "@/hooks/use-auth";
 import { appendEquipmentLuckSnapshot } from "@/lib/equipmentHistory";
 
 const DEFAULT_EQUIPMENT: EquipmentSession = {
-  weapon: { luck: 0, rarity: 'comum' },
-  axe: { luck: 0, rarity: 'comum' },
-  armor: { luck: 0, rarity: 'comum' },
-  pickaxe: { luck: 0, rarity: 'comum' },
+  weapon: { luck: 100, rarity: 'comum' },
+  axe: { luck: 50, rarity: 'comum' },
+  armor: { luck: 100, rarity: 'comum' },
+  pickaxe: { luck: 50, rarity: 'comum' },
 };
 
 function storageKeyForUser(username: string | null): string {

@@ -1,33 +1,37 @@
 import { useState } from "react";
-import { Equipment, clampLuck, Rarity, RARITY_LABELS } from "@/types/equipment";
+import { Equipment, clampLuck, Rarity, RARITY_LABELS, EquipmentType } from "@/types/equipment";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 
 interface EquipmentEditorProps {
   equipment: Equipment;
+  type: EquipmentType;
   onSave: (e: Equipment) => void;
   onCancel: () => void;
 }
 
 const RARITIES: Rarity[] = ['comum', 'incomum', 'raro', 'épico', 'lendário', 'mítico'];
 const RARITY_PRESETS: Record<Rarity, number> = {
-  comum: 50,
-  incomum: 150,
-  raro: 300,
-  épico: 600,
+  comum: 100,
+  incomum: 200,
+  raro: 400,
+  épico: 700,
   lendário: 1200,
-  mítico: 2000,
+  mítico: 3053,
 };
 
-export function EquipmentEditor({ equipment, onSave, onCancel }: EquipmentEditorProps) {
+export function EquipmentEditor({ equipment, type, onSave, onCancel }: EquipmentEditorProps) {
   const { t } = useI18n();
   const [luck, setLuck] = useState<number>(equipment.luck);
   const [rarity, setRarity] = useState<Rarity>(equipment.rarity);
 
   const applyPreset = (r: Rarity) => {
     setRarity(r);
-    setLuck(RARITY_PRESETS[r]);
+    const base = RARITY_PRESETS[r];
+    const isTool = type === 'axe' || type === 'pickaxe';
+    const value = isTool ? Math.floor(base / 2) : base;
+    setLuck(clampLuck(value));
   };
 
   const nudge = (delta: number) => setLuck((v) => clampLuck(v + delta));
@@ -49,7 +53,7 @@ export function EquipmentEditor({ equipment, onSave, onCancel }: EquipmentEditor
         <div className="flex items-center gap-2">
           <Button type="button" className="h-9 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => nudge(-100)}>-100</Button>
           <Button type="button" className="h-9 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => nudge(-10)}>-10</Button>
-          <Input type="number" value={luck} onChange={(e) => setLuck(clampLuck(Number(e.target.value)))} className="h-9 bg-white/10 border-white/20 text-white w-32 text-center" min={0} max={3000} />
+          <Input type="number" value={luck} onChange={(e) => setLuck(clampLuck(Number(e.target.value)))} className="h-9 bg-white/10 border-white/20 text-white w-32 text-center" min={0} max={3053} />
           <Button type="button" className="h-9 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => nudge(10)}>+10</Button>
           <Button type="button" className="h-9 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => nudge(100)}>+100</Button>
         </div>

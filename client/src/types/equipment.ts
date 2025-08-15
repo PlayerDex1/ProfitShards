@@ -41,5 +41,5 @@ export const RARITY_COLORS: Record<Rarity, string> = {
 
 export function clampLuck(level: number): number {
   if (Number.isNaN(level)) return 0;
-  return Math.max(0, Math.min(3000, Math.floor(level)));
+  return Math.max(0, Math.min(3053, Math.floor(level)));
 }

@@ -86,8 +86,8 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
   }));
 
   const tokenDistribution = [
-    { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#ffffff' },
-    { name: t('results.farmedTokens'), value: results.tokensFarmed, color: '#cccccc' }
+    { name: t('results.farmedTokens'), value: Math.max(0, results.tokensFarmed - results.tokensEquipment), color: '#ffffff' },
+    { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#cccccc' }
   ];
 
   return (
@@ -160,23 +160,23 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value.toLocaleString(), 'Tokens']} contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }} />
+                  <Tooltip formatter={(value) => [value.toLocaleString(), t('results.tokenLabel')]} contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }} />
                 </RechartsPieChart>
               </ResponsiveContainer>
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
                 <div className="w-3 h-3 bg-white rounded-full"></div>
-                <span className="text-white/80 text-sm">Tokens dos Equipamentos</span>
+                <span className="text-white/80 text-sm">{t('results.equipTokens')}</span>
                 <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-equipment">
                   {results.tokensEquipment.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
                 <div className="w-3 h-3 bg-white/70 rounded-full"></div>
-                <span className="text-white/80 text-sm">Tokens Farmados</span>
+                <span className="text-white/80 text-sm">{t('results.farmedTokens')}</span>
                 <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-farmed">
-                  {results.tokensFarmed.toLocaleString()}
+                  {Math.max(0, results.tokensFarmed - results.tokensEquipment).toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/10 border border-white/20 rounded-lg">
