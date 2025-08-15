@@ -1,9 +1,14 @@
-import { Moon, Sun, Calculator } from "lucide-react";
+import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
+import { useAuth } from "@/hooks/use-auth";
+import { useState } from "react";
+import { AuthModal } from "@/components/AuthModal";
 
 export function Header() {
   const { isDark, toggleTheme } = useTheme();
+  const { user, isAuthenticated, logout } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
 
   return (
     <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800">
@@ -22,6 +27,26 @@ export function Header() {
           </div>
           
           <div className="flex items-center space-x-2">
+            {isAuthenticated ? (
+              <>
+                <span className="text-white/80 text-sm hidden sm:inline">Olá, {user}</span>
+                <Button
+                  variant="ghost"
+                  className="h-10 px-3 rounded-lg text-white hover:bg-white/10"
+                  onClick={logout}
+                >
+                  <LogOut className="h-5 w-5 mr-2" /> Sair
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="ghost"
+                className="h-10 px-3 rounded-lg text-white hover:bg-white/10"
+                onClick={() => setShowAuth(true)}
+              >
+                <LogIn className="h-5 w-5 mr-2" /> Entrar
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="icon"
@@ -39,6 +64,7 @@ export function Header() {
           </div>
         </div>
       </div>
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
     </header>
   );
 }
