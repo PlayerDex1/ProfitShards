@@ -1,6 +1,7 @@
 import { Calculator, Package, BarChart3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { CalculationResults } from "@/types/calculator";
+import { useI18n } from "@/i18n";
 
 interface SidebarProps {
   results: CalculationResults | null;
@@ -9,35 +10,36 @@ interface SidebarProps {
 }
 
 export function Sidebar({ results, activeSection, onSectionChange }: SidebarProps) {
+  const { t } = useI18n();
   const menuItems = [
-    { id: 'calculator', label: 'Calculadora', icon: Calculator },
-    { id: 'equipment', label: 'Equipamentos', icon: Package },
-    { id: 'history', label: 'Histórico', icon: BarChart3 },
+    { id: 'calculator', label: t('sidebar.nav.calculator'), icon: Calculator },
+    { id: 'equipment', label: t('sidebar.nav.equipment'), icon: Package },
+    { id: 'history', label: t('sidebar.nav.history'), icon: BarChart3 },
   ];
 
   return (
     <div className="lg:col-span-3">
       <div className="bg-black rounded-xl shadow-sm border border-gray-800 p-6">
-        <h2 className="text-lg font-semibold text-white mb-4">Resumo Rápido</h2>
+        <h2 className="text-lg font-semibold text-white mb-4">{t('sidebar.summary')}</h2>
         
         {/* Quick Stats */}
         <div className="space-y-4">
           <div className="bg-white/5 p-4 rounded-lg">
-            <div className="text-sm text-white/70 font-medium">Lucro Total</div>
+            <div className="text-sm text-white/70 font-medium">{t('sidebar.totalProfit')}</div>
             <div className="text-2xl font-bold text-white font-mono" data-testid="text-total-profit">
               {results ? `$${results.netProfit.toFixed(2)}` : '$0.00'}
             </div>
           </div>
           
           <div className="bg-white/5 p-4 rounded-lg">
-            <div className="text-sm text-white/70 font-medium">ROI</div>
+            <div className="text-sm text-white/70 font-medium">{t('sidebar.roi')}</div>
             <div className="text-2xl font-bold text-white font-mono" data-testid="text-roi">
               {results ? `${results.roi.toFixed(1)}%` : '0.0%'}
             </div>
           </div>
           
           <div className="bg-white/5 p-4 rounded-lg">
-            <div className="text-sm text-white/70 font-medium">Eficiência</div>
+            <div className="text-sm text-white/70 font-medium">{t('sidebar.efficiency')}</div>
             <div className="text-2xl font-bold text-white font-mono" data-testid="text-efficiency">
               {results ? `${results.efficiency.toFixed(1)}/10` : '0.0/10'}
             </div>
