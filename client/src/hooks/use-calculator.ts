@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername } from '@/hooks/use-auth';
 import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
+import { computeExpectedTokens } from '@/lib/maps';
 
 export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -16,6 +17,9 @@ export function useCalculator() {
 		loadsUsed: 0,
 		tokenPrice: 0,
 		gemPrice: 0.00714,
+		useMap: false,
+		mapId: '',
+		mapEfficiency: 1,
 	});
 
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
@@ -31,34 +35,36 @@ export function useCalculator() {
 		return () => window.removeEventListener('worldshards-whatif-luck', onWhatIf);
 	}, []);
 
-	const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
+	const updateFormData = useCallback((field: keyof CalculatorFormData, value: number | string | boolean) => {
 		setFormData(prev => ({
 			...prev,
-			[field]: value,
+			[field]: value as any,
 		}));
 	}, []);
 
 	const results = useMemo((): CalculationResults | null => {
-		if (formData.investment <= 0 || formData.tokenPrice <= 0 || formData.gemPrice <= 0) {
+		if (formData.investment < 0 || formData.tokenPrice < 0 || formData.gemPrice < 0) {
 			return null;
 		}
 
-		// Tokens efetivamente farmados líquidos (subtrai os tokens gastos na aceleração)
-		const netFarmedTokens = Math.max(0, formData.tokensFarmed - formData.tokensEquipment);
+		const producedTokens = formData.useMap && formData.mapId
+			? computeExpectedTokens(formData.loadsUsed || 0, formData.mapId, formData.mapEfficiency || 1)
+			: formData.tokensFarmed || 0;
+		const netFarmedTokens = Math.max(0, producedTokens - (formData.tokensEquipment || 0));
 		const totalTokens = netFarmedTokens;
-		const totalTokenValue = totalTokens * formData.tokenPrice * luckMultiplier;
-		const gemsCost = formData.gemsConsumed * formData.gemPrice;
-		const grossProfit = totalTokenValue; // já não somamos tokens gastos
-		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
+		const totalTokenValue = totalTokens * (formData.tokenPrice || 0) * luckMultiplier;
+		const gemsCost = (formData.gemsConsumed || 0) * (formData.gemPrice || 0);
+		const grossProfit = totalTokenValue;
+		const rebuyCost = 0;
 		const finalProfit = grossProfit - gemsCost;
 		const netProfit = finalProfit;
 		const roi = formData.investment > 0 ? (finalProfit / formData.investment) * 100 : 0;
-		const efficiency = formData.loadsUsed > 0 ? netFarmedTokens / formData.loadsUsed : 0;
+		const efficiency = (formData.loadsUsed || 0) > 0 ? netFarmedTokens / formData.loadsUsed : 0;
 
 		return {
 			totalTokens,
 			tokensEquipment: formData.tokensEquipment,
-			tokensFarmed: formData.tokensFarmed,
+			tokensFarmed: producedTokens,
 			totalTokenValue,
 			gemsCost,
 			grossProfit,

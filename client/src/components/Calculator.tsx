@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { DollarSign, Gem, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,19 +6,25 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalculatorFormData } from "@/types/calculator";
 import { useI18n } from "@/i18n";
+import { MAPS, computeExpectedTokens } from "@/lib/maps";
 
 interface CalculatorProps {
   formData: CalculatorFormData;
-  onUpdateFormData: (field: keyof CalculatorFormData, value: number) => void;
+  onUpdateFormData: (field: keyof CalculatorFormData, value: any) => void;
   onSaveToHistory: () => void;
 }
 
 export const Calculator = memo(function Calculator({ formData, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
   const { t } = useI18n();
   const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0;
+    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : parseFloat(e.target.value) || 0;
     onUpdateFormData(field, value);
   };
+
+  const estimatedTokens = useMemo(() => {
+    if (!formData.useMap || !formData.mapId) return 0;
+    return computeExpectedTokens(formData.loadsUsed || 0, formData.mapId, formData.mapEfficiency || 1);
+  }, [formData.useMap, formData.mapId, formData.loadsUsed, formData.mapEfficiency]);
 
   return (
     <Card className="bg-black text-white shadow-lg border border-gray-800">
@@ -63,10 +69,28 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
               <Input id="gemsPurchased" type="number" value={formData.gemsPurchased} onChange={handleInputChange('gemsPurchased')} data-testid="input-gems-purchased" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
             </div>
             <div>
-              <Label htmlFor="tokensEquipment" className="text-xs font-medium text-white/80">
-                {t('calc.tokensEquipment')}
-              </Label>
-              <Input id="tokensEquipment" type="number" value={formData.tokensEquipment} onChange={handleInputChange('tokensEquipment')} data-testid="input-tokens-equipment" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+              <div className="flex items-center gap-2">
+                <input id="useMap" type="checkbox" checked={formData.useMap} onChange={handleInputChange('useMap')} />
+                <Label htmlFor="useMap" className="text-xs font-medium text-white/80">{t('calc.useMap')}</Label>
+              </div>
+              {formData.useMap && (
+                <div className="mt-2 space-y-2">
+                  <div>
+                    <Label className="text-xs font-medium text-white/80">{t('calc.map')}</Label>
+                    <select value={formData.mapId} onChange={(e) => onUpdateFormData('mapId', e.target.value)} className="w-full h-9 bg-white/10 border-white/20 text-white rounded mt-1">
+                      <option value="" className="bg-black text-white">--</option>
+                      {MAPS.map((m) => (
+                        <option key={m.id} value={m.id} className="bg-black text-white">{t(`map.${m.id}`)}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="mapEfficiency" className="text-xs font-medium text-white/80">{t('calc.mapEfficiency')}</Label>
+                    <Input id="mapEfficiency" type="number" step="0.01" min={0.5} max={2} value={formData.mapEfficiency} onChange={handleInputChange('mapEfficiency')} className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+                  </div>
+                  <div className="text-xs text-white/70">{t('calc.estimatedTokens')}: <span className="font-mono text-white">{estimatedTokens.toLocaleString()}</span></div>
+                </div>
+              )}
             </div>
             <div>
               <Label htmlFor="tokenPrice" className="text-xs font-medium text-white/80">
@@ -87,13 +111,13 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
               <Label htmlFor="tokensFarmed" className="text-xs font-medium text-white/80">
                 {t('calc.tokensFarmed')}
               </Label>
-              <Input id="tokensFarmed" type="number" value={formData.tokensFarmed} onChange={handleInputChange('tokensFarmed')} data-testid="input-tokens-farmed" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+              <Input id="tokensFarmed" type="number" value={formData.tokensFarmed} onChange={handleInputChange('tokensFarmed')} data-testid="input-tokens-farmed" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" disabled={formData.useMap} />
             </div>
             <div>
               <Label htmlFor="gemPrice" className="text-xs font-medium text-white/80">
                 {t('calc.gemPrice')}
               </Label>
-              <Input id="gemPrice" type="number" step="0.0001" value={formData.gemPrice} onChange={handleInputChange('gemPrice')} data-testid="input-gem-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+              <Input id="gemPrice" type="number" step="0.00001" value={formData.gemPrice} onChange={handleInputChange('gemPrice')} data-testid="input-gem-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
             </div>
           </div>
         </div>
