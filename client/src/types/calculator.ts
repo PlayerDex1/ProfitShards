@@ -8,9 +8,6 @@ export interface CalculatorFormData {
   loadsUsed: number;
   tokenPrice: number;
   gemPrice: number;
-  useMap: boolean;
-  mapId: string;
-  mapEfficiency: number;
 }
 
 export interface CalculationResults {
