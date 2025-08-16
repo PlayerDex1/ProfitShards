@@ -85,6 +85,12 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 						<div className="text-xs text-white/70 mb-1">{t('donate.wallet')}</div>
 						<div className="text-white font-mono text-xs break-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
 					</div>
+					<div className="mt-2 text-xs text-white/70">
+						<p>Created by holdboy</p>
+						<p>
+							<a href="https://x.com/PlayerHold" target="_blank" rel="noopener noreferrer" className="underline text-white">https://x.com/PlayerHold</a>
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
