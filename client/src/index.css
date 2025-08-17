@@ -4,101 +4,80 @@
 @tailwind utilities;
 
 :root {
-  --background: hsl(0, 0%, 0%);
-  --foreground: hsl(0, 0%, 100%);
-  --card: hsl(0, 0%, 0%);
-  --card-foreground: hsl(0, 0%, 100%);
-  --popover: hsl(0, 0%, 0%);
-  --popover-foreground: hsl(0, 0%, 100%);
-  --primary: hsl(0, 0%, 100%);
-  --primary-foreground: hsl(0, 0%, 0%);
-  --secondary: hsl(0, 0%, 15%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --muted: hsl(0, 0%, 15%);
-  --muted-foreground: hsl(0, 0%, 80%);
-  --accent: hsl(0, 0%, 20%);
-  --accent-foreground: hsl(0, 0%, 100%);
-  --destructive: hsl(0, 0%, 60%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(0, 0%, 20%);
-  --input: hsl(0, 0%, 20%);
-  --ring: hsl(0, 0%, 100%);
-  --profit: hsl(0, 0%, 100%);
-  --loss: hsl(0, 0%, 60%);
-  --info: hsl(0, 0%, 100%);
-  --success: hsl(0, 0%, 100%);
-  --warning: hsl(0, 0%, 80%);
-  --chart-1: hsl(0, 0%, 100%);
-  --chart-2: hsl(0, 0%, 80%);
-  --chart-3: hsl(0, 0%, 60%);
-  --chart-4: hsl(0, 0%, 40%);
-  --chart-5: hsl(0, 0%, 20%);
+  --background: 0 0% 6%;
+  --foreground: 0 0% 96%;
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 0 0% 96%;
+  --primary-foreground: 0 0% 6%;
+  --secondary: 0 0% 14%;
+  --secondary-foreground: 0 0% 92%;
+  --muted: 0 0% 18%;
+  --muted-foreground: 0 0% 75%;
+  --accent: 0 0% 22%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 0% 55%;
+  --destructive-foreground: 0 0% 96%;
+  --border: 0 0% 30% / 0.25;
+  --input: 0 0% 22% / 0.6;
+  --ring: 0 0% 96%;
+  --profit: 0 0% 96%;
+  --loss: 0 0% 65%;
+  --info: 0 0% 92%;
+  --success: 0 0% 92%;
+  --warning: 0 0% 80%;
+  --chart-1: 0 0% 96%;
+  --chart-2: 0 0% 80%;
+  --chart-3: 0 0% 64%;
+  --chart-4: 0 0% 46%;
+  --chart-5: 0 0% 28%;
   --radius: 0.75rem;
 }
 
 .dark {
-  --background: hsl(0, 0%, 0%);
-  --foreground: hsl(0, 0%, 100%);
-  --card: hsl(0, 0%, 0%);
-  --card-foreground: hsl(0, 0%, 100%);
-  --popover: hsl(0, 0%, 0%);
-  --popover-foreground: hsl(0, 0%, 100%);
-  --primary: hsl(0, 0%, 100%);
-  --primary-foreground: hsl(0, 0%, 0%);
-  --secondary: hsl(0, 0%, 15%);
-  --secondary-foreground: hsl(0, 0%, 100%);
-  --muted: hsl(0, 0%, 15%);
-  --muted-foreground: hsl(0, 0%, 80%);
-  --accent: hsl(0, 0%, 20%);
-  --accent-foreground: hsl(0, 0%, 100%);
-  --destructive: hsl(0, 0%, 60%);
-  --destructive-foreground: hsl(0, 0%, 100%);
-  --border: hsl(0, 0%, 20%);
-  --input: hsl(0, 0%, 20%);
-  --ring: hsl(0, 0%, 100%);
-  --profit: hsl(0, 0%, 100%);
-  --loss: hsl(0, 0%, 60%);
-  --info: hsl(0, 0%, 100%);
-  --success: hsl(0, 0%, 100%);
-  --warning: hsl(0, 0%, 80%);
+  --background: 0 0% 6%;
+  --foreground: 0 0% 96%;
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 96%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 0 0% 96%;
+  --primary-foreground: 0 0% 6%;
+  --secondary: 0 0% 14%;
+  --secondary-foreground: 0 0% 92%;
+  --muted: 0 0% 18%;
+  --muted-foreground: 0 0% 75%;
+  --accent: 0 0% 22%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 0% 55%;
+  --destructive-foreground: 0 0% 96%;
+  --border: 0 0% 30% / 0.25;
+  --input: 0 0% 22% / 0.6;
+  --ring: 0 0% 96%;
+  --profit: 0 0% 96%;
+  --loss: 0 0% 65%;
+  --info: 0 0% 92%;
+  --success: 0 0% 92%;
+  --warning: 0 0% 80%;
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
-  
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    background-color: rgba(0,0,0,0.45);
+    background-blend-mode: overlay;
   }
 }
 
 @layer utilities {
-  .gradient-primary {
-    @apply bg-white;
-  }
-  
-  .text-profit {
-    color: hsl(var(--profit));
-  }
-  
-  .text-loss {
-    color: hsl(var(--loss));
-  }
-  
-  .text-info {
-    color: hsl(var(--info));
-  }
-  
-  .bg-profit {
-    background-color: hsl(var(--profit));
-  }
-  
-  .bg-loss {
-    background-color: hsl(var(--loss));
-  }
-  
-  .bg-info {
-    background-color: hsl(var(--info));
-  }
+  .gradient-primary { @apply bg-white; }
+  .text-profit { color: hsl(var(--profit)); }
+  .text-loss { color: hsl(var(--loss)); }
+  .text-info { color: hsl(var(--info)); }
+  .bg-profit { background-color: hsl(var(--profit)); }
+  .bg-loss { background-color: hsl(var(--loss)); }
+  .bg-info { background-color: hsl(var(--info)); }
 }
