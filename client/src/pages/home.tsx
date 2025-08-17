@@ -73,11 +73,13 @@ export default function Home() {
 			</main>
 
 			<footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-				<div className="mt-8 text-center text-white/70 text-sm">
-					<p>Created by holdboy</p>
-					<p>
-						<a href="https://x.com/PlayerHold" target="_blank" rel="noopener noreferrer" className="underline text-white">https://x.com/PlayerHold</a>
-					</p>
+				<div className="mt-8 flex flex-col items-center gap-2">
+					<img
+						src="https://uc90a4073598eb2abdfdc25fd606.previews.dropboxusercontent.com/p/thumb/ACvIAUwrTbHvs5wgQSOQGBqZaigkyyjczmvALj9BvIFzrn4Vk9jjFdR8qxAt3N6wEAfQF9gVFh7JfcEHLTmNA2pLqUBKyg1kkBdHym0IJgjhFwP9oMOPbcnbsE8FQMHrgejlzakA3OMBS8dEVnech2Alq1fu6mGX0JeNSzBGR2i4XEnrBq4KrWAREy60w1a6z0QFWPQQ3Sylo8sYimbLy6toNWgr2Q0ISAy179ozOeBLsBeFzX-CI1oMBm9o7iDPVDxrkLc-4nAj7eIoQeFtgbv8qndQWNpyn7ORVa0NbUqiwyGbScT-G3KJXx7qnWuVffJkLCSFZQkt8DyPfTIQWDuZ31YEvGqBtpDhY51CngzxKg/p.png"
+						alt="WorldShards Game logo"
+						className="h-12 w-12 object-contain"
+					/>
+					<p className="text-white font-semibold">WorldShards Game</p>
 				</div>
 			</footer>
 
