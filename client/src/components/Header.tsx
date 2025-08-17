@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
+import { Link } from "wouter";
 
 export function Header() {
   const { isDark, toggleTheme } = useTheme();
@@ -40,6 +41,7 @@ export function Header() {
             </select>
             {isAuthenticated ? (
               <>
+                <Link href="/perfil" className="text-white/80 text-sm hidden sm:inline hover:underline">Perfil</Link>
                 <span className="text-white/80 text-sm hidden sm:inline">Olá, {user}</span>
                 <Button
                   variant="ghost"
