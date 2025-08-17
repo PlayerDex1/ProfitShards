@@ -8,6 +8,7 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
+import { Link } from "wouter";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
@@ -38,7 +39,7 @@ export default function Home() {
 					<div className="space-y-4">
 						<div className="flex items-center justify-between">
 							<h2 className="text-lg font-semibold">Calculadora</h2>
-							<EquipmentButton onClick={openEquipment} totalLuck={totalLuck} />
+							<Link href="/perfil" className="text-white/90 underline">Abrir Perfil (Luck: {totalLuck})</Link>
 						</div>
 						<Calculator 
 							formData={formData}
@@ -85,15 +86,6 @@ export default function Home() {
 					<p className="text-white font-extrabold text-3xl sm:text-4xl tracking-wide">WorldShards</p>
 				</div>
 			</footer>
-
-			{isOpen && (
-				<EquipmentInterface
-					session={session}
-					totalLuck={totalLuck}
-					onClose={closeEquipment}
-					onEquipmentChange={updateEquipment}
-				/>
-			)}
 		</div>
 	);
 }

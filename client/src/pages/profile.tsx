@@ -7,6 +7,8 @@ import { useI18n } from "@/i18n";
 import { useEffect, useState } from "react";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { HistoryItem } from "@/types/calculator";
+import { useEquipment } from "@/hooks/useEquipment";
+import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
 
 export default function Profile() {
 	const { prefs, save } = usePreferences();
@@ -14,6 +16,7 @@ export default function Profile() {
 	const [mapSize, setMapSize] = useState(prefs.mapSize);
 	const [loadsPerMap, setLoadsPerMap] = useState<number>(prefs.loadsPerMap);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
+	const { session, totalLuck, updateEquipment } = useEquipment();
 
 	useEffect(() => {
 		setMapSize(prefs.mapSize);
@@ -56,6 +59,15 @@ export default function Profile() {
 						<div className="md:col-span-2">
 							<Button className="bg-white text-black hover:bg-white/90 h-9 px-4" onClick={() => save({ mapSize, loadsPerMap })}>Salvar Preferências</Button>
 						</div>
+					</CardContent>
+				</Card>
+
+				<Card className="bg-black/50 border-white/10">
+					<CardHeader className="py-4">
+						<CardTitle className="text-lg">Equipamento</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<EquipmentPanel session={session} totalLuck={totalLuck} onEquipmentChange={updateEquipment} />
 					</CardContent>
 				</Card>
 
