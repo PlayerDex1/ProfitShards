@@ -53,7 +53,15 @@ export default function Home() {
 	};
 
 	return (
-		<div className="min-h-screen bg-black text-white">
+		<div
+			className="min-h-screen text-white"
+			style={{
+				backgroundImage: "url(https://uc6331ff2dd94e6d7afcb4323cf6.previews.dropboxusercontent.com/p/thumb/ACuhngeWwsuI4p-j7Mg8dEtz0KiF6EYSuKwQwNaJuL4anB21MjQFN6CubaNita6hSnki38QXx0bUqokkMv9wj3kos8bUSKukBfyDaMzuWRT1cSYRdrXwZ82jhyDnNA_kOhnjYDUachGXTL5oIxa_I3ibBJZgyFL9ozT8t0PqcQLTKdS3fkaR3etlrIOnDO_WT5DoIVem9frrNnvNxuUtVsepS-d3QIAcO4126dAVlUcPbcFbFH3-vYS_e30SDMlStkqhg2wWlU65Khx9gQskJXrcc_A13up7wFy60VkX4QeJLSeilnn-zRTn-6jna6WP0sCATeNViQkmsAB2bVZ60LEuJLLzo0pEU5Mb744jDhcV00TNdzH27_R5l1-KJtjdvfUZslmuwSjk8nAYDKAyqxY1yZeS3lNpb9yEuK-v0hIjXQ/p.png)",
+				backgroundSize: 'cover',
+				backgroundPosition: 'center',
+				backgroundAttachment: 'fixed',
+			}}
+		>
 			<Header />
 			
 			<main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
