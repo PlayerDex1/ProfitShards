@@ -56,7 +56,7 @@ export default function Home() {
 		<div
 			className="min-h-screen text-white"
 			style={{
-				backgroundImage: "url(https://uc6331ff2dd94e6d7afcb4323cf6.previews.dropboxusercontent.com/p/thumb/ACuhngeWwsuI4p-j7Mg8dEtz0KiF6EYSuKwQwNaJuL4anB21MjQFN6CubaNita6hSnki38QXx0bUqokkMv9wj3kos8bUSKukBfyDaMzuWRT1cSYRdrXwZ82jhyDnNA_kOhnjYDUachGXTL5oIxa_I3ibBJZgyFL9ozT8t0PqcQLTKdS3fkaR3etlrIOnDO_WT5DoIVem9frrNnvNxuUtVsepS-d3QIAcO4126dAVlUcPbcFbFH3-vYS_e30SDMlStkqhg2wWlU65Khx9gQskJXrcc_A13up7wFy60VkX4QeJLSeilnn-zRTn-6jna6WP0sCATeNViQkmsAB2bVZ60LEuJLLzo0pEU5Mb744jDhcV00TNdzH27_R5l1-KJtjdvfUZslmuwSjk8nAYDKAyqxY1yZeS3lNpb9yEuK-v0hIjXQ/p.png)",
+				backgroundImage: "url(https://ucc1148e8d60a90d462482626b53.previews.dropboxusercontent.com/p/thumb/ACtx04ToK2TB0oJhHFpp1D__lhrKR4Cs_LTM0Br8HFGWmgfhWCQDGspJkB_ltkCOmNO5oSnqE0mSFmus5cYzmHzSXi1TO4O1Z0kZCi9ZrLGLqjleyLISiFvISzRK0LyVcAEwUDNaCW1xYgm_TuuDI01Hxs44PHqTHo3OwaIs5RuhSstCI1jAI_FJWKYPSumXTvTOwDF83Ns2kUP8_GIWWVAliYzAjrtIm-jv7GCJQtP_qdvZ9_mimGBZPUvm5Z5ZayNNUNYikBSOccwitFLMc4MaziSV0Yj8QaIiKusjwIUSVYav7J1MFhqOnowqS9Gr9IvOcU7zO9gqnCScFon8PTrBAjBYUCZ4CL9rct2hd_De_A/p.jpeg)",
 				backgroundSize: 'cover',
 				backgroundPosition: 'center',
 				backgroundAttachment: 'fixed',
