@@ -9,6 +9,8 @@ import { getCurrentUsername } from "@/hooks/use-auth";
 import { HistoryItem } from "@/types/calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
+import { MapPlanner } from "@/components/MapPlanner";
+import { Link } from "wouter";
 
 export default function Profile() {
 	const { prefs, save } = usePreferences();
@@ -43,6 +45,9 @@ export default function Profile() {
 		<div className="min-h-screen text-white" style={{ background: 'rgba(0,0,0,0.45)' }}>
 			<Header />
 			<main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+				<div className="flex justify-end">
+					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
+				</div>
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">
 						<CardTitle className="text-lg">Perfil</CardTitle>
@@ -61,6 +66,9 @@ export default function Profile() {
 						</div>
 					</CardContent>
 				</Card>
+
+				{/* Planejador de mapa */}
+				<MapPlanner onApply={(tokens, loads) => { /* Mantém edição na calculadora via usuário */ }} />
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">

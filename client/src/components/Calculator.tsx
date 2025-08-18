@@ -1,4 +1,4 @@
-import { memo, useMemo } from "react";
+import { memo } from "react";
 import { DollarSign, Gem, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalculatorFormData } from "@/types/calculator";
 import { useI18n } from "@/i18n";
-import { MapPlanner } from "@/components/MapPlanner";
 
 interface CalculatorProps {
   formData: CalculatorFormData;
@@ -21,11 +20,6 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
     onUpdateFormData(field, value);
   };
 
-  const applyFromPlanner = (tokens: number, loads: number) => {
-    onUpdateFormData('tokensFarmed', tokens);
-    onUpdateFormData('loadsUsed', loads);
-  };
-
   return (
     <Card className="bg-black text-white shadow-lg border border-gray-800">
       <CardHeader className="py-4">
@@ -38,8 +32,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 space-y-4">
-        <MapPlanner onApply={applyFromPlanner} />
+      <CardContent className="pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <div className="space-y-3">
             <div>
@@ -99,7 +92,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
           </div>
         </div>
 
-        <div className="mt-2">
+        <div className="mt-6">
           <Button onClick={onSaveToHistory} className="w-full bg-white text-black hover:bg-white/90 font-semibold py-3 px-6 transition-all duration-300" data-testid="button-calculate">
             <div className="flex items-center justify-center gap-3">
               <Gem className="w-5 h-5" />
