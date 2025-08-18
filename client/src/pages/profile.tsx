@@ -34,15 +34,16 @@ export default function Profile() {
 	return (
 		<div className="min-h-screen text-white" style={{ background: 'rgba(0,0,0,0.45)' }}>
 			<Header />
-			<main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+			<main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 space-y-6">
 				<div className="flex justify-end">
 					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
 				</div>
 
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-					<MapPlanner />
-					<MapMetrics />
-				</div>
+				{/* Map Planner ocupa linha inteira */}
+				<MapPlanner />
+
+				{/* Métricas abaixo */}
+				<MapMetrics />
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">
