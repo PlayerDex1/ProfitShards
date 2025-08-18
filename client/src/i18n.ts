@@ -141,6 +141,8 @@ const dicts: Record<Lang, Dict> = {
     'metrics.bestHour': 'Melhor horário',
     'metrics.noData': 'Sem dados suficientes',
     'metrics.runShort': 'carga',
+    'planner.clear': 'Limpar histórico',
+    'planner.delete': 'Excluir',
   },
   en: {
     'header.title': 'ProfitShards',
@@ -279,6 +281,8 @@ const dicts: Record<Lang, Dict> = {
     'metrics.bestHour': 'Best hour',
     'metrics.noData': 'No data yet',
     'metrics.runShort': 'load',
+    'planner.clear': 'Clear history',
+    'planner.delete': 'Delete',
   },
 };
 

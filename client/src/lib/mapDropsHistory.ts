@@ -40,3 +40,17 @@ export function appendMapDropEntry(entry: MapDropEntry) {
   localStorage.setItem(key, JSON.stringify(filtered));
   window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
 }
+
+export function deleteMapDropEntry(timestamp: number) {
+  const key = keyForUser(getCurrentUsername());
+  const arr = getMapDropsHistory();
+  const next = arr.filter((e) => e.timestamp !== timestamp);
+  localStorage.setItem(key, JSON.stringify(next));
+  window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+}
+
+export function clearMapDropsHistory() {
+  const key = keyForUser(getCurrentUsername());
+  localStorage.removeItem(key);
+  window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+}

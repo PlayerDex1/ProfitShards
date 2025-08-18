@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/i18n";
-import { appendMapDropEntry, getMapDropsHistory } from "@/lib/mapDropsHistory";
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
 
 interface MapPlannerProps {}
 
@@ -84,6 +84,9 @@ export function MapPlanner({}: MapPlannerProps) {
 
           <div className="flex items-center gap-2">
             <Button className="bg-white text-black hover:bg-white/90 h-9" onClick={apply}>{t('planner.apply')}</Button>
+            {history.length > 0 && (
+              <Button className="bg-white/10 text-white hover:bg-white/20 h-9" onClick={() => clearMapDropsHistory()}>{t('planner.clear')}</Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -114,6 +117,9 @@ export function MapPlanner({}: MapPlannerProps) {
                     <div className="flex-1 text-center font-mono text-white">{h.tokensDropped.toLocaleString()}</div>
                     <div className="w-24 text-center font-mono text-white">{h.loads}</div>
                     <div className="w-40 text-right text-white/70 text-xs md:text-sm">{new Date(h.timestamp).toLocaleString()}</div>
+                    <div className="ml-2">
+                      <Button className="h-7 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => deleteMapDropEntry(h.timestamp)}>{t('planner.delete')}</Button>
+                    </div>
                   </div>
                 ))}
             </div>
