@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Home from "@/pages/home";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
+import { useIdleLogout } from "@/hooks/useIdleLogout";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
 }
 
 function App() {
+  useIdleLogout();
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
