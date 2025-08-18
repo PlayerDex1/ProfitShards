@@ -15,6 +15,9 @@ export function MapMetrics() {
 
   const { avgPerMap, totalsByDay, bestHour } = useMemo(() => {
     const sizes: MapSize[] = ['small', 'medium', 'large', 'xlarge'];
+    const now = Date.now();
+    const last24 = data.filter(e => now - e.timestamp <= 24 * 60 * 60 * 1000);
+
     const sums: Record<MapSize, { tokens: number; loads: number }> = {
       small: { tokens: 0, loads: 0 },
       medium: { tokens: 0, loads: 0 },
@@ -25,7 +28,7 @@ export function MapMetrics() {
     const byDay: Record<string, { tokens: number; loads: number }> = {};
     const byHour: Record<number, { tokens: number; loads: number }> = {};
 
-    for (const e of data) {
+    for (const e of last24) {
       sums[e.mapSize].tokens += e.tokensDropped;
       sums[e.mapSize].loads += e.loads;
       const d = new Date(e.timestamp);
@@ -47,7 +50,7 @@ export function MapMetrics() {
 
     const totalsByDay = Object.entries(byDay)
       .sort((a, b) => a[0] < b[0] ? 1 : -1)
-      .slice(0, 2)
+      .slice(0, 1)
       .map(([day, v]) => ({ day, tokens: v.tokens, loads: v.loads }));
 
     let bestHour = null as null | { hour: number; score: number };
@@ -64,7 +67,7 @@ export function MapMetrics() {
   return (
     <Card className="bg-black/50 border-white/10">
       <CardHeader className="py-3">
-        <CardTitle className="text-base">{t('metrics.title')}</CardTitle>
+        <CardTitle className="text-base">{t('metrics.title24h')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
