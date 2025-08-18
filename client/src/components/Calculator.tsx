@@ -63,6 +63,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
               <Input id="gemsPurchased" type="number" value={formData.gemsPurchased} onChange={handleInputChange('gemsPurchased')} data-testid="input-gems-purchased" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
             </div>
             <div>
+              <Label htmlFor="tokensEquipment" className="text-xs font-medium text-white/80">
+                {t('calc.tokensEquipment')}
+              </Label>
+              <Input id="tokensEquipment" type="number" value={formData.tokensEquipment} onChange={handleInputChange('tokensEquipment')} data-testid="input-tokens-equipment" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+            </div>
+            <div>
               <Label htmlFor="tokenPrice" className="text-xs font-medium text-white/80">
                 {t('calc.tokenPrice')}
               </Label>
