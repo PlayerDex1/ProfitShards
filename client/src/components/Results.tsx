@@ -86,8 +86,8 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
   }));
 
   const tokenDistribution = [
-    { name: t('results.farmedTokens'), value: Math.max(0, results.tokensFarmed - results.tokensEquipment), color: '#ffffff' },
-    { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#cccccc' }
+    { name: t('results.farmedTokens'), value: Math.max(0, results.tokensFarmed - results.tokensEquipment), color: '#22d3ee' },
+    { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#f43f5e' }
   ];
 
   return (
@@ -166,14 +166,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <div className="w-3 h-3 bg-white rounded-full"></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#f43f5e' }}></div>
                 <span className="text-white/80 text-sm">{t('results.equipTokens')}</span>
                 <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-equipment">
                   {results.tokensEquipment.toLocaleString()}
                 </span>
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
-                <div className="w-3 h-3 bg-white/70 rounded-full"></div>
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22d3ee' }}></div>
                 <span className="text-white/80 text-sm">{t('results.farmedTokens')}</span>
                 <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-farmed">
                   {Math.max(0, results.tokensFarmed - results.tokensEquipment).toLocaleString()}
