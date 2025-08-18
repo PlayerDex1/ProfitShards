@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { DollarSign, Gem, Zap } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -6,18 +6,24 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalculatorFormData } from "@/types/calculator";
 import { useI18n } from "@/i18n";
+import { MapPlanner } from "@/components/MapPlanner";
 
 interface CalculatorProps {
   formData: CalculatorFormData;
-  onUpdateFormData: (field: keyof CalculatorFormData, value: number) => void;
+  onUpdateFormData: (field: keyof CalculatorFormData, value: any) => void;
   onSaveToHistory: () => void;
 }
 
 export const Calculator = memo(function Calculator({ formData, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
   const { t } = useI18n();
   const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(e.target.value) || 0;
+    const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : parseFloat(e.target.value) || 0;
     onUpdateFormData(field, value);
+  };
+
+  const applyFromPlanner = (tokens: number, loads: number) => {
+    onUpdateFormData('tokensFarmed', tokens);
+    onUpdateFormData('loadsUsed', loads);
   };
 
   return (
@@ -32,7 +38,8 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
+      <CardContent className="pt-0 space-y-4">
+        <MapPlanner onApply={applyFromPlanner} />
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
           <div className="space-y-3">
             <div>
@@ -63,12 +70,6 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
               <Input id="gemsPurchased" type="number" value={formData.gemsPurchased} onChange={handleInputChange('gemsPurchased')} data-testid="input-gems-purchased" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
             </div>
             <div>
-              <Label htmlFor="tokensEquipment" className="text-xs font-medium text-white/80">
-                {t('calc.tokensEquipment')}
-              </Label>
-              <Input id="tokensEquipment" type="number" value={formData.tokensEquipment} onChange={handleInputChange('tokensEquipment')} data-testid="input-tokens-equipment" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-            </div>
-            <div>
               <Label htmlFor="tokenPrice" className="text-xs font-medium text-white/80">
                 {t('calc.tokenPrice')}
               </Label>
@@ -93,12 +94,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
               <Label htmlFor="gemPrice" className="text-xs font-medium text-white/80">
                 {t('calc.gemPrice')}
               </Label>
-              <Input id="gemPrice" type="number" step="0.0001" value={formData.gemPrice} onChange={handleInputChange('gemPrice')} data-testid="input-gem-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+              <Input id="gemPrice" type="number" step="0.00001" value={formData.gemPrice} onChange={handleInputChange('gemPrice')} data-testid="input-gem-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
             </div>
           </div>
         </div>
 
-        <div className="mt-6">
+        <div className="mt-2">
           <Button onClick={onSaveToHistory} className="w-full bg-white text-black hover:bg-white/90 font-semibold py-3 px-6 transition-all duration-300" data-testid="button-calculate">
             <div className="flex items-center justify-center gap-3">
               <Gem className="w-5 h-5" />
