@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
-import { Results } from "@/components/Results";
-import { EquipmentButton, EquipmentInterface } from "@/components/equipment";
 import { Sidebar } from "@/components/Sidebar";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingUp } from "lucide-react";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const [activeSection, setActiveSection] = useState('calculator');
-	const { session, totalLuck, isOpen, openEquipment, closeEquipment, updateEquipment } = useEquipment();
+	const { session, totalLuck } = useEquipment();
 	const { t } = useI18n();
 
 	useEffect(() => {
@@ -27,30 +27,39 @@ export default function Home() {
 	};
 
 	const renderContent = () => {
-		switch (activeSection) {
-			case 'history':
-				return (
-					<div className="space-y-4">
-						<Results results={results} breakdown={breakdown} includeHistory />
-					</div>
-				);
-			default:
-				return (
-					<div className="space-y-4">
-						<div className="flex items-center justify-between">
-							<h2 className="text-lg font-semibold">Calculadora</h2>
-							<Link href="/perfil" className="text-white/90 underline">Abrir Perfil (Luck: {totalLuck})</Link>
-						</div>
-						<Calculator 
-							formData={formData}
-							onUpdateFormData={updateFormData}
-							onSaveToHistory={handleSaveToHistory}
-						/>
-						<Results results={results} breakdown={breakdown} />
+		return (
+			<div className="space-y-4">
+				<div className="flex items-center justify-between">
+					<h2 className="text-lg font-semibold">Calculadora</h2>
+					<Link href="/perfil" className="text-white/90 underline">Abrir Perfil (Luck: {totalLuck})</Link>
+				</div>
+				<Calculator 
+					formData={formData}
+					onUpdateFormData={updateFormData}
+					onSaveToHistory={handleSaveToHistory}
+				/>
 
-					</div>
-				);
-		}
+				{/* Final Profit Card only */}
+				{results && (
+					<Card className="bg-black border-gray-800">
+						<CardContent className="p-4">
+							<div className="flex items-center space-x-2 mb-3">
+								<div className="w-7 h-7 bg-white rounded-full flex items-center justify-center">
+									<TrendingUp className="w-4 h-4 text-black" />
+								</div>
+								<h3 className="text-base font-semibold text-white">{t('results.finalProfit')}</h3>
+							</div>
+							<div className="text-3xl font-bold text-white font-mono" data-testid="text-final-profit">
+								${results.finalProfit.toFixed(2)}
+							</div>
+							<p className="text-white/80 text-sm mt-1">
+								{results.finalProfit > 0 ? t('results.profitable') : t('results.loss')}
+							</p>
+						</CardContent>
+					</Card>
+				)}
+			</div>
+		);
 	};
 
 	return (
