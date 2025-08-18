@@ -3,22 +3,63 @@ import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdo
 import { getCurrentUsername } from '@/hooks/use-auth';
 import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 
+const DEFAULT_FORM: CalculatorFormData = {
+	investment: 0,
+	gemsPurchased: 0,
+	gemsRemaining: 0,
+	gemsConsumed: 0,
+	tokensEquipment: 0,
+	tokensFarmed: 0,
+	loadsUsed: 0,
+	tokenPrice: 0,
+	gemPrice: 0.00714,
+};
+
+function storageKeyForUser(user: string | null) {
+	return `worldshards-form-${user ?? 'guest'}`;
+}
+
 export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	
-	const [formData, setFormData] = useState<CalculatorFormData>({
-		investment: 0,
-		gemsPurchased: 0,
-		gemsRemaining: 0,
-		gemsConsumed: 0,
-		tokensEquipment: 0,
-		tokensFarmed: 0,
-		loadsUsed: 0,
-		tokenPrice: 0,
-		gemPrice: 0.00714,
-	});
+	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
+
+	// Restaurar do localStorage ao montar e quando auth mudar
+	useEffect(() => {
+		const load = () => {
+			const key = storageKeyForUser(getCurrentUsername());
+			try {
+				const raw = localStorage.getItem(key);
+				setFormData(raw ? JSON.parse(raw) : DEFAULT_FORM);
+			} catch {
+				setFormData(DEFAULT_FORM);
+			}
+		};
+		load();
+		const onAuth = () => {
+			const user = getCurrentUsername();
+			if (!user) {
+				// logout (inclusive AFK): limpar e voltar ao padrão
+				try { localStorage.removeItem(storageKeyForUser(null)); } catch {}
+				setFormData(DEFAULT_FORM);
+			} else {
+				load();
+			}
+		};
+		window.addEventListener('worldshards-auth-updated', onAuth);
+		return () => window.removeEventListener('worldshards-auth-updated', onAuth);
+	}, []);
+
+	// Salvar automaticamente o formulário por usuário (apenas logado)
+	useEffect(() => {
+		const user = getCurrentUsername();
+		if (!user) return;
+		try {
+			localStorage.setItem(storageKeyForUser(user), JSON.stringify(formData));
+		} catch {}
+	}, [formData]);
 
 	useEffect(() => {
 		const onWhatIf = (e: Event) => {
