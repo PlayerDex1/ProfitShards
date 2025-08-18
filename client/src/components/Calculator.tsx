@@ -30,14 +30,15 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 	}, []);
 
 	const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-		const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : (e.target.value === '' ? 0 : parseFloat(e.target.value) || 0);
+		const raw = e.target.value.replace(',', '.');
+		const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : (raw === '' ? 0 : parseFloat(raw) || 0);
 		onUpdateFormData(field, value);
 		setTouched((prev) => ({ ...prev, [field]: true }));
 	};
 
 	const displayValue = (field: keyof CalculatorFormData, v: number) => {
 		if (field === 'gemPrice') return v; // keep default visible
-		return !touched[field] && v === 0 ? '' : v;
+		return !touched[field] && v === 0 ? '' : Number.isFinite(v) ? Number(v) : 0;
 	};
 
 	return (

@@ -3,7 +3,8 @@ import { TrendingUp, TrendingDown, DollarSign, BarChart3, Gem, Zap, Clock, PieCh
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { TokenDistributionChart } from '@/components/charts/TokenDistributionChart';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { useI18n } from "@/i18n";
@@ -146,37 +147,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardContent className="pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="h-52">
-              <ResponsiveContainer width="100%" height="100%">
-                <RechartsPieChart>
-                  <Pie
-                    data={tokenDistribution}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={45}
-                    outerRadius={70}
-                    dataKey="value"
-                    labelLine={false}
-                    label={({ name, percent }) => percent >= 0.05 ? `${name}: ${(percent * 100).toFixed(1)}%` : ''}
-                  >
-                    {tokenDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#0a0a0a" strokeWidth={2} />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number, name: string, props: any) => [
-                      `${Number(value).toLocaleString()} (${(((props?.payload?.percent) ?? 0) * 100).toFixed(1)}%)`,
-                      name
-                    ]}
-                    contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }}
-                  />
-                  <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="14" fontWeight="bold">
-                    {results.totalTokens.toLocaleString()}
-                  </text>
-                  <text x="50%" y="62%" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.7)" fontSize="10">
-                    {t('results.totalTokensLabel')}
-                  </text>
-                </RechartsPieChart>
-              </ResponsiveContainer>
+              <TokenDistributionChart data={tokenDistribution} totalTokens={results.totalTokens} totalLabel={t('results.totalTokensLabel')} />
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
