@@ -118,13 +118,15 @@ export function useCalculator() {
 		}
 
 		debounceTimeoutRef.current = setTimeout(() => {
+			const username = getCurrentUsername();
+			if (!username) return; // não salva se não estiver logado
+
 			const historyItem: HistoryItem = {
 				timestamp: Date.now(),
 				formData,
 				results,
 			};
 
-			const username = getCurrentUsername() ?? 'guest';
 			const key = `worldshards-history-${username}`;
 			const existingHistory = localStorage.getItem(key);
 			const history: HistoryItem[] = existingHistory ? JSON.parse(existingHistory) : [];

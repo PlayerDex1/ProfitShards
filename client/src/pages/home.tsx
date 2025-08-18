@@ -46,7 +46,7 @@ export default function Home() {
 							onUpdateFormData={updateFormData}
 							onSaveToHistory={handleSaveToHistory}
 						/>
-						<Results results={results} breakdown={breakdown} includeHistory />
+						<Results results={results} breakdown={breakdown} />
 
 					</div>
 				);
