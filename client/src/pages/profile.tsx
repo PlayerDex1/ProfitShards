@@ -8,6 +8,7 @@ import { useEquipment } from "@/hooks/useEquipment";
 import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
 import { MapPlanner } from "@/components/MapPlanner";
 import { Link } from "wouter";
+import { MapMetrics } from "@/components/MapMetrics";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -38,8 +39,10 @@ export default function Profile() {
 					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
 				</div>
 
-				{/* Planejador de mapa */}
-				<MapPlanner onApply={() => {}} />
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+					<MapPlanner />
+					<MapMetrics />
+				</div>
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">

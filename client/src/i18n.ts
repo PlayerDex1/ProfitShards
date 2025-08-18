@@ -133,6 +133,12 @@ const dicts: Record<Lang, Dict> = {
     'planner.example': 'ex.: 30 no mapa médio',
     'planner.history': 'Mini histórico (2 dias)',
     'planner.noHistory': 'Nenhum registro de drop nos últimos 2 dias',
+    'metrics.title': 'Métricas (últimos 2 dias)',
+    'metrics.avgPerRun': 'Média de tokens por carga',
+    'metrics.totalByDay': 'Total por dia',
+    'metrics.bestHour': 'Melhor horário',
+    'metrics.noData': 'Sem dados suficientes',
+    'metrics.runShort': 'carga',
   },
   en: {
     'header.title': 'ProfitShards',
@@ -263,6 +269,12 @@ const dicts: Record<Lang, Dict> = {
     'planner.example': 'e.g., 30 on medium map',
     'planner.history': 'Mini history (2 days)',
     'planner.noHistory': 'No drop records in last 2 days',
+    'metrics.title': 'Metrics (last 2 days)',
+    'metrics.avgPerRun': 'Avg tokens per load',
+    'metrics.totalByDay': 'Total per day',
+    'metrics.bestHour': 'Best hour',
+    'metrics.noData': 'No data yet',
+    'metrics.runShort': 'load',
   },
 };
 
