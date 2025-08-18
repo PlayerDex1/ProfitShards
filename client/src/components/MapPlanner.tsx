@@ -96,20 +96,24 @@ export function MapPlanner({}: MapPlannerProps) {
           {history.length === 0 ? (
             <p className="text-white/70 text-sm">{t('planner.noHistory')}</p>
           ) : (
-            <div className="space-y-2 max-h-60 overflow-auto pr-2">
+            <div className="space-y-2 max-h-96 overflow-auto pr-2">
+              <div className="sticky top-0 z-10 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 flex text-xs md:text-sm text-white/60">
+                <div className="w-28">{t('planner.mapSize')}</div>
+                <div className="flex-1 text-center">{t('planner.tokensDropped')}</div>
+                <div className="w-24 text-center">{t('planner.loads')}</div>
+                <div className="w-40 text-right">{t('planner.when')}</div>
+              </div>
               {history
                 .slice()
                 .reverse()
                 .map((h, i) => (
-                  <div key={i} className="border border-white/10 rounded-lg p-3 bg-white/5 text-sm flex items-center justify-between">
-                    <div className="text-white/90">
-                      <span className="font-medium">{t(`planner.${h.mapSize}`)}</span>
-                      <span className="mx-2">•</span>
-                      <span>{h.tokensDropped} {t('results.tokenLabel')}</span>
-                      <span className="mx-2">•</span>
-                      <span>{t('planner.loads')}: {h.loads}</span>
+                  <div key={i} className="border border-white/10 rounded-lg px-3 py-2 bg-white/5 text-sm md:text-base flex items-center">
+                    <div className="w-28">
+                      <span className="px-2 py-0.5 rounded bg-white/10 text-white text-xs md:text-sm">{t(`planner.${h.mapSize}`)}</span>
                     </div>
-                    <div className="text-white/60 text-xs">{new Date(h.timestamp).toLocaleString()}</div>
+                    <div className="flex-1 text-center font-mono text-white">{h.tokensDropped.toLocaleString()}</div>
+                    <div className="w-24 text-center font-mono text-white">{h.loads}</div>
+                    <div className="w-40 text-right text-white/70 text-xs md:text-sm">{new Date(h.timestamp).toLocaleString()}</div>
                   </div>
                 ))}
             </div>
