@@ -9,11 +9,14 @@ import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
 import { MapPlanner } from "@/components/MapPlanner";
 import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
+import { Results } from "@/components/Results";
+import { useCalculator } from "@/hooks/use-calculator";
 
 export default function Profile() {
 	const { t } = useI18n();
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const { session, totalLuck, updateEquipment } = useEquipment();
+	const { results, breakdown } = useCalculator();
 
 	useEffect(() => {
 		const load = () => {
@@ -44,6 +47,9 @@ export default function Profile() {
 
 				{/* Métricas abaixo */}
 				<MapMetrics />
+
+				{/* Métricas da Calculadora (sem histórico) */}
+				<Results results={results} breakdown={breakdown} />
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">
