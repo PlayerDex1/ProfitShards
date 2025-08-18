@@ -1,9 +1,9 @@
 {
-  "name": "calculateshards",
+  "name": "rest-express",
   "version": "1.0.0",
   "type": "module",
   "license": "MIT",
-  "description": "CalculateShards - calculadora de lucro para Worldshards (SPA em React/Vite)",
+  "description": "Calculadora de Lucro - Worldshards (SPA em React/Vite)",
   "scripts": {
     "dev": "NODE_ENV=development tsx server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",

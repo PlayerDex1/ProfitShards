@@ -108,7 +108,7 @@ export function EquipmentInterface({ session, totalLuck, onClose, onEquipmentCha
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'calculateshards-builds.json';
+    a.download = 'profitshards-builds.json';
     document.body.appendChild(a);
     a.click();
     a.remove();
