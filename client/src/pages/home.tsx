@@ -94,7 +94,7 @@ export default function Home() {
 
 			<footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
 				<div className="mt-8 flex flex-col items-center gap-2">
-					<p className="text-white font-extrabold text-3xl sm:text-4xl tracking-wide">WorldShards</p>
+					<p className="text-white font-extrabold text-3xl sm:text-4xl tracking-wide">CalculateShards</p>
 				</div>
 			</footer>
 		</div>

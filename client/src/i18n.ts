@@ -6,8 +6,8 @@ type Dict = Record<string, string>;
 
 const dicts: Record<Lang, Dict> = {
   pt: {
-    'header.title': 'ProfitShards',
-    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
+    'header.title': 'CalculateShards',
+    'header.subtitle': 'CalculateShards: Builds, Drops, Results',
     'header.login': 'Entrar',
     'header.logout': 'Sair',
     'header.theme': 'Alternar tema',
@@ -145,8 +145,8 @@ const dicts: Record<Lang, Dict> = {
     'planner.delete': 'Excluir',
   },
   en: {
-    'header.title': 'ProfitShards',
-    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
+    'header.title': 'CalculateShards',
+    'header.subtitle': 'CalculateShards: Builds, Drops, Results',
     'header.login': 'Sign in',
     'header.logout': 'Sign out',
     'header.theme': 'Toggle theme',

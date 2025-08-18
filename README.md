@@ -1,8 +1,8 @@
-# 🎮 Calculadora de Lucro - Worldshards
+# 🎮 CalculateShards - Calculadora de Lucro
 
-Uma calculadora interativa e moderna para calcular custos, lucros e eficiência de equipamentos no jogo Worldshards.
+Uma calculadora interativa e moderna para calcular custos, lucros e eficiência de equipamentos.
 
-![Preview da Calculadora](https://via.placeholder.com/800x400/10B981/FFFFFF?text=Calculadora+Worldshards)
+![Preview da Calculadora](https://via.placeholder.com/800x400/10B981/FFFFFF?text=CalculateShards)
 
 ## 🌟 Funcionalidades
 
@@ -101,4 +101,4 @@ Contribuições são bem-vindas! Abra uma issue ou pull request.
 
 ---
 
-**Desenvolvido para a comunidade Worldshards** 🎮✨
+**Desenvolvido para a comunidade** 🎮✨
