@@ -66,10 +66,12 @@ export default function Home() {
 		<div
 			className="min-h-screen text-white"
 			style={{
-				backgroundImage: "url(https://ucc1148e8d60a90d462482626b53.previews.dropboxusercontent.com/p/thumb/ACtx04ToK2TB0oJhHFpp1D__lhrKR4Cs_LTM0Br8HFGWmgfhWCQDGspJkB_ltkCOmNO5oSnqE0mSFmus5cYzmHzSXi1TO4O1Z0kZCi9ZrLGLqjleyLISiFvISzRK0LyVcAEwUDNaCW1xYgm_TuuDI01Hxs44PHqTHo3OwaIs5RuhSstCI1jAI_FJWKYPSumXTvTOwDF83Ns2kUP8_GIWWVAliYzAjrtIm-jv7GCJQtP_qdvZ9_mimGBZPUvm5Z5ZayNNUNYikBSOccwitFLMc4MaziSV0Yj8QaIiKusjwIUSVYav7J1MFhqOnowqS9Gr9IvOcU7zO9gqnCScFon8PTrBAjBYUCZ4CL9rct2hd_De_A/p.jpeg)",
-				backgroundSize: 'cover',
-				backgroundPosition: 'center',
+				backgroundImage: `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url(/bg-home.jpeg), url(https://ucc1148e8d60a90d462482626b53.previews.dropboxusercontent.com/p/thumb/ACtx04ToK2TB0oJhHFpp1D__lhrKR4Cs_LTM0Br8HFGWmgfhWCQDGspJkB_ltkCOmNO5oSnqE0mSFmus5cYzmHzSXi1TO4O1Z0kZCi9ZrLGLqjleyLISiFvISzRK0LyVcAEwUDNaCW1xYgm_TuuDI01Hxs44PHqTHo3OwaIs5RuhSstCI1jAI_FJWKYPSumXTvTOwDF83Ns2kUP8_GIWWVAliYzAjrtIm-jv7GCJQtP_qdvZ9_mimGBZPUvm5Z5ZayNNUNYikBSOccwitFLMc4MaziSV0Yj8QaIiKusjwIUSVYav7J1MFhqOnowqS9Gr9IvOcU7zO9gqnCScFon8PTrBAjBYUCZ4CL9rct2hd_De_A/p.jpeg)`,
+				backgroundSize: 'cover, cover, cover',
+				backgroundPosition: 'center, center, center',
+				backgroundRepeat: 'no-repeat, no-repeat, no-repeat',
 				backgroundAttachment: 'fixed',
+				backgroundColor: '#000',
 			}}
 		>
 			<Header />
