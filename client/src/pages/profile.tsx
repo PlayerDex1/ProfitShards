@@ -35,7 +35,7 @@ export default function Profile() {
 	}, []);
 
 	return (
-		<div className="min-h-screen text-white" style={{ background: 'rgba(0,0,0,0.45)' }}>
+		<div className="min-h-screen text-white" style={{ background: 'linear-gradient(rgba(20,184,166,0.12), rgba(20,184,166,0.12))' }}>
 			<Header />
 			<main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 space-y-6">
 				<div className="flex justify-end">
