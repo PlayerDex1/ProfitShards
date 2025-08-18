@@ -152,15 +152,29 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
                     data={tokenDistribution}
                     cx="50%"
                     cy="50%"
+                    innerRadius={45}
                     outerRadius={70}
                     dataKey="value"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(1)}%`}
+                    labelLine={false}
+                    label={({ name, percent }) => percent >= 0.05 ? `${name}: ${(percent * 100).toFixed(1)}%` : ''}
                   >
                     {tokenDistribution.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
+                      <Cell key={`cell-${index}`} fill={entry.color} stroke="#0a0a0a" strokeWidth={2} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => [value.toLocaleString(), t('results.tokenLabel')]} contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }} />
+                  <Tooltip 
+                    formatter={(value: number, name: string, props: any) => [
+                      `${Number(value).toLocaleString()} (${(((props?.payload?.percent) ?? 0) * 100).toFixed(1)}%)`,
+                      name
+                    ]}
+                    contentStyle={{ backgroundColor: '#000', borderColor: '#333', color: '#fff' }}
+                  />
+                  <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" fill="#ffffff" fontSize="14" fontWeight="bold">
+                    {results.totalTokens.toLocaleString()}
+                  </text>
+                  <text x="50%" y="62%" textAnchor="middle" dominantBaseline="middle" fill="rgba(255,255,255,0.7)" fontSize="10">
+                    {t('results.totalTokensLabel')}
+                  </text>
                 </RechartsPieChart>
               </ResponsiveContainer>
             </div>
