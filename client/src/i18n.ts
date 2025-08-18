@@ -7,7 +7,7 @@ type Dict = Record<string, string>;
 const dicts: Record<Lang, Dict> = {
   pt: {
     'header.title': 'ProfitShards',
-    'header.subtitle': 'Otimize seu lucro no Worldshards com builds e cálculos inteligentes',
+    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
     'header.login': 'Entrar',
     'header.logout': 'Sair',
     'header.theme': 'Alternar tema',
@@ -146,7 +146,7 @@ const dicts: Record<Lang, Dict> = {
   },
   en: {
     'header.title': 'ProfitShards',
-    'header.subtitle': 'Optimize your Worldshards profits with smart builds and calculations',
+    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
     'header.login': 'Sign in',
     'header.logout': 'Sign out',
     'header.theme': 'Toggle theme',
