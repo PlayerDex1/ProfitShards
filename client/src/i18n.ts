@@ -129,8 +129,10 @@ const dicts: Record<Lang, Dict> = {
     'planner.energyCost': 'Energia por mapa',
     'planner.loads': 'Cargas (nº de runs)',
     'planner.tokensDropped': 'Tokens dropados',
-    'planner.apply': 'Aplicar na calculadora',
+    'planner.apply': 'Salvar no mini histórico',
     'planner.example': 'ex.: 30 no mapa médio',
+    'planner.history': 'Mini histórico (2 dias)',
+    'planner.noHistory': 'Nenhum registro de drop nos últimos 2 dias',
   },
   en: {
     'header.title': 'ProfitShards',
@@ -257,8 +259,10 @@ const dicts: Record<Lang, Dict> = {
     'planner.energyCost': 'Energy per map',
     'planner.loads': 'Loads (runs)',
     'planner.tokensDropped': 'Tokens dropped',
-    'planner.apply': 'Apply to calculator',
+    'planner.apply': 'Save to mini history',
     'planner.example': 'e.g., 30 on medium map',
+    'planner.history': 'Mini history (2 days)',
+    'planner.noHistory': 'No drop records in last 2 days',
   },
 };
 
