@@ -1,6 +1,6 @@
-# Deploy da Calculadora Worldshards no GitHub Pages
+# Deploy da Calculadora Worldshards (GitHub Pages e Cloudflare Pages)
 
-Este guia mostra como fazer deploy da sua calculadora no GitHub Pages gratuitamente.
+Este guia mostra como fazer deploy da sua calculadora no GitHub Pages ou Cloudflare Pages.
 
 ## Pré-requisitos
 
@@ -26,8 +26,9 @@ Este guia mostra como fazer deploy da sua calculadora no GitHub Pages gratuitame
 ### 3. Configuração Automática
 
 O projeto já inclui:
-- ✅ **Workflow do GitHub Actions** (`.github/workflows/deploy.yml`)
-- ✅ **Configuração de build** para produção (`vite.config.production.ts`)
+- ✅ **Workflow GitHub Pages** (`.github/workflows/deploy.yml`)
+- ✅ **Workflow Cloudflare Pages** (`.github/workflows/deploy-cloudflare-pages.yml`)
+- ✅ **Configuração de build** (`vite.config.production.ts`)
 - ✅ **Otimizações de performance** (minificação, code splitting)
 - ✅ **Meta tags SEO** para melhor indexação
 
@@ -106,6 +107,20 @@ Para alterar o nome no GitHub Pages, renomeie seu repositório nas configuraçõ
 ## Próximos Passos
 
 Após o deploy bem-sucedido, você pode:
+
+## Deploy no Cloudflare Pages
+
+1. Crie um projeto no Cloudflare Pages e anote:
+   - Account ID
+   - Project Name
+   - API Token com permissões de Pages (Edit)
+2. No GitHub, adicione os segredos do repositório:
+   - `CLOUDFLARE_API_TOKEN`
+   - `CLOUDFLARE_ACCOUNT_ID`
+   - `CLOUDFLARE_PAGES_PROJECT`
+   - (Opcional) `CF_ZONE_ID` para purge de cache de um domínio existente
+3. Faça push na `main` e aguarde o workflow `Deploy to Cloudflare Pages` concluir.
+4. Verifique a URL do Pages e associe um domínio customizado se desejar.
 1. **Compartilhar** a URL da calculadora
 2. **Customizar** cores e layout
 3. **Adicionar** novas funcionalidades

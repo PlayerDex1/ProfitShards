@@ -26,5 +26,7 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci
-      - name: Build (Vercel target)
-        run: npm run build:vercel
+      - name: Typecheck
+        run: npm run check
+      - name: Build (Production)
+        run: npx vite build --config vite.config.production.ts
