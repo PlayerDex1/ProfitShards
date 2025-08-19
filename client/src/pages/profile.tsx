@@ -9,7 +9,8 @@ import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
 import { MapPlanner } from "@/components/MapPlanner";
 import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
-import { Results } from "@/components/Results";
+import { lazy, Suspense } from "react";
+const Results = lazy(() => import("@/components/Results").then(m => ({ default: m.Results })));
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
 
@@ -50,7 +51,9 @@ export default function Profile() {
 				<MapMetrics />
 
 				{/* Métricas da Calculadora (sem histórico) */}
-				<Results results={results} breakdown={breakdown} />
+				<Suspense fallback={<div className="text-white/80">Carregando métricas…</div>}>
+					<Results results={results} breakdown={breakdown} />
+				</Suspense>
 
 				<BackupPanel />
 
