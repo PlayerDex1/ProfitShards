@@ -67,6 +67,18 @@ function scheduleOneTimeMidnightReset() {
 
 // Execute one-time reset immediately on first load after this update,
 // then never again. Also keep the scheduled fallback for safety.
+// Force reset if URL contains ?reset=1 (one-time trigger per visit)
+try {
+  const url = new URL(window.location.href);
+  const force = url.searchParams.get('reset');
+  if (force === '1') {
+    performOneTimeReset();
+    // Clean the URL to avoid repeating
+    url.searchParams.delete('reset');
+    window.history.replaceState({}, '', url.toString());
+  }
+} catch {}
+
 if (localStorage.getItem('ps_reset_done') !== '1') {
   performOneTimeReset();
 }
