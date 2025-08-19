@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TokenDistributionChart } from '@/components/charts/TokenDistributionChart';
+import { ProfitSensitivityChart } from '@/components/charts/ProfitSensitivityChart';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { useI18n } from "@/i18n";
@@ -13,9 +14,17 @@ interface ResultsProps {
   results: CalculationResults | null;
   breakdown: CalculationBreakdown[];
   includeHistory?: boolean;
+  visible?: {
+    summary?: boolean;
+    distribution?: boolean;
+    efficiency?: boolean;
+    sensitivity?: boolean;
+    performance?: boolean;
+    history?: boolean;
+  };
 }
 
-export const Results = memo(function Results({ results, breakdown, includeHistory = false }: ResultsProps) {
+export const Results = memo(function Results({ results, breakdown, includeHistory = false, visible }: ResultsProps) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const { t } = useI18n();
@@ -42,6 +51,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
     const key = `worldshards-history-${username}`;
     localStorage.removeItem(key);
     setHistory([]);
+  };
+
+  const show = {
+    summary: visible?.summary ?? true,
+    distribution: visible?.distribution ?? true,
+    efficiency: visible?.efficiency ?? true,
+    sensitivity: visible?.sensitivity ?? true,
+    performance: visible?.performance ?? true,
   };
 
   if (!results) {
@@ -94,6 +111,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
   return (
     <div className="space-y-4">
       {/* Final Profit Card */}
+      {show.summary && (
       <Card className="bg-black border-gray-800">
         <CardContent className="p-4">
           <div className="flex items-center space-x-2 mb-3">
@@ -110,8 +128,10 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           </p>
         </CardContent>
       </Card>
+      )}
 
       {/* Calculation Summary */}
+      {show.summary && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
@@ -135,8 +155,10 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           ))}
         </CardContent>
       </Card>
+      )}
 
       {/* Token Distribution */}
+      {show.distribution && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
@@ -175,8 +197,10 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           </div>
         </CardContent>
       </Card>
+      )}
 
       {/* Efficiency Metrics */}
+      {show.efficiency && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center space-x-2">
@@ -209,9 +233,28 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           </div>
         </CardContent>
       </Card>
+      )}
+
+      {/* Profit Sensitivity (Token Price) */}
+      {show.sensitivity && (
+      <Card className="bg-black border-gray-800">
+        <CardHeader className="py-3">
+          <div className="flex items-center space-x-2">
+            <BarChart3 className="w-4 h-4 text-white" />
+            <CardTitle className="text-base font-semibold text-white">Análise de Sensibilidade (Preço do Token)</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <div className="h-56">
+            <ProfitSensitivityChart currentTokenPrice={(history[history.length - 1]?.formData.tokenPrice) ?? 0} results={results} />
+          </div>
+          <p className="text-white/70 text-xs mt-2">Variação do lucro entre 50% e 150% do preço atual.</p>
+        </CardContent>
+      </Card>
+      )}
 
       {/* Performance Chart */}
-      {history.length > 1 && (
+      {history.length > 1 && show.performance && (
         <Card className="bg-black border-gray-800">
           <CardHeader className="py-3">
             <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">

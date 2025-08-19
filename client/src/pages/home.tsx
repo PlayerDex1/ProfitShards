@@ -66,7 +66,7 @@ export default function Home() {
 		<div
 			className="min-h-screen text-white"
 			style={{
-				backgroundImage: `linear-gradient(rgba(13,148,136,0.12), rgba(0,0,0,0.7)), url(https://uc9a60f219416a91329372e3d9b7.previews.dropboxusercontent.com/p/thumb/ACsbiM5tvfUM4n0ZH2qAJ1lo-o5yHotq01WJDcIV0J8gfYbdJTCzL0CTEJcFstSbFgozbwj89Qa5X-7os45WzXd47mXXaUOR4rBeB8V97knwH-eL6HTGMziJ8UWX7EI8Y6Rup6ieoeLltsHI5bkuv8Cb1bBBJJt9Tjglt0uRvlia9TSwaqU0cpzeBLmO6--oxvcx4LBC-mBJfPUqYP3hUOHdvj_UcWgMQvD3SnMtSqxkqerF7GYRLPzqyXRD41Nq0D62EgzwmKy5vWp_prccmDiTtl2FUAMCwe6IXU-OugYfX2pLgYsoDQ54mRRkfolVmMIzsE8UmzDZVImR8R-xvj2ySOBPmIYICAjfaNdWfsuXzA/p.jpeg), url(/bg-home.jpeg)`,
+				backgroundImage: `linear-gradient(rgba(13,148,136,0.12), rgba(0,0,0,0.7)), url(https://ucc1148e8d60a90d462482626b53.previews.dropboxusercontent.com/p/thumb/ACuJ2jNF9hwkfzRXZ2KeeDWpNoqPCiS_rljsdJ5TUeob4VHNBg27apSWGyL7l-WEV9vxqj_vRzTX9eMdgelvABPIUPLF8nHtqGQvwjXcQZ4TVYJ7BC8sVEi67ODlked_dzjgPou01VU2m7ZfdoxNeE_SRdeWY_Hq9-ppZnPsnFUY4ujn0dDNqGNkIdASAERgjRB_p-tb3hWdUzOrxW-l2bdkH5Ejg9Xp-UKpN01IBYDGxBFZ_-45jmKYmkZYYOjgCGdKhn-dsi-ExIyzjLwyvtVpbP4CYgO6eEdnz6FZPsBNLpUE4FUQIjYz-uMG8aMDgt71tM2i3MwY4UT1aOn5p2TDG1XWtCWRvvADT5SnB_0Cig/p.jpeg), url(/og-image.png)`,
 				backgroundSize: 'cover, cover',
 				backgroundPosition: 'center, center',
 				backgroundRepeat: 'no-repeat, no-repeat',

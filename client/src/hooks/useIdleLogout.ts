@@ -27,21 +27,22 @@ export function useIdleLogout(timeoutMs: number = 15 * 60 * 1000) {
       }, timeoutMs);
     };
 
-    const events: Array<keyof WindowEventMap> = [
+    const windowEvents: Array<keyof WindowEventMap> = [
       'mousemove',
       'mousedown',
       'keydown',
       'scroll',
       'touchstart',
-      'visibilitychange',
     ];
 
-    events.forEach((ev) => window.addEventListener(ev, reset, { passive: true }));
+    windowEvents.forEach((ev) => window.addEventListener(ev, reset, { passive: true }));
+    document.addEventListener('visibilitychange', reset);
     reset();
 
     return () => {
       if (timerRef.current) window.clearTimeout(timerRef.current);
-      events.forEach((ev) => window.removeEventListener(ev, reset));
+      windowEvents.forEach((ev) => window.removeEventListener(ev, reset));
+      document.removeEventListener('visibilitychange', reset);
     };
   }, [isAuthenticated, logout, timeoutMs]);
 }
