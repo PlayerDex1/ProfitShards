@@ -36,36 +36,7 @@ function performOneTimeReset() {
   } catch {}
 }
 
-function scheduleOneTimeMidnightReset() {
-  try {
-    if (localStorage.getItem('ps_reset_version') === RESET_VERSION) return;
-
-    let target = localStorage.getItem('ps_reset_target');
-    let targetMs: number;
-    if (target) {
-      targetMs = parseInt(target, 10);
-    } else {
-      const now = new Date();
-      const next = new Date(now);
-      next.setDate(now.getDate() + 1);
-      next.setHours(0, 0, 0, 0);
-      targetMs = next.getTime();
-      localStorage.setItem('ps_reset_target', String(targetMs));
-    }
-
-    const nowMs = Date.now();
-    if (nowMs >= targetMs) {
-      performOneTimeReset();
-      return;
-    }
-
-    const delay = Math.max(0, targetMs - nowMs);
-    setTimeout(() => {
-      if (localStorage.getItem('ps_reset_version') === RESET_VERSION) return;
-      performOneTimeReset();
-    }, delay);
-  } catch {}
-}
+// scheduleOneTimeMidnightReset removed (no automatic reset)
 
 // Force reset if URL contains ?reset=1 (one-time trigger per visit)
 try {
@@ -79,11 +50,7 @@ try {
   }
 } catch {}
 
-// Versioned automatic reset: runs once per RESET_VERSION on next visit
-if (localStorage.getItem('ps_reset_version') !== RESET_VERSION) {
-  performOneTimeReset();
-}
-scheduleOneTimeMidnightReset();
+// Automatic resets disabled as requested; keep only manual URL trigger above
 
 createRoot(document.getElementById("root")!).render(
   <I18nProvider>
