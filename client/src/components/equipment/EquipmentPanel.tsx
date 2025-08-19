@@ -1,4 +1,4 @@
-import { Edit2 } from "lucide-react";
+import { Edit2, Eye, EyeOff } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, RARITY_COLORS } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
 import { useEffect, useState } from "react";
@@ -9,9 +9,11 @@ interface EquipmentPanelProps {
 	session: EquipmentSession;
 	totalLuck: number;
 	onEquipmentChange?: (type: EquipmentType, equipment: Equipment) => void;
+	visible?: boolean;
+	onChangeVisibility?: (value: boolean) => void;
 }
 
-export function EquipmentPanel({ session, totalLuck, onEquipmentChange }: EquipmentPanelProps) {
+export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible = true, onChangeVisibility }: EquipmentPanelProps) {
 	const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
 	const username = getCurrentUsername() ?? 'Convidado';
 	const { t } = useI18n();
@@ -55,6 +57,19 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange }: Equipm
 		);
 	};
 
+	if (!visible) {
+		return (
+			<div className="bg-black/50 border border-slate-700 rounded-lg">
+				<div className="flex items-center justify-between p-6">
+					<h1 className="text-sm font-medium text-white/80">Equipamento (oculto)</h1>
+					<button onClick={() => onChangeVisibility?.(true)} className="text-gray-300 hover:text-white transition-colors p-2 rounded hover:bg-slate-800" aria-label="Mostrar seção">
+						<Eye className="h-5 w-5" />
+					</button>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="bg-black/50 border border-slate-700 rounded-lg">
 			<div className="flex items-center justify-between p-6 border-b border-slate-700">
@@ -62,6 +77,9 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange }: Equipm
 					<h1 className="text-2xl font-bold text-white">{t('equipment.title')}{username}</h1>
 					<p className="text-gray-400 text-sm mt-1">{t('equipment.config')}</p>
 				</div>
+				<button onClick={() => onChangeVisibility?.(false)} className="text-gray-300 hover:text-white transition-colors p-2 rounded hover:bg-slate-800" aria-label="Ocultar seção">
+					<EyeOff className="h-5 w-5" />
+				</button>
 			</div>
 			<div className="p-6 space-y-6">
 				<div className="grid grid-cols-2 gap-8">

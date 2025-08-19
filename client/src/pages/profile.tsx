@@ -24,13 +24,15 @@ export default function Profile() {
 		efficiency: true,
 		sensitivity: true,
 		performance: true,
+		equipment: true,
+		backup: true,
 	});
 
-	const allOn = visible.summary && visible.distribution && visible.efficiency && visible.sensitivity && visible.performance;
+	const allOn = visible.summary && visible.distribution && visible.efficiency && visible.sensitivity && visible.performance && visible.equipment && visible.backup;
 
 	const toggleAll = () => {
 		const next = !allOn;
-		setVisible({ summary: next, distribution: next, efficiency: next, sensitivity: next, performance: next });
+		setVisible({ summary: next, distribution: next, efficiency: next, sensitivity: next, performance: next, equipment: next, backup: next });
 	};
 
 	useEffect(() => {
@@ -79,14 +81,14 @@ export default function Profile() {
 					<Results results={results} breakdown={breakdown} visible={visible} onChangeVisibility={(section, value) => setVisible(s => ({ ...s, [section]: value }))} />
 				</Suspense>
 
-				<BackupPanel />
+				<BackupPanel visible={visible.backup} onChangeVisibility={(v) => setVisible(s => ({ ...s, backup: v }))} />
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">
 						<CardTitle className="text-lg">Equipamento</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<EquipmentPanel session={session} totalLuck={totalLuck} onEquipmentChange={updateEquipment} />
+						<EquipmentPanel session={session} totalLuck={totalLuck} onEquipmentChange={updateEquipment} visible={visible.equipment} onChangeVisibility={(v) => setVisible(s => ({ ...s, equipment: v }))} />
 					</CardContent>
 				</Card>
 

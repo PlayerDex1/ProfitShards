@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { createEncryptedBackup, restoreEncryptedBackup } from '@/lib/backup';
+import { Eye, EyeOff } from 'lucide-react';
 
-export function BackupPanel() {
+export function BackupPanel({ visible = true, onChangeVisibility }: { visible?: boolean; onChangeVisibility?: (value: boolean) => void }) {
 	const [password, setPassword] = useState('');
 	const [file, setFile] = useState<File | null>(null);
 	const [message, setMessage] = useState<string>('');
@@ -37,10 +38,30 @@ export function BackupPanel() {
 		}
 	};
 
+	if (!visible) {
+		return (
+			<Card className="bg-black/50 border-white/10">
+				<CardHeader className="py-3">
+					<div className="flex items-center justify-between">
+						<CardTitle className="text-sm font-medium text-white/80">Backup (oculto)</CardTitle>
+						<Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.(true)} aria-label="Mostrar seção">
+							<Eye className="w-4 h-4" />
+						</Button>
+					</div>
+				</CardHeader>
+			</Card>
+		);
+	}
+
 	return (
 		<Card className="bg-black/50 border-white/10">
 			<CardHeader className="py-4">
-				<CardTitle className="text-lg">Backup (Encrypted)</CardTitle>
+				<div className="flex items-center justify-between">
+					<CardTitle className="text-lg">Backup (Encrypted)</CardTitle>
+					<Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.(false)} aria-label="Ocultar seção">
+						<EyeOff className="w-4 h-4" />
+					</Button>
+				</div>
 			</CardHeader>
 			<CardContent className="space-y-3">
 				<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -62,4 +83,3 @@ export function BackupPanel() {
 		</Card>
 	);
 }
-
