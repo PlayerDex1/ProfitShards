@@ -5,6 +5,8 @@ import { I18nProvider } from "./i18n";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 
+const RESET_VERSION = '2025-08-20-01';
+
 function performOneTimeReset() {
   try {
     const currentUser = localStorage.getItem('worldshards-current-user');
@@ -29,14 +31,14 @@ function performOneTimeReset() {
     }
     keysToRemove.forEach(k => localStorage.removeItem(k));
 
-    localStorage.setItem('ps_reset_done', '1');
+    localStorage.setItem('ps_reset_version', RESET_VERSION);
     localStorage.removeItem('ps_reset_target');
   } catch {}
 }
 
 function scheduleOneTimeMidnightReset() {
   try {
-    if (localStorage.getItem('ps_reset_done') === '1') return;
+    if (localStorage.getItem('ps_reset_version') === RESET_VERSION) return;
 
     let target = localStorage.getItem('ps_reset_target');
     let targetMs: number;
@@ -59,14 +61,12 @@ function scheduleOneTimeMidnightReset() {
 
     const delay = Math.max(0, targetMs - nowMs);
     setTimeout(() => {
-      if (localStorage.getItem('ps_reset_done') === '1') return;
+      if (localStorage.getItem('ps_reset_version') === RESET_VERSION) return;
       performOneTimeReset();
     }, delay);
   } catch {}
 }
 
-// Execute one-time reset immediately on first load after this update,
-// then never again. Also keep the scheduled fallback for safety.
 // Force reset if URL contains ?reset=1 (one-time trigger per visit)
 try {
   const url = new URL(window.location.href);
@@ -79,7 +79,8 @@ try {
   }
 } catch {}
 
-if (localStorage.getItem('ps_reset_done') !== '1') {
+// Versioned automatic reset: runs once per RESET_VERSION on next visit
+if (localStorage.getItem('ps_reset_version') !== RESET_VERSION) {
   performOneTimeReset();
 }
 scheduleOneTimeMidnightReset();
