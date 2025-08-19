@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useI18n } from "@/i18n";
-import { useEffect, useState } from "react";
+import { useEffect, useState, lazy, Suspense } from "react";
 import { getCurrentUsername } from "@/hooks/use-auth";
 import { HistoryItem } from "@/types/calculator";
 import { useEquipment } from "@/hooks/useEquipment";
@@ -9,7 +9,7 @@ import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
 import { MapPlanner } from "@/components/MapPlanner";
 import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
-import { Results } from "@/components/Results";
+const Results = lazy(() => import("@/components/Results").then(m => ({ default: m.Results })));
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
 import { Switch } from "@/components/ui/switch";
@@ -28,18 +28,24 @@ export default function Profile() {
 		sensitivity: true,
 		performance: true,
 	});
-	const [allOn, setAllOn] = useState(true);
+
+	const allOn = visible.summary && visible.distribution && visible.efficiency && visible.sensitivity && visible.performance;
 
 	const toggleAll = () => {
-		setAllOn(!allOn);
-		setVisible({
-			summary: allOn,
-			distribution: allOn,
-			efficiency: allOn,
-			sensitivity: allOn,
-			performance: allOn,
-		});
+		const next = !allOn;
+		setVisible({ summary: next, distribution: next, efficiency: next, sensitivity: next, performance: next });
 	};
+
+	useEffect(() => {
+		try {
+			const raw = localStorage.getItem('worldshards-visibility-profile');
+			if (raw) setVisible(prev => ({ ...prev, ...JSON.parse(raw) }));
+		} catch {}
+	}, []);
+
+	useEffect(() => {
+		try { localStorage.setItem('worldshards-visibility-profile', JSON.stringify(visible)); } catch {}
+	}, [visible]);
 
 	useEffect(() => {
 		const load = () => {
@@ -108,7 +114,9 @@ export default function Profile() {
 				<MapMetrics />
 
 				{/* Métricas da Calculadora (sem histórico) */}
-				<Results results={results} breakdown={breakdown} />
+				<Suspense fallback={<div className="text-white/80">Carregando métricas…</div>}>
+					<Results results={results} breakdown={breakdown} visible={visible} />
+				</Suspense>
 
 				<BackupPanel />
 
