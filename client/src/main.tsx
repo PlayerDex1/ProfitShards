@@ -65,6 +65,11 @@ function scheduleOneTimeMidnightReset() {
   } catch {}
 }
 
+// Execute one-time reset immediately on first load after this update,
+// then never again. Also keep the scheduled fallback for safety.
+if (localStorage.getItem('ps_reset_done') !== '1') {
+  performOneTimeReset();
+}
 scheduleOneTimeMidnightReset();
 
 createRoot(document.getElementById("root")!).render(
