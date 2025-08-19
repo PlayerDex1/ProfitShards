@@ -11,6 +11,8 @@ import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { lazy, Suspense } from "react";
 const Results = lazy(() => import("@/components/Results").then(m => ({ default: m.Results })));
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
 
@@ -19,6 +21,25 @@ export default function Profile() {
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const { session, totalLuck, updateEquipment } = useEquipment();
 	const { results, breakdown } = useCalculator();
+	const [visible, setVisible] = useState({
+		summary: true,
+		distribution: true,
+		efficiency: true,
+		sensitivity: true,
+		performance: true,
+	});
+
+	useEffect(() => {
+		try {
+			const raw = localStorage.getItem('worldshards-visibility-profile');
+			if (raw) setVisible({ ...visible, ...JSON.parse(raw) });
+		} catch {}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	useEffect(() => {
+		try { localStorage.setItem('worldshards-visibility-profile', JSON.stringify(visible)); } catch {}
+	}, [visible]);
 
 	useEffect(() => {
 		const load = () => {
@@ -50,9 +71,40 @@ export default function Profile() {
 				{/* Métricas abaixo */}
 				<MapMetrics />
 
+				{/* Preferências de Visualização */}
+				<Card className="bg-black/50 border-white/10">
+					<CardHeader className="py-4">
+						<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
+					</CardHeader>
+					<CardContent>
+						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+								<Label htmlFor="toggle-summary" className="text-white/90 text-sm">Resumo</Label>
+								<Switch id="toggle-summary" checked={visible.summary} onCheckedChange={(v) => setVisible((s) => ({ ...s, summary: Boolean(v) }))} />
+							</div>
+							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+								<Label htmlFor="toggle-distribution" className="text-white/90 text-sm">Distribuição de Tokens</Label>
+								<Switch id="toggle-distribution" checked={visible.distribution} onCheckedChange={(v) => setVisible((s) => ({ ...s, distribution: Boolean(v) }))} />
+							</div>
+							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+								<Label htmlFor="toggle-efficiency" className="text-white/90 text-sm">Eficiência</Label>
+								<Switch id="toggle-efficiency" checked={visible.efficiency} onCheckedChange={(v) => setVisible((s) => ({ ...s, efficiency: Boolean(v) }))} />
+							</div>
+							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+								<Label htmlFor="toggle-sensitivity" className="text-white/90 text-sm">Sensibilidade (Preço)</Label>
+								<Switch id="toggle-sensitivity" checked={visible.sensitivity} onCheckedChange={(v) => setVisible((s) => ({ ...s, sensitivity: Boolean(v) }))} />
+							</div>
+							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+								<Label htmlFor="toggle-performance" className="text-white/90 text-sm">Performance ao Tempo</Label>
+								<Switch id="toggle-performance" checked={visible.performance} onCheckedChange={(v) => setVisible((s) => ({ ...s, performance: Boolean(v) }))} />
+							</div>
+						</div>
+					</CardContent>
+				</Card>
+
 				{/* Métricas da Calculadora (sem histórico) */}
 				<Suspense fallback={<div className="text-white/80">Carregando métricas…</div>}>
-					<Results results={results} breakdown={breakdown} />
+					<Results results={results} breakdown={breakdown} visible={visible} />
 				</Suspense>
 
 				<BackupPanel />
