@@ -80,7 +80,7 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 						<div className="flex items-center justify-between gap-3">
 							<span className="text-xs text-white/80">{t('support.ambassador')}</span>
 							<a href="https://openloot.com/ambassador/link?code=HOLDBOY" target="_blank" rel="noopener noreferrer" className="text-xs bg-white text-black px-2 py-1 rounded whitespace-nowrap">
-								{t('support.ambassador.cta')}
+								My link
 							</a>
 						</div>
 					</div>
