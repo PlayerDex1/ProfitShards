@@ -32,9 +32,8 @@ export default function Profile() {
 	useEffect(() => {
 		try {
 			const raw = localStorage.getItem('worldshards-visibility-profile');
-			if (raw) setVisible({ ...visible, ...JSON.parse(raw) });
+			if (raw) setVisible((prev) => ({ ...prev, ...JSON.parse(raw) }));
 		} catch {}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -65,14 +64,8 @@ export default function Profile() {
 					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
 				</div>
 
-				{/* Map Planner ocupa linha inteira */}
-				<MapPlanner />
-
-				{/* Métricas abaixo */}
-				<MapMetrics />
-
-				{/* Preferências de Visualização */}
-				<Card className="bg-black/50 border-white/10">
+				{/* Preferências de Visualização (mais visível, no topo) */}
+				<Card className="bg-white/10 border-white/30">
 					<CardHeader className="py-4">
 						<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
 					</CardHeader>
@@ -101,6 +94,12 @@ export default function Profile() {
 						</div>
 					</CardContent>
 				</Card>
+
+				{/* Map Planner ocupa linha inteira */}
+				<MapPlanner />
+
+				{/* Métricas abaixo */}
+				<MapMetrics />
 
 				{/* Métricas da Calculadora (sem histórico) */}
 				<Suspense fallback={<div className="text-white/80">Carregando métricas…</div>}>
@@ -143,3 +142,4 @@ export default function Profile() {
 		</div>
 	);
 }
+
