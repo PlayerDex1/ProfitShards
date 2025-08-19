@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
+import { BackupPanel } from "@/components/BackupPanel";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -50,6 +51,8 @@ export default function Profile() {
 
 				{/* Métricas da Calculadora (sem histórico) */}
 				<Results results={results} breakdown={breakdown} />
+
+				<BackupPanel />
 
 				<Card className="bg-black/50 border-white/10">
 					<CardHeader className="py-4">
