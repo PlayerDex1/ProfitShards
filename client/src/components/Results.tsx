@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, Gem, Zap, Clock, PieChart } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, Gem, Zap, Clock, PieChart, EyeOff } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,9 +22,10 @@ interface ResultsProps {
     performance?: boolean;
     history?: boolean;
   };
+  onChangeVisibility?: (section: "summary" | "distribution" | "efficiency" | "sensitivity" | "performance", value: boolean) => void;
 }
 
-export const Results = memo(function Results({ results, breakdown, includeHistory = false, visible }: ResultsProps) {
+export const Results = memo(function Results({ results, breakdown, includeHistory = false, visible, onChangeVisibility }: ResultsProps) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [showHistory, setShowHistory] = useState(false);
   const { t } = useI18n();
@@ -134,9 +135,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       {show.summary && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">{t('results.summaryTitle')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="w-4 h-4 text-white" />
+              <CardTitle className="text-base font-semibold text-white">{t('results.summaryTitle')}</CardTitle>
+            </div>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("summary", false)} aria-label="Ocultar seção">
+              <EyeOff className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="space-y-2 pt-0">
@@ -161,9 +167,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       {show.distribution && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
-          <div className="flex items-center space-x-2">
-            <PieChart className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">{t('results.tokenDistribution')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <PieChart className="w-4 h-4 text-white" />
+              <CardTitle className="text-base font-semibold text-white">{t('results.tokenDistribution')}</CardTitle>
+            </div>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("distribution", false)} aria-label="Ocultar seção">
+              <EyeOff className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -203,9 +214,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       {show.efficiency && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
-          <div className="flex items-center space-x-2">
-            <Zap className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">{t('results.efficiencyMetrics')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Zap className="w-4 h-4 text-white" />
+              <CardTitle className="text-base font-semibold text-white">{t('results.efficiencyMetrics')}</CardTitle>
+            </div>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("efficiency", false)} aria-label="Ocultar seção">
+              <EyeOff className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -239,9 +255,14 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       {show.sensitivity && (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
-          <div className="flex items-center space-x-2">
-            <BarChart3 className="w-4 h-4 text-white" />
-            <CardTitle className="text-base font-semibold text-white">Análise de Sensibilidade (Preço do Token)</CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <BarChart3 className="w-4 h-4 text-white" />
+              <CardTitle className="text-base font-semibold text-white">Análise de Sensibilidade (Preço do Token)</CardTitle>
+            </div>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("sensitivity", false)} aria-label="Ocultar seção">
+              <EyeOff className="w-4 h-4" />
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
@@ -257,10 +278,15 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       {history.length > 1 && show.performance && (
         <Card className="bg-black border-gray-800">
           <CardHeader className="py-3">
-            <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
-              <TrendingUp className="w-4 h-4 text-white" />
-              <span>Performance ao Longo do Tempo</span>
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base font-semibold text-white flex items-center space-x-2">
+                <TrendingUp className="w-4 h-4 text-white" />
+                <span>Performance ao Longo do Tempo</span>
+              </CardTitle>
+              <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("performance", false)} aria-label="Ocultar seção">
+                <EyeOff className="w-4 h-4" />
+              </Button>
+            </div>
           </CardHeader>
           <CardContent className="pt-0">
             <div className="h-56">

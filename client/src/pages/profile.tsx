@@ -76,9 +76,10 @@ export default function Profile() {
 					<CardHeader className="py-4">
 						<div className="flex items-center justify-between">
 							<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
-							<Button variant="ghost" size="sm" onClick={toggleAll} className="text-white">
-								{allOn ? 'Ocultar tudo' : 'Mostrar tudo'}
-							</Button>
+							<div className="flex items-center gap-2">
+								<Button variant="ghost" size="sm" onClick={() => setVisible({ summary: true, distribution: true, efficiency: true, sensitivity: true, performance: true })} className="text-white/90">Resetar layout</Button>
+								<Button variant="ghost" size="sm" onClick={toggleAll} className="text-white">{allOn ? 'Ocultar tudo' : 'Mostrar tudo'}</Button>
+							</div>
 						</div>
 					</CardHeader>
 					<CardContent>
@@ -115,7 +116,7 @@ export default function Profile() {
 
 				{/* Métricas da Calculadora (sem histórico) */}
 				<Suspense fallback={<div className="text-white/80">Carregando métricas…</div>}>
-					<Results results={results} breakdown={breakdown} visible={visible} />
+					<Results results={results} breakdown={breakdown} visible={visible} onChangeVisibility={(section, value) => setVisible(s => ({ ...s, [section]: value }))} />
 				</Suspense>
 
 				<BackupPanel />
