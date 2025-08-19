@@ -1,5 +1,5 @@
 import { memo, useState, useEffect } from "react";
-import { TrendingUp, TrendingDown, DollarSign, BarChart3, Gem, Zap, Clock, PieChart, EyeOff } from "lucide-react";
+import { TrendingUp, TrendingDown, DollarSign, BarChart3, Gem, Zap, Clock, PieChart, EyeOff, Eye } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -132,7 +132,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
       )}
 
       {/* Calculation Summary */}
-      {show.summary && (
+      {show.summary ? (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center justify-between">
@@ -161,10 +161,21 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           ))}
         </CardContent>
       </Card>
+      ) : (
+      <Card className="bg-black/40 border-gray-800">
+        <CardHeader className="py-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-white/80">Resumo (oculto)</CardTitle>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("summary", true)} aria-label="Mostrar seção">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
       )}
 
       {/* Token Distribution */}
-      {show.distribution && (
+      {show.distribution ? (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center justify-between">
@@ -208,10 +219,21 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           </div>
         </CardContent>
       </Card>
+      ) : (
+      <Card className="bg-black/40 border-gray-800">
+        <CardHeader className="py-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-white/80">Distribuição de Tokens (oculto)</CardTitle>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("distribution", true)} aria-label="Mostrar seção">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
       )}
 
       {/* Efficiency Metrics */}
-      {show.efficiency && (
+      {show.efficiency ? (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center justify-between">
@@ -249,10 +271,21 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           </div>
         </CardContent>
       </Card>
+      ) : (
+      <Card className="bg-black/40 border-gray-800">
+        <CardHeader className="py-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-white/80">Eficiência (oculto)</CardTitle>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("efficiency", true)} aria-label="Mostrar seção">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
       )}
 
       {/* Profit Sensitivity (Token Price) */}
-      {show.sensitivity && (
+      {show.sensitivity ? (
       <Card className="bg-black border-gray-800">
         <CardHeader className="py-3">
           <div className="flex items-center justify-between">
@@ -272,10 +305,21 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
           <p className="text-white/70 text-xs mt-2">Variação do lucro entre 50% e 150% do preço atual.</p>
         </CardContent>
       </Card>
+      ) : (
+      <Card className="bg-black/40 border-gray-800">
+        <CardHeader className="py-2">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-sm font-medium text-white/80">Sensibilidade (oculto)</CardTitle>
+            <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("sensitivity", true)} aria-label="Mostrar seção">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </div>
+        </CardHeader>
+      </Card>
       )}
 
       {/* Performance Chart */}
-      {history.length > 1 && show.performance && (
+      {history.length > 1 && show.performance ? (
         <Card className="bg-black border-gray-800">
           <CardHeader className="py-3">
             <div className="flex items-center justify-between">
@@ -308,7 +352,18 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
             </div>
           </CardContent>
         </Card>
-      )}
+      ) : (!show.performance ? (
+        <Card className="bg-black/40 border-gray-800">
+          <CardHeader className="py-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-sm font-medium text-white/80">Performance (oculto)</CardTitle>
+              <Button variant="ghost" size="sm" className="text-white/80" onClick={() => onChangeVisibility?.("performance", true)} aria-label="Mostrar seção">
+                <Eye className="w-4 h-4" />
+              </Button>
+            </div>
+          </CardHeader>
+        </Card>
+      ) : null)}
 
       {includeHistory && (
         <Card className="bg-black border-gray-800">

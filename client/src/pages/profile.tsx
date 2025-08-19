@@ -12,9 +12,6 @@ import { MapMetrics } from "@/components/MapMetrics";
 const Results = lazy(() => import("@/components/Results").then(m => ({ default: m.Results })));
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -70,43 +67,6 @@ export default function Profile() {
 				<div className="flex justify-end">
 					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
 				</div>
-
-				{/* Preferências de Visualização (topo) */}
-				<Card className="bg-white/10 border-white/30">
-					<CardHeader className="py-4">
-						<div className="flex items-center justify-between">
-							<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
-							<div className="flex items-center gap-2">
-								<Button variant="ghost" size="sm" onClick={() => setVisible({ summary: true, distribution: true, efficiency: true, sensitivity: true, performance: true })} className="text-white/90">Resetar layout</Button>
-								<Button variant="ghost" size="sm" onClick={toggleAll} className="text-white">{allOn ? 'Ocultar tudo' : 'Mostrar tudo'}</Button>
-							</div>
-						</div>
-					</CardHeader>
-					<CardContent>
-						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-								<Label htmlFor="toggle-summary" className="text-white/90 text-sm">Resumo</Label>
-								<Switch id="toggle-summary" checked={visible.summary} onCheckedChange={(v) => setVisible((s) => ({ ...s, summary: Boolean(v) }))} />
-							</div>
-							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-								<Label htmlFor="toggle-distribution" className="text-white/90 text-sm">Distribuição de Tokens</Label>
-								<Switch id="toggle-distribution" checked={visible.distribution} onCheckedChange={(v) => setVisible((s) => ({ ...s, distribution: Boolean(v) }))} />
-							</div>
-							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-								<Label htmlFor="toggle-efficiency" className="text-white/90 text-sm">Eficiência</Label>
-								<Switch id="toggle-efficiency" checked={visible.efficiency} onCheckedChange={(v) => setVisible((s) => ({ ...s, efficiency: Boolean(v) }))} />
-							</div>
-							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-								<Label htmlFor="toggle-sensitivity" className="text-white/90 text-sm">Sensibilidade (Preço)</Label>
-								<Switch id="toggle-sensitivity" checked={visible.sensitivity} onCheckedChange={(v) => setVisible((s) => ({ ...s, sensitivity: Boolean(v) }))} />
-							</div>
-							<div className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-								<Label htmlFor="toggle-performance" className="text-white/90 text-sm">Performance ao Tempo</Label>
-								<Switch id="toggle-performance" checked={visible.performance} onCheckedChange={(v) => setVisible((s) => ({ ...s, performance: Boolean(v) }))} />
-							</div>
-						</div>
-					</CardContent>
-				</Card>
 
 				{/* Map Planner ocupa linha inteira */}
 				<MapPlanner />
