@@ -73,7 +73,7 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 					</nav>
 				</div>
 
-				{/* Support block */}
+				{/* Support block (minimal) */}
 				<div className="mt-8 border-t border-gray-800 pt-4 space-y-3">
 					<h4 className="text-white text-sm font-semibold">{t('support.title')}</h4>
 					<div className="bg-white/5 p-3 rounded-lg">
@@ -85,19 +85,18 @@ export function Sidebar({ results, activeSection, onSectionChange }: SidebarProp
 						</div>
 					</div>
 					<div className="bg-white/5 p-3 rounded-lg">
-						<div className="text-xs text-white/80 mb-1">{t('support.donate')}</div>
-						<div className="flex items-center gap-2">
-							<div className="text-white font-mono text-xs break-all select-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
-							<button
-								onClick={() => navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5').catch(() => {})}
-								className="text-xs bg-white/10 text-white px-2 py-1 rounded"
-							>
-								{t('donate.copy')}
-							</button>
+						<div className="flex items-center justify-between gap-3">
+							<span className="text-xs text-white/80">{t('donate.wallet')}</span>
+							<div className="flex items-center gap-2">
+								<div className="text-white font-mono text-xs break-all select-all">0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5</div>
+								<button
+									onClick={() => navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5').catch(() => {})}
+									className="text-xs bg-white/10 text-white px-2 py-1 rounded"
+								>
+									{t('donate.copy')}
+								</button>
+							</div>
 						</div>
-					</div>
-					<div className="text-xs text-white/70">
-						<p>Created by holdboy — <a href="https://x.com/PlayerHold" target="_blank" rel="noopener noreferrer" className="underline text-white">@PlayerHold</a></p>
 					</div>
 				</div>
 			</div>
