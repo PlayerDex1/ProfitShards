@@ -13,6 +13,7 @@ import { lazy, Suspense } from "react";
 const Results = lazy(() => import("@/components/Results").then(m => ({ default: m.Results })));
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
 
@@ -28,6 +29,18 @@ export default function Profile() {
 		sensitivity: true,
 		performance: true,
 	});
+
+	const allOn = visible.summary && visible.distribution && visible.efficiency && visible.sensitivity && visible.performance;
+	const toggleAll = () => {
+		const next = !allOn;
+		setVisible({
+			summary: next,
+			distribution: next,
+			efficiency: next,
+			sensitivity: next,
+			performance: next,
+		});
+	};
 
 	useEffect(() => {
 		try {
@@ -67,7 +80,12 @@ export default function Profile() {
 				{/* Preferências de Visualização (mais visível, no topo) */}
 				<Card className="bg-white/10 border-white/30">
 					<CardHeader className="py-4">
-						<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
+						<div className="flex items-center justify-between">
+							<CardTitle className="text-lg">Preferências de Gráficos</CardTitle>
+							<Button variant="ghost" size="sm" onClick={toggleAll} className="text-white">
+								{allOn ? 'Ocultar tudo' : 'Mostrar tudo'}
+							</Button>
+						</div>
 					</CardHeader>
 					<CardContent>
 						<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
