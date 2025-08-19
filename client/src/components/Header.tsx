@@ -14,26 +14,30 @@ export function Header() {
   const { lang, setLang, t } = useI18n();
 
   return (
-    <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800">
+    <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-3 bg-white rounded-xl">
+        <div className="flex justify-between items-center h-20">
+          <div className="flex items-center gap-4 min-w-0">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
                 <Calculator className="w-6 h-6 text-black" />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">{t('header.title')}</h1>
-                <p className="text-sm text-white/70">{t('header.subtitle')}</p>
+              <div className="min-w-0">
+                <h1 className="text-2xl md:text-3xl font-extrabold text-white leading-tight truncate">
+                  {t('header.title')}
+                </h1>
+                <p className="text-xs md:text-sm text-white/70 leading-snug max-w-[56ch] truncate md:whitespace-normal">
+                  {t('header.subtitle')}
+                </p>
               </div>
             </div>
           </div>
-          
-          <div className="flex items-center space-x-2">
+
+          <div className="flex items-center gap-2">
             <select
               value={lang}
               onChange={(e) => setLang(e.target.value as 'pt' | 'en')}
-              className="h-10 px-2 rounded bg-white/10 text-white"
+              className="h-10 px-2 rounded bg-white/10 text-white border border-white/10"
               aria-label={t('header.lang')}
             >
               <option className="bg-black text-white" value="pt">Português</option>
@@ -41,8 +45,8 @@ export function Header() {
             </select>
             {isAuthenticated ? (
               <>
-                <Link href="/perfil" className="text-white/80 text-sm hidden sm:inline hover:underline">Perfil</Link>
-                <span className="text-white/80 text-sm hidden sm:inline">Olá, {user}</span>
+                <Link href="/perfil" className="text-white/80 text-sm hidden md:inline hover:underline">Perfil</Link>
+                <span className="text-white/80 text-sm hidden md:inline">Olá, {user}</span>
                 <Button
                   variant="ghost"
                   className="h-10 px-3 rounded-lg text-white hover:bg-white/10"
