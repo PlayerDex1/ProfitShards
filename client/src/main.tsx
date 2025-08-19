@@ -5,13 +5,8 @@ import { I18nProvider } from "./i18n";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import { Analytics } from "@vercel/analytics/react";
 
-function resetAllUserDataIfNeeded() {
+function performOneTimeReset() {
   try {
-    const now = new Date();
-    const todayKey = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    const lastReset = localStorage.getItem('ps_last_reset');
-    if (lastReset === todayKey) return;
-
     const currentUser = localStorage.getItem('worldshards-current-user');
     const perUserPrefixes = [
       'worldshards-form-',
@@ -27,20 +22,50 @@ function resetAllUserDataIfNeeded() {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i);
       if (!key) continue;
-      // Remove dados por usuário atual (mantém tema/idioma)
       if (currentUser && perUserPrefixes.some(p => key === `${p}${currentUser}`)) {
         keysToRemove.push(key);
       }
-      // Chaves conhecidas que não dependem de sufixo de usuário
       if (key === 'worldshards-visibility-profile') keysToRemove.push(key);
     }
-
     keysToRemove.forEach(k => localStorage.removeItem(k));
-    localStorage.setItem('ps_last_reset', todayKey);
+
+    localStorage.setItem('ps_reset_done', '1');
+    localStorage.removeItem('ps_reset_target');
   } catch {}
 }
 
-resetAllUserDataIfNeeded();
+function scheduleOneTimeMidnightReset() {
+  try {
+    if (localStorage.getItem('ps_reset_done') === '1') return;
+
+    let target = localStorage.getItem('ps_reset_target');
+    let targetMs: number;
+    if (target) {
+      targetMs = parseInt(target, 10);
+    } else {
+      const now = new Date();
+      const next = new Date(now);
+      next.setDate(now.getDate() + 1);
+      next.setHours(0, 0, 0, 0);
+      targetMs = next.getTime();
+      localStorage.setItem('ps_reset_target', String(targetMs));
+    }
+
+    const nowMs = Date.now();
+    if (nowMs >= targetMs) {
+      performOneTimeReset();
+      return;
+    }
+
+    const delay = Math.max(0, targetMs - nowMs);
+    setTimeout(() => {
+      if (localStorage.getItem('ps_reset_done') === '1') return;
+      performOneTimeReset();
+    }, delay);
+  } catch {}
+}
+
+scheduleOneTimeMidnightReset();
 
 createRoot(document.getElementById("root")!).render(
   <I18nProvider>
