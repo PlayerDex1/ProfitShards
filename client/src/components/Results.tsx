@@ -105,7 +105,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
   }));
 
   const tokenDistribution = [
-    { name: t('results.farmedTokens'), value: Math.max(0, results.tokensFarmed - results.tokensEquipment), color: '#22d3ee' },
+    { name: t('results.netTokens'), value: Math.max(0, results.tokensFarmed - results.tokensEquipment), color: '#22d3ee' },
     { name: t('results.equipTokens'), value: results.tokensEquipment, color: '#f43f5e' }
   ];
 
@@ -191,7 +191,7 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
         <CardContent className="pt-0">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="h-52">
-              <TokenDistributionChart data={tokenDistribution} totalTokens={results.totalTokens} totalLabel={t('results.totalTokensLabel')} />
+              <TokenDistributionChart data={tokenDistribution} totalTokens={results.totalTokens} totalLabel={t('results.netTokens')} />
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
@@ -203,18 +203,12 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
               </div>
               <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: '#22d3ee' }}></div>
-                <span className="text-white/80 text-sm">{t('results.farmedTokens')}</span>
+                <span className="text-white/80 text-sm">{t('results.netTokens')}</span>
                 <span className="ml-auto font-mono font-semibold text-white text-sm" data-testid="text-tokens-farmed">
                   {Math.max(0, results.tokensFarmed - results.tokensEquipment).toLocaleString()}
                 </span>
               </div>
-              <div className="flex items-center gap-3 p-3 bg-white/10 border border-white/20 rounded-lg">
-                <div className="w-3 h-3 bg-white rounded-full"></div>
-                <span className="text-white font-medium text-sm">Total de Tokens</span>
-                <span className="ml-auto font-mono font-bold text-white text-base" data-testid="text-total-tokens">
-                  {results.totalTokens.toLocaleString()}
-                </span>
-              </div>
+              
             </div>
           </div>
         </CardContent>
