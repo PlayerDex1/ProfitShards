@@ -18,6 +18,13 @@ export default function Profile() {
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const { session, totalLuck, updateEquipment } = useEquipment();
 	const { results, breakdown } = useCalculator();
+	const [resultsVisible, setResultsVisible] = useState({
+		summary: true,
+		distribution: true,
+		efficiency: true,
+		sensitivity: true,
+		performance: true,
+	});
 
 	useEffect(() => {
 		const load = () => {
@@ -67,7 +74,12 @@ export default function Profile() {
 				<MapMetrics />
 
 				{/* Métricas da Calculadora (sem histórico) */}
-				<Results results={results} breakdown={breakdown} />
+				<Results
+					results={results}
+					breakdown={breakdown}
+					visible={resultsVisible}
+					onChangeVisibility={(section, value) => setResultsVisible((v) => ({ ...v, [section]: value }))}
+				/>
 
 				<BackupPanel />
 

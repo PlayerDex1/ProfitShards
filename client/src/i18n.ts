@@ -138,6 +138,8 @@ const dicts: Record<Lang, Dict> = {
     'planner.energyCost': 'Energia por mapa',
     'planner.loads': 'Cargas (nº de runs)',
     'planner.tokensDropped': 'Tokens dropados',
+    'planner.luck': 'Sorte (Luck)',
+    'planner.status': 'Status',
     'planner.apply': 'Salvar no mini histórico',
     'planner.example': 'ex.: 30 no mapa médio',
     'planner.history': 'Mini histórico (2 dias)',
@@ -152,6 +154,12 @@ const dicts: Record<Lang, Dict> = {
     'metrics.runShort': 'carga',
     'planner.clear': 'Limpar histórico',
     'planner.delete': 'Excluir',
+
+    // Status labels
+    'status.excellent': 'Excelente',
+    'status.positive': 'Positivo',
+    'status.negative': 'Negativo',
+    'status.neutral': 'Neutro',
   },
   en: {
     'header.title': 'ProfitShards',
@@ -287,6 +295,8 @@ const dicts: Record<Lang, Dict> = {
     'planner.energyCost': 'Energy per map',
     'planner.loads': 'Loads (runs)',
     'planner.tokensDropped': 'Tokens dropped',
+    'planner.luck': 'Luck',
+    'planner.status': 'Status',
     'planner.apply': 'Save to mini history',
     'planner.example': 'e.g., 30 on medium map',
     'planner.history': 'Mini history (2 days)',
@@ -301,6 +311,12 @@ const dicts: Record<Lang, Dict> = {
     'metrics.runShort': 'load',
     'planner.clear': 'Clear history',
     'planner.delete': 'Delete',
+
+    // Status labels
+    'status.excellent': 'Excellent',
+    'status.positive': 'Positive',
+    'status.negative': 'Negative',
+    'status.neutral': 'Neutral',
   },
 };
 

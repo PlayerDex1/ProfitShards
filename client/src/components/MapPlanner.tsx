@@ -19,6 +19,8 @@ export function MapPlanner({}: MapPlannerProps) {
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
   const { totalLuck } = useEquipment();
+  const [luck, setLuck] = useState<number>(totalLuck || 0);
+  const [status, setStatus] = useState<'excellent' | 'positive' | 'negative' | 'neutral'>('neutral');
 
   useEffect(() => {
     const onUpd = () => setHistory(getMapDropsHistory());
@@ -43,7 +45,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
   const apply = () => {
     save({ mapSize, loadsPerMap: loads });
-    appendMapDropEntry({ timestamp: Date.now(), mapSize, tokensDropped, loads, totalLuck });
+    appendMapDropEntry({ timestamp: Date.now(), mapSize, tokensDropped, loads, totalLuck: luck, status });
   };
 
   return (
@@ -84,6 +86,26 @@ export function MapPlanner({}: MapPlannerProps) {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-xs text-white/70 mb-1 block">{t('planner.luck')}</label>
+              <Input type="number" value={luck} onChange={(e) => setLuck(parseInt(e.target.value || '0'))} className="bg-white/10 border-white/20 text-white h-9" />
+            </div>
+            <div>
+              <label className="text-xs text-white/70 mb-1 block">{t('planner.status')}</label>
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value as any)}
+                className="h-9 w-full rounded bg-white/10 text-white border border-white/20 px-2"
+              >
+                <option className="bg-black text-white" value="neutral">{t('status.neutral')}</option>
+                <option className="bg-black text-white" value="positive">{t('status.positive')}</option>
+                <option className="bg-black text-white" value="negative">{t('status.negative')}</option>
+                <option className="bg-black text-white" value="excellent">{t('status.excellent')}</option>
+              </select>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2">
             <Button className="bg-white text-black hover:bg-white/90 h-9" onClick={apply}>{t('planner.apply')}</Button>
             {history.length > 0 && (
@@ -102,26 +124,28 @@ export function MapPlanner({}: MapPlannerProps) {
             <p className="text-white/70 text-sm">{t('planner.noHistory')}</p>
           ) : (
             <div className="space-y-2 max-h-96 overflow-auto pr-2">
-              <div className="sticky top-0 z-10 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 grid grid-cols-5 gap-2 text-xs text-white/60">
+              <div className="sticky top-0 z-10 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 grid grid-cols-6 gap-2 text-xs text-white/60">
                 <div>{t('planner.mapSize')}</div>
                 <div className="text-center">{t('planner.tokensDropped')}</div>
                 <div className="text-center">{t('planner.loads')}</div>
                 <div className="text-center">Luck</div>
+                <div className="text-center">{t('planner.status')}</div>
                 <div className="text-right">{t('planner.when')}</div>
               </div>
               {history
                 .slice()
                 .reverse()
                 .map((h, i) => (
-                  <div key={i} className="border border-white/10 rounded-lg px-3 py-2 bg-white/5 text-sm grid grid-cols-5 gap-2 items-center">
+                  <div key={i} className="border border-white/10 rounded-lg px-3 py-2 bg-white/5 text-sm grid grid-cols-6 gap-2 items-center">
                     <div>
                       <span className="px-2 py-0.5 rounded bg-white/10 text-white text-xs">{t(`planner.${h.mapSize}`)}</span>
                     </div>
                     <div className="text-center font-mono text-white">{h.tokensDropped.toLocaleString()}</div>
                     <div className="text-center font-mono text-white">{h.loads}</div>
                     <div className="text-center font-mono text-white">{h.totalLuck ?? '-'}</div>
+                    <div className="text-center text-white/80">{h.status ? t(`status.${h.status}`) : '-'}</div>
                     <div className="text-right text-white/70 text-[10px] md:text-xs">{new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} {new Date(h.timestamp).toLocaleDateString()}</div>
-                    <div className="col-span-5 flex justify-end mt-1">
+                    <div className="col-span-6 flex justify-end mt-1">
                       <Button className="h-7 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => deleteMapDropEntry(h.timestamp)}>{t('planner.delete')}</Button>
                     </div>
                   </div>

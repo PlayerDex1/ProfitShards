@@ -8,6 +8,7 @@ export interface MapDropEntry {
   tokensDropped: number;
   loads: number;
   totalLuck?: number;
+  status?: 'excellent' | 'positive' | 'negative' | 'neutral';
 }
 
 function keyForUser(user: string | null) {
