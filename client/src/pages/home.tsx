@@ -9,12 +9,14 @@ import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TrendingUp } from "lucide-react";
+import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const [activeSection, setActiveSection] = useState('calculator');
 	const { session, totalLuck } = useEquipment();
 	const { t } = useI18n();
+	const { user } = useAuth();
 
 	useEffect(() => {
 		importBuildsFromUrl();
@@ -31,7 +33,11 @@ export default function Home() {
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
 					<h2 className="text-lg font-semibold">{t('home.calculator')}</h2>
-					<Link href="/perfil" className="text-white/90 underline">{t('nav.openProfile').replace('{luck}', String(totalLuck))}</Link>
+					<Link href="/perfil" className="text-white/90 underline">
+						{user
+							? t('nav.openProfileUser').replace('{user}', user)
+							: t('nav.openProfileUser').replace('{user}', t('auth.guest'))}
+					</Link>
 				</div>
 				<Calculator 
 					formData={formData}

@@ -119,6 +119,9 @@ const dicts: Record<Lang, Dict> = {
     // Navigation
     'nav.backToMain': 'Voltar ao Menu Principal',
     'nav.openProfile': 'Abrir Perfil (Sorte: {luck})',
+    'nav.openProfileUser': 'Abrir Perfil ({user})',
+
+    'auth.guest': 'Convidado',
 
     'donate.title': 'Doação',
     'donate.openloot': 'Creator OL',
@@ -276,6 +279,9 @@ const dicts: Record<Lang, Dict> = {
     // Navigation
     'nav.backToMain': 'Back to Main Menu',
     'nav.openProfile': 'Open Profile (Luck: {luck})',
+    'nav.openProfileUser': 'Open Profile ({user})',
+
+    'auth.guest': 'Guest',
 
     'donate.title': 'Donation',
     'donate.openloot': 'Creator OL',
