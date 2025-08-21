@@ -56,6 +56,17 @@ const migrations: Migration[] = [
        )`,
     ],
   },
+  {
+    version: '2024-08-21_auth_v2_username',
+    statements: [
+      // Add username column (nullable initially), backfill, then ensure unique index
+      `ALTER TABLE users ADD COLUMN username TEXT`,
+      `UPDATE users SET username = CASE WHEN email LIKE '%@%'
+         THEN substr(email, 1, instr(email,'@')-1) ELSE email END
+         WHERE username IS NULL`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)`
+    ],
+  },
 ];
 
 export async function ensureMigrations(env: Env): Promise<void> {

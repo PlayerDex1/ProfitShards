@@ -18,10 +18,11 @@ function isValidEmail(email: string) {
 export async function onRequestPost({ env, request }: { env: Env; request: Request }) {
   try {
     await ensureMigrations(env as any);
-    const body = await request.json().catch(() => null) as { email?: string; password?: string } | null;
+    const body = await request.json().catch(() => null) as { email?: string; username?: string; password?: string } | null;
     const email = (body?.email || '').trim().toLowerCase();
+    const username = (body?.username || '').trim();
     const password = body?.password || '';
-    if (!isValidEmail(email) || password.length < 6) {
+    if (!isValidEmail(email) || password.length < 6 || !username) {
       return new Response(JSON.stringify({ error: 'invalid email or password' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
     // Check existing
@@ -29,10 +30,14 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     if (existing?.id) {
       return new Response(JSON.stringify({ error: 'email_already_registered' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
     }
+    const existingUser = await (env as any).DB.prepare(`SELECT id FROM users WHERE username = ?`).bind(username).first<{ id: string }>();
+    if (existingUser?.id) {
+      return new Response(JSON.stringify({ error: 'username_taken' }), { status: 409, headers: { 'Content-Type': 'application/json' } });
+    }
     const id = crypto.randomUUID();
     const pass_hash = await sha256(password);
     const now = Date.now();
-    await (env as any).DB.prepare(`INSERT INTO users(id, email, pass_hash, created_at, email_verified) VALUES (?, ?, ?, ?, 0)`).bind(id, email, pass_hash, now).run();
+    await (env as any).DB.prepare(`INSERT INTO users(id, email, pass_hash, created_at, email_verified, username) VALUES (?, ?, ?, ?, 0, ?)`).bind(id, email, pass_hash, now, username).run();
     return new Response(JSON.stringify({ ok: true }), { headers: { 'Content-Type': 'application/json' } });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: String(err?.message || err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });

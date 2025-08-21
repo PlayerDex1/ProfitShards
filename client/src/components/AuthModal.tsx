@@ -13,6 +13,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const { register, login, requestReset, resetPassword } = useAuth();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -32,7 +33,12 @@ export function AuthModal({ onClose }: AuthModalProps) {
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true); setError(null); setInfo(null);
-    const res = await register(email, password);
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, username, password }),
+      credentials: 'include',
+    }).then(r => r.json()).catch(() => ({ ok: false }));
     setLoading(false);
     if (!res.ok) setError(res.error || "Erro ao registrar");
     else { setInfo("Conta criada. Faça login."); setMode('login'); }
@@ -43,7 +49,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
     setLoading(true); setError(null); setInfo(null);
     const res = await requestReset(email).catch(() => ({ ok: true }));
     setLoading(false);
-    setInfo("Se o e-mail existir, enviamos o link de reset. Para testes, um token pode ser retornado pela API.");
+    setInfo("Se o e-mail existir, enviamos o link de reset (verifique caixa de entrada e spam).");
     if ((res as any)?.token) setToken((res as any).token);
   };
 
@@ -93,6 +99,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 <Input value={email} onChange={(e) => setEmail(e.target.value)} className="bg-white/10 border-white/20 text-white h-9" placeholder="you@example.com" />
               </div>
               <div>
+                <label className="block text-xs text-white/70 mb-1">Nome de usuário</label>
+                <Input value={username} onChange={(e) => setUsername(e.target.value)} className="bg-white/10 border-white/20 text-white h-9" placeholder="seu nome" />
+              </div>
+              <div>
                 <label className="block text-xs text-white/70 mb-1">{t('auth.password')}</label>
                 <Input value={password} onChange={(e) => setPassword(e.target.value)} type="password" className="bg-white/10 border-white/20 text-white h-9" placeholder={t('auth.password')} />
               </div>
@@ -117,6 +127,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 <Button type="button" onClick={() => setMode('login')} className="bg-white/10 text-white hover:bg-white/20 h-9 px-4">Voltar</Button>
                 <Button type="submit" className="bg-white text-black hover:bg-white/90 h-9 px-4" disabled={loading}>{loading ? '...' : 'Enviar link'}</Button>
               </div>
+              <div className="text-[11px] text-white/60">Após receber o e-mail, clique no link ou copie o token retornado para testes.</div>
             </form>
           )}
 
