@@ -1,4 +1,5 @@
 import { getCurrentUsername } from "@/hooks/use-auth";
+import { appendMapDrop, clearMapDropsRemote, deleteMapDrop, getMapDropsCached, refreshMapDrops } from "@/lib/mapDropsApi";
 
 export type MapSize = 'small' | 'medium' | 'large' | 'xlarge';
 
@@ -11,21 +12,17 @@ export interface MapDropEntry {
   status?: 'excellent' | 'positive' | 'negative' | 'neutral';
 }
 
-function keyForUser(user: string | null) {
-  return `worldshards-mapdrops-${user ?? 'guest'}`;
-}
-
 const TTL_MS = 2 * 24 * 60 * 60 * 1000; // 2 dias
 
 export function getMapDropsHistory(): MapDropEntry[] {
   try {
-    const key = keyForUser(getCurrentUsername());
-    const raw = localStorage.getItem(key);
-    const arr: MapDropEntry[] = raw ? JSON.parse(raw) : [];
+    const arr: MapDropEntry[] = getMapDropsCached();
     const now = Date.now();
     const filtered = arr.filter((e) => now - e.timestamp <= TTL_MS);
     if (filtered.length !== arr.length) {
-      localStorage.setItem(key, JSON.stringify(filtered));
+      // rewrite cache
+      const user = getCurrentUsername();
+      if (user) localStorage.setItem(`worldshards-mapdrops-cache-${user}`, JSON.stringify(filtered));
     }
     return filtered;
   } catch {
@@ -34,25 +31,16 @@ export function getMapDropsHistory(): MapDropEntry[] {
 }
 
 export function appendMapDropEntry(entry: MapDropEntry) {
-  const key = keyForUser(getCurrentUsername());
-  const arr = getMapDropsHistory();
-  arr.push(entry);
-  const now = Date.now();
-  const filtered = arr.filter((e) => now - e.timestamp <= TTL_MS).slice(-200);
-  localStorage.setItem(key, JSON.stringify(filtered));
-  window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+  appendMapDrop(entry).catch(() => {});
 }
 
 export function deleteMapDropEntry(timestamp: number) {
-  const key = keyForUser(getCurrentUsername());
-  const arr = getMapDropsHistory();
-  const next = arr.filter((e) => e.timestamp !== timestamp);
-  localStorage.setItem(key, JSON.stringify(next));
-  window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+  deleteMapDrop(timestamp).catch(() => {});
 }
 
 export function clearMapDropsHistory() {
-  const key = keyForUser(getCurrentUsername());
-  localStorage.removeItem(key);
-  window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+  clearMapDropsRemote().catch(() => {});
 }
+
+// Warm cache on load
+try { refreshMapDrops(); } catch {}

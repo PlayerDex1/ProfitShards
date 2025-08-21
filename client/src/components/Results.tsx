@@ -8,6 +8,7 @@ import { TokenDistributionChart } from '@/components/charts/TokenDistributionCha
 import { ProfitSensitivityChart } from '@/components/charts/ProfitSensitivityChart';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
 import { getCurrentUsername } from "@/hooks/use-auth";
+import { clearHistoryRemote, deleteHistoryItem, getHistoryCached, refreshHistory } from "@/lib/historyApi";
 import { useI18n } from "@/i18n";
 
 interface ResultsProps {
@@ -32,26 +33,22 @@ export const Results = memo(function Results({ results, breakdown, includeHistor
 
   useEffect(() => {
     const load = () => {
-      const username = getCurrentUsername() ?? 'guest';
-      const key = `worldshards-history-${username}`;
-      const savedHistory = localStorage.getItem(key);
-      setHistory(savedHistory ? JSON.parse(savedHistory) : []);
+      setHistory(getHistoryCached());
     };
     load();
     const onUpdate = () => load();
     window.addEventListener('worldshards-history-updated', onUpdate);
-    window.addEventListener('worldshards-auth-updated', onUpdate);
+    window.addEventListener('worldshards-auth-updated', () => {
+      refreshHistory().then(load).catch(load);
+    });
     return () => {
       window.removeEventListener('worldshards-history-updated', onUpdate);
-      window.removeEventListener('worldshards-auth-updated', onUpdate);
+      window.removeEventListener('worldshards-auth-updated', () => {});
     };
   }, [results]);
 
   const clearHistory = () => {
-    const username = getCurrentUsername() ?? 'guest';
-    const key = `worldshards-history-${username}`;
-    localStorage.removeItem(key);
-    setHistory([]);
+    clearHistoryRemote().catch(() => {});
   };
 
   const show = {

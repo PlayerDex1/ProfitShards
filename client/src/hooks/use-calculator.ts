@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername } from '@/hooks/use-auth';
 import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
+import { appendHistoryItem, refreshHistory } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
 	investment: 0,
@@ -36,6 +37,8 @@ export function useCalculator() {
 			} catch {
 				setFormData(DEFAULT_FORM);
 			}
+			// warm history cache from server
+			refreshHistory().catch(() => {});
 		};
 		load();
 		const onAuth = () => {
@@ -168,21 +171,7 @@ export function useCalculator() {
 				results,
 			};
 
-			const key = `worldshards-history-${username}`;
-			const existingHistory = localStorage.getItem(key);
-			const history: HistoryItem[] = existingHistory ? JSON.parse(existingHistory) : [];
-			
-			const lastItem = history[history.length - 1];
-			if (lastItem && Date.now() - lastItem.timestamp < 60000) {
-				const isDuplicate = JSON.stringify(lastItem.formData) === JSON.stringify(formData);
-				if (isDuplicate) return;
-			}
-			
-			const updatedHistory = [...history, historyItem].slice(-50);
-			localStorage.setItem(key, JSON.stringify(updatedHistory));
-			if (typeof window !== 'undefined') {
-				window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
-			}
+			appendHistoryItem(historyItem).catch(() => {});
 		}, 500);
 	}, [debounceTimeoutRef]);
 
