@@ -12,14 +12,14 @@ type MapDropEntry = {
 };
 
 async function ensureTables(env: Env) {
-  await env.DB.exec(`
-    CREATE TABLE IF NOT EXISTS map_drops (
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS map_drops (
       user TEXT NOT NULL,
-      timestamp INTEGER PRIMARY KEY,
-      data TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_mapdrops_user_time ON map_drops(user, timestamp);
-  `);
+      timestamp INTEGER NOT NULL,
+      data TEXT NOT NULL,
+      PRIMARY KEY (user, timestamp)
+    )`
+  ).run();
 }
 
 export async function onRequestGet(context: { env: Env; request: Request }) {

@@ -9,14 +9,14 @@ type HistoryItem = {
 };
 
 async function ensureTables(env: Env) {
-  await env.DB.exec(`
-    CREATE TABLE IF NOT EXISTS history_items (
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS history_items (
       user TEXT NOT NULL,
-      timestamp INTEGER PRIMARY KEY,
-      data TEXT NOT NULL
-    );
-    CREATE INDEX IF NOT EXISTS idx_history_user_time ON history_items(user, timestamp);
-  `);
+      timestamp INTEGER NOT NULL,
+      data TEXT NOT NULL,
+      PRIMARY KEY (user, timestamp)
+    )`
+  ).run();
 }
 
 export async function onRequestGet(context: { env: Env; request: Request }) {
@@ -99,4 +99,3 @@ export async function onRequestDelete(context: { env: Env; request: Request }) {
     return new Response(JSON.stringify({ error: String(err?.message || err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
-
