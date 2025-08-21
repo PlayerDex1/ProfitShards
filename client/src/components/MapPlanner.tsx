@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
+import { useEquipment } from "@/hooks/useEquipment";
 
 interface MapPlannerProps {}
 
@@ -17,6 +18,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const [loads, setLoads] = useState<number>(prefs.loadsPerMap || 0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
+  const { totalLuck } = useEquipment();
 
   useEffect(() => {
     const onUpd = () => setHistory(getMapDropsHistory());
@@ -41,7 +43,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
   const apply = () => {
     save({ mapSize, loadsPerMap: loads });
-    appendMapDropEntry({ timestamp: Date.now(), mapSize, tokensDropped, loads });
+    appendMapDropEntry({ timestamp: Date.now(), mapSize, tokensDropped, loads, totalLuck });
   };
 
   return (
@@ -100,24 +102,26 @@ export function MapPlanner({}: MapPlannerProps) {
             <p className="text-white/70 text-sm">{t('planner.noHistory')}</p>
           ) : (
             <div className="space-y-2 max-h-96 overflow-auto pr-2">
-              <div className="sticky top-0 z-10 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 flex text-xs md:text-sm text-white/60">
-                <div className="w-28">{t('planner.mapSize')}</div>
-                <div className="flex-1 text-center">{t('planner.tokensDropped')}</div>
-                <div className="w-24 text-center">{t('planner.loads')}</div>
-                <div className="w-40 text-right">{t('planner.when')}</div>
+              <div className="sticky top-0 z-10 bg-black/60 backdrop-blur px-2 py-1 rounded border border-white/10 grid grid-cols-5 gap-2 text-xs text-white/60">
+                <div>{t('planner.mapSize')}</div>
+                <div className="text-center">{t('planner.tokensDropped')}</div>
+                <div className="text-center">{t('planner.loads')}</div>
+                <div className="text-center">Luck</div>
+                <div className="text-right">{t('planner.when')}</div>
               </div>
               {history
                 .slice()
                 .reverse()
                 .map((h, i) => (
-                  <div key={i} className="border border-white/10 rounded-lg px-3 py-2 bg-white/5 text-sm md:text-base flex items-center">
-                    <div className="w-28">
-                      <span className="px-2 py-0.5 rounded bg-white/10 text-white text-xs md:text-sm">{t(`planner.${h.mapSize}`)}</span>
+                  <div key={i} className="border border-white/10 rounded-lg px-3 py-2 bg-white/5 text-sm grid grid-cols-5 gap-2 items-center">
+                    <div>
+                      <span className="px-2 py-0.5 rounded bg-white/10 text-white text-xs">{t(`planner.${h.mapSize}`)}</span>
                     </div>
-                    <div className="flex-1 text-center font-mono text-white">{h.tokensDropped.toLocaleString()}</div>
-                    <div className="w-24 text-center font-mono text-white">{h.loads}</div>
-                    <div className="w-40 text-right text-white/70 text-xs md:text-sm">{new Date(h.timestamp).toLocaleString()}</div>
-                    <div className="ml-2">
+                    <div className="text-center font-mono text-white">{h.tokensDropped.toLocaleString()}</div>
+                    <div className="text-center font-mono text-white">{h.loads}</div>
+                    <div className="text-center font-mono text-white">{h.totalLuck ?? '-'}</div>
+                    <div className="text-right text-white/70 text-[10px] md:text-xs">{new Date(h.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} {new Date(h.timestamp).toLocaleDateString()}</div>
+                    <div className="col-span-5 flex justify-end mt-1">
                       <Button className="h-7 px-2 bg-white/10 text-white hover:bg-white/20" onClick={() => deleteMapDropEntry(h.timestamp)}>{t('planner.delete')}</Button>
                     </div>
                   </div>

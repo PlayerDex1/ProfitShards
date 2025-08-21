@@ -7,6 +7,7 @@ export interface MapDropEntry {
   mapSize: MapSize;
   tokensDropped: number;
   loads: number;
+  totalLuck?: number;
 }
 
 function keyForUser(user: string | null) {
