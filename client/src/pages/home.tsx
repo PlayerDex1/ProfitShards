@@ -30,8 +30,8 @@ export default function Home() {
 		return (
 			<div className="space-y-4">
 				<div className="flex items-center justify-between">
-					<h2 className="text-lg font-semibold">Calculadora</h2>
-					<Link href="/perfil" className="text-white/90 underline">Abrir Perfil (Luck: {totalLuck})</Link>
+					<h2 className="text-lg font-semibold">{t('home.calculator')}</h2>
+					<Link href="/perfil" className="text-white/90 underline">{t('nav.openProfile').replace('{luck}', String(totalLuck))}</Link>
 				</div>
 				<Calculator 
 					formData={formData}

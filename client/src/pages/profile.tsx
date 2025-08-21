@@ -57,7 +57,7 @@ export default function Profile() {
 			<Header />
 			<main className="max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-6 space-y-6">
 				<div className="flex justify-end">
-					<Link href="/" className="text-white/90 underline">Voltar ao Menu Principal</Link>
+					<Link href="/" className="text-white/90 underline">{t('nav.backToMain')}</Link>
 				</div>
 
 				{/* Map Planner ocupa linha inteira */}

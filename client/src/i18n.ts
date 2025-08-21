@@ -116,6 +116,10 @@ const dicts: Record<Lang, Dict> = {
 
     'home.calculator': 'Calculadora',
 
+    // Navigation
+    'nav.backToMain': 'Voltar ao Menu Principal',
+    'nav.openProfile': 'Abrir Perfil (Sorte: {luck})',
+
     'donate.title': 'Doação',
     'donate.openloot': 'Creator OL',
     'donate.wallet': 'Carteira EVM',
@@ -260,6 +264,10 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.history': 'History',
 
     'home.calculator': 'Calculator',
+
+    // Navigation
+    'nav.backToMain': 'Back to Main Menu',
+    'nav.openProfile': 'Open Profile (Luck: {luck})',
 
     'donate.title': 'Donation',
     'donate.openloot': 'Creator OL',
