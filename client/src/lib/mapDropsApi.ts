@@ -18,7 +18,7 @@ export function getMapDropsCached(): MapDropEntry[] {
 export async function refreshMapDrops(): Promise<void> {
   const user = getCurrentUsername();
   if (!user) return;
-  const res = await fetch(`/api/mapdrops?user=${encodeURIComponent(user)}&limit=200`);
+  const res = await fetch(`/api/mapdrops?user=${encodeURIComponent(user)}&limit=1000`);
   if (!res.ok) return;
   const items = (await res.json()) as MapDropEntry[];
   localStorage.setItem(cacheKey(user), JSON.stringify(items));

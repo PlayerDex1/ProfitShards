@@ -18,10 +18,10 @@ export function getHistoryCached(): HistoryItem[] {
 export async function refreshHistory(): Promise<void> {
   const user = getCurrentUsername();
   if (!user) return; // keep empty when not logged
-  const res = await fetch(`/api/history?user=${encodeURIComponent(user)}&limit=50`);
+  const res = await fetch(`/api/history?user=${encodeURIComponent(user)}&limit=500`);
   if (!res.ok) return;
   const items = (await res.json()) as HistoryItem[];
-  localStorage.setItem(cacheKey(user), JSON.stringify(items.slice(-50)));
+  localStorage.setItem(cacheKey(user), JSON.stringify(items.slice(-500)));
   window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
 }
 
