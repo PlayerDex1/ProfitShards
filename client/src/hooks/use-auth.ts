@@ -23,6 +23,10 @@ export function useAuth() {
         if (email) localStorage.setItem(CURRENT_USER_KEY, email);
         else localStorage.removeItem(CURRENT_USER_KEY);
         setUser(email);
+        if (email) {
+          const { migrateGuestToCurrentUser } = await import('@/lib/migrateGuestToAccount');
+          migrateGuestToCurrentUser().catch(() => {});
+        }
       } catch {
         localStorage.removeItem(CURRENT_USER_KEY);
         setUser(null);
@@ -63,7 +67,7 @@ export function useAuth() {
     if (!('ok' in res) || !res.ok) {
       return { ok: false as const, error: (res as any)?.error || 'invalid_credentials' };
     }
-    // Refresh me
+    // Refresh me and migrate
     try {
       const me = await api<{ user: { id: string; email: string } | null }>("/api/auth/me");
       const emailNow = me.user?.email ?? null;
@@ -71,6 +75,10 @@ export function useAuth() {
       else localStorage.removeItem(CURRENT_USER_KEY);
       setUser(emailNow);
       window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
+      if (emailNow) {
+        const { migrateGuestToCurrentUser } = await import('@/lib/migrateGuestToAccount');
+        migrateGuestToCurrentUser().catch(() => {});
+      }
     } catch {}
     return { ok: true as const };
   }, []);
