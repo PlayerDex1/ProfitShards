@@ -1,6 +1,7 @@
 export interface Env {
   DB: D1Database;
 }
+import { ensureMigrations } from "../_lib/migrations";
 
 type MapDropEntry = {
   timestamp: number;
@@ -28,7 +29,7 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
     if (!env || !env.DB) {
       return new Response(JSON.stringify({ error: 'D1 binding DB not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
-    await ensureTables(env);
+    await ensureMigrations(env);
     const url = new URL(request.url);
     const user = url.searchParams.get('user')?.trim();
     const limit = Math.min(Number(url.searchParams.get('limit') || '200'), 1000);
@@ -61,7 +62,7 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     if (!env || !env.DB) {
       return new Response(JSON.stringify({ error: 'D1 binding DB not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
-    await ensureTables(env);
+    await ensureMigrations(env);
     const body = await request.json().catch(() => null) as { user?: string; entry?: MapDropEntry } | null;
     const user = body?.user?.trim();
     const entry = body?.entry;
@@ -82,7 +83,7 @@ export async function onRequestDelete(context: { env: Env; request: Request }) {
     if (!env || !env.DB) {
       return new Response(JSON.stringify({ error: 'D1 binding DB not configured' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
-    await ensureTables(env);
+    await ensureMigrations(env);
     const url = new URL(request.url);
     const user = url.searchParams.get('user')?.trim();
     const ts = url.searchParams.get('timestamp');
