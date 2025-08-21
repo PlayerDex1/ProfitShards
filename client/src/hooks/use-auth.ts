@@ -1,28 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-const USERS_KEY = "worldshards-users";
 const CURRENT_USER_KEY = "worldshards-current-user";
 
-async function sha256(input: string): Promise<string> {
-  const enc = new TextEncoder();
-  const data = enc.encode(input);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-  const hashHex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
-  return hashHex;
-}
-
-function readUsers(): Record<string, { passHash: string }> {
-  try {
-    const raw = localStorage.getItem(USERS_KEY);
-    return raw ? JSON.parse(raw) : {};
-  } catch {
-    return {};
-  }
-}
-
-function writeUsers(users: Record<string, { passHash: string }>) {
-  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+async function api<T>(url: string, opts?: RequestInit): Promise<T> {
+  const res = await fetch(url, { credentials: 'include', ...(opts || {}) });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
 }
 
 export function getCurrentUsername(): string | null {
@@ -33,56 +16,89 @@ export function useAuth() {
   const [user, setUser] = useState<string | null>(null);
 
   useEffect(() => {
-    setUser(getCurrentUsername());
-    const onAuthUpdated = () => setUser(getCurrentUsername());
+    (async () => {
+      try {
+        const me = await api<{ user: { id: string; email: string } | null }>("/api/auth/me");
+        const email = me.user?.email ?? null;
+        if (email) localStorage.setItem(CURRENT_USER_KEY, email);
+        else localStorage.removeItem(CURRENT_USER_KEY);
+        setUser(email);
+      } catch {
+        localStorage.removeItem(CURRENT_USER_KEY);
+        setUser(null);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === CURRENT_USER_KEY) {
-        setUser(getCurrentUsername());
+        setUser(localStorage.getItem(CURRENT_USER_KEY));
       }
     };
-    window.addEventListener("worldshards-auth-updated", onAuthUpdated);
     window.addEventListener("storage", onStorage);
-    return () => {
-      window.removeEventListener("worldshards-auth-updated", onAuthUpdated);
-      window.removeEventListener("storage", onStorage);
-    };
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   const isAuthenticated = useMemo(() => Boolean(user), [user]);
 
-  const login = useCallback(async (username: string, password: string) => {
-    const trimmed = username.trim();
-    if (!trimmed || !password) {
-      return { ok: false, error: "Informe nick e senha" } as const;
-    }
-    const users = readUsers();
-    const passHash = await sha256(password);
-
-    if (!users[trimmed]) {
-      // registro implícito
-      users[trimmed] = { passHash };
-      writeUsers(users);
-      localStorage.setItem(CURRENT_USER_KEY, trimmed);
-      setUser(trimmed);
-      window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
-      return { ok: true, isNew: true } as const;
-    }
-
-    if (users[trimmed].passHash !== passHash) {
-      return { ok: false, error: "Senha incorreta" } as const;
-    }
-
-    localStorage.setItem(CURRENT_USER_KEY, trimmed);
-    setUser(trimmed);
-    window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
-    return { ok: true, isNew: false } as const;
+  const register = useCallback(async (email: string, password: string) => {
+    const res = await api<{ ok?: boolean; error?: string }>("/api/auth/register", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    });
+    if (!res.ok) return { ok: false as const, error: res.error || 'register_failed' };
+    return { ok: true as const };
   }, []);
 
-  const logout = useCallback(() => {
+  const login = useCallback(async (email: string, password: string) => {
+    const res = await api<{ ok?: boolean; error?: string }>("/api/auth/login", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+      credentials: 'include',
+    }).catch(async (e) => ({ ok: false, error: 'invalid_credentials' }));
+    if (!('ok' in res) || !res.ok) {
+      return { ok: false as const, error: (res as any)?.error || 'invalid_credentials' };
+    }
+    // Refresh me
+    try {
+      const me = await api<{ user: { id: string; email: string } | null }>("/api/auth/me");
+      const emailNow = me.user?.email ?? null;
+      if (emailNow) localStorage.setItem(CURRENT_USER_KEY, emailNow);
+      else localStorage.removeItem(CURRENT_USER_KEY);
+      setUser(emailNow);
+      window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
+    } catch {}
+    return { ok: true as const };
+  }, []);
+
+  const logout = useCallback(async () => {
+    await api<{ ok: boolean }>("/api/auth/logout", { method: 'POST', credentials: 'include' }).catch(() => {});
     localStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
     window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
   }, []);
 
-  return { user, isAuthenticated, login, logout };
+  const requestReset = useCallback(async (email: string) => {
+    return api<{ ok: boolean; token?: string }>("/api/auth/request-reset", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+      credentials: 'include',
+    });
+  }, []);
+
+  const resetPassword = useCallback(async (token: string, password: string) => {
+    return api<{ ok?: boolean; error?: string }>("/api/auth/reset", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, password }),
+      credentials: 'include',
+    });
+  }, []);
+
+  return { user, isAuthenticated, register, login, logout, requestReset, resetPassword };
 }

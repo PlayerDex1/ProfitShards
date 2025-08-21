@@ -30,6 +30,32 @@ const migrations: Migration[] = [
        )`,
     ],
   },
+  {
+    version: '2024-08-21_auth',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS users (
+         id TEXT PRIMARY KEY,
+         email TEXT NOT NULL UNIQUE,
+         pass_hash TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         email_verified INTEGER NOT NULL DEFAULT 0
+       )`,
+      `CREATE TABLE IF NOT EXISTS sessions (
+         session_id TEXT PRIMARY KEY,
+         user_id TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         expires_at INTEGER NOT NULL,
+         FOREIGN KEY (user_id) REFERENCES users(id)
+       )`,
+      `CREATE TABLE IF NOT EXISTS password_resets (
+         token TEXT PRIMARY KEY,
+         user_id TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         expires_at INTEGER NOT NULL,
+         FOREIGN KEY (user_id) REFERENCES users(id)
+       )`,
+    ],
+  },
 ];
 
 export async function ensureMigrations(env: Env): Promise<void> {
