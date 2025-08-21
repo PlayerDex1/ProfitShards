@@ -2,7 +2,7 @@ import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/hooks/use-theme";
 import { useAuth } from "@/hooks/use-auth";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
 import { Link } from "wouter";
@@ -12,6 +12,22 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const { lang, setLang, t } = useI18n();
+  const [defaultMode, setDefaultMode] = useState<'login' | 'register' | 'forgot' | 'reset' | undefined>(undefined);
+  const [defaultToken, setDefaultToken] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href);
+      const token = url.searchParams.get('resetToken');
+      if (token) {
+        setDefaultMode('reset');
+        setDefaultToken(token);
+        setShowAuth(true);
+        url.searchParams.delete('resetToken');
+        window.history.replaceState({}, '', url.toString());
+      }
+    } catch {}
+  }, []);
 
   return (
     <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800/80">
@@ -71,7 +87,7 @@ export function Header() {
           </div>
         </div>
       </div>
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} defaultMode={defaultMode} defaultToken={defaultToken} />}
     </header>
   );
 }

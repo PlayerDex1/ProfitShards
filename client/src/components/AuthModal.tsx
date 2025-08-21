@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -7,19 +7,26 @@ import { useI18n } from "@/i18n";
 
 interface AuthModalProps {
   onClose: () => void;
+  defaultMode?: 'login' | 'register' | 'forgot' | 'reset';
+  defaultToken?: string;
 }
 
-export function AuthModal({ onClose }: AuthModalProps) {
+export function AuthModal({ onClose, defaultMode, defaultToken }: AuthModalProps) {
   const { register, login, requestReset, resetPassword } = useAuth();
-  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'forgot' | 'reset'>(defaultMode ?? 'login');
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [token, setToken] = useState("");
+  const [token, setToken] = useState(defaultToken ?? "");
   const [error, setError] = useState<string | null>(null);
   const [info, setInfo] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { t } = useI18n();
+
+  useEffect(() => {
+    if (defaultMode) setMode(defaultMode);
+    if (defaultToken) setToken(defaultToken);
+  }, [defaultMode, defaultToken]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -99,7 +106,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 <Input value={email} onChange={(e) => setEmail(e.target.value)} className="bg-white/10 border-white/20 text-white h-9" placeholder="you@example.com" />
               </div>
               <div>
-                <label className="block text-xs text-white/70 mb-1">Nome de usuário</label>
+                <label className="block text-xs text-xs text-white/70 mb-1">Nome de usuário</label>
                 <Input value={username} onChange={(e) => setUsername(e.target.value)} className="bg-white/10 border-white/20 text-white h-9" placeholder="seu nome" />
               </div>
               <div>
@@ -127,7 +134,10 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 <Button type="button" onClick={() => setMode('login')} className="bg-white/10 text-white hover:bg-white/20 h-9 px-4">Voltar</Button>
                 <Button type="submit" className="bg-white text-black hover:bg-white/90 h-9 px-4" disabled={loading}>{loading ? '...' : 'Enviar link'}</Button>
               </div>
-              <div className="text-[11px] text-white/60">Após receber o e-mail, clique no link ou copie o token retornado para testes.</div>
+              <div className="text-[11px] text-white/60">Após receber o e-mail, clique no link; se necessário, cole o token abaixo.</div>
+              {token && (
+                <div className="text-[11px] text-white/80 break-all">Token (fallback): {token}</div>
+              )}
             </form>
           )}
 
