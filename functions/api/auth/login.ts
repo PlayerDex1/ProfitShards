@@ -1,8 +1,4 @@
-return new Response(JSON.stringify({ success: true }), {
-  headers: {
-    "Set-Cookie": `session=...; Domain=profitshards.online; HttpOnly; Secure; SameSite=Lax; Max-Age=604800`,
-    "Content-Type": "application/json",
-  },
+ },
 });import { ensureMigrations } from "../../_lib/migrations";
 
 export interface Env { DB: D1Database }
