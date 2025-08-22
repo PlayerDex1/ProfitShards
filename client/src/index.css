@@ -4,83 +4,114 @@
 @tailwind utilities;
 
 :root {
-  /* Light theme (default) */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
+  /* Light theme - Pleasant colors for reading */
+  --background: 0 0% 98%;           /* Very light gray background */
+  --foreground: 220 13% 18%;        /* Dark blue-gray text */
+  --card: 0 0% 100%;               /* Pure white cards */
+  --card-foreground: 220 13% 18%;   /* Dark blue-gray text on cards */
   --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 174 72% 42%;
-  --primary-foreground: 210 40% 98%;
-  --secondary: 210 40% 96%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 174 72% 42%;
+  --popover-foreground: 220 13% 18%;
+  --primary: 174 72% 42%;           /* Teal primary color */
+  --primary-foreground: 0 0% 100%;  /* White text on primary */
+  --secondary: 220 14% 96%;         /* Light blue-gray */
+  --secondary-foreground: 220 13% 18%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;   /* Medium gray for muted text */
+  --accent: 174 72% 42%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 84% 60%;         /* Red for errors */
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;            /* Light border */
+  --input: 220 13% 91%;             /* Light input background */
+  --ring: 174 72% 42%;              /* Teal focus ring */
   --radius: 0.5rem;
 }
 
 .dark {
-  /* Dark theme */
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 174 72% 42%;
-  --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 174 72% 42%;
+  /* Dark theme - Easy on the eyes */
+  --background: 220 13% 9%;         /* Dark blue-gray background */
+  --foreground: 220 14% 95%;        /* Light text */
+  --card: 220 13% 11%;              /* Slightly lighter cards */
+  --card-foreground: 220 14% 95%;   /* Light text on cards */
+  --popover: 220 13% 11%;
+  --popover-foreground: 220 14% 95%;
+  --primary: 174 72% 42%;           /* Same teal primary */
+  --primary-foreground: 220 13% 9%; /* Dark text on primary */
+  --secondary: 220 13% 15%;         /* Dark blue-gray secondary */
+  --secondary-foreground: 220 14% 95%;
+  --muted: 220 13% 15%;
+  --muted-foreground: 220 14% 70%;  /* Light gray for muted text */
+  --accent: 220 13% 15%;
+  --accent-foreground: 220 14% 95%;
+  --destructive: 0 63% 31%;         /* Darker red for dark theme */
+  --destructive-foreground: 220 14% 95%;
+  --border: 220 13% 20%;            /* Dark border */
+  --input: 220 13% 15%;             /* Dark input background */
+  --ring: 174 72% 42%;              /* Same teal focus ring */
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+  
   body {
     @apply bg-background text-foreground;
     font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+  }
+  
+  /* Ensure good contrast */
+  h1, h2, h3, h4, h5, h6 {
+    @apply text-foreground font-semibold;
+  }
+  
+  p {
+    @apply text-foreground;
+  }
+  
+  /* Button improvements */
+  button {
+    @apply transition-colors duration-200;
   }
 }
 
-/* Ensure minimum contrast for readability */
-.text-foreground {
-  color: hsl(var(--foreground));
-}
-
-.bg-background {
-  background-color: hsl(var(--background));
-}
-
-/* Custom utilities */
+/* Custom utilities for better readability */
 @layer utilities {
   .text-profit { 
-    color: #22c55e; /* green-500 */
+    color: #10b981; /* emerald-500 - good contrast in both themes */
   }
+  
   .text-loss { 
-    color: #ef4444; /* red-500 */
+    color: #f59e0b; /* amber-500 - softer than red, better readability */
   }
+  
+  .text-info {
+    color: #3b82f6; /* blue-500 */
+  }
+  
   .bg-profit { 
-    background-color: #22c55e; 
+    background-color: #10b981; 
   }
+  
   .bg-loss { 
-    background-color: #ef4444; 
+    background-color: #f59e0b; 
+  }
+  
+  .bg-info {
+    background-color: #3b82f6;
+  }
+  
+  /* Pleasant hover states */
+  .hover-lift {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+  
+  .text-readable {
+    @apply text-foreground;
+  }
+  
+  .bg-readable {
+    @apply bg-background;
   }
 }
