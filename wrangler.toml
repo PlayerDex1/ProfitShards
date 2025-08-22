@@ -1,0 +1,13 @@
+name = "profitshards-app"
+account_id = "${CLOUDFLARE_ACCOUNT_ID}"
+compatibility_date = "2024-06-01"
+
+[pages]
+# Directory with static assets produced by the Vite build
+build_output_dir = "./dist/public"
+
+[build]
+command = "npm run build"
+
+[env.production]
+vars = { RUNS_API_KEY = "${RUNS_API_KEY}" }
