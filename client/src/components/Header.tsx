@@ -1,24 +1,28 @@
 import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
 
 export function Header() {
-  const { theme, setTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const { t } = useI18n();
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    document.documentElement.classList.toggle('dark');
+  };
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="mr-4 flex">
-            <Calculator className="h-6 w-6 mr-2" />
-            <span className="hidden font-bold sm:inline-block">
+      <header className="sticky top-0 z-40 w-full border-b bg-white shadow-sm">
+        <div className="container mx-auto px-4 flex h-14 items-center">
+          <div className="mr-4 flex items-center">
+            <Calculator className="h-6 w-6 mr-2 text-teal-600" />
+            <span className="hidden font-bold sm:inline-block text-gray-900">
               ProfitShards
             </span>
           </div>
@@ -31,24 +35,29 @@ export function Header() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                onClick={toggleTheme}
+                className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
               >
-                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                {isDark ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
                 <span className="sr-only">Toggle theme</span>
               </Button>
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-2">
-                  <span className="text-sm text-muted-foreground">
+                  <span className="text-sm text-gray-600">
                     {user}
                   </span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={logout}
+                    className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                   >
-                    <LogOut className="h-5 w-5 mr-2" /> Sair
+                    <LogOut className="h-4 w-4 mr-2" /> Sair
                   </Button>
                 </div>
               ) : (
@@ -56,8 +65,9 @@ export function Header() {
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowAuth(true)}
+                  className="text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                 >
-                  <LogIn className="h-5 w-5 mr-2" /> {t('header.login')}
+                  <LogIn className="h-4 w-4 mr-2" /> {t('header.login')}
                 </Button>
               )}
             </nav>
