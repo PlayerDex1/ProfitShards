@@ -1,16 +1,16 @@
 # 🎮 CalculateShards - Calculadora de Lucro
 
-Uma calculadora interativa e moderna para calcular custos, lucros e eficiência de equipamentos com **autenticação Google** integrada.
+Uma calculadora interativa e moderna para calcular custos, lucros e eficiência de equipamentos **100% offline**.
 
 ![Preview da Calculadora](https://via.placeholder.com/800x400/10B981/FFFFFF?text=CalculateShards)
 
 ## 🌟 Funcionalidades
 
-### 🔐 **Autenticação Segura**
-- **Login com Google** - Entre com sua conta Google de forma segura
-- **Dados na Nuvem** - Seus cálculos são salvos automaticamente
-- **Sessões Persistentes** - Mantenha-se logado por 7 dias
-- **Migração de Dados** - Dados locais são migrados para sua conta
+### 💻 **Aplicação Offline Completa**
+- **100% Offline** - Funciona sem internet após carregamento
+- **Dados Locais** - Tudo salvo no seu navegador com segurança
+- **Sem Login Necessário** - Comece a usar imediatamente
+- **Histórico Persistente** - Seus cálculos nunca se perdem
 
 ### ✨ Interface Moderna
 - **Modo Escuro/Claro** - Troca suave entre temas
@@ -21,7 +21,7 @@ Uma calculadora interativa e moderna para calcular custos, lucros e eficiência 
 - **ROI Detalhado** - Retorno sobre investimento preciso
 - **Análise de Eficiência** - Métricas de performance por carga
 - **Distribuição de Tokens** - Visualização clara de equipamentos vs farming
-- **Histórico Completo** - Salva automaticamente todos os cálculos na nuvem
+- **Histórico Completo** - Salva automaticamente todos os cálculos localmente
 
 ### 📈 Gráficos Interativos
 - **Performance ao Longo do Tempo** - Acompanhe seu progresso
@@ -30,10 +30,10 @@ Uma calculadora interativa e moderna para calcular custos, lucros e eficiência 
 
 ## 🚀 Como Usar
 
-### 1. **Faça Login**
-- Clique em "Entrar" no canto superior direito
-- Escolha "Continuar com Google"
-- Autorize o acesso à sua conta Google
+### 1. **Acesse a Calculadora**
+- **URL**: https://profitshards.pages.dev
+- **Sem cadastro** - Comece a usar imediatamente
+- **Offline** - Funciona sem internet após carregar
 
 ### 2. **Configure seus Valores**
 - Investimento inicial em USD
@@ -47,7 +47,7 @@ Uma calculadora interativa e moderna para calcular custos, lucros e eficiência 
 - Métricas de ROI e eficiência
 
 ### 4. **Acompanhe o Histórico**
-- Todos os cálculos são salvos automaticamente na nuvem
+- Todos os cálculos são salvos automaticamente no navegador
 - Visualize gráficos de performance
 - Compare resultados ao longo do tempo
 
@@ -55,13 +55,12 @@ Uma calculadora interativa e moderna para calcular custos, lucros e eficiência 
 
 ### Pré-requisitos
 - Node.js 18+
-- PostgreSQL
-- Conta no Google Cloud Console
+- Navegador moderno
 
 ### 1. **Clone o Repositório**
 ```bash
-git clone https://github.com/seu-usuario/worldshards-calculator.git
-cd worldshards-calculator
+git clone https://github.com/PlayerDex1/ProfitShards.git
+cd ProfitShards
 ```
 
 ### 2. **Instale as Dependências**
@@ -69,94 +68,33 @@ cd worldshards-calculator
 npm install
 ```
 
-### 3. **Configure o Google OAuth**
-
-1. Acesse o [Google Cloud Console](https://console.cloud.google.com/)
-2. Crie um novo projeto ou selecione um existente
-3. Ative a API "Google+ API" ou "Google Identity"
-4. Vá em **Credenciais** → **Criar Credenciais** → **ID do Cliente OAuth 2.0**
-5. Configure:
-   - **Tipo de aplicativo**: Aplicativo da Web
-   - **URIs de redirecionamento autorizados**: 
-     - `http://localhost:5000/api/auth/google/callback` (desenvolvimento)
-     - `https://seudominio.com/api/auth/google/callback` (produção)
-
-### 4. **Configure as Variáveis de Ambiente**
-```bash
-cp .env.example .env
-```
-
-Edite o arquivo `.env` com suas credenciais:
-```env
-DATABASE_URL=postgresql://usuario:senha@localhost:5432/worldshards_db
-GOOGLE_CLIENT_ID=seu-client-id.apps.googleusercontent.com
-GOOGLE_CLIENT_SECRET=seu-client-secret
-SESSION_SECRET=sua-chave-secreta-super-segura
-NODE_ENV=development
-```
-
-### 5. **Configure o Banco de Dados**
-```bash
-# Execute as migrações
-npm run db:push
-```
-
-### 6. **Inicie o Servidor de Desenvolvimento**
+### 3. **Inicie o Servidor de Desenvolvimento**
 ```bash
 npm run dev
 ```
 
 O aplicativo estará disponível em `http://localhost:5000`
 
-## 💾 Deploy
+## 💾 Deploy no Cloudflare Pages
 
-### Variáveis de Ambiente Necessárias
+### Deploy Automático (Já Configurado!)
+- ✅ **GitHub Actions** configurado
+- ✅ **Push para main** = deploy automático
+- ✅ **URL**: https://profitshards.pages.dev
+- ✅ **CDN Global** - Super rápido mundialmente
 
-Para deploy em produção, configure as seguintes variáveis:
-
-#### **Vercel/Netlify**
-- `DATABASE_URL` - URL de conexão PostgreSQL
-- `GOOGLE_CLIENT_ID` - Client ID do Google OAuth
-- `GOOGLE_CLIENT_SECRET` - Client Secret do Google OAuth  
-- `SESSION_SECRET` - Chave secreta para sessões
-- `NODE_ENV=production`
-
-#### **Cloudflare Pages**
-- `DATABASE_URL` - URL de conexão PostgreSQL
-- `GOOGLE_CLIENT_ID` - Client ID do Google OAuth
-- `GOOGLE_CLIENT_SECRET` - Client Secret do Google OAuth
-- `SESSION_SECRET` - Chave secreta para sessões
-
-### Deploy Recomendado (Backend + Frontend):
-
-**Para funcionalidade completa com Google OAuth:**
-
-#### **Vercel (Recomendado)**
+### Como Fazer Fork e Deploy:
 1. **Fork** este repositório no GitHub
-2. Conecte no [Vercel](https://vercel.com)
-3. **Configure** as variáveis de ambiente:
-   - `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`
-4. **Deploy** automático - Funcionalidade completa!
+2. **Conecte** no Cloudflare Pages
+3. **Selecione** seu fork
+4. **Deploy** automático - Pronto!
 
-#### **Railway/Render**
-- Suporte completo ao Express + PostgreSQL
-- Configure as mesmas variáveis de ambiente
-- Deploy automático via GitHub
-
-#### **Cloudflare Pages (Limitado)**
-- ⚠️ **Apenas frontend estático** - sem autenticação Google
-- Ideal para demonstração da interface
-- Deploy automático configurado
-
-Consulte o [Guia de Deploy](./DEPLOY.md) completo para instruções detalhadas.
+### Configuração Cloudflare Pages:
+- **Build Command**: `npm run build:vercel`
+- **Output Directory**: `dist/public`
+- **Node Version**: `18.x`
 
 ## 🛠️ Tecnologias Utilizadas
-
-### Backend
-- **Express.js** - Servidor HTTP rápido e minimalista
-- **Passport.js** - Autenticação OAuth com Google
-- **Drizzle ORM** - ORM TypeScript type-safe
-- **PostgreSQL** - Banco de dados relacional
 
 ### Frontend
 - **React 18** - Interface moderna e reativa
@@ -166,6 +104,11 @@ Consulte o [Guia de Deploy](./DEPLOY.md) completo para instruções detalhadas.
 - **Radix UI** - Componentes acessíveis de alta qualidade
 - **Vite** - Build rápido e otimizado
 
+### Armazenamento
+- **LocalStorage** - Dados salvos no navegador
+- **IndexedDB** - Histórico e dados complexos
+- **Service Workers** - Cache offline inteligente
+
 ## ⚡ Performance
 
 ### Otimizações Implementadas:
@@ -174,7 +117,7 @@ Consulte o [Guia de Deploy](./DEPLOY.md) completo para instruções detalhadas.
 - **Debounce** - Reduz cálculos em tempo real
 - **Minificação** - Código otimizado para produção
 - **Lazy Loading** - Componentes carregados conforme necessário
-- **Session Management** - Sessões otimizadas com PostgreSQL
+- **PWA Ready** - Instalável como app nativo
 
 ## 🎯 Como Funciona
 
@@ -194,13 +137,13 @@ ROI = (Lucro Líquido / Investimento) × 100
 - **ROI**: Retorno percentual sobre investimento
 - **Payback**: Tempo estimado para recuperar investimento
 
-## 🔒 Segurança
+## 🔒 Privacidade e Segurança
 
-- **OAuth 2.0** - Autenticação segura com Google
-- **HTTPS Obrigatório** - Todas as comunicações criptografadas
-- **Sessões Seguras** - Cookies HttpOnly e SameSite
-- **Validação de Dados** - Todas as entradas são validadas
-- **Proteção CSRF** - Tokens de segurança em formulários
+- **Dados Locais** - Nada é enviado para servidores
+- **Sem Tracking** - Zero cookies de rastreamento
+- **Código Aberto** - Totalmente auditável
+- **HTTPS** - Comunicação criptografada
+- **Offline First** - Funciona sem internet
 
 ## 🎨 Personalização
 
@@ -209,11 +152,11 @@ ROI = (Lucro Líquido / Investimento) × 100
 - **Tema Escuro** - Reduz fadiga ocular em sessões longas
 - **Detecção Automática** - Segue preferência do sistema
 
-### Configurações Salvas:
-- Preferência de tema (local)
-- Histórico de cálculos (nuvem)
-- Dados de usuário (nuvem)
-- Últimos valores utilizados (nuvem)
+### Dados Salvos Localmente:
+- Preferência de tema
+- Histórico de cálculos (ilimitado)
+- Configurações personalizadas
+- Últimos valores utilizados
 
 ## 🤝 Contribuição
 
@@ -229,6 +172,15 @@ Contribuições são bem-vindas! Siga estas etapas:
 
 Este projeto está licenciado sob a Licença MIT - veja o arquivo [LICENSE](LICENSE) para detalhes.
 
+## 🌐 Links Úteis
+
+- **🎮 Aplicação**: https://profitshards.pages.dev
+- **📊 Status**: https://github.com/PlayerDex1/ProfitShards/actions
+- **🐛 Issues**: https://github.com/PlayerDex1/ProfitShards/issues
+- **📖 Wiki**: https://github.com/PlayerDex1/ProfitShards/wiki
+
 ---
 
 **Desenvolvido para a comunidade com ❤️** 🎮✨
+
+**Acesse agora**: https://profitshards.pages.dev

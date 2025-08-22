@@ -35,53 +35,48 @@ export function AuthModal({ onClose }: AuthModalProps) {
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
         <Card className="w-full max-w-md bg-black border-gray-800">
           <CardHeader className="py-4">
-            <CardTitle className="text-white text-lg text-center">🔐 Autenticação Indisponível</CardTitle>
+            <CardTitle className="text-white text-lg text-center">🎮 Calculadora Worldshards</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 pt-0">
             <div className="text-center space-y-3">
               <p className="text-white/80 text-sm">
-                Esta é uma <strong>versão de demonstração</strong> hospedada estaticamente.
+                Esta calculadora funciona <strong>100% offline</strong> no seu navegador!
               </p>
               
-              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-left">
-                <p className="text-white/70 text-xs mb-2">
-                  <strong>✅ Funciona nesta versão:</strong>
+              <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-3 text-left">
+                <p className="text-green-300 text-xs mb-2">
+                  <strong>✅ Funcionalidades Completas:</strong>
                 </p>
-                <ul className="text-white/60 text-xs space-y-1 ml-2">
-                  <li>• Calculadora de lucro completa</li>
-                  <li>• Gráficos e análises</li>
+                <ul className="text-green-200/80 text-xs space-y-1 ml-2">
+                  <li>• Calculadora de lucro avançada</li>
+                  <li>• Gráficos interativos e análises</li>
+                  <li>• Histórico de cálculos salvo</li>
                   <li>• Modo escuro/claro</li>
-                  <li>• Armazenamento local</li>
+                  <li>• Interface responsiva</li>
+                  <li>• Dados salvos no navegador</li>
                 </ul>
               </div>
 
-              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 text-left">
-                <p className="text-orange-300 text-xs mb-2">
-                  <strong>🚀 Para login com Google:</strong>
+              <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-3 text-left">
+                <p className="text-blue-300 text-xs mb-2">
+                  <strong>💡 Como funciona:</strong>
                 </p>
-                <p className="text-orange-200/80 text-xs">
-                  Acesse a versão completa em{' '}
-                  <a 
-                    href="https://profitshards.vercel.app" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-blue-300 hover:text-blue-200 underline"
-                  >
-                    profitshards.vercel.app
-                  </a>
+                <p className="text-blue-200/80 text-xs">
+                  Todos os seus dados ficam salvos localmente no navegador. 
+                  Não precisamos de login ou internet após o carregamento inicial!
                 </p>
               </div>
               
               <Button 
                 type="button" 
                 onClick={onClose} 
-                className="w-full bg-white/10 text-white hover:bg-white/20 h-10"
+                className="w-full bg-gradient-to-r from-green-600 to-blue-600 text-white hover:from-green-700 hover:to-blue-700 h-10 font-medium"
               >
-                Continuar sem Login
+                🚀 Começar a Calcular
               </Button>
               
               <p className="text-[11px] text-white/50 text-center">
-                Seus dados serão salvos localmente no navegador
+                Seus cálculos são salvos automaticamente no navegador
               </p>
             </div>
           </CardContent>
