@@ -1,0 +1,16 @@
+name = "profitshards"
+compatibility_date = "2024-01-15"
+
+[env.production]
+d1_databases = [
+  { binding = "DB", database_name = "profitshards-db", database_id = "your-database-id-here" }
+]
+
+[env.preview]
+d1_databases = [
+  { binding = "DB", database_name = "profitshards-db-preview", database_id = "your-preview-database-id-here" }
+]
+
+# Environment variables (set these in Cloudflare Dashboard)
+# GOOGLE_CLIENT_ID = "your-google-client-id"
+# GOOGLE_CLIENT_SECRET = "your-google-client-secret"
