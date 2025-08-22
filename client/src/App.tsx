@@ -1,36 +1,66 @@
-import { Switch, Route } from "wouter";
-import { lazy, Suspense } from "react";
-import { queryClient } from "./lib/queryClient";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { Route, Switch } from "wouter";
+import { ThemeProvider } from "next-themes";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
-const Home = lazy(() => import("@/pages/home"));
-const Profile = lazy(() => import("@/pages/profile"));
-const NotFound = lazy(() => import("@/pages/not-found"));
-import { useIdleLogout } from "@/hooks/useIdleLogout";
+import { useAuth } from "@/hooks/use-auth";
+import { useCloudStorage } from "@/hooks/useCloudStorage";
+import { useEffect } from "react";
 
-function Router() {
-  return (
-    <Suspense fallback={<div className="text-white/80 p-4">Carregando…</div>}>
-      <Switch>
-        <Route path="/" component={Home} />
-        <Route path="/perfil" component={Profile} />
-        <Route component={NotFound} />
-      </Switch>
-    </Suspense>
-  );
+// Pages
+import HomePage from "@/pages/home";
+import ProfilePage from "@/pages/profile";
+import NotFoundPage from "@/pages/not-found";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 minutes
+      retry: 1,
+    },
+  },
+});
+
+function CloudSyncManager() {
+  const { isAuthenticated, user } = useAuth();
+  const { loadUserData } = useCloudStorage();
+
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('🔄 [APP] User authenticated, initializing cloud sync for:', user);
+      
+      // Load user data from cloud after login
+      setTimeout(() => {
+        loadUserData().then((result) => {
+          if (result.success) {
+            console.log('✅ [APP] Cloud sync initialized successfully');
+          } else {
+            console.log('❌ [APP] Cloud sync failed:', result.error);
+          }
+        });
+      }, 3000); // Wait 3 seconds for auth to stabilize
+    } else {
+      console.log('📱 [APP] User not authenticated, using local storage only');
+    }
+  }, [isAuthenticated, user, loadUserData]);
+
+  return null; // This component only handles side effects
 }
 
-function App() {
-  useIdleLogout();
+export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Router />
-      </TooltipProvider>
+      <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <div className="min-h-screen bg-background text-foreground">
+          <CloudSyncManager />
+          <Switch>
+            <Route path="/" component={HomePage} />
+            <Route path="/perfil" component={ProfilePage} />
+            <Route path="/profile" component={ProfilePage} />
+            <Route component={NotFoundPage} />
+          </Switch>
+          <Toaster />
+        </div>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }
-
-export default App;

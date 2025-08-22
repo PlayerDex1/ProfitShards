@@ -1,185 +1,157 @@
-import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
+import { useCallback, useEffect, useState } from 'react';
 import { getCurrentUsername } from '@/hooks/use-auth';
-import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
-import { appendHistoryItem, refreshHistory } from '@/lib/historyApi';
+import { useCloudStorage } from '@/hooks/useCloudStorage';
 
-const DEFAULT_FORM: CalculatorFormData = {
-	investment: 0,
-	gemsPurchased: 0,
-	gemsRemaining: 0,
-	gemsConsumed: 0,
-	tokensEquipment: 0,
-	tokensFarmed: 0,
-	loadsUsed: 0,
-	tokenPrice: 0,
-	gemPrice: 0.00714,
-};
-
-function storageKeyForUser(user: string | null) {
-	return `worldshards-form-${user ?? 'guest'}`;
+export interface CalculatorState {
+	initialInvestmentUSD: number;
+	gemsBought: number;
+	gemsConsumed: number;
+	equipmentTokens: number;
+	farmedTokens: number;
+	tokenPrice: number;
+	gemPrice: number;
 }
 
+export const defaultCalculatorState: CalculatorState = {
+	initialInvestmentUSD: 0,
+	gemsBought: 0,
+	gemsConsumed: 0,
+	equipmentTokens: 0,
+	farmedTokens: 0,
+	tokenPrice: 0,
+	gemPrice: 0,
+};
+
 export function useCalculator() {
-	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-	
-	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
+	const [state, setState] = useState<CalculatorState>(defaultCalculatorState);
+	const { saveCalculation, isCloudEnabled } = useCloudStorage();
 
-	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
-
-	// Restaurar do localStorage ao montar e quando auth mudar
-	useEffect(() => {
-		const load = () => {
-			const key = storageKeyForUser(getCurrentUsername());
-			try {
-				const raw = localStorage.getItem(key);
-				setFormData(raw ? JSON.parse(raw) : DEFAULT_FORM);
-			} catch {
-				setFormData(DEFAULT_FORM);
-			}
-			// warm history cache from server
-			refreshHistory().catch(() => {});
-		};
-		load();
-		const onAuth = () => {
-			const user = getCurrentUsername();
-			if (!user) {
-				// logout (inclusive AFK): limpar e voltar ao padrão
-				try { localStorage.removeItem(storageKeyForUser(null)); } catch {}
-				setFormData(DEFAULT_FORM);
-			} else {
-				load();
-			}
-		};
-		window.addEventListener('worldshards-auth-updated', onAuth);
-		return () => window.removeEventListener('worldshards-auth-updated', onAuth);
-	}, []);
-
-	// Salvar automaticamente o formulário por usuário (apenas logado)
-	useEffect(() => {
-		const user = getCurrentUsername();
-		if (!user) return;
+	const saveToStorage = useCallback((newState: CalculatorState) => {
+		const username = getCurrentUsername();
+		const key = username ? `worldshards-form-${username}` : 'worldshards-form-guest';
+		
 		try {
-			localStorage.setItem(storageKeyForUser(user), JSON.stringify(formData));
-		} catch {}
-	}, [formData]);
-
-	useEffect(() => {
-		const onWhatIf = (e: Event) => {
-			const custom = e as CustomEvent<{ targetLuck: number; history: number[] }>;
-			const { targetLuck, history } = custom.detail || { targetLuck: 0, history: [] };
-			const m = calculateLuckEffectFromArray(history || [], targetLuck || 0);
-			setLuckMultiplier(m > 0 ? m : 1);
-		};
-		window.addEventListener('worldshards-whatif-luck', onWhatIf);
-		return () => window.removeEventListener('worldshards-whatif-luck', onWhatIf);
-	}, []);
-
-	const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
-		setFormData(prev => ({
-			...prev,
-			[field]: value,
-		}));
-	}, []);
-
-	const results = useMemo((): CalculationResults | null => {
-		if (formData.investment <= 0 || formData.tokenPrice <= 0 || formData.gemPrice <= 0) {
-			return null;
+			localStorage.setItem(key, JSON.stringify(newState));
+			console.log('💾 [LOCAL] Calculator state saved to localStorage');
+			
+			// Save to cloud if user is logged in
+			if (isCloudEnabled && username) {
+				saveCalculation({
+					type: 'profit',
+					data: newState,
+					results: calculateResults(newState)
+				}).then((result) => {
+					if (result.success) {
+						console.log('☁️ [CLOUD] Calculator state synced to cloud');
+					}
+				});
+			}
+		} catch (error) {
+			console.error('❌ Failed to save calculator state:', error);
 		}
+	}, [saveCalculation, isCloudEnabled]);
 
-		// Tokens efetivamente farmados líquidos (subtrai os tokens gastos na aceleração)
-		const netFarmedTokens = Math.max(0, formData.tokensFarmed - formData.tokensEquipment);
-		const totalTokens = netFarmedTokens;
-		const totalTokenValue = totalTokens * formData.tokenPrice * luckMultiplier;
-		const gemsCost = formData.gemsConsumed * formData.gemPrice;
-		const grossProfit = totalTokenValue; // já não somamos tokens gastos
-		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
-		const finalProfit = grossProfit - gemsCost;
-		const netProfit = finalProfit;
-		const roi = formData.investment > 0 ? (finalProfit / formData.investment) * 100 : 0;
-		const efficiency = formData.loadsUsed > 0 ? netFarmedTokens / formData.loadsUsed : 0;
+	const loadFromStorage = useCallback(() => {
+		const username = getCurrentUsername();
+		const key = username ? `worldshards-form-${username}` : 'worldshards-form-guest';
+		
+		try {
+			const saved = localStorage.getItem(key);
+			if (saved) {
+				const parsedState = JSON.parse(saved);
+				setState(parsedState);
+				console.log('📥 [LOCAL] Calculator state loaded from localStorage');
+				return parsedState;
+			}
+		} catch (error) {
+			console.error('❌ Failed to load calculator state:', error);
+		}
+		
+		setState(defaultCalculatorState);
+		return defaultCalculatorState;
+	}, []);
+
+	// Calculate results
+	const calculateResults = useCallback((calcState: CalculatorState) => {
+		const totalTokens = calcState.equipmentTokens + calcState.farmedTokens;
+		const totalValue = totalTokens * calcState.tokenPrice;
+		const gemsCost = calcState.gemsConsumed * calcState.gemPrice;
+		const grossProfit = totalValue - gemsCost;
+		const rebuyCost = calcState.gemsConsumed * calcState.gemPrice;
+		const netProfit = grossProfit - rebuyCost;
+		const roi = calcState.initialInvestmentUSD > 0 ? (netProfit / calcState.initialInvestmentUSD) * 100 : 0;
 
 		return {
 			totalTokens,
-			tokensEquipment: formData.tokensEquipment,
-			tokensFarmed: formData.tokensFarmed,
-			totalTokenValue,
+			totalValue,
 			gemsCost,
 			grossProfit,
 			rebuyCost,
-			finalProfit,
 			netProfit,
 			roi,
-			efficiency,
+			calculatedAt: Date.now()
 		};
-	}, [formData, luckMultiplier]);
+	}, []);
 
-	const breakdown = useMemo((): CalculationBreakdown[] => {
-		if (!results) return [];
+	// Restaurar do localStorage ao montar e quando auth mudar
+	useEffect(() => {
+		loadFromStorage();
+	}, [loadFromStorage]);
 
-		return [
-			{
-				metric: 'Valor Total dos Tokens',
-				key: 'results.totalTokenValue',
-				value: `$${results.totalTokenValue.toFixed(2)}`,
-				period: '',
-				status: 'positive'
-			},
-			{
-				metric: 'Custo das Gemas',
-				key: 'results.gemsCost',
-				value: `-$${results.gemsCost.toFixed(2)}`,
-				period: '',
-				status: 'negative'
-			},
-			{
-				metric: 'Lucro Bruto',
-				key: 'results.grossProfit',
-				value: `$${results.grossProfit.toFixed(2)}`,
-				period: '',
-				status: results.grossProfit > 0 ? 'positive' : 'negative'
-			},
-			{
-				metric: 'Lucro Líquido',
-				key: 'results.finalProfit',
-				value: `$${results.finalProfit.toFixed(2)}`,
-				period: '',
-				status: results.finalProfit > 0 ? 'positive' : 'negative'
-			},
-			{
-				metric: 'ROI',
-				key: 'results.roi',
-				value: `${results.roi.toFixed(1)}%`,
-				period: '',
-				status: results.roi > 30 ? 'excellent' : results.roi > 0 ? 'positive' : 'negative'
+	useEffect(() => {
+		const onAuth = () => {
+			console.log('🔄 [CALCULATOR] Auth changed, reloading calculator state');
+			loadFromStorage();
+		};
+
+		window.addEventListener('worldshards-auth-updated', onAuth);
+		return () => window.removeEventListener('worldshards-auth-updated', onAuth);
+	}, [loadFromStorage]);
+
+	// Listen for cloud data loaded event
+	useEffect(() => {
+		const onCloudDataLoaded = (event: CustomEvent) => {
+			const cloudData = event.detail;
+			console.log('☁️ [CALCULATOR] Cloud data received:', cloudData);
+			
+			if (cloudData?.data?.calculations) {
+				// Find the most recent profit calculation
+				const recentCalculation = cloudData.data.calculations
+					.filter((calc: any) => calc.type === 'profit')
+					.sort((a: any, b: any) => b.createdAt - a.createdAt)[0];
+
+				if (recentCalculation) {
+					console.log('📥 [CALCULATOR] Loading recent calculation from cloud');
+					setState(recentCalculation.data);
+					
+					// Also save to localStorage for offline access
+					const username = getCurrentUsername();
+					const key = username ? `worldshards-form-${username}` : 'worldshards-form-guest';
+					localStorage.setItem(key, JSON.stringify(recentCalculation.data));
+				}
 			}
-		];
-	}, [results]);
+		};
 
-	const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
-		if (debounceTimeoutRef.current) {
-			clearTimeout(debounceTimeoutRef.current);
-		}
+		window.addEventListener('cloud-data-loaded', onCloudDataLoaded as EventListener);
+		return () => window.removeEventListener('cloud-data-loaded', onCloudDataLoaded as EventListener);
+	}, []);
 
-		debounceTimeoutRef.current = setTimeout(() => {
-			const username = getCurrentUsername();
-			if (!username) return; // não salva se não estiver logado
+	const updateState = useCallback((updates: Partial<CalculatorState>) => {
+		const newState = { ...state, ...updates };
+		setState(newState);
+		saveToStorage(newState);
+	}, [state, saveToStorage]);
 
-			const historyItem: HistoryItem = {
-				timestamp: Date.now(),
-				formData,
-				results,
-			};
-
-			appendHistoryItem(historyItem).catch(() => {});
-		}, 500);
-	}, [debounceTimeoutRef]);
+	const resetState = useCallback(() => {
+		setState(defaultCalculatorState);
+		saveToStorage(defaultCalculatorState);
+	}, [saveToStorage]);
 
 	return {
-		formData,
-		results,
-		breakdown,
-		updateFormData,
-		saveToHistory,
+		state,
+		updateState,
+		resetState,
+		calculateResults: () => calculateResults(state),
+		isCloudSynced: isCloudEnabled
 	};
 }
