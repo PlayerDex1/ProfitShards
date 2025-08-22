@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
-import { Sidebar } from "@/components/Sidebar";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
@@ -14,8 +13,7 @@ import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
-	const [activeSection, setActiveSection] = useState('calculator');
-	const { session, totalLuck } = useEquipment();
+	const { totalLuck } = useEquipment();
 	const { t } = useI18n();
 	const { user, isAuthenticated } = useAuth();
 
@@ -133,6 +131,18 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
+			
+			{/* Footer */}
+			<footer className="mt-12 py-8 border-t border-border/50">
+				<div className="container mx-auto px-4">
+					<div className="text-center">
+						<h2 className="text-2xl font-bold text-foreground mb-2">WorldShards Game</h2>
+						<p className="text-sm text-muted-foreground">
+							Ferramenta de cálculo de lucro desenvolvida pela comunidade
+						</p>
+					</div>
+				</div>
+			</footer>
 		</div>
 	);
 }
