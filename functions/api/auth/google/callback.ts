@@ -88,10 +88,10 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
       if (existingUser) {
         console.log('Linking Google account to existing user:', existingUser.id);
-        // Link Google account to existing user and update last_login
+        // Link Google account to existing user
         await env.DB.prepare(`
-          UPDATE users SET google_sub = ?, email_verified = 1, last_login = ?, updated_at = ?, created_at = COALESCE(created_at, ?) WHERE id = ?
-        `).bind(profile.sub, now, now, now, existingUser.id).run();
+          UPDATE users SET google_sub = ?, email_verified = 1, updated_at = ?, created_at = COALESCE(created_at, ?) WHERE id = ?
+        `).bind(profile.sub, now, now, existingUser.id).run();
         
         user = await env.DB.prepare(`
           SELECT id, email, username FROM users WHERE id = ?
@@ -105,9 +105,9 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         const username = (profile.name || profile.email.split('@')[0]).substring(0, 50);
         
         await env.DB.prepare(`
-          INSERT INTO users (id, email, username, google_sub, email_verified, created_at, updated_at, last_login, pass_hash)
-          VALUES (?, ?, ?, ?, 1, ?, ?, ?, '')
-        `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now, now, now).run();
+          INSERT INTO users (id, email, username, google_sub, email_verified, created_at, updated_at, pass_hash)
+          VALUES (?, ?, ?, ?, 1, ?, ?, '')
+        `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now, now).run();
 
         user = { id: userId, email: profile.email.toLowerCase(), username };
         
@@ -118,10 +118,10 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         `).bind(userId, now, now).run();
       }
     } else {
-      // Update last_login for existing Google user
+      // Update timestamp for existing Google user
       await env.DB.prepare(`
-        UPDATE users SET last_login = ?, updated_at = ? WHERE id = ?
-      `).bind(now, now, user.id).run();
+        UPDATE users SET updated_at = ? WHERE id = ?
+      `).bind(now, user.id).run();
     }
 
     if (!user) {

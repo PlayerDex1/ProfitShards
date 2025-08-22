@@ -22,34 +22,21 @@ export async function ensureMigrations(env: Env): Promise<void> {
       console.log('Running migration: add_google_oauth_columns');
       
       // Add columns to users table (ignore errors if columns already exist)
-      try {
-        await env.DB.prepare(`ALTER TABLE users ADD COLUMN google_sub TEXT`).run();
-      } catch (e) {
-        console.log('google_sub column may already exist');
-      }
+      const columnsToAdd = [
+        { name: 'google_sub', sql: 'ALTER TABLE users ADD COLUMN google_sub TEXT' },
+        { name: 'email_verified', sql: 'ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE' },
+        { name: 'created_at', sql: 'ALTER TABLE users ADD COLUMN created_at INTEGER' },
+        { name: 'updated_at', sql: 'ALTER TABLE users ADD COLUMN updated_at INTEGER' },
+        { name: 'last_login', sql: 'ALTER TABLE users ADD COLUMN last_login INTEGER' }
+      ];
 
-      try {
-        await env.DB.prepare(`ALTER TABLE users ADD COLUMN email_verified BOOLEAN DEFAULT FALSE`).run();
-      } catch (e) {
-        console.log('email_verified column may already exist');
-      }
-
-      try {
-        await env.DB.prepare(`ALTER TABLE users ADD COLUMN created_at INTEGER`).run();
-      } catch (e) {
-        console.log('created_at column may already exist');
-      }
-
-      try {
-        await env.DB.prepare(`ALTER TABLE users ADD COLUMN updated_at INTEGER`).run();
-      } catch (e) {
-        console.log('updated_at column may already exist');
-      }
-
-      try {
-        await env.DB.prepare(`ALTER TABLE users ADD COLUMN last_login INTEGER`).run();
-      } catch (e) {
-        console.log('last_login column may already exist');
+      for (const column of columnsToAdd) {
+        try {
+          await env.DB.prepare(column.sql).run();
+          console.log(`✅ Added column: ${column.name}`);
+        } catch (e) {
+          console.log(`⚠️ Column ${column.name} may already exist or failed to add:`, e.message);
+        }
       }
 
       // Create sessions table
@@ -151,25 +138,29 @@ export async function ensureMigrations(env: Env): Promise<void> {
       `).run();
 
       // Create all indexes
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_last_login ON users(last_login)`).run();
-      
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)`).run();
-      
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_user_id ON user_calculations(user_id)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_type ON user_calculations(calculation_type)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_created ON user_calculations(created_at)`).run();
-      
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_equipment_user_id ON user_equipment_builds(user_id)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_equipment_favorite ON user_equipment_builds(is_favorite)`).run();
-      
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_mapdrops_user_id ON user_map_drops(user_id)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_mapdrops_map ON user_map_drops(map_name)`).run();
-      
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_activity_user_id ON user_activity(user_id)`).run();
-      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_activity_type ON user_activity(activity_type)`).run();
+      const indexes = [
+        'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)',
+        'CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)',
+        'CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)',
+        'CREATE INDEX IF NOT EXISTS idx_calculations_user_id ON user_calculations(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_calculations_type ON user_calculations(calculation_type)',
+        'CREATE INDEX IF NOT EXISTS idx_calculations_created ON user_calculations(created_at)',
+        'CREATE INDEX IF NOT EXISTS idx_equipment_user_id ON user_equipment_builds(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_equipment_favorite ON user_equipment_builds(is_favorite)',
+        'CREATE INDEX IF NOT EXISTS idx_mapdrops_user_id ON user_map_drops(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_mapdrops_map ON user_map_drops(map_name)',
+        'CREATE INDEX IF NOT EXISTS idx_activity_user_id ON user_activity(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_activity_type ON user_activity(activity_type)'
+      ];
+
+      for (const indexSql of indexes) {
+        try {
+          await env.DB.prepare(indexSql).run();
+        } catch (e) {
+          console.log('Index creation failed (may already exist):', e.message);
+        }
+      }
 
       // Mark migration as completed
       await env.DB.prepare(`
@@ -179,7 +170,7 @@ export async function ensureMigrations(env: Env): Promise<void> {
       console.log('Migration create_user_data_tables completed successfully');
     }
 
-    // Migration 003: Fix cookie domain issue
+    // Migration 003: Fix cookie domain issue and clean up sessions
     const migration003 = await env.DB.prepare(`
       SELECT name FROM migrations WHERE name = 'fix_cookie_domain'
     `).first();
@@ -190,16 +181,10 @@ export async function ensureMigrations(env: Env): Promise<void> {
       // Delete duplicate sessions to clean up cookie issues
       await env.DB.prepare(`
         DELETE FROM sessions WHERE session_id IN (
-          SELECT session_id FROM sessions 
-          WHERE user_id IN (
-            SELECT user_id FROM sessions 
-            GROUP BY user_id 
-            HAVING COUNT(*) > 1
-          )
-          AND session_id NOT IN (
-            SELECT MAX(session_id) FROM sessions 
-            GROUP BY user_id
-          )
+          SELECT session_id FROM (
+            SELECT session_id, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY created_at DESC) as rn
+            FROM sessions
+          ) WHERE rn > 1
         )
       `).run();
 
