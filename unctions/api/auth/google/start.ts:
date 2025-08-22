@@ -1,0 +1,221 @@
+import { ensureMigrations } from "../../../_lib/migrations";
+
+export interface Env { DB: D1Database; GOOGLE_CLIENT_ID?: string }
+
+function buildRedirectUri(req: Request) {
+  const url = new URL(req.url);
+  return `${url.protocol}//${url.host}/api/auth/google/callback`;
+}
+
+export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
+  await ensureMigrations(env as any);
+  const clientId = env.GOOGLE_CLIENT_ID;
+  if (!clientId) return new Response('Missing GOOGLE_CLIENT_ID', { status: 500 });
+  const redirectUri = buildRedirectUri(request);
+  const scope = encodeURIComponent('openid email profile');
+  const state = crypto.randomUUID();
+  const authUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${encodeURIComponent(state)}&prompt=consent`;
+  return Response.redirect(authUrl, 302);
+}
+Crie o arquivo functions/api/auth/google/callback.ts:
+
+import { ensureMigrations } from "../../../_lib/migrations";
+
+export interface Env { DB: D1Database; GOOGLE_CLIENT_ID?: string; GOOGLE_CLIENT_SECRET?: string }
+
+function buildRedirectUri(req: Request) {
+  const url = new URL(req.url);
+  return `${url.protocol}//${url.host}/api/auth/google/callback`;
+}
+
+async function exchangeCodeForToken(code: string, clientId: string, clientSecret: string, redirectUri: string) {
+  const body = new URLSearchParams({ code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri, grant_type: 'authorization_code' });
+  const res = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body });
+  if (!res.ok) throw new Error('Token exchange failed');
+  return res.json() as Promise<{ access_token: string }>;
+}
+
+async function fetchUserInfo(accessToken: string) {
+  const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', { headers: { Authorization: `Bearer ${accessToken}` } });
+  if (!res.ok) throw new Error('Userinfo failed');
+  return res.json() as Promise<{ sub: string; email: string; name?: string }>;
+}
+
+export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
+  await ensureMigrations(env as any);
+  const clientId = env.GOOGLE_CLIENT_ID;
+  const clientSecret = env.GOOGLE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) return new Response('Missing Google credentials', { status: 500 });
+
+  const url = new URL(request.url);
+  const code = url.searchParams.get('code');
+  if (!code) return new Response('Missing code', { status: 400 });
+
+  const token = await exchangeCodeForToken(code, clientId, clientSecret, buildRedirectUri(request));
+  const profile = await fetchUserInfo(token.access_token);
+
+  const now = Date.now();
+  const bySub = await (env as any).DB.prepare(`SELECT id FROM users WHERE google_sub = ?`).bind(profile.sub).first<{ id: string }>();
+  let userId = bySub?.id;
+  if (!userId) {
+    const byEmail = await (env as any).DB.prepare(`SELECT id FROM users WHERE email = ?`).bind(profile.email.toLowerCase()).first<{ id: string }>();
+    if (byEmail?.id) {
+      userId = byEmail.id;
+      await (env as any).DB.prepare(`UPDATE users SET google_sub = ?, email_verified = 1 WHERE id = ?`).bind(profile.sub, userId).run();
+    } else {
+      userId = crypto.randomUUID();
+      const username = (profile.name || profile.email.split('@')[0]).slice(0, 30);
+      await (env as any).DB.prepare(
+        `INSERT INTO users(id, email, pass_hash, created_at, email_verified, username, google_sub)
+         VALUES (?, ?, '', ?, 1, ?, ?)`
+      ).bind(userId, profile.email.toLowerCase(), now, username, profile.sub).run();
+    }
+  }
+
+  const sessionId = crypto.randomUUID();
+  const expires = now + 1000 * 60 * 60 * 24 * 7;
+  await (env as any).DB.prepare(
+    `INSERT INTO sessions(session_id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`
+  ).bind(sessionId, userId, now, expires).run();
+
+  const headers = new Headers({ 'Content-Type': 'text/html' });
+  const host = new URL(request.url).host;
+  const apex = host.replace(/^www\./, '');
+  const cookieDomain = `.${apex}`;
+  headers.append('Set-Cookie', `ps_session=${sessionId}; Path=/; Domain=${cookieDomain}; HttpOnly; Secure; SameSite=Lax; Max-Age=${60*60*24*7}`);
+  headers.append('Location', '/');
+  return new Response('<html><head><meta http-equiv="refresh" content="0;url=/"></head></html>', { status: 302, headers });
+}
+Substitua o conteúdo de functions/_lib/migrations.ts por este (inclui google_sub):
+
+export interface Env {
+  DB: D1Database;
+}
+
+type Migration = {
+  version: string;
+  statements: string[];
+};
+
+// Define ordered migrations here
+const migrations: Migration[] = [
+  {
+    version: '2024-08-21_init',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS schema_migrations (
+         version TEXT PRIMARY KEY,
+         applied_at INTEGER NOT NULL
+       )`,
+      `CREATE TABLE IF NOT EXISTS history_items (
+         user TEXT NOT NULL,
+         timestamp INTEGER NOT NULL,
+         data TEXT NOT NULL,
+         PRIMARY KEY (user, timestamp)
+       )`,
+      `CREATE TABLE IF NOT EXISTS map_drops (
+         user TEXT NOT NULL,
+         timestamp INTEGER NOT NULL,
+         data TEXT NOT NULL,
+         PRIMARY KEY (user, timestamp)
+       )`,
+    ],
+  },
+  {
+    version: '2024-08-21_auth',
+    statements: [
+      `CREATE TABLE IF NOT EXISTS users (
+         id TEXT PRIMARY KEY,
+         email TEXT NOT NULL UNIQUE,
+         pass_hash TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         email_verified INTEGER NOT NULL DEFAULT 0,
+         username TEXT,
+         google_sub TEXT
+       )`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub) WHERE google_sub IS NOT NULL`,
+      `CREATE TABLE IF NOT EXISTS sessions (
+         session_id TEXT PRIMARY KEY,
+         user_id TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         expires_at INTEGER NOT NULL,
+         FOREIGN KEY (user_id) REFERENCES users(id)
+       )`,
+      `CREATE TABLE IF NOT EXISTS password_resets (
+         token TEXT PRIMARY KEY,
+         user_id TEXT NOT NULL,
+         created_at INTEGER NOT NULL,
+         expires_at INTEGER NOT NULL,
+         FOREIGN KEY (user_id) REFERENCES users(id)
+       )`,
+    ],
+  },
+];
+
+export async function ensureMigrations(env: Env): Promise<void> {
+  if (!env || !env.DB) return;
+  // Ensure schema_migrations exists first
+  await env.DB.prepare(
+    `CREATE TABLE IF NOT EXISTS schema_migrations (
+       version TEXT PRIMARY KEY,
+       applied_at INTEGER NOT NULL
+     )`
+  ).run();
+
+  // Load applied versions
+  const appliedRows = await env.DB.prepare(`SELECT version FROM schema_migrations`).all<{ version: string }>();
+  const applied = new Set((appliedRows.results || []).map(r => r.version));
+
+  // Apply pending migrations in order
+  for (const m of migrations) {
+    if (applied.has(m.version)) continue;
+    for (const stmt of m.statements) {
+      await env.DB.prepare(stmt).run();
+    }
+    await env.DB.prepare(`INSERT INTO schema_migrations(version, applied_at) VALUES (?, ?)`)
+      .bind(m.version, Date.now()).run();
+  }
+}
+Troque o client/src/components/AuthModal.tsx por um botão único do Google:
+
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { useI18n } from "@/i18n";
+
+interface AuthModalProps {
+  onClose: () => void;
+  defaultMode?: 'login' | 'register' | 'forgot' | 'reset';
+  defaultToken?: string;
+}
+
+export function AuthModal({ onClose }: AuthModalProps) {
+  const { t } = useI18n();
+  const [loading, setLoading] = useState(false);
+
+  const googleLogin = () => {
+    setLoading(true);
+    window.location.href = '/api/auth/google/start';
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+      <Card className="w-full max-w-sm bg-black border-gray-800">
+        <CardHeader className="py-3">
+          <CardTitle className="text-white text-base">{t('auth.title')}</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3 pt-0">
+          <div className="space-y-2">
+            <Button type="button" onClick={googleLogin} className="w-full bg-white text-black hover:bg-white/90 h-9 px-4" disabled={loading}>
+              {loading ? '...' : 'Continuar com Google'}
+            </Button>
+            <Button type="button" onClick={onClose} className="w-full bg-white/10 text-white hover:bg-white/20 h-9 px-4">
+              {t('auth.cancel')}
+            </Button>
+            <p className="text-[11px] text-white/60 text-center">Use sua conta Google para entrar com segurança.</p>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
