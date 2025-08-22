@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername } from '@/hooks/use-auth';
 import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
-import { appendHistoryItem, refreshHistory } from '@/lib/historyApi';
+import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
 	investment: 0,
@@ -24,6 +24,7 @@ export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
+	const [history, setHistory] = useState<HistoryItem[]>([]);
 
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
 
@@ -73,6 +74,18 @@ export function useCalculator() {
 		};
 		window.addEventListener('worldshards-whatif-luck', onWhatIf);
 		return () => window.removeEventListener('worldshards-whatif-luck', onWhatIf);
+	}, []);
+
+	// Load history on mount and when updated
+	useEffect(() => {
+		setHistory(getHistoryCached());
+		
+		const handleHistoryUpdate = () => {
+			setHistory(getHistoryCached());
+		};
+		
+		window.addEventListener('worldshards-history-updated', handleHistoryUpdate);
+		return () => window.removeEventListener('worldshards-history-updated', handleHistoryUpdate);
 	}, []);
 
 	const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
@@ -162,16 +175,13 @@ export function useCalculator() {
 		}
 
 		debounceTimeoutRef.current = setTimeout(() => {
-			const username = getCurrentUsername();
-			if (!username) return; // não salva se não estiver logado
-
 			const historyItem: HistoryItem = {
 				timestamp: Date.now(),
 				formData,
 				results,
 			};
 
-			appendHistoryItem(historyItem).catch(() => {});
+			appendHistoryItem(historyItem);
 		}, 500);
 	}, [debounceTimeoutRef]);
 
@@ -181,5 +191,6 @@ export function useCalculator() {
 		breakdown,
 		updateFormData,
 		saveToHistory,
+		history,
 	};
 }
