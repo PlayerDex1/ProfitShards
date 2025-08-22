@@ -168,36 +168,98 @@ export default function Profile() {
 											</p>
 										</div>
 									) : (
-										<div className="space-y-3">
+										<>
+											{/* Estatísticas Resumidas */}
+											<div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
+												<h3 className="text-lg font-semibold text-foreground mb-3">📊 Resumo Estatístico</h3>
+												<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+													<div className="text-center">
+														<div className="text-2xl font-bold text-foreground">
+															{history.length}
+														</div>
+														<div className="text-sm text-muted-foreground">Cálculos</div>
+													</div>
+													<div className="text-center">
+														<div className={`text-2xl font-bold ${history.filter(h => h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+															${(history.reduce((sum, h) => sum + h.results.finalProfit, 0) / history.length).toFixed(2)}
+														</div>
+														<div className="text-sm text-muted-foreground">Lucro Médio</div>
+													</div>
+													<div className="text-center">
+														<div className="text-2xl font-bold text-green-600 dark:text-green-400">
+															${Math.max(...history.map(h => h.results.finalProfit)).toFixed(2)}
+														</div>
+														<div className="text-sm text-muted-foreground">Melhor Lucro</div>
+													</div>
+													<div className="text-center">
+														<div className="text-2xl font-bold text-foreground">
+															{((history.filter(h => h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
+														</div>
+														<div className="text-sm text-muted-foreground">Taxa Sucesso</div>
+													</div>
+												</div>
+											</div>
+
+											{/* Lista do Histórico */}
+											<div className="space-y-3 max-h-96 overflow-auto">
 											{history.slice().reverse().map((item, revIndex) => {
 												const idx = history.length - 1 - revIndex;
 												const isProfit = item.results.finalProfit > 0;
+												const date = new Date(item.timestamp);
+												const dateStr = date.toLocaleDateString('pt-BR');
+												const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+												
 												return (
-													<Card key={idx} className="border-border">
+													<Card key={idx} className="border-border hover:bg-muted/30 transition-colors">
 														<CardContent className="p-4">
 															<div className="flex justify-between items-start">
-																<div className="space-y-2">
-																	<div className="flex items-center space-x-3">
-																		<div className={`text-2xl font-bold font-mono ${isProfit ? 'text-profit' : 'text-loss'}`}>
-																			${item.results.finalProfit.toFixed(2)}
+																<div className="flex-1 space-y-2">
+																	{/* Profit destacado */}
+																	<div className="flex items-center justify-between">
+																		<div className={`text-2xl font-bold font-mono ${isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+																			{isProfit ? '+' : ''}${item.results.finalProfit.toFixed(2)}
 																		</div>
-																		<div className={`text-sm px-2 py-1 rounded ${isProfit ? 'bg-profit/10 text-profit' : 'bg-loss/10 text-loss'}`}>
+																		<div className={`text-sm px-2 py-1 rounded-full font-medium ${isProfit ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
 																			ROI: {item.results.roi.toFixed(1)}%
 																		</div>
 																	</div>
-																	<div className="text-sm text-muted-foreground">
-																		<div>Investimento: ${item.formData.investment.toFixed(2)}</div>
-																		<div>Tokens: {item.results.totalTokens} | Gemas: {item.formData.gemsConsumed}</div>
+																	
+																	{/* Data e hora destacadas */}
+																	<div className="flex items-center space-x-4 text-sm">
+																		<div className="flex items-center space-x-2 text-foreground font-medium">
+																			<span>📅</span>
+																			<span>{dateStr}</span>
+																		</div>
+																		<div className="flex items-center space-x-2 text-foreground font-medium">
+																			<span>🕒</span>
+																			<span>{timeStr}</span>
+																		</div>
 																	</div>
-																	<div className="text-xs text-muted-foreground">
-																		{new Date(item.timestamp).toLocaleString('pt-BR')}
+																	
+																	{/* Detalhes do cálculo */}
+																	<div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+																		<div>
+																			<span className="font-medium">Investimento:</span> ${item.formData.investment.toFixed(2)}
+																		</div>
+																		<div>
+																			<span className="font-medium">Tokens:</span> {item.results.totalTokens.toLocaleString()}
+																		</div>
+																		<div>
+																			<span className="font-medium">Gemas:</span> {item.formData.gemsConsumed}
+																		</div>
+																		<div>
+																			<span className="font-medium">Eficiência:</span> {item.results.efficiency.toFixed(1)}/load
+																		</div>
 																	</div>
 																</div>
+																
+																{/* Botão de deletar */}
 																<Button
 																	variant="ghost"
 																	size="sm"
 																	onClick={() => removeHistoryItem(idx)}
-																	className="text-muted-foreground hover:text-destructive"
+																	className="text-muted-foreground hover:text-destructive ml-4"
+																	title="Remover este cálculo"
 																>
 																	<Trash2 className="h-4 w-4" />
 																</Button>
@@ -206,7 +268,8 @@ export default function Profile() {
 													</Card>
 												);
 											})}
-										</div>
+											</div>
+										</>
 									)}
 								</CardContent>
 							</Card>
