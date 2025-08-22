@@ -139,31 +139,10 @@ export function useCalculator() {
 
 	const breakdown = useMemo((): CalculationBreakdown[] => {
 		if (!results) return [];
-
+		
 		return [
 			{
-				metric: 'Valor Total dos Tokens',
-				key: 'results.totalTokenValue',
-				value: `$${results.totalTokenValue.toFixed(2)}`,
-				period: '',
-				status: 'positive'
-			},
-			{
-				metric: 'Custo das Gemas',
-				key: 'results.gemsCost',
-				value: `-$${results.gemsCost.toFixed(2)}`,
-				period: '',
-				status: 'negative'
-			},
-			{
-				metric: 'Lucro Bruto',
-				key: 'results.grossProfit',
-				value: `$${results.grossProfit.toFixed(2)}`,
-				period: '',
-				status: results.grossProfit > 0 ? 'positive' : 'negative'
-			},
-			{
-				metric: 'Lucro Líquido',
+				metric: 'Lucro Final',
 				key: 'results.finalProfit',
 				value: `$${results.finalProfit.toFixed(2)}`,
 				period: '',
@@ -179,21 +158,43 @@ export function useCalculator() {
 		];
 	}, [results]);
 
-	const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
-		if (debounceTimeoutRef.current) {
-			clearTimeout(debounceTimeoutRef.current);
+	// Auto-save to history when results change
+	useEffect(() => {
+		if (results && formData.investment > 0) {
+			// Only save if we have meaningful data
+			const hasSignificantData = 
+				formData.tokensFarmed > 0 || 
+				formData.tokensEquipment > 0 || 
+				formData.gemsConsumed > 0;
+
+			if (hasSignificantData) {
+				if (debounceTimeoutRef.current) {
+					clearTimeout(debounceTimeoutRef.current);
+				}
+
+				debounceTimeoutRef.current = setTimeout(() => {
+					const historyItem: HistoryItem = {
+						timestamp: Date.now(),
+						formData: { ...formData },
+						results: { ...results },
+					};
+
+					appendHistoryItem(historyItem);
+				}, 1000); // 1 second debounce to avoid too many saves while typing
+			}
 		}
+	}, [results, formData]);
 
-		debounceTimeoutRef.current = setTimeout(() => {
-			const historyItem: HistoryItem = {
-				timestamp: Date.now(),
-				formData,
-				results,
-			};
+	const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
+		// Manual save (when user clicks button) - immediate save
+		const historyItem: HistoryItem = {
+			timestamp: Date.now(),
+			formData,
+			results,
+		};
 
-			appendHistoryItem(historyItem);
-		}, 500);
-	}, [debounceTimeoutRef]);
+		appendHistoryItem(historyItem);
+	}, []);
 
 	return {
 		formData,

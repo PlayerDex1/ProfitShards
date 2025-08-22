@@ -17,6 +17,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 	const { t } = useI18n();
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
+	const [saveMessage, setSaveMessage] = useState<string>('');
 
 	useEffect(() => {
 		// Mark fields as touched if they already have non-zero value
@@ -35,6 +36,25 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
+
+	// Show auto-save message when formData changes and has meaningful data
+	useEffect(() => {
+		const hasSignificantData = 
+			formData.investment > 0 && (
+				formData.tokensFarmed > 0 || 
+				formData.tokensEquipment > 0 || 
+				formData.gemsConsumed > 0
+			);
+
+		if (hasSignificantData) {
+			setSaveMessage('💾 Salvando automaticamente...');
+			const timer = setTimeout(() => {
+				setSaveMessage('✅ Salvo no histórico');
+				setTimeout(() => setSaveMessage(''), 2000);
+			}, 1200);
+			return () => clearTimeout(timer);
+		}
+	}, [formData]);
 
 	const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
 		try {
@@ -59,6 +79,13 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 	const displayValue = (field: keyof CalculatorFormData, v: number) => {
 		if (field === 'gemPrice') return v; // keep default visible
 		return !touched[field] && v === 0 ? '' : Number.isFinite(v) ? Number(v) : 0;
+	};
+
+	const handleManualSave = () => {
+		// Manual save with immediate feedback
+		setSaveMessage('✅ Salvo manualmente!');
+		setTimeout(() => setSaveMessage(''), 3000);
+		onSaveToHistory();
 	};
 
 	if (error) {
@@ -246,11 +273,22 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 					</div>
 				</div>
 
-				{/* Save Button */}
-				<div className="pt-4 border-t">
-					<Button onClick={onSaveToHistory} className="w-full">
-						{t('calc.button')}
-					</Button>
+				{/* Auto-save indicator and Manual Save Button */}
+				<div className="pt-4 border-t space-y-3">
+					{saveMessage && (
+						<div className="text-center text-sm p-2 rounded-lg bg-muted/50 text-muted-foreground">
+							{saveMessage}
+						</div>
+					)}
+					
+					<div className="text-center">
+						<p className="text-xs text-muted-foreground mb-2">
+							💡 Seus cálculos são salvos automaticamente no histórico
+						</p>
+						<Button onClick={handleManualSave} variant="outline" size="sm">
+							{t('calc.button')}
+						</Button>
+					</div>
 				</div>
 			</CardContent>
 		</Card>

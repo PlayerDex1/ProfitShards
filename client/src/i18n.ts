@@ -104,7 +104,7 @@ const dicts: Record<Lang, Dict> = {
     'calc.gemsRemaining': 'Gemas Restantes',
     'calc.tokensFarmed': 'Tokens Farmados',
     'calc.gemPrice': 'Preço Gema (USD)',
-    'calc.button': 'Calcular Lucro Líquido',
+    'calc.button': 'Salvar Cálculo Manual',
 
     'sidebar.summary': 'Resumo Rápido',
     'sidebar.totalProfit': 'Lucro Total',
