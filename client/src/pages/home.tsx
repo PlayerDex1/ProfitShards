@@ -3,18 +3,17 @@ import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
 import { Sidebar } from "@/components/Sidebar";
 import { Results } from "@/components/Results";
-import { MapPlanner } from "@/components/MapPlanner";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, User } from "lucide-react";
+import { TrendingUp, User, History } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
-	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
+	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
 	const [activeSection, setActiveSection] = useState('calculator');
 	const { session, totalLuck } = useEquipment();
 	const { t } = useI18n();
@@ -77,50 +76,18 @@ export default function Home() {
 					</Card>
 				)}
 
-				<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-					{/* Sidebar */}
-					<div className="lg:col-span-1">
-						<Sidebar 
-							activeSection={activeSection} 
-							onSectionChange={setActiveSection}
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+					{/* Main Content - Calculator */}
+					<div className="lg:col-span-2">
+						<Calculator
+							formData={formData}
+							onUpdateFormData={updateFormData}
+							onSaveToHistory={handleSaveToHistory}
 						/>
 					</div>
 
-					{/* Main Content */}
-					<div className="lg:col-span-2">
-						{activeSection === 'calculator' && (
-							<Calculator
-								formData={formData}
-								onUpdateFormData={updateFormData}
-								onSaveToHistory={handleSaveToHistory}
-							/>
-						)}
-						
-						{activeSection === 'planner' && (
-							<MapPlanner />
-						)}
-						
-						{activeSection === 'equipment' && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="text-foreground">
-										{t('equipment.title')}
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<p className="text-muted-foreground mb-4">
-										Configure seus equipamentos para otimizar os cálculos.
-									</p>
-									<Link href="/perfil" className="text-primary hover:text-primary/80 underline">
-										Ir para página de equipamentos completa →
-									</Link>
-								</CardContent>
-							</Card>
-						)}
-					</div>
-
-					{/* Results */}
-					<div className="lg:col-span-1">
+					{/* Results and History */}
+					<div className="lg:col-span-1 space-y-6">
 						{results && (
 							<Results 
 								results={results}
@@ -128,6 +95,40 @@ export default function Home() {
 								formData={formData}
 								totalLuck={totalLuck}
 							/>
+						)}
+
+						{/* History Section */}
+						{history.length > 0 && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<History className="h-5 w-5" />
+										<span>Histórico Recente</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-3 max-h-96 overflow-auto">
+										{history.slice(0, 5).map((entry, index) => (
+											<div key={index} className="p-3 border rounded-lg bg-muted/50">
+												<div className="text-sm font-medium text-foreground mb-1">
+													{entry.formData.mapSize} - {entry.formData.loads} loads
+												</div>
+												<div className="text-xs text-muted-foreground">
+													Profit: {entry.results.profitPerLoad.toLocaleString()} / load
+												</div>
+												<div className="text-xs text-muted-foreground">
+													{new Date(entry.timestamp).toLocaleString()}
+												</div>
+											</div>
+										))}
+									</div>
+									<div className="mt-4 pt-3 border-t">
+										<Link href="/perfil" className="text-sm text-primary hover:text-primary/80 underline">
+											Ver histórico completo no perfil →
+										</Link>
+									</div>
+								</CardContent>
+							</Card>
 						)}
 					</div>
 				</div>
