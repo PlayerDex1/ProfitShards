@@ -132,8 +132,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     let cookieDomain = '';
     
     // Configure cookie domain based on hostname
-    if (hostname.includes('profitsfards.online')) {
-      cookieDomain = '; Domain=.profitsfards.online';
+    if (hostname.includes('profitshards.online')) {
+      cookieDomain = '; Domain=.profitshards.online';
     } else if (hostname.includes('pages.dev')) {
       cookieDomain = '; Domain=.pages.dev';
     }
