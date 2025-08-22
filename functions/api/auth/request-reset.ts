@@ -24,7 +24,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     const resetUrl = `${origin.protocol}//${origin.host}/?resetToken=${encodeURIComponent(token)}`;
     const mailBody = {
       personalizations: [{ to: [{ email }] }],
-      from: { email: 'no-reply@profitshards.pages.dev', name: 'ProfitShards' },
+      from: { email: 'no-reply@profitshards.online', name: 'ProfitShards' },
       subject: 'Reset de senha',
       content: [{ type: 'text/plain', value: `Use este link para resetar sua senha: ${resetUrl} (expira em 30 minutos).` }]
     };
