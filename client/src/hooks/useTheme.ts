@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 export type Theme = 'light' | 'dark' | 'system';
 
 export function useTheme() {
-  const [theme, setThemeState] = useState<Theme>('system');
+  const [theme, setThemeState] = useState<Theme>('light'); // Default to light instead of system
 
   // Get system preference
   const getSystemTheme = useCallback((): 'light' | 'dark' => {
@@ -40,14 +40,14 @@ export function useTheme() {
         setThemeState(savedTheme);
         applyTheme(savedTheme);
       } else {
-        // Default to system
-        setThemeState('system');
-        applyTheme('system');
+        // Default to light for better first experience
+        setThemeState('light');
+        applyTheme('light');
       }
     } catch (error) {
       console.error('Failed to load theme:', error);
-      setThemeState('system');
-      applyTheme('system');
+      setThemeState('light');
+      applyTheme('light');
     }
   }, [applyTheme]);
 

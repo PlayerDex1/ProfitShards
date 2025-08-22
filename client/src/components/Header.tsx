@@ -1,4 +1,4 @@
-import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
+import { Moon, Sun, Calculator, LogIn, LogOut, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/useTheme";
@@ -10,7 +10,7 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
-  const { t } = useI18n();
+  const { t, lang, setLang } = useI18n();
 
   return (
     <>
@@ -28,6 +28,20 @@ export function Header() {
             </div>
             
             <nav className="flex items-center space-x-3">
+              {/* Language Selector */}
+              <div className="flex items-center space-x-1">
+                <Globe className="h-4 w-4 text-muted-foreground" />
+                <select
+                  value={lang}
+                  onChange={(e) => setLang(e.target.value as 'pt' | 'en')}
+                  className="bg-transparent text-sm text-foreground border-none outline-none cursor-pointer hover:text-primary transition-colors"
+                >
+                  <option value="pt" className="bg-background text-foreground">🇧🇷 PT</option>
+                  <option value="en" className="bg-background text-foreground">🇺🇸 EN</option>
+                </select>
+              </div>
+
+              {/* Theme Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -53,7 +67,7 @@ export function Header() {
                     onClick={logout}
                     className="text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                   >
-                    <LogOut className="h-4 w-4 mr-2" /> Sair
+                    <LogOut className="h-4 w-4 mr-2" /> {t('header.logout')}
                   </Button>
                 </div>
               ) : (
