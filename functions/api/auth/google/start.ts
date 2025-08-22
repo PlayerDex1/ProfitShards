@@ -1,9 +1,14 @@
+import { ensureMigrations } from "../../../_lib/migrations";
+
 export interface Env {
   DB: D1Database;
   GOOGLE_CLIENT_ID: string;
 }
 
 export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
+  // Run migrations automatically
+  await ensureMigrations(env);
+  
   const clientId = env.GOOGLE_CLIENT_ID;
   if (!clientId) {
     return new Response('Missing GOOGLE_CLIENT_ID', { status: 500 });

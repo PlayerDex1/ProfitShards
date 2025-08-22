@@ -1,3 +1,5 @@
+import { ensureMigrations } from "../../../_lib/migrations";
+
 export interface Env {
   DB: D1Database;
   GOOGLE_CLIENT_ID: string;
@@ -40,6 +42,9 @@ async function fetchUserInfo(accessToken: string) {
 
 export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
   try {
+    // Run migrations automatically before processing
+    await ensureMigrations(env);
+    
     const clientId = env.GOOGLE_CLIENT_ID;
     const clientSecret = env.GOOGLE_CLIENT_SECRET;
     

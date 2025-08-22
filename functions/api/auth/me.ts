@@ -1,9 +1,14 @@
+import { ensureMigrations } from "../../_lib/migrations";
+
 export interface Env {
   DB: D1Database;
 }
 
 export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
   try {
+    // Run migrations automatically
+    await ensureMigrations(env);
+    
     // Get session from cookie
     const cookie = request.headers.get('Cookie');
     if (!cookie) {
