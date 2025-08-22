@@ -3,6 +3,21 @@
   "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist/public",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/(.*)", "destination": "/index.html" }
-  ]
+  ],
+  "functions": {
+    "functions/api/auth/google/start.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "functions/api/auth/google/callback.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "functions/api/auth/me.ts": {
+      "runtime": "nodejs18.x"
+    },
+    "functions/api/auth/logout.ts": {
+      "runtime": "nodejs18.x"
+    }
+  }
 }

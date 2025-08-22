@@ -1,0 +1,30 @@
+name = "worldshards-auth"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[env.production]
+name = "worldshards-auth"
+
+[env.preview]
+name = "worldshards-auth-preview"
+
+# D1 Database configuration
+# Replace with your actual database IDs
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "worldshards-db"
+database_id = "your-production-database-id"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "worldshards-db-preview"
+database_id = "your-preview-database-id"
+
+# Environment variables
+[env.production.vars]
+GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "your-google-client-secret"
+
+[env.preview.vars]
+GOOGLE_CLIENT_ID = "your-google-client-id.apps.googleusercontent.com"
+GOOGLE_CLIENT_SECRET = "your-google-client-secret"
