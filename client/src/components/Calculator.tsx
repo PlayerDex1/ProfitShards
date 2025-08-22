@@ -16,24 +16,44 @@ interface CalculatorProps {
 export const Calculator = memo(function Calculator({ formData, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
 	const { t } = useI18n();
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
+	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
 		// Mark fields as touched if they already have non-zero value
-		const init: Record<string, boolean> = {};
-		(Object.keys(formData) as (keyof CalculatorFormData)[]).forEach((k) => {
-			const v = formData[k] as any;
-			if (k === 'gemPrice') init[k] = true; // always show default gem price
-			else init[k] = typeof v === 'number' ? v !== 0 : !!v;
-		});
-		setTouched(init);
+		try {
+			const init: Record<string, boolean> = {};
+			(Object.keys(formData) as (keyof CalculatorFormData)[]).forEach((k) => {
+				const v = formData[k] as any;
+				if (k === 'gemPrice') init[k] = true; // always show default gem price
+				else init[k] = typeof v === 'number' ? v !== 0 : !!v;
+			});
+			setTouched(init);
+			setError(null);
+		} catch (err) {
+			console.error('Error initializing calculator:', err);
+			setError('Erro ao inicializar calculadora');
+		}
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
-		const raw = e.target.value.replace(',', '.');
-		const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : (raw === '' ? 0 : parseFloat(raw) || 0);
-		onUpdateFormData(field, value);
-		setTouched((prev) => ({ ...prev, [field]: true }));
+		try {
+			const raw = e.target.value.replace(',', '.');
+			const value = e.target.type === 'checkbox' ? (e.target as HTMLInputElement).checked : (raw === '' ? 0 : parseFloat(raw) || 0);
+			
+			// Validate the value
+			if (typeof value === 'number' && (isNaN(value) || !isFinite(value))) {
+				console.warn(`Invalid value for ${field}:`, value);
+				return;
+			}
+			
+			onUpdateFormData(field, value);
+			setTouched((prev) => ({ ...prev, [field]: true }));
+			setError(null);
+		} catch (err) {
+			console.error(`Error updating field ${field}:`, err);
+			setError(`Erro ao atualizar ${field}`);
+		}
 	};
 
 	const displayValue = (field: keyof CalculatorFormData, v: number) => {
@@ -41,90 +61,195 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 		return !touched[field] && v === 0 ? '' : Number.isFinite(v) ? Number(v) : 0;
 	};
 
+	if (error) {
+		return (
+			<Card>
+				<CardContent className="p-6">
+					<div className="text-center text-red-500">
+						<p>{error}</p>
+						<Button 
+							onClick={() => {
+								setError(null);
+								window.location.reload();
+							}} 
+							variant="outline" 
+							className="mt-4"
+						>
+							Recarregar
+						</Button>
+					</div>
+				</CardContent>
+			</Card>
+		);
+	}
+
 	return (
-		<Card className="bg-black text-white shadow-lg border border-gray-800">
+		<Card>
 			<CardHeader className="py-4">
 				<div className="flex items-center gap-3">
-					<div className="p-2 bg-white rounded-lg">
-						<DollarSign className="w-5 h-5 text-black" />
+					<div className="p-2 bg-primary rounded-lg">
+						<DollarSign className="w-5 h-5 text-primary-foreground" />
 					</div>
-					<CardTitle className="text-lg font-semibold text-white">
+					<CardTitle className="text-xl font-bold text-foreground">
 						{t('calc.title')}
 					</CardTitle>
 				</div>
 			</CardHeader>
-			<CardContent className="pt-0">
-				<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-					<div className="space-y-3">
+			<CardContent className="space-y-6">
+				{/* Investment Section */}
+				<div className="space-y-4">
+					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+						<DollarSign className="w-4 h-4" />
+						Investimento
+					</h3>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<Label htmlFor="investment" className="text-xs font-medium text-white/80">
+							<Label htmlFor="investment" className="text-sm font-medium text-foreground">
 								{t('calc.investment')}
 							</Label>
-							<Input id="investment" type="number" value={displayValue('investment', formData.investment)} onChange={handleInputChange('investment')} data-testid="input-investment" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" placeholder="" />
+							<Input
+								id="investment"
+								type="number"
+								step="0.01"
+								value={displayValue('investment', formData.investment)}
+								onChange={handleInputChange('investment')}
+								placeholder="0.00"
+								className="mt-1"
+							/>
 						</div>
 						<div>
-							<Label htmlFor="gemsConsumed" className="text-xs font-medium text-white/80">
-								{t('calc.gemsConsumed')}
-							</Label>
-							<Input id="gemsConsumed" type="number" value={displayValue('gemsConsumed', formData.gemsConsumed)} onChange={handleInputChange('gemsConsumed')} data-testid="input-gems-consumed" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-						<div>
-							<Label htmlFor="loadsUsed" className="text-xs font-medium text-white/80">
-								{t('calc.loadsUsed')}
-							</Label>
-							<Input id="loadsUsed" type="number" value={displayValue('loadsUsed', formData.loadsUsed)} onChange={handleInputChange('loadsUsed')} data-testid="input-loads-used" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-					</div>
-
-					<div className="space-y-3">
-						<div>
-							<Label htmlFor="gemsPurchased" className="text-xs font-medium text-white/80">
-								{t('calc.gemsPurchased')}
-							</Label>
-							<Input id="gemsPurchased" type="number" value={displayValue('gemsPurchased', formData.gemsPurchased)} onChange={handleInputChange('gemsPurchased')} data-testid="input-gems-purchased" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-						<div>
-							<Label htmlFor="tokensEquipment" className="text-xs font-medium text-white/80">
-								{t('calc.tokensEquipment')}
-							</Label>
-							<Input id="tokensEquipment" type="number" value={displayValue('tokensEquipment', formData.tokensEquipment)} onChange={handleInputChange('tokensEquipment')} data-testid="input-tokens-equipment" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-						<div>
-							<Label htmlFor="tokenPrice" className="text-xs font-medium text-white/80">
-								{t('calc.tokenPrice')}
-							</Label>
-							<Input id="tokenPrice" type="number" step="0.0001" value={displayValue('tokenPrice', formData.tokenPrice)} onChange={handleInputChange('tokenPrice')} data-testid="input-token-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-					</div>
-
-					<div className="space-y-3">
-						<div>
-							<Label htmlFor="gemsRemaining" className="text-xs font-medium text-white/80">
-								{t('calc.gemsRemaining')}
-							</Label>
-							<Input id="gemsRemaining" type="number" value={displayValue('gemsRemaining', formData.gemsRemaining)} onChange={handleInputChange('gemsRemaining')} data-testid="input-gems-remaining" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-						<div>
-							<Label htmlFor="tokensFarmed" className="text-xs font-medium text-white/80">
-								{t('calc.tokensFarmed')}
-							</Label>
-							<Input id="tokensFarmed" type="number" value={displayValue('tokensFarmed', formData.tokensFarmed)} onChange={handleInputChange('tokensFarmed')} data-testid="input-tokens-farmed" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
-						</div>
-						<div>
-							<Label htmlFor="gemPrice" className="text-xs font-medium text-white/80">
+							<Label htmlFor="gemPrice" className="text-sm font-medium text-foreground">
 								{t('calc.gemPrice')}
 							</Label>
-							<Input id="gemPrice" type="number" step="0.00001" value={formData.gemPrice} onChange={handleInputChange('gemPrice')} data-testid="input-gem-price" className="font-mono mt-1 bg-white/10 border-white/20 text-white placeholder-white/40 h-9" />
+							<Input
+								id="gemPrice"
+								type="number"
+								step="0.00001"
+								value={displayValue('gemPrice', formData.gemPrice)}
+								onChange={handleInputChange('gemPrice')}
+								placeholder="0.00714"
+								className="mt-1"
+							/>
 						</div>
 					</div>
 				</div>
 
-				<div className="mt-6">
-					<Button onClick={onSaveToHistory} className="w-full bg-white text-black hover:bg-white/90 font-semibold py-3 px-6 transition-all duration-300" data-testid="button-calculate">
-						<div className="flex items-center justify-center gap-3">
-							<Gem className="w-5 h-5" />
-							{t('calc.button')}
+				{/* Gems Section */}
+				<div className="space-y-4">
+					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+						<Gem className="w-4 h-4" />
+						Gemas
+					</h3>
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+						<div>
+							<Label htmlFor="gemsPurchased" className="text-sm font-medium text-foreground">
+								{t('calc.gemsPurchased')}
+							</Label>
+							<Input
+								id="gemsPurchased"
+								type="number"
+								value={displayValue('gemsPurchased', formData.gemsPurchased)}
+								onChange={handleInputChange('gemsPurchased')}
+								placeholder="0"
+								className="mt-1"
+							/>
 						</div>
+						<div>
+							<Label htmlFor="gemsRemaining" className="text-sm font-medium text-foreground">
+								{t('calc.gemsRemaining')}
+							</Label>
+							<Input
+								id="gemsRemaining"
+								type="number"
+								value={displayValue('gemsRemaining', formData.gemsRemaining)}
+								onChange={handleInputChange('gemsRemaining')}
+								placeholder="0"
+								className="mt-1"
+							/>
+						</div>
+						<div>
+							<Label htmlFor="gemsConsumed" className="text-sm font-medium text-foreground">
+								{t('calc.gemsConsumed')}
+							</Label>
+							<Input
+								id="gemsConsumed"
+								type="number"
+								value={displayValue('gemsConsumed', formData.gemsConsumed)}
+								onChange={handleInputChange('gemsConsumed')}
+								placeholder="0"
+								className="mt-1"
+							/>
+						</div>
+					</div>
+				</div>
+
+				{/* Tokens Section */}
+				<div className="space-y-4">
+					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+						<Zap className="w-4 h-4" />
+						Tokens
+					</h3>
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<Label htmlFor="tokensEquipment" className="text-sm font-medium text-foreground">
+								{t('calc.tokensEquipment')}
+							</Label>
+							<Input
+								id="tokensEquipment"
+								type="number"
+								value={displayValue('tokensEquipment', formData.tokensEquipment)}
+								onChange={handleInputChange('tokensEquipment')}
+								placeholder="0"
+								className="mt-1"
+							/>
+						</div>
+						<div>
+							<Label htmlFor="tokensFarmed" className="text-sm font-medium text-foreground">
+								{t('calc.tokensFarmed')}
+							</Label>
+							<Input
+								id="tokensFarmed"
+								type="number"
+								value={displayValue('tokensFarmed', formData.tokensFarmed)}
+								onChange={handleInputChange('tokensFarmed')}
+								placeholder="0"
+								className="mt-1"
+							/>
+						</div>
+						<div>
+							<Label htmlFor="loadsUsed" className="text-sm font-medium text-foreground">
+								{t('calc.loadsUsed')}
+							</Label>
+							<Input
+								id="loadsUsed"
+								type="number"
+								value={displayValue('loadsUsed', formData.loadsUsed)}
+								onChange={handleInputChange('loadsUsed')}
+								placeholder="0"
+								className="mt-1"
+							/>
+						</div>
+						<div>
+							<Label htmlFor="tokenPrice" className="text-sm font-medium text-foreground">
+								{t('calc.tokenPrice')}
+							</Label>
+							<Input
+								id="tokenPrice"
+								type="number"
+								step="0.00001"
+								value={displayValue('tokenPrice', formData.tokenPrice)}
+								onChange={handleInputChange('tokenPrice')}
+								placeholder="0.00000"
+								className="mt-1"
+							/>
+						</div>
+					</div>
+				</div>
+
+				{/* Save Button */}
+				<div className="pt-4 border-t">
+					<Button onClick={onSaveToHistory} className="w-full">
+						{t('calc.button')}
 					</Button>
 				</div>
 			</CardContent>
