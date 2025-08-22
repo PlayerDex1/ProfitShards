@@ -1,5 +1,4 @@
- },
-});import { ensureMigrations } from "../../_lib/migrations";
+import { ensureMigrations } from "../../_lib/migrations";
 
 export interface Env { DB: D1Database }
 
@@ -32,10 +31,14 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     await (env as any).DB.prepare(`INSERT INTO sessions(session_id, user_id, created_at, expires_at) VALUES (?, ?, ?, ?)`).bind(sessionId, row.id, now, expires).run();
 
     const headers = new Headers({ 'Content-Type': 'application/json' });
-    headers.append('Set-Cookie', `ps_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${60*60*24*7}`);
+    // Define o cookie para apex + www (ex.: .profitshards.online)
+    const host = new URL(request.url).host;
+    const apex = host.replace(/^www\./, '');
+    const cookieDomain = `.${apex}`;
+    headers.append('Set-Cookie', `ps_session=${sessionId}; Path=/; Domain=${cookieDomain}; HttpOnly; Secure; SameSite=Lax; Max-Age=${60*60*24*7}`);
+
     return new Response(JSON.stringify({ ok: true }), { headers });
   } catch (err: any) {
     return new Response(JSON.stringify({ error: String(err?.message || err) }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
-
