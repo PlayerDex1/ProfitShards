@@ -10,7 +10,11 @@
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push",
-    "build:vercel": "NODE_ENV=production vite build --config vite.config.production.ts && cp dist/public/index.html dist/public/404.html"
+    "build:vercel": "NODE_ENV=production vite build --config vite.config.production.ts && cp dist/public/index.html dist/public/404.html",
+    "db:setup": "wrangler d1 execute worldshards-db --file=./d1-schema.sql",
+    "db:backup": "wrangler d1 export worldshards-db --output=backup.sql",
+    "deploy:preview": "wrangler pages deploy dist/public --project-name=worldshards-auth",
+    "deploy:production": "wrangler pages deploy dist/public --project-name=worldshards-auth --branch=main"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

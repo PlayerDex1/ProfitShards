@@ -1,6 +1,12 @@
-node_modules
-dist
+node_modules/
+dist/
+.env
+.env.local
+.env.production
+.env.development
+*.log
 .DS_Store
-server/public
-vite.config.ts.*
-*.tar.gz
+*.db
+*.sqlite
+*.sqlite3
+dev.db

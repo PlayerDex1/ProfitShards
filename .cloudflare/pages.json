@@ -1,0 +1,19 @@
+{
+  "name": "worldshards-auth",
+  "compatibility_date": "2024-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "functions": {
+    "directory": "functions"
+  },
+  "env": {
+    "GOOGLE_CLIENT_ID": "your-google-client-id.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_SECRET": "your-google-client-secret"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "worldshards-db",
+      "database_id": "your-database-id"
+    }
+  ]
+}
