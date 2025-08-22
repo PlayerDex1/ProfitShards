@@ -78,6 +78,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       SELECT id, email, username FROM users WHERE google_sub = ?
     `).bind(profile.sub).first();
 
+    let isNewUser = false;
+
     if (!user) {
       // Check if user exists by email
       const existingUser = await env.DB.prepare(`
@@ -86,27 +88,40 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
       if (existingUser) {
         console.log('Linking Google account to existing user:', existingUser.id);
-        // Link Google account to existing user
+        // Link Google account to existing user and update last_login
         await env.DB.prepare(`
-          UPDATE users SET google_sub = ?, email_verified = 1, created_at = COALESCE(created_at, ?) WHERE id = ?
-        `).bind(profile.sub, now, existingUser.id).run();
+          UPDATE users SET google_sub = ?, email_verified = 1, last_login = ?, updated_at = ?, created_at = COALESCE(created_at, ?) WHERE id = ?
+        `).bind(profile.sub, now, now, now, existingUser.id).run();
         
         user = await env.DB.prepare(`
           SELECT id, email, username FROM users WHERE id = ?
         `).bind(existingUser.id).first();
       } else {
         console.log('Creating new user for:', profile.email);
+        isNewUser = true;
+        
         // Create new user
         const userId = crypto.randomUUID();
         const username = (profile.name || profile.email.split('@')[0]).substring(0, 50);
         
         await env.DB.prepare(`
-          INSERT INTO users (id, email, username, google_sub, email_verified, created_at, pass_hash)
-          VALUES (?, ?, ?, ?, 1, ?, '')
-        `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now).run();
+          INSERT INTO users (id, email, username, google_sub, email_verified, created_at, updated_at, last_login, pass_hash)
+          VALUES (?, ?, ?, ?, 1, ?, ?, ?, '')
+        `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now, now, now).run();
 
         user = { id: userId, email: profile.email.toLowerCase(), username };
+        
+        // Create default preferences for new user
+        await env.DB.prepare(`
+          INSERT INTO user_preferences (user_id, theme, language, currency, created_at, updated_at)
+          VALUES (?, 'system', 'pt', 'USD', ?, ?)
+        `).bind(userId, now, now).run();
       }
+    } else {
+      // Update last_login for existing Google user
+      await env.DB.prepare(`
+        UPDATE users SET last_login = ?, updated_at = ? WHERE id = ?
+      `).bind(now, now, user.id).run();
     }
 
     if (!user) {
@@ -116,7 +131,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     console.log('User ready:', user.id, user.email);
 
-    // Create session
+    // Delete any existing sessions for this user to avoid duplicates
+    await env.DB.prepare(`
+      DELETE FROM sessions WHERE user_id = ?
+    `).bind(user.id).run();
+
+    // Create new session
     const sessionId = crypto.randomUUID();
     const expires = now + (7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -127,7 +147,29 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     console.log('Session created:', sessionId);
 
-    // Set cookie with proper domain configuration
+    // Log login activity
+    const userAgent = request.headers.get('User-Agent') || '';
+    const ipAddress = request.headers.get('CF-Connecting-IP') || request.headers.get('X-Forwarded-For') || '';
+    
+    await env.DB.prepare(`
+      INSERT INTO user_activity (id, user_id, activity_type, activity_data, ip_address, user_agent, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      crypto.randomUUID(),
+      user.id,
+      isNewUser ? 'user_registered' : 'user_login',
+      JSON.stringify({ 
+        method: 'google_oauth',
+        email: profile.email,
+        name: profile.name,
+        isNewUser 
+      }),
+      ipAddress,
+      userAgent,
+      now
+    ).run();
+
+    // Set cookie with correct domain
     const hostname = url.hostname;
     let cookieDomain = '';
     

@@ -5,7 +5,7 @@ export interface Env {
 export async function ensureMigrations(env: Env): Promise<void> {
   try {
     // Check if migrations table exists
-    const migrationsTable = await env.DB.prepare(`
+    await env.DB.prepare(`
       CREATE TABLE IF NOT EXISTS migrations (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT UNIQUE NOT NULL,
@@ -40,6 +40,18 @@ export async function ensureMigrations(env: Env): Promise<void> {
         console.log('created_at column may already exist');
       }
 
+      try {
+        await env.DB.prepare(`ALTER TABLE users ADD COLUMN updated_at INTEGER`).run();
+      } catch (e) {
+        console.log('updated_at column may already exist');
+      }
+
+      try {
+        await env.DB.prepare(`ALTER TABLE users ADD COLUMN last_login INTEGER`).run();
+      } catch (e) {
+        console.log('last_login column may already exist');
+      }
+
       // Create sessions table
       await env.DB.prepare(`
         CREATE TABLE IF NOT EXISTS sessions (
@@ -50,16 +62,6 @@ export async function ensureMigrations(env: Env): Promise<void> {
         )
       `).run();
 
-      // Create indexes
-      try {
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)`).run();
-      } catch (e) {
-        console.log('Some indexes may already exist');
-      }
-
       // Mark migration as completed
       await env.DB.prepare(`
         INSERT INTO migrations (name, executed_at) VALUES ('add_google_oauth_columns', ?)
@@ -68,64 +70,145 @@ export async function ensureMigrations(env: Env): Promise<void> {
       console.log('Migration add_google_oauth_columns completed successfully');
     }
 
-    // Migration 002: Fix pass_hash NOT NULL constraint
+    // Migration 002: Create user data tables
     const migration002 = await env.DB.prepare(`
-      SELECT name FROM migrations WHERE name = 'fix_pass_hash_constraint'
+      SELECT name FROM migrations WHERE name = 'create_user_data_tables'
     `).first();
 
     if (!migration002) {
-      console.log('Running migration: fix_pass_hash_constraint');
+      console.log('Running migration: create_user_data_tables');
       
-      // SQLite doesn't support ALTER COLUMN, so we need to recreate the table
-      // First, check if pass_hash column exists and is NOT NULL
-      try {
-        // Create new users table with correct schema
-        await env.DB.prepare(`
-          CREATE TABLE IF NOT EXISTS users_new (
-            id TEXT PRIMARY KEY,
-            username TEXT NOT NULL,
-            email TEXT,
-            password TEXT,
-            pass_hash TEXT,
-            google_sub TEXT,
-            email_verified BOOLEAN DEFAULT FALSE,
-            created_at INTEGER
-          )
-        `).run();
+      // User calculations/runs
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS user_calculations (
+          id TEXT PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          calculation_type TEXT NOT NULL,
+          calculation_data TEXT NOT NULL,
+          result_data TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `).run();
 
-        // Copy existing data
-        await env.DB.prepare(`
-          INSERT OR IGNORE INTO users_new (id, username, email, password, pass_hash, google_sub, email_verified, created_at)
-          SELECT id, username, email, password, COALESCE(pass_hash, ''), google_sub, email_verified, created_at FROM users
-        `).run();
+      // User preferences
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS user_preferences (
+          user_id TEXT PRIMARY KEY,
+          theme TEXT DEFAULT 'system',
+          language TEXT DEFAULT 'pt',
+          currency TEXT DEFAULT 'USD',
+          preferences_data TEXT,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `).run();
 
-        // Drop old table and rename new one
-        await env.DB.prepare(`DROP TABLE users`).run();
-        await env.DB.prepare(`ALTER TABLE users_new RENAME TO users`).run();
+      // Equipment builds
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS user_equipment_builds (
+          id TEXT PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          build_name TEXT NOT NULL,
+          equipment_data TEXT NOT NULL,
+          build_type TEXT,
+          is_favorite BOOLEAN DEFAULT FALSE,
+          created_at INTEGER NOT NULL,
+          updated_at INTEGER,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `).run();
 
-        // Recreate indexes
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`).run();
-        await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)`).run();
+      // Map drops history
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS user_map_drops (
+          id TEXT PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          map_name TEXT NOT NULL,
+          drop_data TEXT NOT NULL,
+          tokens_earned INTEGER,
+          time_spent INTEGER,
+          efficiency_rating REAL,
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `).run();
 
-        console.log('Users table recreated with nullable pass_hash');
-      } catch (e) {
-        console.log('Table recreation failed, trying alternative approach:', e);
-        
-        // Alternative: Just update existing records to have empty pass_hash
-        try {
-          await env.DB.prepare(`UPDATE users SET pass_hash = '' WHERE pass_hash IS NULL`).run();
-          console.log('Updated NULL pass_hash values to empty string');
-        } catch (updateError) {
-          console.log('Failed to update pass_hash values:', updateError);
-        }
-      }
+      // User activity log
+      await env.DB.prepare(`
+        CREATE TABLE IF NOT EXISTS user_activity (
+          id TEXT PRIMARY KEY,
+          user_id TEXT NOT NULL,
+          activity_type TEXT NOT NULL,
+          activity_data TEXT,
+          ip_address TEXT,
+          user_agent TEXT,
+          created_at INTEGER NOT NULL,
+          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+      `).run();
+
+      // Create all indexes
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_users_last_login ON users(last_login)`).run();
+      
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_sessions_expires ON sessions(expires_at)`).run();
+      
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_user_id ON user_calculations(user_id)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_type ON user_calculations(calculation_type)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_calculations_created ON user_calculations(created_at)`).run();
+      
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_equipment_user_id ON user_equipment_builds(user_id)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_equipment_favorite ON user_equipment_builds(is_favorite)`).run();
+      
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_mapdrops_user_id ON user_map_drops(user_id)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_mapdrops_map ON user_map_drops(map_name)`).run();
+      
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_activity_user_id ON user_activity(user_id)`).run();
+      await env.DB.prepare(`CREATE INDEX IF NOT EXISTS idx_activity_type ON user_activity(activity_type)`).run();
 
       // Mark migration as completed
       await env.DB.prepare(`
-        INSERT INTO migrations (name, executed_at) VALUES ('fix_pass_hash_constraint', ?)
+        INSERT INTO migrations (name, executed_at) VALUES ('create_user_data_tables', ?)
       `).bind(Date.now()).run();
 
-      console.log('Migration fix_pass_hash_constraint completed');
+      console.log('Migration create_user_data_tables completed successfully');
+    }
+
+    // Migration 003: Fix cookie domain issue
+    const migration003 = await env.DB.prepare(`
+      SELECT name FROM migrations WHERE name = 'fix_cookie_domain'
+    `).first();
+
+    if (!migration003) {
+      console.log('Running migration: fix_cookie_domain');
+      
+      // Delete duplicate sessions to clean up cookie issues
+      await env.DB.prepare(`
+        DELETE FROM sessions WHERE session_id IN (
+          SELECT session_id FROM sessions 
+          WHERE user_id IN (
+            SELECT user_id FROM sessions 
+            GROUP BY user_id 
+            HAVING COUNT(*) > 1
+          )
+          AND session_id NOT IN (
+            SELECT MAX(session_id) FROM sessions 
+            GROUP BY user_id
+          )
+        )
+      `).run();
+
+      // Mark migration as completed
+      await env.DB.prepare(`
+        INSERT INTO migrations (name, executed_at) VALUES ('fix_cookie_domain', ?)
+      `).bind(Date.now()).run();
+
+      console.log('Migration fix_cookie_domain completed successfully');
     }
 
   } catch (error) {
