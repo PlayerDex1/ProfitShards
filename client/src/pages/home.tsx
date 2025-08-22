@@ -3,12 +3,14 @@ import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
 import { Sidebar } from "@/components/Sidebar";
 import { Results } from "@/components/Results";
+import { MapPlanner } from "@/components/MapPlanner";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
+import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp } from "lucide-react";
+import { TrendingUp, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
@@ -33,6 +35,29 @@ export default function Home() {
 			<Header />
 			
 			<div className="container mx-auto px-4 py-6">
+				{/* Navigation and Welcome */}
+				<div className="flex justify-between items-center mb-6">
+					<div>
+						<h1 className="text-3xl font-bold text-foreground">
+							{t('home.title')}
+						</h1>
+						<p className="text-muted-foreground mt-1">
+							{t('home.subtitle')}
+						</p>
+					</div>
+					
+					{/* Profile Link */}
+					<Link href="/perfil" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
+						<User className="h-5 w-5" />
+						<span className="font-medium">
+							{isAuthenticated 
+								? `Perfil de ${user}`
+								: t('nav.profile')
+							}
+						</span>
+					</Link>
+				</div>
+
 				{/* Welcome message for authenticated users */}
 				{isAuthenticated && (
 					<Card className="mb-6 bg-primary/5 border-primary/20">
@@ -41,7 +66,7 @@ export default function Home() {
 								<TrendingUp className="h-6 w-6 text-primary" />
 								<div>
 									<h2 className="text-lg font-semibold text-foreground">
-										{t('welcome.title', { user: user || 'Usuário' })}
+										Bem-vindo, {user}!
 									</h2>
 									<p className="text-sm text-muted-foreground">
 										Seus dados são salvos automaticamente na nuvem
@@ -72,16 +97,23 @@ export default function Home() {
 						)}
 						
 						{activeSection === 'planner' && (
+							<MapPlanner />
+						)}
+						
+						{activeSection === 'equipment' && (
 							<Card>
 								<CardHeader>
 									<CardTitle className="text-foreground">
-										{t('planner.title')}
+										{t('equipment.title')}
 									</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p className="text-muted-foreground">
-										Planejador de mapas em desenvolvimento...
+									<p className="text-muted-foreground mb-4">
+										Configure seus equipamentos para otimizar os cálculos.
 									</p>
+									<Link href="/perfil" className="text-primary hover:text-primary/80 underline">
+										Ir para página de equipamentos completa →
+									</Link>
 								</CardContent>
 							</Card>
 						)}
