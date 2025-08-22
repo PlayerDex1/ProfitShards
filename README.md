@@ -127,10 +127,26 @@ Para deploy em produção, configure as seguintes variáveis:
 - `GOOGLE_CLIENT_SECRET` - Client Secret do Google OAuth
 - `SESSION_SECRET` - Chave secreta para sessões
 
-### Deploy Rápido (3 passos):
+### Deploy Recomendado (Backend + Frontend):
+
+**Para funcionalidade completa com Google OAuth:**
+
+#### **Vercel (Recomendado)**
 1. **Fork** este repositório no GitHub
-2. **Configure** as variáveis de ambiente na sua plataforma de deploy
-3. **Deploy** - Sua calculadora estará online em alguns minutos
+2. Conecte no [Vercel](https://vercel.com)
+3. **Configure** as variáveis de ambiente:
+   - `DATABASE_URL`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `SESSION_SECRET`
+4. **Deploy** automático - Funcionalidade completa!
+
+#### **Railway/Render**
+- Suporte completo ao Express + PostgreSQL
+- Configure as mesmas variáveis de ambiente
+- Deploy automático via GitHub
+
+#### **Cloudflare Pages (Limitado)**
+- ⚠️ **Apenas frontend estático** - sem autenticação Google
+- Ideal para demonstração da interface
+- Deploy automático configurado
 
 Consulte o [Guia de Deploy](./DEPLOY.md) completo para instruções detalhadas.
 
