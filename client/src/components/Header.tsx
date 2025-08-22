@@ -1,4 +1,4 @@
-import { Moon, Sun, Calculator, LogIn, LogOut, Bug } from "lucide-react";
+import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
@@ -8,40 +8,9 @@ import { useI18n } from "@/i18n";
 
 export function Header() {
   const { theme, setTheme } = useTheme();
-  const { user, isAuthenticated, logout, refreshAuth } = useAuth();
+  const { user, isAuthenticated, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
   const { t } = useI18n();
-  const [defaultMode, setDefaultMode] = useState<'login' | 'register' | 'forgot' | 'reset' | undefined>(undefined);
-  const [defaultToken, setDefaultToken] = useState<string | undefined>(undefined);
-
-  // Debug function to test auth
-  const debugAuth = async () => {
-    console.log('🐛 [DEBUG] Manual auth check triggered');
-    try {
-      const response = await fetch('/api/debug/auth-status', { credentials: 'include' });
-      const data = await response.json();
-      console.log('🐛 [DEBUG] Auth status:', data);
-      
-      // Force refresh auth
-      refreshAuth();
-    } catch (error) {
-      console.error('🐛 [DEBUG] Auth status error:', error);
-    }
-  };
-
-  // Listen for auth parameter changes
-  useState(() => {
-    const url = new URL(window.location.href);
-    const mode = url.searchParams.get('auth') as 'login' | 'register' | 'forgot' | 'reset' | null;
-    const token = url.searchParams.get('token');
-    if (mode) {
-      setDefaultMode(mode);
-      setDefaultToken(token || undefined);
-      if (mode !== 'reset' || token) {
-        setShowAuth(true);
-      }
-    }
-  });
 
   return (
     <>
@@ -59,17 +28,6 @@ export function Header() {
             </div>
             
             <nav className="flex items-center space-x-2">
-              {/* Debug button - temporary */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={debugAuth}
-                className="text-xs"
-              >
-                <Bug className="h-4 w-4 mr-1" />
-                Debug
-              </Button>
-              
               <Button
                 variant="ghost"
                 size="sm"
