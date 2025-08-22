@@ -19,26 +19,34 @@ export function useAuth() {
   const checkAuth = useCallback(async () => {
     try {
       setLoading(true);
-      console.log('🔍 Checking auth status...');
+      console.log('🔍 [PROFITSHARDS AUTH] Checking auth status...');
       const me = await api<{ user: { id: string; email: string; username: string } | null }>("/api/auth/me");
-      console.log('🔍 Auth response:', me);
+      console.log('🔍 [PROFITSHARDS AUTH] Auth response:', me);
       
       const email = me.user?.email ?? null;
       if (email) {
         localStorage.setItem(CURRENT_USER_KEY, email);
-        console.log('✅ User authenticated:', email);
+        console.log('✅ [PROFITSHARDS AUTH] User authenticated:', email);
         setUser(email);
         
         // Trigger migration if user just logged in
-        const { migrateGuestToCurrentUser } = await import('@/lib/migrateGuestToAccount');
-        migrateGuestToCurrentUser().catch(console.error);
+        try {
+          const { migrateGuestToCurrentUser } = await import('@/lib/migrateGuestToAccount');
+          await migrateGuestToCurrentUser();
+          console.log('✅ [PROFITSHARDS AUTH] Data migration completed');
+        } catch (migrationError) {
+          console.error('❌ [PROFITSHARDS AUTH] Migration error:', migrationError);
+        }
+        
+        // Dispatch auth updated event
+        window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
       } else {
         localStorage.removeItem(CURRENT_USER_KEY);
-        console.log('❌ No user authenticated');
+        console.log('❌ [PROFITSHARDS AUTH] No user authenticated');
         setUser(null);
       }
     } catch (error) {
-      console.log('❌ Auth check failed:', error);
+      console.log('❌ [PROFITSHARDS AUTH] Auth check failed:', error);
       localStorage.removeItem(CURRENT_USER_KEY);
       setUser(null);
     } finally {
@@ -54,35 +62,41 @@ export function useAuth() {
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === 'success') {
-      console.log('🎉 Login success detected, refreshing auth state');
+      console.log('🎉 [PROFITSHARDS AUTH] Login success detected, refreshing auth state');
       
       // Remove the parameter from URL
       urlParams.delete('login');
       const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
       window.history.replaceState({}, '', newUrl);
       
-      // Force refresh auth state multiple times to ensure cookie is read
+      // Force immediate refresh
+      console.log('🔄 [PROFITSHARDS AUTH] Immediate auth refresh...');
+      checkAuth();
+      
+      // Additional refreshes to handle cookie delays
       setTimeout(() => {
-        console.log('🔄 First auth refresh...');
+        console.log('🔄 [PROFITSHARDS AUTH] First delayed refresh...');
         checkAuth();
-      }, 500);
+      }, 1000);
       
       setTimeout(() => {
-        console.log('🔄 Second auth refresh...');
+        console.log('🔄 [PROFITSHARDS AUTH] Second delayed refresh...');
         checkAuth();
-      }, 2000);
+      }, 3000);
       
       setTimeout(() => {
-        console.log('🔄 Final auth refresh...');
+        console.log('🔄 [PROFITSHARDS AUTH] Final delayed refresh...');
         checkAuth();
-      }, 4000);
+      }, 6000);
     }
   }, [checkAuth]);
 
   useEffect(() => {
     const onStorage = (e: StorageEvent) => {
       if (e.key === CURRENT_USER_KEY) {
-        setUser(localStorage.getItem(CURRENT_USER_KEY));
+        const newUser = localStorage.getItem(CURRENT_USER_KEY);
+        console.log('🔄 [PROFITSHARDS AUTH] Storage event, new user:', newUser);
+        setUser(newUser);
       }
     };
     window.addEventListener("storage", onStorage);
@@ -90,6 +104,12 @@ export function useAuth() {
   }, []);
 
   const isAuthenticated = useMemo(() => Boolean(user), [user]);
+
+  // Manual refresh function for debugging
+  const refreshAuth = useCallback(() => {
+    console.log('🔄 [PROFITSHARDS AUTH] Manual refresh triggered');
+    checkAuth();
+  }, [checkAuth]);
 
   // Dummy functions to maintain compatibility (not needed for Google OAuth)
   const register = useCallback(async (email: string, password: string) => {
@@ -102,10 +122,11 @@ export function useAuth() {
 
   const logout = useCallback(async () => {
     try {
+      console.log('🚪 [PROFITSHARDS AUTH] Logging out...');
       await api<{ ok: boolean }>("/api/auth/logout", { method: 'POST', credentials: 'include' });
-      console.log('✅ Logout successful');
+      console.log('✅ [PROFITSHARDS AUTH] Logout successful');
     } catch (error) {
-      console.error('❌ Logout error:', error);
+      console.error('❌ [PROFITSHARDS AUTH] Logout error:', error);
     }
     localStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
@@ -120,5 +141,5 @@ export function useAuth() {
     return { ok: true as const };
   }, []);
 
-  return { user, isAuthenticated, loading, register, login, logout, requestReset, resetPassword };
+  return { user, isAuthenticated, loading, register, login, logout, requestReset, resetPassword, refreshAuth };
 }

@@ -1,93 +1,113 @@
-import { Moon, Sun, Calculator, LogIn, LogOut } from "lucide-react";
+import { Moon, Sun, Calculator, LogIn, LogOut, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "next-themes";
 import { useAuth } from "@/hooks/use-auth";
-import { useEffect, useMemo, useState } from "react";
+import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
-import { Link } from "wouter";
 
 export function Header() {
-  const { isDark, toggleTheme } = useTheme();
-  const { user, isAuthenticated, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const { user, isAuthenticated, logout, refreshAuth } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
-  const { lang, setLang, t } = useI18n();
+  const { t } = useI18n();
   const [defaultMode, setDefaultMode] = useState<'login' | 'register' | 'forgot' | 'reset' | undefined>(undefined);
   const [defaultToken, setDefaultToken] = useState<string | undefined>(undefined);
 
-  useEffect(() => {
+  // Debug function to test auth
+  const debugAuth = async () => {
+    console.log('🐛 [DEBUG] Manual auth check triggered');
     try {
-      const url = new URL(window.location.href);
-      const token = url.searchParams.get('resetToken');
-      if (token) {
-        setDefaultMode('reset');
-        setDefaultToken(token);
+      const response = await fetch('/api/debug/auth-status', { credentials: 'include' });
+      const data = await response.json();
+      console.log('🐛 [DEBUG] Auth status:', data);
+      
+      // Force refresh auth
+      refreshAuth();
+    } catch (error) {
+      console.error('🐛 [DEBUG] Auth status error:', error);
+    }
+  };
+
+  // Listen for auth parameter changes
+  useState(() => {
+    const url = new URL(window.location.href);
+    const mode = url.searchParams.get('auth') as 'login' | 'register' | 'forgot' | 'reset' | null;
+    const token = url.searchParams.get('token');
+    if (mode) {
+      setDefaultMode(mode);
+      setDefaultToken(token || undefined);
+      if (mode !== 'reset' || token) {
         setShowAuth(true);
-        url.searchParams.delete('resetToken');
-        window.history.replaceState({}, '', url.toString());
       }
-    } catch {}
-  }, []);
+    }
+  });
 
   return (
-    <header className="bg-black sticky top-0 z-50 w-full border-b border-gray-800/80">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          <div className="min-w-0">
-            <h1 className="text-xl md:text-2xl font-bold text-white truncate">
-              {t('header.title')}
-            </h1>
+    <>
+      <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="container flex h-14 items-center">
+          <div className="mr-4 flex">
+            <Calculator className="h-6 w-6 mr-2" />
+            <span className="hidden font-bold sm:inline-block">
+              ProfitShards
+            </span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as 'pt' | 'en')}
-              className="h-9 px-2 rounded bg-white/10 text-white border border-white/10"
-              aria-label={t('header.lang')}
-            >
-              <option className="bg-black text-white" value="pt">Português</option>
-              <option className="bg-black text-white" value="en">English</option>
-            </select>
-            {isAuthenticated ? (
-              <>
-                <Link href="/perfil" className="text-white/80 text-sm hidden md:inline hover:underline">Perfil</Link>
-                <span className="text-white/80 text-sm hidden md:inline">Olá, {user}</span>
-                <Button
-                  variant="ghost"
-                  className="h-9 px-3 rounded-lg text-white hover:bg-white/10"
-                  onClick={logout}
-                >
-                  <LogOut className="h-5 w-5 mr-2" /> {t('header.logout')}
-                </Button>
-              </>
-            ) : (
+          
+          <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+            <div className="w-full flex-1 md:w-auto md:flex-none">
+            </div>
+            
+            <nav className="flex items-center space-x-2">
+              {/* Debug button - temporary */}
               <Button
                 variant="ghost"
-                className="h-9 px-3 rounded-lg text-white hover:bg-white/10"
-                onClick={() => setShowAuth(true)}
+                size="sm"
+                onClick={debugAuth}
+                className="text-xs"
               >
-                <LogIn className="h-5 w-5 mr-2" /> {t('header.login')}
+                <Bug className="h-4 w-4 mr-1" />
+                Debug
               </Button>
-            )}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              data-testid="button-toggle-theme"
-              className="h-9 w-9 rounded-lg text-white hover:bg-white/10"
-              aria-label={t('header.theme')}
-            >
-              {isDark ? (
-                <Sun className="h-5 w-5" />
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              >
+                <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+                <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+                <span className="sr-only">Toggle theme</span>
+              </Button>
+              
+              {isAuthenticated ? (
+                <div className="flex items-center space-x-2">
+                  <span className="text-sm text-muted-foreground">
+                    {user}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={logout}
+                  >
+                    <LogOut className="h-5 w-5 mr-2" /> Sair
+                  </Button>
+                </div>
               ) : (
-                <Moon className="h-5 w-5" />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowAuth(true)}
+                >
+                  <LogIn className="h-5 w-5 mr-2" /> {t('header.login')}
+                </Button>
               )}
-            </Button>
+            </nav>
           </div>
         </div>
-      </div>
-      {showAuth && <AuthModal onClose={() => setShowAuth(false)} defaultMode={defaultMode} defaultToken={defaultToken} />}
-    </header>
+      </header>
+
+      {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+    </>
   );
 }
