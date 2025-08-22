@@ -96,26 +96,36 @@ export function useCalculator() {
 	}, []);
 
 	const results = useMemo((): CalculationResults | null => {
-		if (formData.investment <= 0 || formData.tokenPrice <= 0 || formData.gemPrice <= 0) {
+		// Only require that at least some meaningful data is provided
+		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0 && formData.investment <= 0) {
 			return null;
 		}
 
+		// Use defaults for missing values
+		const investment = formData.investment || 0;
+		const tokenPrice = formData.tokenPrice || 0;
+		const gemPrice = formData.gemPrice || 0.00714; // default gem price
+		const tokensFarmed = formData.tokensFarmed || 0;
+		const tokensEquipment = formData.tokensEquipment || 0;
+		const gemsConsumed = formData.gemsConsumed || 0;
+		const loadsUsed = formData.loadsUsed || 1; // avoid division by zero
+
 		// Tokens efetivamente farmados líquidos (subtrai os tokens gastos na aceleração)
-		const netFarmedTokens = Math.max(0, formData.tokensFarmed - formData.tokensEquipment);
+		const netFarmedTokens = Math.max(0, tokensFarmed - tokensEquipment);
 		const totalTokens = netFarmedTokens;
-		const totalTokenValue = totalTokens * formData.tokenPrice * luckMultiplier;
-		const gemsCost = formData.gemsConsumed * formData.gemPrice;
+		const totalTokenValue = totalTokens * tokenPrice * luckMultiplier;
+		const gemsCost = gemsConsumed * gemPrice;
 		const grossProfit = totalTokenValue; // já não somamos tokens gastos
 		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
 		const finalProfit = grossProfit - gemsCost;
 		const netProfit = finalProfit;
-		const roi = formData.investment > 0 ? (finalProfit / formData.investment) * 100 : 0;
-		const efficiency = formData.loadsUsed > 0 ? netFarmedTokens / formData.loadsUsed : 0;
+		const roi = investment > 0 ? (finalProfit / investment) * 100 : 0;
+		const efficiency = loadsUsed > 0 ? netFarmedTokens / loadsUsed : 0;
 
 		return {
 			totalTokens,
-			tokensEquipment: formData.tokensEquipment,
-			tokensFarmed: formData.tokensFarmed,
+			tokensEquipment,
+			tokensFarmed,
 			totalTokenValue,
 			gemsCost,
 			grossProfit,

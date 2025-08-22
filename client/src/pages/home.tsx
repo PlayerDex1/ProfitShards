@@ -86,14 +86,13 @@ export default function Home() {
 
 					{/* Results and History */}
 					<div className="lg:col-span-1 space-y-6">
-						{results && (
-							<Results 
-								results={results}
-								breakdown={breakdown}
-								formData={formData}
-								totalLuck={totalLuck}
-							/>
-						)}
+						{/* Always show Results component - it handles the empty state */}
+						<Results 
+							results={results}
+							breakdown={breakdown}
+							formData={formData}
+							totalLuck={totalLuck}
+						/>
 
 						{/* History Section */}
 						{history.length > 0 && (
@@ -109,10 +108,13 @@ export default function Home() {
 										{history.slice(0, 5).map((entry, index) => (
 											<div key={index} className="p-3 border rounded-lg bg-muted/50">
 												<div className="text-sm font-medium text-foreground mb-1">
-													{entry.formData.mapSize} - {entry.formData.loads} loads
+													Investimento: ${entry.formData.investment.toFixed(2)}
 												</div>
 												<div className="text-xs text-muted-foreground">
-													Profit: {entry.results.profitPerLoad.toLocaleString()} / load
+													Lucro Final: ${entry.results.finalProfit.toFixed(2)}
+												</div>
+												<div className="text-xs text-muted-foreground">
+													ROI: {entry.results.roi.toFixed(1)}%
 												</div>
 												<div className="text-xs text-muted-foreground">
 													{new Date(entry.timestamp).toLocaleString()}
@@ -124,6 +126,24 @@ export default function Home() {
 										<Link href="/perfil" className="text-sm text-primary hover:text-primary/80 underline">
 											Ver histórico completo no perfil →
 										</Link>
+									</div>
+								</CardContent>
+							</Card>
+						)}
+
+						{/* Show message when no history */}
+						{history.length === 0 && (
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<History className="h-5 w-5" />
+										<span>Histórico</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="text-center text-muted-foreground py-4">
+										<p className="text-sm">Nenhum cálculo salvo ainda</p>
+										<p className="text-xs mt-1">Faça um cálculo e clique em "Calcular Lucro Líquido" para salvar</p>
 									</div>
 								</CardContent>
 							</Card>
