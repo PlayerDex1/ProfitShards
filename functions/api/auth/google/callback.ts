@@ -61,11 +61,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     const redirectUri = `${url.protocol}//${url.host}/api/auth/google/callback`;
 
+    console.log('Starting OAuth callback for:', url.host);
+
     // Exchange code for token
     const token = await exchangeCodeForToken(code, clientId, clientSecret, redirectUri);
+    console.log('Token exchange successful');
     
     // Get user info from Google
     const profile = await fetchUserInfo(token.access_token);
+    console.log('User profile obtained:', profile.email);
 
     const now = Date.now();
 
@@ -77,35 +81,40 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     if (!user) {
       // Check if user exists by email
       const existingUser = await env.DB.prepare(`
-        SELECT id FROM users WHERE email = ?
+        SELECT id, username FROM users WHERE email = ?
       `).bind(profile.email.toLowerCase()).first();
 
       if (existingUser) {
+        console.log('Linking Google account to existing user:', existingUser.id);
         // Link Google account to existing user
         await env.DB.prepare(`
-          UPDATE users SET google_sub = ?, email_verified = 1 WHERE id = ?
-        `).bind(profile.sub, existingUser.id).run();
+          UPDATE users SET google_sub = ?, email_verified = 1, created_at = COALESCE(created_at, ?) WHERE id = ?
+        `).bind(profile.sub, now, existingUser.id).run();
         
         user = await env.DB.prepare(`
           SELECT id, email, username FROM users WHERE id = ?
         `).bind(existingUser.id).first();
       } else {
+        console.log('Creating new user for:', profile.email);
         // Create new user
         const userId = crypto.randomUUID();
-        const username = profile.name || profile.email.split('@')[0];
+        const username = (profile.name || profile.email.split('@')[0]).substring(0, 50);
         
         await env.DB.prepare(`
           INSERT INTO users (id, email, username, google_sub, email_verified, created_at, pass_hash)
           VALUES (?, ?, ?, ?, 1, ?, '')
         `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now).run();
 
-        user = { id: userId, email: profile.email, username };
+        user = { id: userId, email: profile.email.toLowerCase(), username };
       }
     }
 
     if (!user) {
+      console.error('User creation/lookup failed');
       return new Response('User creation failed', { status: 500 });
     }
+
+    console.log('User ready:', user.id, user.email);
 
     // Create session
     const sessionId = crypto.randomUUID();
@@ -116,10 +125,27 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       VALUES (?, ?, ?, ?)
     `).bind(sessionId, user.id, now, expires).run();
 
-    // Set cookie and redirect
+    console.log('Session created:', sessionId);
+
+    // Set cookie with proper domain configuration
+    const hostname = url.hostname;
+    let cookieDomain = '';
+    
+    // Configure cookie domain based on hostname
+    if (hostname.includes('profitsfards.online')) {
+      cookieDomain = '; Domain=.profitsfards.online';
+    } else if (hostname.includes('pages.dev')) {
+      cookieDomain = '; Domain=.pages.dev';
+    }
+
+    const cookieValue = `ps_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}${cookieDomain}`;
+
+    console.log('Setting cookie:', cookieValue);
+
+    // Redirect with success message
     const headers = new Headers({
-      'Location': '/',
-      'Set-Cookie': `ps_session=${sessionId}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${7 * 24 * 60 * 60}`
+      'Location': '/?login=success',
+      'Set-Cookie': cookieValue
     });
 
     return new Response(null, { status: 302, headers });
