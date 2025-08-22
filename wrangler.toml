@@ -5,12 +5,12 @@ pages_build_output_dir = "dist/public"
 
 [env.production]
 d1_databases = [
-  { binding = "DB", database_name = "profitshards-db", database_id = "your-database-id-here" }
+  { binding = "DB", database_name = "profitshards", database_id = "0565dee6-30b3-48d5-ad6d-7f7e19d26d24" }
 ]
 
 [env.preview]
 d1_databases = [
-  { binding = "DB", database_name = "profitshards-db-preview", database_id = "your-preview-database-id-here" }
+  { binding = "DB", database_name = "profitshards", database_id = "0565dee6-30b3-48d5-ad6d-7f7e19d26d24" }
 ]
 
 # Environment variables (set these in Cloudflare Dashboard)
