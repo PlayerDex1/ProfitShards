@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
@@ -12,12 +12,83 @@ interface AuthModalProps {
 export function AuthModal({ onClose }: AuthModalProps) {
   const { t } = useI18n();
   const [loading, setLoading] = useState(false);
+  const [isStaticHost, setIsStaticHost] = useState(false);
+
+  useEffect(() => {
+    // Detecta se estamos em um host estático (Cloudflare Pages, Netlify, etc.)
+    const hostname = window.location.hostname;
+    const isStatic = hostname.includes('.pages.dev') || 
+                    hostname.includes('.netlify.app') || 
+                    hostname.includes('.github.io') ||
+                    hostname.includes('surge.sh');
+    setIsStaticHost(isStatic);
+  }, []);
 
   const googleLogin = () => {
     setLoading(true);
-    // Use Express OAuth route instead of Cloudflare Functions
+    // Use Express OAuth route
     window.location.href = '/api/auth/google';
   };
+
+  if (isStaticHost) {
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
+        <Card className="w-full max-w-md bg-black border-gray-800">
+          <CardHeader className="py-4">
+            <CardTitle className="text-white text-lg text-center">🔐 Autenticação Indisponível</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-0">
+            <div className="text-center space-y-3">
+              <p className="text-white/80 text-sm">
+                Esta é uma <strong>versão de demonstração</strong> hospedada estaticamente.
+              </p>
+              
+              <div className="bg-white/5 border border-white/10 rounded-lg p-3 text-left">
+                <p className="text-white/70 text-xs mb-2">
+                  <strong>✅ Funciona nesta versão:</strong>
+                </p>
+                <ul className="text-white/60 text-xs space-y-1 ml-2">
+                  <li>• Calculadora de lucro completa</li>
+                  <li>• Gráficos e análises</li>
+                  <li>• Modo escuro/claro</li>
+                  <li>• Armazenamento local</li>
+                </ul>
+              </div>
+
+              <div className="bg-orange-500/10 border border-orange-500/20 rounded-lg p-3 text-left">
+                <p className="text-orange-300 text-xs mb-2">
+                  <strong>🚀 Para login com Google:</strong>
+                </p>
+                <p className="text-orange-200/80 text-xs">
+                  Acesse a versão completa em{' '}
+                  <a 
+                    href="https://profitshards.vercel.app" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-300 hover:text-blue-200 underline"
+                  >
+                    profitshards.vercel.app
+                  </a>
+                </p>
+              </div>
+              
+              <Button 
+                type="button" 
+                onClick={onClose} 
+                className="w-full bg-white/10 text-white hover:bg-white/20 h-10"
+              >
+                Continuar sem Login
+              </Button>
+              
+              <p className="text-[11px] text-white/50 text-center">
+                Seus dados serão salvos localmente no navegador
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80">
