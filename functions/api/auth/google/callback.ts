@@ -95,8 +95,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         const username = profile.name || profile.email.split('@')[0];
         
         await env.DB.prepare(`
-          INSERT INTO users (id, email, username, google_sub, email_verified, created_at)
-          VALUES (?, ?, ?, ?, 1, ?)
+          INSERT INTO users (id, email, username, google_sub, email_verified, created_at, pass_hash)
+          VALUES (?, ?, ?, ?, 1, ?, '')
         `).bind(userId, profile.email.toLowerCase(), username, profile.sub, now).run();
 
         user = { id: userId, email: profile.email, username };
