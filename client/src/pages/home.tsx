@@ -7,12 +7,12 @@ import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { TrendingUp, User, History } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { TrendingUp, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
-	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
+	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const { totalLuck } = useEquipment();
 	const { t } = useI18n();
 	const { user, isAuthenticated } = useAuth();
@@ -84,70 +84,14 @@ export default function Home() {
 						/>
 					</div>
 
-					{/* Results and History */}
-					<div className="lg:col-span-1 space-y-6">
-						{/* Always show Results component - it handles the empty state */}
+					{/* Results */}
+					<div className="lg:col-span-1">
 						<Results 
 							results={results}
 							breakdown={breakdown}
 							formData={formData}
 							totalLuck={totalLuck}
 						/>
-
-						{/* History Section */}
-						{history.length > 0 && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center space-x-2">
-										<History className="h-5 w-5" />
-										<span>Histórico Recente</span>
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<div className="space-y-3 max-h-96 overflow-auto">
-										{history.slice(0, 5).map((entry, index) => (
-											<div key={index} className="p-3 border rounded-lg bg-muted/50">
-												<div className="text-sm font-medium text-foreground mb-1">
-													Investimento: ${entry.formData.investment.toFixed(2)}
-												</div>
-												<div className="text-xs text-muted-foreground">
-													Lucro Final: ${entry.results.finalProfit.toFixed(2)}
-												</div>
-												<div className="text-xs text-muted-foreground">
-													ROI: {entry.results.roi.toFixed(1)}%
-												</div>
-												<div className="text-xs text-muted-foreground">
-													{new Date(entry.timestamp).toLocaleString()}
-												</div>
-											</div>
-										))}
-									</div>
-									<div className="mt-4 pt-3 border-t">
-										<Link href="/perfil" className="text-sm text-primary hover:text-primary/80 underline">
-											Ver histórico completo no perfil →
-										</Link>
-									</div>
-								</CardContent>
-							</Card>
-						)}
-
-						{/* Show message when no history */}
-						{history.length === 0 && (
-							<Card>
-								<CardHeader>
-									<CardTitle className="flex items-center space-x-2">
-										<History className="h-5 w-5" />
-										<span>Histórico</span>
-									</CardTitle>
-								</CardHeader>
-								<CardContent>
-									<div className="text-center text-muted-foreground py-4">
-										<p className="text-sm">Nenhum cálculo salvo ainda</p>
-										<p className="text-xs mt-1">Faça um cálculo e clique em "Calcular Lucro Líquido" para salvar</p>
-									</div>
-								</CardContent>
-							</Card>
-						)}
 					</div>
 				</div>
 			</div>
