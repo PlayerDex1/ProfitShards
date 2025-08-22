@@ -19,18 +19,26 @@ export function useAuth() {
   const checkAuth = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('🔍 Checking auth status...');
       const me = await api<{ user: { id: string; email: string; username: string } | null }>("/api/auth/me");
+      console.log('🔍 Auth response:', me);
+      
       const email = me.user?.email ?? null;
       if (email) {
         localStorage.setItem(CURRENT_USER_KEY, email);
-        console.log('User authenticated:', email);
+        console.log('✅ User authenticated:', email);
+        setUser(email);
+        
+        // Trigger migration if user just logged in
+        const { migrateGuestToCurrentUser } = await import('@/lib/migrateGuestToAccount');
+        migrateGuestToCurrentUser().catch(console.error);
       } else {
         localStorage.removeItem(CURRENT_USER_KEY);
-        console.log('No user authenticated');
+        console.log('❌ No user authenticated');
+        setUser(null);
       }
-      setUser(email);
     } catch (error) {
-      console.log('Auth check failed:', error);
+      console.log('❌ Auth check failed:', error);
       localStorage.removeItem(CURRENT_USER_KEY);
       setUser(null);
     } finally {
@@ -42,20 +50,32 @@ export function useAuth() {
     checkAuth();
   }, [checkAuth]);
 
-  // Check for login success parameter
+  // Check for login success parameter and force refresh
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('login') === 'success') {
-      console.log('Login success detected, refreshing auth state');
+      console.log('🎉 Login success detected, refreshing auth state');
+      
       // Remove the parameter from URL
       urlParams.delete('login');
       const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
       window.history.replaceState({}, '', newUrl);
       
-      // Refresh auth state after a brief delay
+      // Force refresh auth state multiple times to ensure cookie is read
       setTimeout(() => {
+        console.log('🔄 First auth refresh...');
         checkAuth();
-      }, 1000);
+      }, 500);
+      
+      setTimeout(() => {
+        console.log('🔄 Second auth refresh...');
+        checkAuth();
+      }, 2000);
+      
+      setTimeout(() => {
+        console.log('🔄 Final auth refresh...');
+        checkAuth();
+      }, 4000);
     }
   }, [checkAuth]);
 
@@ -83,9 +103,9 @@ export function useAuth() {
   const logout = useCallback(async () => {
     try {
       await api<{ ok: boolean }>("/api/auth/logout", { method: 'POST', credentials: 'include' });
-      console.log('Logout successful');
+      console.log('✅ Logout successful');
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('❌ Logout error:', error);
     }
     localStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
