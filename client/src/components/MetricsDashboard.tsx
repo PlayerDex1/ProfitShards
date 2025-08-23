@@ -166,6 +166,14 @@ export function MetricsDashboard() {
             <Button onClick={fixTimestamps} variant="outline" size="sm" className="bg-yellow-100">
               Fix Timestamps
             </Button>
+            <Button 
+              onClick={() => { loadMetrics(); fetchDebugData(); }} 
+              variant="default" 
+              size="sm" 
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Reload All
+            </Button>
         </div>
       </div>
 
@@ -355,31 +363,63 @@ export function MetricsDashboard() {
 
       {/* Debug Data Section */}
       {debugData && (
-        <Card className="mt-6 border-yellow-200 bg-yellow-50">
+        <Card className="mt-6 border-gray-400 bg-gray-800 text-white">
           <CardHeader>
-            <CardTitle className="text-yellow-800">🔍 Debug Data</CardTitle>
+            <CardTitle className="text-yellow-300">🔍 Debug Data</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-sm space-y-2">
-              <div><strong>Admin:</strong> {debugData.admin_user}</div>
-              <div><strong>Tabelas no banco:</strong> {debugData.database_info.total_tables}</div>
-              <div><strong>Map Drop Metrics:</strong> 
-                {debugData.map_drop_metrics.table_exists ? 
-                  `✅ Tabela existe (${debugData.map_drop_metrics.total_records} registros)` : 
-                  '❌ Tabela não existe'
-                }
+            <div className="text-sm space-y-3">
+              <div className="p-2 bg-gray-700 rounded">
+                <strong className="text-blue-300">Admin:</strong> 
+                <span className="ml-2 text-green-300">{debugData.admin_user}</span>
               </div>
-              <div><strong>Usuários:</strong> {debugData.other_tables.users.count}</div>
-              <div><strong>Sessões ativas:</strong> {debugData.other_tables.sessions.active_count}</div>
+              
+              <div className="p-2 bg-gray-700 rounded">
+                <strong className="text-blue-300">Tabelas no banco:</strong> 
+                <span className="ml-2 text-yellow-300">{debugData.database_info.total_tables}</span>
+              </div>
+              
+              <div className="p-2 bg-gray-700 rounded">
+                <strong className="text-blue-300">Map Drop Metrics:</strong>
+                <div className="ml-4 mt-1">
+                  {debugData.map_drop_metrics.table_exists ? 
+                    <span className="text-green-300">✅ Tabela existe ({debugData.map_drop_metrics.total_records} registros)</span> : 
+                    <span className="text-red-300">❌ Tabela não existe</span>
+                  }
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="p-2 bg-gray-700 rounded">
+                  <strong className="text-blue-300">Usuários:</strong> 
+                  <span className="ml-2 text-cyan-300">{debugData.other_tables.users.count}</span>
+                </div>
+                
+                <div className="p-2 bg-gray-700 rounded">
+                  <strong className="text-blue-300">Sessões ativas:</strong> 
+                  <span className="ml-2 text-cyan-300">{debugData.other_tables.sessions.active_count}</span>
+                </div>
+              </div>
               
               {debugData.map_drop_metrics.recent_data && debugData.map_drop_metrics.recent_data.length > 0 && (
                 <details className="mt-4">
-                  <summary className="cursor-pointer font-semibold">📊 Últimos registros ({debugData.map_drop_metrics.recent_data.length})</summary>
-                  <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto max-h-40">
-                    {JSON.stringify(debugData.map_drop_metrics.recent_data, null, 2)}
-                  </pre>
+                  <summary className="cursor-pointer font-semibold text-yellow-300 hover:text-yellow-200">
+                    📊 Últimos registros ({debugData.map_drop_metrics.recent_data.length}) - Clique para expandir
+                  </summary>
+                  <div className="mt-3 p-3 bg-black rounded border border-gray-600">
+                    <pre className="text-xs text-green-300 overflow-auto max-h-60 whitespace-pre-wrap">
+                      {JSON.stringify(debugData.map_drop_metrics.recent_data, null, 2)}
+                    </pre>
+                  </div>
                 </details>
               )}
+              
+              <div className="mt-4 p-2 bg-blue-900 rounded border border-blue-600">
+                <div className="text-blue-200 text-xs">
+                  💡 <strong>Dica:</strong> Se você acabou de fazer um teste e não apareceu, 
+                  clique em "Fix Timestamps" e depois "Refresh" para recarregar os dados.
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>

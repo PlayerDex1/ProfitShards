@@ -91,7 +91,7 @@ export function MapPlanner({}: MapPlannerProps) {
       
       // Salvar métricas anônimas se usuário autenticado
       if (isAuthenticated && tokensDropped > 0) {
-        console.log('🔍 DEBUG: Tentando salvar métricas:', {
+        console.log('%c🔍 DEBUG: Tentando salvar métricas', 'color: #3B82F6; font-weight: bold; font-size: 14px;', {
           isAuthenticated,
           tokensDropped,
           mapSize,
@@ -118,18 +118,23 @@ export function MapPlanner({}: MapPlannerProps) {
           });
           
           const metricsResult = await metricsResponse.json();
-          console.log('📊 Métricas response:', metricsResult, 'Status:', metricsResponse.status);
           
           if (!metricsResponse.ok) {
-            console.error('❌ Erro ao salvar métricas:', metricsResult);
+            console.log('%c❌ Erro ao salvar métricas', 'color: #EF4444; font-weight: bold; font-size: 14px;', {
+              status: metricsResponse.status,
+              error: metricsResult
+            });
           } else {
-            console.log('✅ Métricas salvas com sucesso!');
+            console.log('%c✅ Métricas salvas com sucesso!', 'color: #10B981; font-weight: bold; font-size: 14px;', {
+              status: metricsResponse.status,
+              result: metricsResult
+            });
           }
         } catch (metricsError) {
-          console.error('❌ Erro completo ao salvar métricas:', metricsError);
+          console.log('%c❌ Erro completo ao salvar métricas', 'color: #EF4444; font-weight: bold; font-size: 14px;', metricsError);
         }
       } else {
-        console.log('⚠️ Métricas não enviadas:', {
+        console.log('%c⚠️ Métricas não enviadas', 'color: #F59E0B; font-weight: bold; font-size: 14px;', {
           isAuthenticated,
           tokensDropped,
           reason: !isAuthenticated ? 'Não autenticado' : 'Tokens = 0'
