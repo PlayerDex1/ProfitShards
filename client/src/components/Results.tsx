@@ -128,12 +128,38 @@ export const Results = memo(function Results({
               <p className="text-xs text-muted-foreground mb-3">
                 Ajude a manter esta ferramenta gratuita e atualizada
               </p>
-              <div className="space-y-2">
-                <div className="text-xs text-muted-foreground">
-                  <strong>PIX:</strong> profitshards@gmail.com
+              <div className="space-y-3">
+                {/* OpenLoot Ambassador */}
+                <div className="flex items-center justify-between gap-2 p-2 bg-white/5 rounded">
+                  <span className="text-xs text-muted-foreground">OpenLoot Ambassador</span>
+                  <a 
+                    href="https://openloot.com/ambassador/link?code=HOLDBOY" 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded hover:bg-primary/80 transition-colors"
+                  >
+                    My Link
+                  </a>
                 </div>
-                <div className="text-xs text-muted-foreground">
-                  <strong>PayPal:</strong> @profitshards
+                
+                {/* Wallet EVM */}
+                <div className="p-2 bg-white/5 rounded">
+                  <div className="text-xs text-muted-foreground mb-1">Wallet EVM:</div>
+                  <div className="flex items-center gap-2">
+                    <div className="text-xs font-mono text-foreground break-all select-all bg-black/20 p-1 rounded flex-1">
+                      0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
+                        // Feedback visual opcional
+                      }}
+                      className="text-xs bg-white/10 text-foreground px-2 py-1 rounded hover:bg-white/20 transition-colors"
+                      title="Copiar endereço"
+                    >
+                      📋
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
