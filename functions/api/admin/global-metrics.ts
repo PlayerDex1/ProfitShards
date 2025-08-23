@@ -34,9 +34,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     }
 
     // Validar sessão e verificar se é admin
-    const session = await env.DB.prepare(
-      'SELECT user_email FROM sessions WHERE id = ? AND expires_at > ?'
-    ).bind(sessionCookie, Date.now()).first() as { user_email: string } | null;
+    const session = await env.DB.prepare(`
+      SELECT u.email as user_email 
+      FROM sessions s 
+      JOIN users u ON s.user_id = u.id 
+      WHERE s.session_id = ? AND s.expires_at > ?
+    `).bind(sessionCookie, Date.now()).first() as { user_email: string } | null;
 
     if (!session) {
       const response = Response.json({ error: 'Invalid session' }, { status: 401 });
