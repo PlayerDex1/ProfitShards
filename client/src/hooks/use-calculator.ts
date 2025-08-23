@@ -158,35 +158,8 @@ export function useCalculator() {
 		];
 	}, [results]);
 
-	// Auto-save to history when results change
-	useEffect(() => {
-		if (results && formData.investment > 0) {
-			// Only save if we have meaningful data
-			const hasSignificantData = 
-				formData.tokensFarmed > 0 || 
-				formData.tokensEquipment > 0 || 
-				formData.gemsConsumed > 0;
-
-			if (hasSignificantData) {
-				if (debounceTimeoutRef.current) {
-					clearTimeout(debounceTimeoutRef.current);
-				}
-
-				debounceTimeoutRef.current = setTimeout(() => {
-					const historyItem: HistoryItem = {
-						timestamp: Date.now(),
-						formData: { ...formData },
-						results: { ...results },
-					};
-
-					appendHistoryItem(historyItem);
-				}, 1000); // 1 second debounce to avoid too many saves while typing
-			}
-		}
-	}, [results, formData]);
-
 	const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
-		// Manual save (when user clicks button) - immediate save
+		// Manual save - immediate save
 		const historyItem: HistoryItem = {
 			timestamp: Date.now(),
 			formData,

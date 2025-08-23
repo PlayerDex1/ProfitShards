@@ -37,25 +37,6 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	// Show auto-save message when formData changes and has meaningful data
-	useEffect(() => {
-		const hasSignificantData = 
-			formData.investment > 0 && (
-				formData.tokensFarmed > 0 || 
-				formData.tokensEquipment > 0 || 
-				formData.gemsConsumed > 0
-			);
-
-		if (hasSignificantData) {
-			setSaveMessage('💾 Salvando automaticamente...');
-			const timer = setTimeout(() => {
-				setSaveMessage('✅ Salvo no histórico');
-				setTimeout(() => setSaveMessage(''), 2000);
-			}, 1200);
-			return () => clearTimeout(timer);
-		}
-	}, [formData]);
-
 	const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
 		try {
 			const raw = e.target.value.replace(',', '.');
@@ -82,8 +63,8 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 	};
 
 	const handleManualSave = () => {
-		// Manual save with immediate feedback
-		setSaveMessage('✅ Salvo manualmente!');
+		// Manual save with feedback
+		setSaveMessage('✅ Cálculo salvo no histórico!');
 		setTimeout(() => setSaveMessage(''), 3000);
 		onSaveToHistory();
 	};
@@ -273,19 +254,19 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 					</div>
 				</div>
 
-				{/* Auto-save indicator and Manual Save Button */}
+				{/* Manual Save Button */}
 				<div className="pt-4 border-t space-y-3">
 					{saveMessage && (
-						<div className="text-center text-sm p-2 rounded-lg bg-muted/50 text-muted-foreground">
+						<div className="text-center text-sm p-2 rounded-lg bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800">
 							{saveMessage}
 						</div>
 					)}
 					
 					<div className="text-center">
-						<p className="text-xs text-muted-foreground mb-2">
-							💡 Seus cálculos são salvos automaticamente no histórico
+						<p className="text-xs text-muted-foreground mb-3">
+							💡 Clique no botão abaixo para salvar este cálculo no seu histórico
 						</p>
-						<Button onClick={handleManualSave} variant="outline" size="sm">
+						<Button onClick={handleManualSave} className="w-full" size="lg">
 							{t('calc.button')}
 						</Button>
 					</div>
