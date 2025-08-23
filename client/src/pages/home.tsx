@@ -53,10 +53,10 @@ export default function Home() {
 								<TrendingUp className="h-6 w-6 text-primary" />
 								<div>
 									<h2 className="text-lg font-semibold text-foreground">
-										Olá, {userProfile?.username || (user ? user.split('@')[0] : 'Usuário')}! 👋
+										{t('profile.welcome', { name: userProfile?.username || (user ? user.split('@')[0] : t('auth.guest')) })}
 									</h2>
 									<p className="text-sm text-muted-foreground">
-										Seus cálculos e configurações são sincronizados automaticamente
+										{t('profile.subtitle')}
 									</p>
 								</div>
 							</div>

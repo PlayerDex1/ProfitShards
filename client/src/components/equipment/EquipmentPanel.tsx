@@ -129,12 +129,12 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 				<div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
 					<div className="flex items-center space-x-2 mb-3">
 						<User className="h-5 w-5 text-blue-400" />
-						<h3 className="text-lg font-semibold text-white">Configurações do Usuário</h3>
+						<h3 className="text-lg font-semibold text-white">{t('equipment.userSettings')}</h3>
 					</div>
 					
 					<div className="space-y-3">
 						<div>
-							<label className="text-sm font-medium text-gray-300 block mb-1">Nickname</label>
+							<label className="text-sm font-medium text-gray-300 block mb-1">{t('equipment.nickname')}</label>
 							{editingNickname ? (
 								<div className="flex items-center space-x-2">
 									<input
@@ -142,7 +142,7 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 										value={newNickname}
 										onChange={(e) => setNewNickname(e.target.value)}
 										className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-										placeholder="Digite seu nickname"
+										placeholder={t('equipment.nicknamePlaceholder')}
 										maxLength={20}
 										disabled={nicknameLoading}
 									/>
@@ -165,23 +165,23 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 										disabled={nicknameLoading}
 										className="px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-500 text-white rounded transition-colors"
 									>
-										Cancelar
+										{t('equipment.nicknameCancel')}
 									</button>
 								</div>
 							) : (
 								<div className="flex items-center justify-between bg-slate-700/50 px-3 py-2 rounded border border-slate-600">
-									<span className="text-white font-medium">{userProfile?.username || 'Carregando...'}</span>
+									<span className="text-white font-medium">{userProfile?.username || t('equipment.nicknameLoading')}</span>
 									<button
 										onClick={() => setEditingNickname(true)}
 										className="text-blue-400 hover:text-blue-300 transition-colors flex items-center space-x-1"
 									>
 										<Edit2 className="h-4 w-4" />
-										<span className="text-sm">Editar</span>
+										<span className="text-sm">{t('equipment.nicknameEdit')}</span>
 									</button>
 								</div>
 							)}
 							<p className="text-xs text-gray-400 mt-1">
-								Seu nickname será exibido publicamente nos rankings e estatísticas
+								{t('equipment.nicknameDescription')}
 							</p>
 						</div>
 					</div>

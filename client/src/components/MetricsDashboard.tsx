@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
+import { useI18n } from '../i18n';
 
 interface LuckRange {
   range: string;
@@ -30,6 +31,7 @@ interface AnalyticsData {
 
 export function MetricsDashboard() {
   const { user } = useAuth();
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin'>('analytics');
   
   // Estados para Analytics
@@ -239,7 +241,7 @@ export function MetricsDashboard() {
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          📈 Analytics Avançados
+          📈 {t('analytics.title')}
         </button>
         <button
           onClick={() => setActiveTab('global')}
@@ -249,7 +251,7 @@ export function MetricsDashboard() {
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          🌍 Dados Globais
+          🌍 {t('analytics.globalData')}
         </button>
         <button
           onClick={() => setActiveTab('admin')}
@@ -259,7 +261,7 @@ export function MetricsDashboard() {
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          🔧 Ferramentas Admin
+          🔧 {t('analytics.adminTools')}
         </button>
       </div>
 
@@ -269,9 +271,9 @@ export function MetricsDashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
-                <span>📈 Analytics Avançados</span>
+                <span>📈 {t('analytics.title')}</span>
                 <Button onClick={loadAnalytics} variant="outline" size="sm" disabled={analyticsLoading}>
-                  {analyticsLoading ? '⏳' : '🔄'} Atualizar
+                  {analyticsLoading ? '⏳' : '🔄'} {t('analytics.update')}
                 </Button>
               </CardTitle>
             </CardHeader>

@@ -83,12 +83,12 @@ export default function Profile() {
 							</div>
 							<div>
 								<h1 className="text-2xl font-bold text-foreground">
-									{isAuthenticated ? `Perfil de ${userProfile?.username || user?.split('@')[0] || 'Usuário'}` : t('profile.title')}
+									{isAuthenticated ? t('profile.of', { name: userProfile?.username || user?.split('@')[0] || t('auth.guest') }) : t('profile.title')}
 								</h1>
 								<p className="text-muted-foreground">
 									{isAuthenticated 
-										? 'Configurações e histórico sincronizados automaticamente'
-										: 'Dados salvos localmente no navegador'
+										? t('profile.subtitle')
+										: t('profile.subtitleLocal')
 									}
 								</p>
 							</div>
