@@ -32,18 +32,8 @@ export default function Home() {
 			<Header />
 			
 			<div className="container mx-auto px-4 py-6">
-				{/* Navigation and Welcome */}
-				<div className="flex justify-between items-center mb-6">
-					<div>
-						<h1 className="text-3xl font-bold text-foreground">
-							{t('home.title')}
-						</h1>
-						<p className="text-muted-foreground mt-1">
-							{t('home.subtitle')}
-						</p>
-					</div>
-					
-					{/* Profile Link */}
+				{/* Profile Link */}
+				<div className="flex justify-end items-center mb-6">
 					<Link href="/perfil" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
 						<User className="h-5 w-5" />
 						<span className="font-medium">
