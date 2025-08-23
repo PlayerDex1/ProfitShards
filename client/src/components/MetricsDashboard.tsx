@@ -144,16 +144,43 @@ export function MetricsDashboard() {
     alert('Função syncLocalData executada!');
     console.log('SYNC: Iniciando...');
     
+    // Coletar dados do localStorage
+    console.log('SYNC: Coletando dados do localStorage...');
+    const allHistoryData = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith('worldshards-mapdrops-')) continue;
+      
+      console.log('SYNC: Chave encontrada:', key);
+      
+      try {
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        const userEmail = key.replace('worldshards-mapdrops-', '');
+        
+        console.log('SYNC: Email:', userEmail, 'Entradas:', data.length);
+        
+        data.forEach((entry) => {
+          allHistoryData.push({ ...entry, userEmail });
+        });
+        
+      } catch (error) {
+        console.log('SYNC: Erro ao processar', key, error);
+      }
+    }
+    
+    console.log('SYNC: Total coletado:', allHistoryData.length);
+    
     try {
       const response = await fetch('/api/admin/sync-local-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ historyData: [] })
+        body: JSON.stringify({ historyData: allHistoryData })
       });
       
       const result = await response.json();
       console.log('SYNC: Resultado:', result);
-      alert(`Teste básico OK! Resultado: ${JSON.stringify(result)}`);
+      alert(`Resultado: Recebidos: ${result.received || 0}, Salvos: ${result.saved || 0}, Ignorados: ${result.skipped || 0}`);
       
     } catch (error) {
       console.log('SYNC: Erro:', error);
