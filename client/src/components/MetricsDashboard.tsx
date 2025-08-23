@@ -169,31 +169,108 @@ export function MetricsDashboard() {
         </Card>
       </div>
 
-      {/* Placeholder para dados futuros */}
-      <Card>
-        <CardHeader>
-          <CardTitle>📊 Dados de Map Runs</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <Map className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p className="text-lg font-medium mb-2">Sistema em Desenvolvimento</p>
-            <p className="text-sm">
-              As métricas do Map Planner serão coletadas automaticamente quando os usuários salvarem suas runs.
-            </p>
-            <div className="mt-6 p-4 bg-muted/50 rounded-lg text-left">
-              <h4 className="font-semibold mb-2">📋 Métricas que serão coletadas:</h4>
-              <ul className="text-sm space-y-1">
-                <li>• Quantidade de tokens dropados por mapa</li>
-                <li>• Luck utilizado em cada run</li>
-                <li>• Eficiência (tokens/load)</li>
-                <li>• Mapas mais populares</li>
-                <li>• Correlação luck vs drops</li>
-              </ul>
+      {/* Breakdown por Mapa */}
+      {metrics.mapBreakdown.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>🗺️ Breakdown por Mapa</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">Mapa</th>
+                    <th className="text-left p-2">Total Runs</th>
+                    <th className="text-left p-2">Luck Médio</th>
+                    <th className="text-left p-2">Tokens Médios</th>
+                    <th className="text-left p-2">Eficiência</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.mapBreakdown.map((map: any, index: number) => (
+                    <tr key={map.map_name} className="border-b hover:bg-muted/50">
+                      <td className="p-2 font-medium capitalize">{map.map_name}</td>
+                      <td className="p-2">{map.total_runs}</td>
+                      <td className="p-2">{map.avg_luck.toFixed(1)}</td>
+                      <td className="p-2 text-green-600 font-semibold">{map.avg_tokens.toFixed(1)}</td>
+                      <td className="p-2 text-blue-600">{map.avg_efficiency.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Breakdown por Faixa de Luck */}
+      {metrics.luckRanges.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>🎯 Breakdown por Faixa de Luck</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">Faixa de Luck</th>
+                    <th className="text-left p-2">Total Runs</th>
+                    <th className="text-left p-2">Tokens Médios</th>
+                    <th className="text-left p-2">Eficiência</th>
+                    <th className="text-left p-2">Performance</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {metrics.luckRanges.map((range: any, index: number) => {
+                    const performance = range.avg_efficiency > 3.0 ? 'excellent' : 
+                                      range.avg_efficiency > 2.5 ? 'positive' : 
+                                      range.avg_efficiency > 2.0 ? 'neutral' : 'negative';
+                    const performanceColor = performance === 'excellent' ? 'text-green-600' :
+                                           performance === 'positive' ? 'text-blue-600' :
+                                           performance === 'neutral' ? 'text-yellow-600' : 'text-red-600';
+                    const performanceIcon = performance === 'excellent' ? '🔥' :
+                                          performance === 'positive' ? '✅' :
+                                          performance === 'neutral' ? '⚡' : '📉';
+                    
+                    return (
+                      <tr key={range.luck_range} className="border-b hover:bg-muted/50">
+                        <td className="p-2 font-medium">{range.luck_range}</td>
+                        <td className="p-2">{range.total_runs}</td>
+                        <td className="p-2 text-green-600 font-semibold">{range.avg_tokens.toFixed(1)}</td>
+                        <td className="p-2 text-blue-600">{range.avg_efficiency.toFixed(2)}</td>
+                        <td className={`p-2 ${performanceColor} font-medium`}>
+                          {performanceIcon} {performance === 'excellent' ? 'Excelente' :
+                                            performance === 'positive' ? 'Bom' :
+                                            performance === 'neutral' ? 'Normal' : 'Baixo'}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Placeholder quando não há dados */}
+      {metrics.mapBreakdown.length === 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>📊 Aguardando Dados</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              <Map className="h-8 w-8 mx-auto mb-3 opacity-50" />
+              <p className="text-sm">
+                As tabelas de breakdown aparecerão quando houver dados de map runs coletados.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Informações de Privacidade */}
       <Card className="border-green-200 bg-green-50 dark:bg-green-950/30">
