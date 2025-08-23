@@ -91,8 +91,16 @@ export function MapPlanner({}: MapPlannerProps) {
       
       // Salvar métricas anônimas se usuário autenticado
       if (isAuthenticated && tokensDropped > 0) {
+        console.log('🔍 DEBUG: Tentando salvar métricas:', {
+          isAuthenticated,
+          tokensDropped,
+          mapSize,
+          luck,
+          loads
+        });
+        
         try {
-          await fetch('/api/admin/save-metrics', {
+          const metricsResponse = await fetch('/api/admin/save-metrics', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -108,9 +116,24 @@ export function MapPlanner({}: MapPlannerProps) {
               }
             })
           });
+          
+          const metricsResult = await metricsResponse.json();
+          console.log('📊 Métricas response:', metricsResult, 'Status:', metricsResponse.status);
+          
+          if (!metricsResponse.ok) {
+            console.error('❌ Erro ao salvar métricas:', metricsResult);
+          } else {
+            console.log('✅ Métricas salvas com sucesso!');
+          }
         } catch (metricsError) {
-          console.log('Metrics save failed (non-critical):', metricsError);
+          console.error('❌ Erro completo ao salvar métricas:', metricsError);
         }
+      } else {
+        console.log('⚠️ Métricas não enviadas:', {
+          isAuthenticated,
+          tokensDropped,
+          reason: !isAuthenticated ? 'Não autenticado' : 'Tokens = 0'
+        });
       }
       
       // Reset form
