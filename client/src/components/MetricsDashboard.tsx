@@ -141,109 +141,23 @@ export function MetricsDashboard() {
   };
 
   const syncLocalData = async () => {
-    if (!confirm('Isso vai coletar TODOS os dados do histórico local e sincronizar com o banco. Continuar?')) {
-      console.log('=== TESTE CANCELADO PELO USUÁRIO ===');
-      return;
-    }
-
-    // Log simples para confirmar execução
-    console.log('=== TESTE SYNC INICIADO ===');
-    alert('TESTE: Função syncLocalData foi chamada!');
-
-    setSyncLoading(true);
-    console.log('%c🔄 INICIANDO SINCRONIZAÇÃO LOCAL DATA', 'color: blue; font-weight: bold; font-size: 16px;');
+    alert('Função syncLocalData executada!');
+    console.log('SYNC: Iniciando...');
     
     try {
-      // Coletar todos os dados do localStorage
-      const allHistoryData = [];
-      console.log('%c📊 Verificando localStorage...', 'color: cyan;');
-      
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (!key || !key.startsWith('worldshards-mapdrops-')) continue;
-        
-        console.log(`%c🔍 Encontrada chave: ${key}`, 'color: yellow;');
-        
-        try {
-          const data = JSON.parse(localStorage.getItem(key) || '[]');
-          console.log(`%c📈 Dados da chave ${key}:`, 'color: green;', data);
-          
-          // Extrair email da chave (formato: worldshards-mapdrops-email@domain.com)
-          const userEmail = key.replace('worldshards-mapdrops-', '');
-          console.log(`%c👤 Email extraído: ${userEmail}`, 'color: magenta;');
-          
-          // Adicionar email a cada entrada
-          data.forEach((entry: any) => {
-            const entryWithEmail = { ...entry, userEmail };
-            allHistoryData.push(entryWithEmail);
-            console.log(`%c➕ Entrada adicionada:`, 'color: lime;', entryWithEmail);
-          });
-          
-        } catch (error) {
-          console.log(`%c❌ Erro ao processar ${key}:`, 'color: red;', error);
-        }
-      }
-      
-      console.log(`%c📊 TOTAL DE ENTRADAS COLETADAS: ${allHistoryData.length}`, 'color: blue; font-weight: bold;');
-      console.log('%c📋 DADOS COMPLETOS:', 'color: purple;', allHistoryData);
-
-      // Enviar para o servidor
-      console.log('%c🚀 Enviando para o servidor...', 'color: orange;');
-      
       const response = await fetch('/api/admin/sync-local-data', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ historyData: allHistoryData })
+        body: JSON.stringify({ historyData: [] })
       });
-
-      console.log('%c📡 RESPOSTA HTTP:', 'color: cyan;', {
-        status: response.status,
-        statusText: response.statusText,
-        ok: response.ok,
-        headers: Object.fromEntries(response.headers.entries())
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.log('%c❌ RESPOSTA DE ERRO:', 'color: red;', errorText);
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
-
-      const result = await response.json();
-      console.log('%c📥 RESPOSTA DO SERVIDOR:', 'color: teal; font-weight: bold;', result);
       
-      if (result.success) {
-        console.log(`%c✅ SINCRONIZAÇÃO CONCLUÍDA!`, 'color: green; font-weight: bold; font-size: 16px;');
-        console.log(`%c📊 Recebidos: ${result.received}`, 'color: blue;');
-        console.log(`%c💾 Salvos: ${result.saved}`, 'color: green;');
-        console.log(`%c⏭️ Ignorados: ${result.skipped}`, 'color: orange;');
-        
-        alert(`Sincronização concluída!\nRecebidos: ${result.received}\nSalvos: ${result.saved}\nIgnorados: ${result.skipped}`);
-        
-        // Recarregar métricas - TEMPORARIAMENTE DESABILITADO PARA DEBUG
-        console.log('%c🔄 Pulando loadMetrics() para evitar travamento', 'color: orange;');
-        // await loadMetrics();
-      } else {
-        console.log(`%c❌ ERRO NA SINCRONIZAÇÃO:`, 'color: red; font-weight: bold;', result.error);
-        alert(`Erro: ${result.error}`);
-      }
+      const result = await response.json();
+      console.log('SYNC: Resultado:', result);
+      alert(`Teste básico OK! Resultado: ${JSON.stringify(result)}`);
       
     } catch (error) {
-      console.log(`%c💥 ERRO CRÍTICO:`, 'color: red; font-weight: bold; font-size: 16px;', error);
-      console.log(`%c🔍 TIPO DO ERRO:`, 'color: orange;', typeof error);
-      console.log(`%c📝 ERRO DETALHADO:`, 'color: yellow;', {
-        message: error?.message || 'Sem mensagem',
-        stack: error?.stack || 'Sem stack trace',
-        name: error?.name || 'Sem nome',
-        toString: error?.toString() || 'Sem toString',
-        errorObject: error
-      });
-      
-      const errorMessage = error?.message || error?.toString() || JSON.stringify(error) || 'Erro desconhecido';
-      alert(`Erro: ${errorMessage}`);
-    } finally {
-      setSyncLoading(false);
-      console.log('%c🏁 SINCRONIZAÇÃO FINALIZADA', 'color: gray;');
+      console.log('SYNC: Erro:', error);
+      alert(`Erro: ${error.message}`);
     }
   };
 
