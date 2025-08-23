@@ -353,6 +353,36 @@ export function MetricsDashboard() {
     }
   };
 
+  // Função para testar D1 diretamente
+  const testD1Direct = async () => {
+    setGlobalLoading(true);
+    setGlobalError(null);
+    
+    try {
+      console.log('🧪 Testando D1 diretamente...');
+      
+      const response = await fetch('/api/admin/test-d1-direct', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      
+      const result = await response.json();
+      console.log('🧪 Resultado do teste D1:', result);
+      
+      if (result.success) {
+        alert(`✅ D1 Teste OK!\n\nInseridos: ${result.inserted} registros\nTotal: ${result.totalRecords} registros\n\nPor usuário:\n${result.recordsByUser.map(r => `${r.user_email}: ${r.count}`).join('\n')}`);
+      } else {
+        alert(`❌ D1 Teste FALHOU:\n${result.error}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro no teste D1:', error);
+      alert(`❌ Erro no teste D1:\n${error.message}`);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadLocalData();
   }, []);
@@ -512,6 +542,9 @@ export function MetricsDashboard() {
                 </Button>
                 <Button onClick={loadGlobalData} variant="outline" size="sm">
                   🔄 Atualizar
+                </Button>
+                <Button onClick={testD1Direct} variant="outline" size="sm">
+                  🧪 Test D1
                 </Button>
               </div>
             </CardTitle>

@@ -1,25 +1,41 @@
-import { addSecurityHeaders, checkRateLimit, getClientIP } from '../../_lib/security';
-import { createUserHash } from '../../_lib/metrics';
+import { addSecurityHeaders } from '../../_lib/security';
 
 interface Env {
   DB: D1Database;
-  KV?: KVNamespace;
+}
+
+interface LuckRange {
+  range: string;
+  runs: number;
+  totalTokens: number;
+  avgTokens: number;
+  users: number;
 }
 
 export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
   try {
-    // Rate limiting
-    const clientIP = getClientIP(request);
-    const rateLimitCheck = await checkRateLimit(env, clientIP, 'api', request);
-    if (!rateLimitCheck.allowed) {
-      const response = Response.json({ error: 'Rate limit exceeded' }, { status: 429 });
+    console.log('🌍 GLOBAL METRICS: Iniciando (D1 FORÇADO)...');
+
+    // Verificar se DB está disponível
+    if (!env.DB) {
+      console.log('❌ D1 Database não disponível');
+      const response = Response.json({ 
+        success: false,
+        error: 'Database not available' 
+      }, { status: 500 });
       return addSecurityHeaders(response);
     }
+
+    console.log('✅ D1 Database disponível');
 
     // Verificar autenticação
     const cookieHeader = request.headers.get('Cookie');
     if (!cookieHeader) {
-      const response = Response.json({ error: 'Unauthorized' }, { status: 401 });
+      console.log('❌ Cookie não encontrado');
+      const response = Response.json({ 
+        success: false,
+        error: 'Unauthorized' 
+      }, { status: 401 });
       return addSecurityHeaders(response);
     }
 
@@ -29,156 +45,162 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       ?.split('=')[1];
 
     if (!sessionCookie) {
-      const response = Response.json({ error: 'No session cookie' }, { status: 401 });
+      console.log('❌ Sessão não encontrada');
+      const response = Response.json({ 
+        success: false,
+        error: 'No session' 
+      }, { status: 401 });
       return addSecurityHeaders(response);
     }
 
-    // Validar sessão e verificar se é admin
+    // Buscar usuário pela sessão
     const session = await env.DB.prepare(`
-      SELECT u.email as user_email 
+      SELECT u.id, u.email 
       FROM sessions s 
       JOIN users u ON s.user_id = u.id 
       WHERE s.session_id = ? AND s.expires_at > ?
-    `).bind(sessionCookie, Date.now()).first() as { user_email: string } | null;
+    `).bind(sessionCookie, Date.now()).first() as { id: string; email: string } | null;
 
     if (!session) {
-      const response = Response.json({ error: 'Invalid session' }, { status: 401 });
+      console.log('❌ Sessão inválida ou expirada');
+      const response = Response.json({ 
+        success: false,
+        error: 'Invalid session' 
+      }, { status: 401 });
       return addSecurityHeaders(response);
     }
 
     // Verificar se é admin
-    const adminUsers = ['holdboy01@gmail.com'];
-    if (!adminUsers.includes(session.user_email)) {
-      const response = Response.json({ error: 'Admin access required' }, { status: 403 });
+    const isAdmin = session.email === 'holdboy01@gmail.com';
+    if (!isAdmin) {
+      console.log('❌ Usuário não é admin:', session.email);
+      const response = Response.json({ 
+        success: false,
+        error: 'Access denied' 
+      }, { status: 403 });
       return addSecurityHeaders(response);
     }
 
-    console.log('📊 Global metrics - Admin:', session.user_email);
+    console.log('✅ Admin autenticado:', session.email);
 
-    // Verificar se a tabela user_map_metrics existe
-    const tableExists = await env.DB.prepare(`
-      SELECT name FROM sqlite_master WHERE type='table' AND name='user_map_metrics'
-    `).first();
+    // Buscar TODOS os dados da tabela user_map_metrics
+    console.log('🔍 Buscando TODOS os dados da tabela user_map_metrics...');
     
-    console.log('🔍 Tabela user_map_metrics existe:', !!tableExists);
+    const allMetrics = await env.DB.prepare(`
+      SELECT * FROM user_map_metrics 
+      ORDER BY created_at DESC
+    `).all();
 
-    // Contar registros na tabela
-    if (tableExists) {
-      const count = await env.DB.prepare(`SELECT COUNT(*) as count FROM user_map_metrics`).first() as { count: number };
-      console.log('📊 Total de registros na tabela:', count?.count || 0);
+    console.log(`📊 Total de registros encontrados: ${allMetrics.results?.length || 0}`);
+    
+    if (allMetrics.results && allMetrics.results.length > 0) {
+      console.log('📊 Primeiros 3 registros:', allMetrics.results.slice(0, 3));
     }
 
-    // Buscar TODOS os dados de métricas dos usuários
-    const globalData = [];
+    // Contar usuários únicos
+    const uniqueUsersResult = await env.DB.prepare(`
+      SELECT COUNT(DISTINCT user_email) as count FROM user_map_metrics
+    `).first() as { count: number } | null;
 
-    if (tableExists) {
-      console.log('📊 Coletando dados de todos os usuários...');
-      
-      const allMetrics = await env.DB.prepare(`
-        SELECT 
-          user_email,
-          map_size,
-          luck_value,
-          tokens_dropped,
-          loads,
-          timestamp,
-          session_date
-        FROM user_map_metrics 
-        ORDER BY timestamp DESC
-      `).all();
+    const uniqueUsers = uniqueUsersResult?.count || 0;
+    console.log(`👥 Usuários únicos com dados: ${uniqueUsers}`);
 
-      if (allMetrics.results && allMetrics.results.length > 0) {
-        console.log(`📊 Total de métricas encontradas: ${allMetrics.results.length}`);
-        
-        for (const metric of allMetrics.results) {
-          const metricData = metric as any;
-          globalData.push({
-            userEmail: metricData.user_email,
-            timestamp: metricData.timestamp,
-            mapSize: metricData.map_size,
-            tokensDropped: metricData.tokens_dropped,
-            totalLuck: metricData.luck_value,
-            loads: metricData.loads,
-            sessionDate: metricData.session_date
-          });
+    // Contar total de usuários registrados
+    const totalUsersResult = await env.DB.prepare(`
+      SELECT COUNT(*) as count FROM users
+    `).first() as { count: number } | null;
+
+    const totalRegisteredUsers = totalUsersResult?.count || 0;
+    console.log(`👥 Total de usuários registrados: ${totalRegisteredUsers}`);
+
+    // Processar dados em faixas de luck
+    const luckRanges: LuckRange[] = [
+      { range: '1k - 2k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '2k - 3k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '3k - 4k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '4k - 5k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '5k - 6k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '6k - 7k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '7k - 8k Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 },
+      { range: '8k+ Luck', runs: 0, totalTokens: 0, avgTokens: 0, users: 0 }
+    ];
+
+    let totalRuns = 0;
+    let totalTokens = 0;
+    const usersByRange: { [key: string]: Set<string> } = {};
+
+    // Inicializar sets para contar usuários únicos por faixa
+    luckRanges.forEach(range => {
+      usersByRange[range.range] = new Set<string>();
+    });
+
+    // Processar cada métrica
+    if (allMetrics.results) {
+      for (const metric of allMetrics.results) {
+        const luck = Number(metric.luck_value) || 0;
+        const tokens = Number(metric.tokens_dropped) || 0;
+        const userEmail = String(metric.user_email);
+
+        totalRuns++;
+        totalTokens += tokens;
+
+        // Determinar faixa de luck
+        let rangeIndex = -1;
+        if (luck >= 1000 && luck < 2000) rangeIndex = 0;
+        else if (luck >= 2000 && luck < 3000) rangeIndex = 1;
+        else if (luck >= 3000 && luck < 4000) rangeIndex = 2;
+        else if (luck >= 4000 && luck < 5000) rangeIndex = 3;
+        else if (luck >= 5000 && luck < 6000) rangeIndex = 4;
+        else if (luck >= 6000 && luck < 7000) rangeIndex = 5;
+        else if (luck >= 7000 && luck < 8000) rangeIndex = 6;
+        else if (luck >= 8000) rangeIndex = 7;
+
+        if (rangeIndex >= 0) {
+          luckRanges[rangeIndex].runs++;
+          luckRanges[rangeIndex].totalTokens += tokens;
+          usersByRange[luckRanges[rangeIndex].range].add(userEmail);
         }
-      } else {
-        console.log('📊 Nenhuma métrica encontrada na tabela');
       }
     }
 
-    console.log('📊 Total de dados globais coletados:', globalData.length);
-
-    // Logs detalhados para debug
-    console.log('🔍 DEBUG: Verificando dados coletados...');
-    if (globalData.length > 0) {
-      console.log('📊 Primeiros 3 registros:', globalData.slice(0, 3));
-    } else {
-      console.log('❌ Nenhum dado encontrado');
-      console.log('💡 Para popular dados:');
-      console.log('   1. Usuários devem fazer login');
-      console.log('   2. Fazer testes no Map Planner');
-      console.log('   3. Clicar "Sync Data" no dashboard');
-    }
-
-    // Processar dados por faixas de luck
-    const ranges = [
-      { range: '1k - 2k Luck', min: 1000, max: 1999 },
-      { range: '2k - 3k Luck', min: 2000, max: 2999 },
-      { range: '3k - 4k Luck', min: 3000, max: 3999 },
-      { range: '4k - 5k Luck', min: 4000, max: 4999 },
-      { range: '5k - 6k Luck', min: 5000, max: 5999 },
-      { range: '6k - 7k Luck', min: 6000, max: 6999 },
-      { range: '7k - 8k Luck', min: 7000, max: 7999 },
-      { range: '8k+ Luck', min: 8000, max: 999999 },
-    ];
-
-    const processedRanges = ranges.map(({ range, min, max }) => {
-      const rangeData = globalData.filter(item => {
-        const luck = item.totalLuck || 0;
-        return luck >= min && luck <= max;
-      });
-
-      const totalTokens = rangeData.reduce((sum, item) => sum + (item.tokensDropped || 0), 0);
-      const avgTokens = rangeData.length > 0 ? totalTokens / rangeData.length : 0;
-
-      return {
-        range,
-        runs: rangeData.length,
-        totalTokens,
-        avgTokens,
-        users: new Set(rangeData.map(item => item.userEmail)).size
-      };
+    // Calcular médias e contar usuários
+    luckRanges.forEach(range => {
+      if (range.runs > 0) {
+        range.avgTokens = Math.round(range.totalTokens / range.runs);
+      }
+      range.users = usersByRange[range.range].size;
     });
 
-    const totalRuns = globalData.length;
-    const totalTokens = globalData.reduce((sum, item) => sum + (item.tokensDropped || 0), 0);
-    const uniqueUsers = new Set(globalData.map(item => item.userEmail)).size;
+    console.log('📊 Estatísticas finais:', {
+      totalRuns,
+      totalTokens,
+      uniqueUsers,
+      totalRegisteredUsers
+    });
 
-    const result = {
+    const response = Response.json({
       success: true,
       totalRuns,
       totalTokens,
       uniqueUsers,
-      totalRegisteredUsers: users.results?.length || 0,
-      luckRanges: processedRanges,
-      rawData: globalData.slice(0, 100) // Primeiros 100 registros para debug
-    };
-
-    console.log('📊 Resultado processado:', {
-      totalRuns: result.totalRuns,
-      totalTokens: result.totalTokens,
-      uniqueUsers: result.uniqueUsers
+      totalRegisteredUsers,
+      luckRanges,
+      rawData: allMetrics.results || [],
+      debug: {
+        recordsFound: allMetrics.results?.length || 0,
+        sampleRecord: allMetrics.results?.[0] || null
+      }
     });
-
-    const response = Response.json(result);
+    
     return addSecurityHeaders(response);
 
   } catch (error) {
-    console.error('❌ Erro em global-metrics:', error);
+    console.error('❌ Erro no global-metrics:', error);
     const response = Response.json({ 
+      success: false,
       error: 'Internal server error',
-      message: error.message 
+      message: error.message,
+      stack: error.stack
     }, { status: 500 });
     return addSecurityHeaders(response);
   }
