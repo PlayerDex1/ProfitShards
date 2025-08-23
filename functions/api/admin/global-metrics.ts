@@ -55,74 +55,55 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     console.log('📊 Global metrics - Admin:', session.user_email);
 
-    // Verificar se a tabela map_drop_metrics existe
+    // Verificar se a tabela user_map_metrics existe
     const tableExists = await env.DB.prepare(`
-      SELECT name FROM sqlite_master WHERE type='table' AND name='map_drop_metrics'
+      SELECT name FROM sqlite_master WHERE type='table' AND name='user_map_metrics'
     `).first();
     
-    console.log('🔍 Tabela map_drop_metrics existe:', !!tableExists);
+    console.log('🔍 Tabela user_map_metrics existe:', !!tableExists);
 
     // Contar registros na tabela
     if (tableExists) {
-      const count = await env.DB.prepare(`SELECT COUNT(*) as count FROM map_drop_metrics`).first() as { count: number };
+      const count = await env.DB.prepare(`SELECT COUNT(*) as count FROM user_map_metrics`).first() as { count: number };
       console.log('📊 Total de registros na tabela:', count?.count || 0);
     }
 
-    // Buscar TODOS os usuários e seus dados
-    const users = await env.DB.prepare(
-      'SELECT id, email, created_at FROM users ORDER BY created_at DESC'
-    ).all();
-
-    console.log('👥 Total de usuários encontrados:', users.results?.length || 0);
-
+    // Buscar TODOS os dados de métricas dos usuários
     const globalData = [];
 
-    // Para cada usuário, buscar dados usando o hash
-    for (const user of users.results || []) {
-      const userRecord = user as { id: string; email: string; created_at: number };
+    if (tableExists) {
+      console.log('📊 Coletando dados de todos os usuários...');
       
-      try {
-        // Gerar hash do usuário
-        const userHash = createUserHash(userRecord.id);
-        console.log(`📊 Processando usuário ${userRecord.email} - hash: ${userHash}`);
+      const allMetrics = await env.DB.prepare(`
+        SELECT 
+          user_email,
+          map_size,
+          luck_value,
+          tokens_dropped,
+          loads,
+          timestamp,
+          session_date
+        FROM user_map_metrics 
+        ORDER BY timestamp DESC
+      `).all();
+
+      if (allMetrics.results && allMetrics.results.length > 0) {
+        console.log(`📊 Total de métricas encontradas: ${allMetrics.results.length}`);
         
-        // Buscar dados de map drops para este usuário
-        if (tableExists) {
-          const userMetrics = await env.DB.prepare(`
-            SELECT 
-              map_name,
-              luck_value,
-              tokens_dropped,
-              loads_completed,
-              session_date,
-              created_at
-            FROM map_drop_metrics 
-            WHERE user_hash = ?
-            ORDER BY created_at DESC
-          `).bind(userHash).all();
-
-          if (userMetrics.results && userMetrics.results.length > 0) {
-            console.log(`📊 Usuário ${userRecord.email}: ${userMetrics.results.length} métricas encontradas`);
-            
-            for (const metric of userMetrics.results) {
-              const metricData = metric as any;
-              globalData.push({
-                userEmail: userRecord.email,
-                timestamp: metricData.created_at,
-                mapSize: metricData.map_name,
-                tokensDropped: metricData.tokens_dropped,
-                totalLuck: metricData.luck_value,
-                loads: metricData.loads_completed,
-                sessionDate: metricData.session_date
-              });
-            }
-          } else {
-            console.log(`📊 Usuário ${userRecord.email}: Nenhuma métrica encontrada`);
-          }
+        for (const metric of allMetrics.results) {
+          const metricData = metric as any;
+          globalData.push({
+            userEmail: metricData.user_email,
+            timestamp: metricData.timestamp,
+            mapSize: metricData.map_size,
+            tokensDropped: metricData.tokens_dropped,
+            totalLuck: metricData.luck_value,
+            loads: metricData.loads,
+            sessionDate: metricData.session_date
+          });
         }
-
-      } catch (error) {
-        console.log(`❌ Erro ao processar usuário ${userRecord.email}:`, error);
+      } else {
+        console.log('📊 Nenhuma métrica encontrada na tabela');
       }
     }
 
@@ -133,11 +114,11 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     if (globalData.length > 0) {
       console.log('📊 Primeiros 3 registros:', globalData.slice(0, 3));
     } else {
-      console.log('❌ Nenhum dado real encontrado no banco');
-      console.log('💡 Possíveis causas:');
-      console.log('   - Tabela map_drop_metrics não existe ou está vazia');
-      console.log('   - Usuários não estão salvando dados no banco');
-      console.log('   - Dados estão apenas no localStorage local');
+      console.log('❌ Nenhum dado encontrado');
+      console.log('💡 Para popular dados:');
+      console.log('   1. Usuários devem fazer login');
+      console.log('   2. Fazer testes no Map Planner');
+      console.log('   3. Clicar "Sync Data" no dashboard');
     }
 
     // Processar dados por faixas de luck

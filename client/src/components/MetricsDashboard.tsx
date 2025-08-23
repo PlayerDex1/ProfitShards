@@ -187,6 +187,71 @@ export function MetricsDashboard() {
     }
   };
 
+  const syncUserData = async () => {
+    try {
+      console.log('🔄 Sincronizando dados do usuário...');
+      
+      // Coletar dados do localStorage
+      const allMapDrops = [];
+      
+      // Dados atuais
+      const currentData = localStorage.getItem('worldshards-mapdrops-history');
+      if (currentData) {
+        const parsed = JSON.parse(currentData);
+        if (Array.isArray(parsed)) {
+          allMapDrops.push(...parsed);
+        }
+      }
+      
+      // Dados antigos (com email na chave)
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith('worldshards-mapdrops-') || key === 'worldshards-mapdrops-history') continue;
+        
+        try {
+          const data = JSON.parse(localStorage.getItem(key) || '[]');
+          if (Array.isArray(data)) {
+            allMapDrops.push(...data);
+          }
+        } catch (error) {
+          console.log('⚠️ Erro ao ler', key, ':', error);
+        }
+      }
+      
+      console.log(`📊 Coletados ${allMapDrops.length} registros do localStorage`);
+      
+      if (allMapDrops.length === 0) {
+        alert('❌ Nenhum dado encontrado no localStorage!\nFaça alguns testes no Map Planner primeiro.');
+        return;
+      }
+      
+      // Enviar para o servidor
+      const response = await fetch('/api/admin/collect-user-data', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ mapDropsData: allMapDrops })
+      });
+      
+      const result = await response.json();
+      console.log('🔄 Resultado da sincronização:', result);
+      
+      if (result.success) {
+        alert(`✅ Dados sincronizados!\nUsuário: ${result.user}\nRecebidos: ${result.received}\nSalvos: ${result.saved}\nIgnorados: ${result.skipped}`);
+        // Recarregar dados globais
+        await loadGlobalData();
+      } else {
+        alert(`❌ Erro na sincronização: ${result.message}`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Erro na sincronização:', error);
+      alert(`❌ Erro na sincronização: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
     loadLocalData();
   }, []);
@@ -335,6 +400,9 @@ export function MetricsDashboard() {
             <CardTitle className="flex items-center justify-between">
               🌍 Faixas de Luck - Todos os Usuários
               <div className="flex space-x-2">
+                <Button onClick={syncUserData} variant="outline" size="sm">
+                  🔄 Sync Data
+                </Button>
                 <Button onClick={checkTableStatus} variant="outline" size="sm">
                   🔍 Status Tabela
                 </Button>
