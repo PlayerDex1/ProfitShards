@@ -28,7 +28,7 @@ interface AnalyticsData {
   weeklyTrends: { week: string; runs: number; tokens: number; users: number }[];
 }
 
-export default function MetricsDashboard() {
+export function MetricsDashboard() {
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin'>('analytics');
   
