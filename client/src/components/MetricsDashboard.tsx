@@ -132,17 +132,34 @@ export function MetricsDashboard() {
     setGlobalError(null);
     
     try {
-      const response = await fetch('/api/admin/global-metrics', {
+      // Tentar API normal primeiro
+      let response = await fetch('/api/admin/global-metrics', {
         credentials: 'include'
       });
+
+      // Se falhar, usar API local
+      if (!response.ok) {
+        console.log('🔄 API principal falhou, usando API local...');
+        response = await fetch('/api/admin/global-metrics-local', {
+          credentials: 'include'
+        });
+      }
 
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
 
       const data = await response.json();
-      console.log('🌍 Dados globais carregados:', data);
-      setGlobalData(data);
+      console.log('🌍 Resposta da API:', data);
+      
+      // Se a API indicar para usar localStorage, processar localmente
+      if (data.useLocalStorage) {
+        console.log('📊 Processando dados localmente...');
+        const processedData = processLocalStorageGlobally();
+        setGlobalData(processedData);
+      } else {
+        setGlobalData(data);
+      }
       
     } catch (error) {
       console.error('❌ Erro ao carregar dados globais:', error);
@@ -150,6 +167,90 @@ export function MetricsDashboard() {
     } finally {
       setGlobalLoading(false);
     }
+  };
+
+  const processLocalStorageGlobally = () => {
+    console.log('📊 Processando localStorage globalmente...');
+    
+    // Coletar TODOS os dados do localStorage (incluindo outros usuários se existirem)
+    const allData: LocalMapData[] = [];
+    const userEmails = new Set<string>();
+    
+    // Dados atuais (sem email específico)
+    try {
+      const currentData = localStorage.getItem('worldshards-mapdrops-history');
+      if (currentData) {
+        const parsed = JSON.parse(currentData);
+        if (Array.isArray(parsed)) {
+          allData.push(...parsed);
+          userEmails.add('current-user'); // Usuário atual
+        }
+      }
+    } catch (error) {
+      console.log('⚠️ Erro ao ler dados atuais:', error);
+    }
+
+    // Dados de usuários específicos (chaves com email)
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith('worldshards-mapdrops-') || key === 'worldshards-mapdrops-history') continue;
+
+      try {
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        if (Array.isArray(data)) {
+          allData.push(...data);
+          const email = key.replace('worldshards-mapdrops-', '');
+          userEmails.add(email);
+        }
+      } catch (error) {
+        console.log('⚠️ Erro ao ler', key, ':', error);
+      }
+    }
+
+    console.log(`📊 Dados coletados: ${allData.length} registros de ${userEmails.size} usuários`);
+
+    // Processar faixas de luck
+    const ranges = [
+      { range: '1k - 2k Luck', min: 1000, max: 1999 },
+      { range: '2k - 3k Luck', min: 2000, max: 2999 },
+      { range: '3k - 4k Luck', min: 3000, max: 3999 },
+      { range: '4k - 5k Luck', min: 4000, max: 4999 },
+      { range: '5k - 6k Luck', min: 5000, max: 5999 },
+      { range: '6k - 7k Luck', min: 6000, max: 6999 },
+      { range: '7k - 8k Luck', min: 7000, max: 7999 },
+      { range: '8k+ Luck', min: 8000, max: 999999 },
+    ];
+
+    const processedRanges = ranges.map(({ range, min, max }) => {
+      const rangeData = allData.filter(item => {
+        const luck = item.totalLuck || item.luck || 0;
+        return luck >= min && luck <= max;
+      });
+
+      const totalTokens = rangeData.reduce((sum, item) => sum + (item.tokensDropped || 0), 0);
+      const avgTokens = rangeData.length > 0 ? totalTokens / rangeData.length : 0;
+
+      return {
+        range,
+        runs: rangeData.length,
+        totalTokens,
+        avgTokens,
+        users: userEmails.size // Aproximação - todos os usuários podem ter dados em qualquer faixa
+      };
+    });
+
+    const totalRuns = allData.length;
+    const totalTokens = allData.reduce((sum, item) => sum + (item.tokensDropped || 0), 0);
+
+    return {
+      success: true,
+      totalRuns,
+      totalTokens,
+      uniqueUsers: userEmails.size,
+      totalRegisteredUsers: userEmails.size,
+      luckRanges: processedRanges,
+      rawData: allData.slice(0, 10) // Primeiros 10 para debug
+    };
   };
 
   const checkTableStatus = async () => {
