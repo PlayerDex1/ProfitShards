@@ -45,7 +45,7 @@ export function MetricsDashboard() {
   // Estados para Admin Tools
   const [adminLoading, setAdminLoading] = useState(false);
 
-  const isAdmin = user === 'holdboy01@gmail.com';
+  const isAdmin = user?.email === 'holdboy01@gmail.com';
 
   // Função para carregar Analytics Avançados
   const loadAnalytics = async () => {
@@ -328,7 +328,7 @@ export function MetricsDashboard() {
                         <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded">
                           <div className="flex items-center space-x-2">
                             <span className="text-xl">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🏅'}</span>
-                            <span className="font-medium">{user.email.split('@')[0]}</span>
+                            <span className="font-medium">{user.username || user.email.split('@')[0]}</span>
                           </div>
                           <div className="text-right">
                             <div className="font-mono">{user.totalTokens.toLocaleString()} tokens</div>

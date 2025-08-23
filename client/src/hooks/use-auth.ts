@@ -13,7 +13,7 @@ export function getCurrentUsername(): string | null {
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<string | null>(null);
+  const [user, setUser] = useState<{ email: string; username: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
@@ -24,10 +24,11 @@ export function useAuth() {
       console.log('🔍 [PROFITSHARDS AUTH] Auth response:', me);
       
       const email = me.user?.email ?? null;
-      if (email) {
+      const username = me.user?.username ?? null;
+      if (email && username) {
         localStorage.setItem(CURRENT_USER_KEY, email);
-        console.log('✅ [PROFITSHARDS AUTH] User authenticated:', email);
-        setUser(email);
+        console.log('✅ [PROFITSHARDS AUTH] User authenticated:', email, 'username:', username);
+        setUser({ email, username });
         
         // Trigger migration if user just logged in
         try {

@@ -53,10 +53,10 @@ export default function Home() {
 								<TrendingUp className="h-6 w-6 text-primary" />
 								<div>
 									<h2 className="text-lg font-semibold text-foreground">
-										Bem-vindo, {user}!
+										Olá, {user?.username || 'Usuário'}! 👋
 									</h2>
 									<p className="text-sm text-muted-foreground">
-										Seus dados são salvos automaticamente na nuvem
+										Seus cálculos e configurações são sincronizados automaticamente
 									</p>
 								</div>
 							</div>

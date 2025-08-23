@@ -18,6 +18,7 @@ interface MapEfficiency {
 
 interface TopUser {
   email: string;
+  username: string;
   totalRuns: number;
   totalTokens: number;
   avgEfficiency: number;
@@ -95,10 +96,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     console.log('✅ Admin autenticado para analytics:', session.email);
 
-    // Buscar todos os dados
+    // Buscar todos os dados incluindo username
     const allMetrics = await env.DB.prepare(`
-      SELECT * FROM user_map_metrics 
-      ORDER BY created_at DESC
+      SELECT m.*, u.username 
+      FROM user_map_metrics m
+      LEFT JOIN users u ON m.user_email = u.email
+      ORDER BY m.created_at DESC
     `).all();
 
     console.log(`📊 Total de registros para analytics: ${allMetrics.results?.length || 0}`);
@@ -133,7 +136,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     const mapStats: { [key: string]: { totalTokens: number; totalLoads: number; runs: number } } = {};
 
     // 3. TOP USUÁRIOS
-    const userStats: { [email: string]: { runs: number; tokens: number; loads: number } } = {};
+    const userStats: { [email: string]: { runs: number; tokens: number; loads: number; username: string } } = {};
 
     // 4. TENDÊNCIAS SEMANAIS
     const weeklyStats: { [week: string]: { runs: number; tokens: number; users: Set<string> } } = {};
@@ -146,6 +149,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       const week = getWeekKey(date);
       const mapSize = String(metric.map_size).toLowerCase();
       const userEmail = String(metric.user_email);
+      const username = String(metric.username) || userEmail.split('@')[0];
       const tokens = Number(metric.tokens_dropped) || 0;
       const loads = Number(metric.loads) || 1;
 
@@ -163,7 +167,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
       // Top usuários
       if (!userStats[userEmail]) {
-        userStats[userEmail] = { runs: 0, tokens: 0, loads: 0 };
+        userStats[userEmail] = { runs: 0, tokens: 0, loads: 0, username };
       }
       userStats[userEmail].runs++;
       userStats[userEmail].tokens += tokens;
@@ -189,6 +193,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     const topUsers: TopUser[] = Object.entries(userStats)
       .map(([email, stats]) => ({
         email,
+        username: stats.username,
         totalRuns: stats.runs,
         totalTokens: stats.tokens,
         avgEfficiency: stats.loads > 0 ? stats.tokens / stats.loads : 0

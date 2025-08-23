@@ -1,8 +1,8 @@
-import { Edit2, Eye, EyeOff } from "lucide-react";
+import { Edit2, Eye, EyeOff, User, Save } from "lucide-react";
 import { Equipment, EquipmentSession, EquipmentType, RARITY_COLORS } from "@/types/equipment";
 import { EquipmentEditor } from "@/components/equipment/EquipmentEditor";
 import { useEffect, useState } from "react";
-import { getCurrentUsername } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth";
 import { useI18n } from "@/i18n";
 
 interface EquipmentPanelProps {
@@ -15,10 +15,53 @@ interface EquipmentPanelProps {
 
 export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible = true, onChangeVisibility }: EquipmentPanelProps) {
 	const [editingEquipment, setEditingEquipment] = useState<EquipmentType | null>(null);
-	const username = getCurrentUsername() ?? 'Convidado';
+	const [editingNickname, setEditingNickname] = useState(false);
+	const [newNickname, setNewNickname] = useState('');
+	const [nicknameLoading, setNicknameLoading] = useState(false);
+	const { user } = useAuth();
 	const { t } = useI18n();
 
-	useEffect(() => {}, []);
+	useEffect(() => {
+		if (user?.username) {
+			setNewNickname(user.username);
+		}
+	}, [user?.username]);
+
+	const handleUpdateNickname = async () => {
+		if (!newNickname.trim() || newNickname === user?.username) {
+			setEditingNickname(false);
+			return;
+		}
+
+		setNicknameLoading(true);
+		try {
+			const response = await fetch('/api/user/update-nickname', {
+				method: 'POST',
+				credentials: 'include',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({ nickname: newNickname.trim() })
+			});
+
+			const result = await response.json();
+			
+			if (result.success) {
+				// Força refresh da auth para atualizar o username
+				window.location.reload();
+			} else {
+				alert(`❌ Erro: ${result.error}`);
+				setNewNickname(user?.username || '');
+			}
+		} catch (error) {
+			console.error('Erro ao atualizar nickname:', error);
+			alert('❌ Erro ao atualizar nickname');
+			setNewNickname(user?.username || '');
+		} finally {
+			setNicknameLoading(false);
+			setEditingNickname(false);
+		}
+	};
 
 	const handleSaveEquipment = (equipment: Equipment) => {
 		if (onEquipmentChange && editingEquipment) {
@@ -82,6 +125,68 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 				</button>
 			</div>
 			<div className="p-6 space-y-6">
+				{/* Seção de Configurações do Usuário */}
+				<div className="bg-slate-800/50 rounded-lg p-4 border border-slate-700">
+					<div className="flex items-center space-x-2 mb-3">
+						<User className="h-5 w-5 text-blue-400" />
+						<h3 className="text-lg font-semibold text-white">Configurações do Usuário</h3>
+					</div>
+					
+					<div className="space-y-3">
+						<div>
+							<label className="text-sm font-medium text-gray-300 block mb-1">Nickname</label>
+							{editingNickname ? (
+								<div className="flex items-center space-x-2">
+									<input
+										type="text"
+										value={newNickname}
+										onChange={(e) => setNewNickname(e.target.value)}
+										className="flex-1 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+										placeholder="Digite seu nickname"
+										maxLength={20}
+										disabled={nicknameLoading}
+									/>
+									<button
+										onClick={handleUpdateNickname}
+										disabled={nicknameLoading || !newNickname.trim()}
+										className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded transition-colors flex items-center space-x-1"
+									>
+										{nicknameLoading ? (
+											<div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+										) : (
+											<Save className="h-4 w-4" />
+										)}
+									</button>
+									<button
+										onClick={() => {
+											setEditingNickname(false);
+											setNewNickname(user?.username || '');
+										}}
+										disabled={nicknameLoading}
+										className="px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-500 text-white rounded transition-colors"
+									>
+										Cancelar
+									</button>
+								</div>
+							) : (
+								<div className="flex items-center justify-between bg-slate-700/50 px-3 py-2 rounded border border-slate-600">
+									<span className="text-white font-medium">{user?.username || 'Carregando...'}</span>
+									<button
+										onClick={() => setEditingNickname(true)}
+										className="text-blue-400 hover:text-blue-300 transition-colors flex items-center space-x-1"
+									>
+										<Edit2 className="h-4 w-4" />
+										<span className="text-sm">Editar</span>
+									</button>
+								</div>
+							)}
+							<p className="text-xs text-gray-400 mt-1">
+								Seu nickname será exibido publicamente nos rankings e estatísticas
+							</p>
+						</div>
+					</div>
+				</div>
+
 				<div className="grid grid-cols-2 gap-8">
 					<div className="space-y-6">
 						{renderEquipmentItem('weapon', session.weapon)}
