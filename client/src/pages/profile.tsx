@@ -58,18 +58,7 @@ export default function Profile() {
 
 	// Lista de usuários que podem ver funcionalidades experimentais
 	const adminUsers = ['profitshards@gmail.com', 'admin@profitshards.com', 'holdboy01@gmail.com']; // Emails de administradores
-	
-	// Debug: verificar estrutura do user
-	console.log('🔍 Debug Admin Check:', {
-		user,
-		userType: typeof user,
-		adminUsers,
-		isAdmin: user && adminUsers.includes(user)
-	});
-	
-	// user é uma string (email), não um objeto
 	const isAdmin = user && adminUsers.includes(user);
-	console.log('👑 Is Admin:', isAdmin);
 
 	const tabs = [
 		{ id: 'history', label: 'Histórico', icon: Calculator },

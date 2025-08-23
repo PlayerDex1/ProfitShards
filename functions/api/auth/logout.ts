@@ -1,5 +1,8 @@
+import { addSecurityHeaders, logAuditEvent, getClientIP } from "../../_lib/security";
+
 export interface Env {
   DB: D1Database;
+  KV?: KVNamespace;
 }
 
 export async function onRequestPost({ env, request }: { env: Env; request: Request }) {
@@ -16,12 +19,25 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const sessionId = sessionMatch[1];
         console.log('🔑 Deleting session:', sessionId);
         
+        // Get user info before deleting session for audit
+        const sessionData = await env.DB.prepare(
+          'SELECT user_id FROM sessions WHERE session_id = ?'
+        ).bind(sessionId).first() as { user_id: string } | null;
+        
         // Delete session from database
         const result = await env.DB.prepare(
           'DELETE FROM sessions WHERE session_id = ?'
         ).bind(sessionId).run();
         
         console.log('🗄️ Session deletion result:', result);
+        
+        // Log audit event
+        if (sessionData) {
+          await logAuditEvent(env, sessionData.user_id, 'user_logout', {
+            session_id: sessionId,
+            method: 'manual'
+          }, getClientIP(request));
+        }
       }
     }
 
@@ -48,16 +64,18 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
     console.log('✅ Logout completed successfully');
 
-    return new Response(JSON.stringify({ ok: true }), {
+    const response = new Response(JSON.stringify({ ok: true }), {
       status: 200,
       headers
     });
+    return addSecurityHeaders(response);
 
   } catch (error) {
     console.error('❌ Logout error:', error);
-    return new Response(JSON.stringify({ ok: false, error: 'logout_failed' }), {
+    const response = new Response(JSON.stringify({ ok: false, error: 'logout_failed' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     });
+    return addSecurityHeaders(response);
   }
 }

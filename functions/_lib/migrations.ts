@@ -1,5 +1,8 @@
+import { cleanupOldData } from "./security";
+
 export interface Env {
   DB: D1Database;
+  KV?: KVNamespace;
 }
 
 export async function ensureMigrations(env: Env): Promise<void> {
@@ -194,6 +197,59 @@ export async function ensureMigrations(env: Env): Promise<void> {
       `).bind(Date.now()).run();
 
       console.log('Migration fix_cookie_domain completed successfully');
+    }
+
+    // Migration 004: Add database indexes for performance
+    const migration004 = await env.DB.prepare(`
+      SELECT name FROM migrations WHERE name = 'add_database_indexes'
+    `).first();
+
+    if (!migration004) {
+      console.log('Running migration: add_database_indexes');
+      
+      // Add indexes for better performance
+      const indexes = [
+        'CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)',
+        'CREATE INDEX IF NOT EXISTS idx_users_google_sub ON users(google_sub)',
+        'CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at)',
+        'CREATE INDEX IF NOT EXISTS idx_user_calculations_user_id ON user_calculations(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_user_calculations_created_at ON user_calculations(created_at)',
+        'CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id)',
+        'CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at)',
+        'CREATE INDEX IF NOT EXISTS idx_rate_limits_updated_at ON rate_limits(updated_at)'
+      ];
+
+      for (const indexSql of indexes) {
+        try {
+          await env.DB.prepare(indexSql).run();
+          console.log(`✅ Created index: ${indexSql.split(' ')[5]}`);
+        } catch (e) {
+          console.log(`⚠️ Index may already exist:`, e.message);
+        }
+      }
+
+      // Mark migration as completed
+      await env.DB.prepare(`
+        INSERT INTO migrations (name, executed_at) VALUES ('add_database_indexes', ?)
+      `).bind(Date.now()).run();
+
+      console.log('Migration add_database_indexes completed successfully');
+    }
+
+    // Executar cleanup periódico (apenas uma vez por dia)
+    const lastCleanup = await env.DB.prepare(`
+      SELECT executed_at FROM migrations WHERE name = 'last_cleanup'
+    `).first() as { executed_at: number } | null;
+    
+    const oneDayAgo = Date.now() - (24 * 60 * 60 * 1000);
+    if (!lastCleanup || lastCleanup.executed_at < oneDayAgo) {
+      console.log('Running periodic cleanup...');
+      await cleanupOldData(env);
+      
+      await env.DB.prepare(`
+        INSERT OR REPLACE INTO migrations (name, executed_at) VALUES ('last_cleanup', ?)
+      `).bind(Date.now()).run();
     }
 
   } catch (error) {

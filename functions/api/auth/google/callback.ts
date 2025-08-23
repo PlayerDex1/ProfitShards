@@ -1,9 +1,11 @@
 import { ensureMigrations } from "../../../_lib/migrations";
+import { checkRateLimit, addSecurityHeaders, logAuditEvent, getClientIP, validateEmail } from "../../../_lib/security";
 
 export interface Env {
   DB: D1Database;
   GOOGLE_CLIENT_ID: string;
   GOOGLE_CLIENT_SECRET: string;
+  KV?: KVNamespace;
 }
 
 async function exchangeCodeForToken(code: string, clientId: string, clientSecret: string, redirectUri: string) {
@@ -45,6 +47,24 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     // Run migrations automatically before processing
     await ensureMigrations(env);
     
+    // Rate limiting
+    const clientIP = getClientIP(request);
+    const rateLimitResult = await checkRateLimit(env, clientIP, 'auth', request);
+    
+    if (!rateLimitResult.allowed) {
+      console.log(`🚫 Rate limit exceeded for IP: ${clientIP}`);
+      const response = Response.json(
+        { error: 'Too many authentication attempts. Please try again later.' },
+        { 
+          status: 429,
+          headers: {
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString()
+          }
+        }
+      );
+      return addSecurityHeaders(response);
+    }
+    
     const clientId = env.GOOGLE_CLIENT_ID;
     const clientSecret = env.GOOGLE_CLIENT_SECRET;
     
@@ -70,6 +90,13 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     // Get user info from Google
     const profile = await fetchUserInfo(token.access_token);
     console.log('User profile obtained:', profile.email);
+    
+    // Validate email from Google
+    if (!validateEmail(profile.email)) {
+      console.log('❌ Invalid email from Google:', profile.email);
+      const response = Response.json({ error: 'Invalid email format' }, { status: 400 });
+      return addSecurityHeaders(response);
+    }
 
     const now = Date.now();
 
@@ -132,6 +159,13 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     `).bind(sessionId, user.id, now, expires).run();
 
     console.log('Session created:', sessionId);
+    
+    // Log audit event
+    await logAuditEvent(env, user.id, 'user_login', {
+      email: profile.email,
+      method: 'google_oauth',
+      session_id: sessionId
+    }, clientIP);
 
     // Set cookie with correct domain (simplified)
     const hostname = url.hostname;
@@ -150,10 +184,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       'Set-Cookie': cookieValue
     });
 
-    return new Response(null, { status: 302, headers });
+    const response = new Response(null, { status: 302, headers });
+    return addSecurityHeaders(response);
 
   } catch (error) {
     console.error('Google OAuth callback error:', error);
-    return new Response(`Authentication failed: ${error.message}`, { status: 500 });
+    const response = new Response(`Authentication failed: ${error.message}`, { status: 500 });
+    return addSecurityHeaders(response);
   }
 }
