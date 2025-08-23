@@ -56,11 +56,16 @@ export default function Profile() {
 		clearHistoryRemote();
 	};
 
+	// Lista de usuários que podem ver funcionalidades experimentais
+	const adminUsers = ['profitshards@gmail.com', 'admin@profitshards.com']; // Adicione seu email aqui
+	const isAdmin = user && adminUsers.includes(user);
+
 	const tabs = [
 		{ id: 'history', label: 'Histórico', icon: Calculator },
 		{ id: 'planner', label: 'Planejador', icon: Map },
 		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
-		{ id: 'test', label: 'Test', icon: TestTube },
+		// Aba Test só aparece para admins
+		...(isAdmin ? [{ id: 'test', label: 'Test', icon: TestTube }] : []),
 	];
 
 	return (
@@ -286,8 +291,8 @@ export default function Profile() {
 						/>
 					)}
 
-					{/* Test - Funcionalidades Experimentais */}
-					{activeTab === 'test' && (
+					{/* Test - Funcionalidades Experimentais (Apenas Admin) */}
+					{activeTab === 'test' && isAdmin && (
 						<div className="space-y-6">
 							{/* Comparador de Cenários */}
 							<Card>
