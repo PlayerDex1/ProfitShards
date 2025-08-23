@@ -14,6 +14,7 @@ import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
 import { Trash2, Download, Upload, User, Calculator, Map, Settings } from "lucide-react";
+import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -32,9 +33,7 @@ export default function Profile() {
 
 	useEffect(() => {
 		const load = () => {
-			const key = `worldshards-history-${getCurrentUsername() ?? 'guest'}`;
-			const raw = localStorage.getItem(key);
-			setHistory(raw ? JSON.parse(raw) : []);
+			setHistory(getHistoryCached());
 		};
 		load();
 		const onUpd = () => load();
@@ -47,20 +46,15 @@ export default function Profile() {
 	}, []);
 
 	const removeHistoryItem = (idx: number) => {
-		const username = getCurrentUsername() ?? 'guest';
-		const key = `worldshards-history-${username}`;
-		const next = history.filter((_, i) => i !== idx);
-		localStorage.setItem(key, JSON.stringify(next));
-		setHistory(next);
-		window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+		// idx é o índice original (não o reverso), então podemos usar diretamente
+		const item = history[idx];
+		if (item) {
+			deleteHistoryItem(item.timestamp);
+		}
 	};
 
 	const clearAllHistory = () => {
-		const username = getCurrentUsername() ?? 'guest';
-		const key = `worldshards-history-${username}`;
-		localStorage.removeItem(key);
-		setHistory([]);
-		window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+		clearHistoryRemote();
 	};
 
 	const tabs = [
