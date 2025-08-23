@@ -48,6 +48,32 @@ export function MetricsDashboard() {
     }
   };
 
+  const fixTimestamps = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/fix-timestamps', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('🔧 TIMESTAMPS CORRIGIDOS:', result);
+      
+      // Recarregar dados após correção
+      await loadMetrics();
+      await fetchDebugData();
+      
+    } catch (err) {
+      console.error('Erro ao corrigir timestamps:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadMetrics = async () => {
     try {
       setLoading(true);
@@ -134,9 +160,12 @@ export function MetricsDashboard() {
           <Button onClick={loadMetrics} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4" />
           </Button>
-          <Button onClick={fetchDebugData} variant="outline" size="sm">
-            Debug Data
-          </Button>
+                      <Button onClick={fetchDebugData} variant="outline" size="sm">
+              Debug Data
+            </Button>
+            <Button onClick={fixTimestamps} variant="outline" size="sm" className="bg-yellow-100">
+              Fix Timestamps
+            </Button>
         </div>
       </div>
 
