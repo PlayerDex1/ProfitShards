@@ -12,7 +12,7 @@ import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, Settings, Flask } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, Settings, TestTube } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 
 export default function Profile() {
@@ -60,7 +60,7 @@ export default function Profile() {
 		{ id: 'history', label: 'Histórico', icon: Calculator },
 		{ id: 'planner', label: 'Planejador', icon: Map },
 		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
-		{ id: 'test', label: 'Test', icon: Flask },
+		{ id: 'test', label: 'Test', icon: TestTube },
 	];
 
 	return (
