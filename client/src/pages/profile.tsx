@@ -13,7 +13,7 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { BackupPanel } from "@/components/BackupPanel";
-import { Trash2, Download, Upload, User, Calculator, Map, Settings } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, Settings, Flask } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 
 export default function Profile() {
@@ -62,6 +62,7 @@ export default function Profile() {
 		{ id: 'planner', label: 'Planejador', icon: Map },
 		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
 		{ id: 'backup', label: 'Backup', icon: Download },
+		{ id: 'test', label: 'Test', icon: Flask },
 	];
 
 	return (
@@ -290,6 +291,247 @@ export default function Profile() {
 					{/* Backup */}
 					{activeTab === 'backup' && (
 						<BackupPanel />
+					)}
+
+					{/* Test - Funcionalidades Experimentais */}
+					{activeTab === 'test' && (
+						<div className="space-y-6">
+							{/* Comparador de Cenários */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>⚖️</span>
+										<span>Comparador de Cenários</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+										{/* Cenário A */}
+										<div className="p-4 border rounded-lg bg-blue-50 dark:bg-blue-950/30">
+											<h3 className="font-semibold text-blue-700 dark:text-blue-300 mb-3">Cenário A</h3>
+											<div className="space-y-2 text-sm">
+												<div>Investment: $500</div>
+												<div>Tokens: 2,500</div>
+												<div className="font-bold text-blue-600">Lucro: $125.50</div>
+											</div>
+										</div>
+										
+										{/* Cenário B */}
+										<div className="p-4 border rounded-lg bg-green-50 dark:bg-green-950/30">
+											<h3 className="font-semibold text-green-700 dark:text-green-300 mb-3">Cenário B</h3>
+											<div className="space-y-2 text-sm">
+												<div>Investment: $300</div>
+												<div>Tokens: 1,800</div>
+												<div className="font-bold text-green-600">Lucro: $89.75</div>
+											</div>
+										</div>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Funcionalidade em desenvolvimento para comparar diferentes estratégias de investimento
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Metas de Lucro */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>🎯</span>
+										<span>Metas de Lucro</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-4">
+										<div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+											<div>
+												<div className="font-medium">Meta Diária</div>
+												<div className="text-sm text-muted-foreground">$100.00</div>
+											</div>
+											<div className="text-right">
+												<div className="text-2xl font-bold text-green-600">75%</div>
+												<div className="text-xs text-muted-foreground">Progresso</div>
+											</div>
+										</div>
+										
+										<div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg">
+											<div>
+												<div className="font-medium">Meta Semanal</div>
+												<div className="text-sm text-muted-foreground">$500.00</div>
+											</div>
+											<div className="text-right">
+												<div className="text-2xl font-bold text-blue-600">42%</div>
+												<div className="text-xs text-muted-foreground">Progresso</div>
+											</div>
+										</div>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Sistema de metas baseado no seu histórico de cálculos
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Simulador de Investimento */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>🔮</span>
+										<span>Simulador "E se..."</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-4">
+										<div className="grid grid-cols-2 gap-4">
+											<div>
+												<label className="text-sm font-medium">E se eu investir:</label>
+												<div className="mt-1 p-2 border rounded bg-muted/30">
+													<span className="font-mono">$750.00</span>
+												</div>
+											</div>
+											<div>
+												<label className="text-sm font-medium">Lucro estimado:</label>
+												<div className="mt-1 p-2 border rounded bg-green-50 dark:bg-green-950/30">
+													<span className="font-mono font-bold text-green-600">$187.75</span>
+												</div>
+											</div>
+										</div>
+										
+										<div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-950/30 dark:to-pink-950/30 rounded-lg border">
+											<div className="text-sm">
+												<strong>Análise:</strong> Aumentando o investimento em 50%, o lucro pode crescer ~49% baseado no seu padrão histórico
+											</div>
+										</div>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Simulações baseadas em machine learning do seu histórico
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Conquistas */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>🏆</span>
+										<span>Conquistas</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+										<div className="flex items-center space-x-3 p-3 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-950/30 dark:to-orange-950/30 rounded-lg border border-yellow-200 dark:border-yellow-800">
+											<span className="text-2xl">🥇</span>
+											<div>
+												<div className="font-semibold text-yellow-700 dark:text-yellow-300">Primeiro Lucro</div>
+												<div className="text-xs text-yellow-600 dark:text-yellow-400">Parabéns pelo primeiro cálculo lucrativo!</div>
+											</div>
+										</div>
+										
+										<div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg border border-dashed">
+											<span className="text-2xl opacity-50">🎯</span>
+											<div>
+												<div className="font-semibold text-muted-foreground">Estrategista</div>
+												<div className="text-xs text-muted-foreground">Faça 10 cálculos (7/10)</div>
+											</div>
+										</div>
+										
+										<div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg border border-dashed">
+											<span className="text-2xl opacity-50">💎</span>
+											<div>
+												<div className="font-semibold text-muted-foreground">Mestre dos Tokens</div>
+												<div className="text-xs text-muted-foreground">Alcance $1000 de lucro total</div>
+											</div>
+										</div>
+										
+										<div className="flex items-center space-x-3 p-3 bg-muted/30 rounded-lg border border-dashed">
+											<span className="text-2xl opacity-50">📊</span>
+											<div>
+												<div className="font-semibold text-muted-foreground">Analista</div>
+												<div className="text-xs text-muted-foreground">Use todas as seções de análise</div>
+											</div>
+										</div>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Sistema de conquistas para gamificar o uso da ferramenta
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Alertas de Preços */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>🔔</span>
+										<span>Alertas de Preços</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="space-y-4">
+										<div className="grid grid-cols-2 gap-4">
+											<div className="space-y-2">
+												<label className="text-sm font-medium">Token Price Alert</label>
+												<div className="flex items-center space-x-2">
+													<span className="text-sm">Avisar quando ≥</span>
+													<div className="px-2 py-1 border rounded bg-muted/30 font-mono text-sm">$0.0015</div>
+												</div>
+											</div>
+											<div className="space-y-2">
+												<label className="text-sm font-medium">Gem Price Alert</label>
+												<div className="flex items-center space-x-2">
+													<span className="text-sm">Avisar quando ≤</span>
+													<div className="px-2 py-1 border rounded bg-muted/30 font-mono text-sm">$0.007</div>
+												</div>
+											</div>
+										</div>
+										
+										<div className="p-3 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+											<div className="flex items-center space-x-2 text-blue-700 dark:text-blue-300">
+												<span>💡</span>
+												<span className="text-sm font-medium">Momento ideal para investir detectado!</span>
+											</div>
+										</div>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Notificações inteligentes baseadas em análise de mercado
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Exportar Relatórios */}
+							<Card>
+								<CardHeader>
+									<CardTitle className="flex items-center space-x-2">
+										<span>📄</span>
+										<span>Exportar Relatórios</span>
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<div className="grid grid-cols-2 gap-4">
+										<Button variant="outline" className="h-16 flex flex-col items-center justify-center space-y-1">
+											<Download className="h-5 w-5" />
+											<span className="text-sm">PDF Report</span>
+										</Button>
+										<Button variant="outline" className="h-16 flex flex-col items-center justify-center space-y-1">
+											<Download className="h-5 w-5" />
+											<span className="text-sm">Excel Export</span>
+										</Button>
+									</div>
+									<div className="mt-4 p-3 bg-muted/50 rounded-lg">
+										<p className="text-sm text-muted-foreground">
+											🧪 <strong>Experimental:</strong> Gere relatórios profissionais dos seus cálculos e análises
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+						</div>
 					)}
 				</div>
 			</main>
