@@ -22,7 +22,7 @@ export interface FarmingMetrics {
 }
 
 // Função para criar hash anônimo do usuário
-function createUserHash(userId: string): string {
+export function createUserHash(userId: string): string {
   // Criar hash simples mas anônimo baseado no userId
   const encoder = new TextEncoder();
   const data = encoder.encode(userId + 'salt_profitshards_2024');
