@@ -31,15 +31,16 @@ export async function migrateGuestToCurrentUser(): Promise<void> {
     }
   }
 
-  // Map drops: upload all items from all legacy owners (including cache)
-  for (const owner of Array.from(legacyOwners)) {
-    const k1 = `worldshards-mapdrops-${owner}`;
-    const k2 = `worldshards-mapdrops-cache-${owner}`;
-    const items = (readLocal<MapDropEntry[]>(k1) || readLocal<MapDropEntry[]>(k2) || []) as MapDropEntry[];
-    for (const entry of items) {
-      try { await appendMapDrop(entry); } catch {}
-    }
-  }
+  // Map drops: DESABILITADO - API antiga removida
+  // for (const owner of Array.from(legacyOwners)) {
+  //   const k1 = `worldshards-mapdrops-${owner}`;
+  //   const k2 = `worldshards-mapdrops-cache-${owner}`;
+  //   const items = (readLocal<MapDropEntry[]>(k1) || readLocal<MapDropEntry[]>(k2) || []) as MapDropEntry[];
+  //   for (const entry of items) {
+  //     try { await appendMapDrop(entry); } catch {}
+  //   }
+  // }
+  console.log('📊 Map drops migration skipped - using new metrics system');
 
   // Calculator form and equipment: migrate guest only for now
   try {
@@ -53,7 +54,8 @@ export async function migrateGuestToCurrentUser(): Promise<void> {
 
   // Refresh caches and notify UI
   try { await refreshHistory(); } catch {}
-  try { await refreshMapDrops(); } catch {}
+  // try { await refreshMapDrops(); } catch {} // DESABILITADO - API antiga
+  console.log('🔄 Map drops refresh skipped - using new metrics system');
   window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
   window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
 }
