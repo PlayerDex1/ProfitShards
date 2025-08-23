@@ -163,6 +163,30 @@ export function MetricsDashboard() {
     }
   };
 
+  const testSaveData = async () => {
+    try {
+      console.log('🧪 Testando salvamento direto no banco...');
+      const response = await fetch('/api/admin/test-save', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      const data = await response.json();
+      console.log('🧪 Resultado do teste:', data);
+      
+      if (data.success) {
+        alert(`✅ Teste de salvamento OK!\nTotal de registros: ${data.totalRecords}`);
+        // Recarregar status da tabela
+        await checkTableStatus();
+      } else {
+        alert(`❌ Erro no teste: ${data.message}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro no teste:', error);
+      alert(`❌ Erro no teste: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
     loadLocalData();
   }, []);
@@ -313,6 +337,9 @@ export function MetricsDashboard() {
               <div className="flex space-x-2">
                 <Button onClick={checkTableStatus} variant="outline" size="sm">
                   🔍 Status Tabela
+                </Button>
+                <Button onClick={testSaveData} variant="outline" size="sm">
+                  🧪 Test Save
                 </Button>
                 <Button onClick={loadGlobalData} variant="outline" size="sm">
                   🔄 Atualizar

@@ -88,12 +88,22 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
     console.log(`✅ Metrics saved for user: ${session.user_id} (type: ${type})`);
     
-    const response = Response.json({ success: true });
+    const response = Response.json({ 
+      success: true, 
+      message: `Métrica ${type} salva com sucesso`,
+      userId: session.user_id,
+      timestamp: new Date().toISOString()
+    });
     return addSecurityHeaders(response);
 
   } catch (error) {
     console.error('❌ Save metrics error:', error);
-    const response = Response.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('❌ Error stack:', error.stack);
+    const response = Response.json({ 
+      error: 'Internal server error',
+      message: error.message,
+      stack: error.stack 
+    }, { status: 500 });
     return addSecurityHeaders(response);
   }
 }
