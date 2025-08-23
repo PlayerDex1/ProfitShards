@@ -117,7 +117,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           { mapSize: 'large', avgEfficiency: 0, totalRuns: 0 },
           { mapSize: 'xlarge', avgEfficiency: 0, totalRuns: 0 }
         ],
-        topUsers: [],
+
         weeklyTrends: []
       };
       
@@ -189,18 +189,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       totalRuns: stats.runs
     })).sort((a, b) => b.avgEfficiency - a.avgEfficiency);
 
-    // Processar top usuários
-    const topUsers: TopUser[] = Object.entries(userStats)
-      .map(([email, stats]) => ({
-        email,
-        username: stats.username,
-        totalRuns: stats.runs,
-        totalTokens: stats.tokens,
-        avgEfficiency: stats.loads > 0 ? stats.tokens / stats.loads : 0
-      }))
-      .sort((a, b) => b.totalTokens - a.totalTokens)
-      .slice(0, 10);
-
     // Processar tendências semanais
     const weeklyTrends: WeeklyTrend[] = Object.entries(weeklyStats)
       .map(([week, stats]) => ({
@@ -215,7 +203,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     console.log('📊 Analytics processados:', {
       totalRecords: allMetrics.results.length,
       mapEfficiencyCount: mapEfficiency.length,
-      topUsersCount: topUsers.length,
       weeklyTrendsCount: weeklyTrends.length
     });
 
@@ -223,7 +210,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       success: true,
       hourlyActivity,
       mapEfficiency,
-      topUsers,
       weeklyTrends
     });
     

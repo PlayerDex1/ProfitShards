@@ -25,7 +25,6 @@ interface GlobalData {
 interface AnalyticsData {
   hourlyActivity: { hour: number; runs: number; tokens: number }[];
   mapEfficiency: { mapSize: string; avgEfficiency: number; totalRuns: number }[];
-  topUsers: { email: string; totalRuns: number; totalTokens: number; avgEfficiency: number }[];
   weeklyTrends: { week: string; runs: number; tokens: number; users: number }[];
 }
 
@@ -316,25 +315,6 @@ export function MetricsDashboard() {
                           <div className="text-right">
                             <div className="font-mono">{map.avgEfficiency.toFixed(1)} T/L</div>
                             <div className="text-xs text-muted-foreground">{map.totalRuns} runs</div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Top Usuários */}
-                  <div>
-                    <h3 className="text-lg font-semibold mb-3">🏆 Top Usuários</h3>
-                    <div className="space-y-2">
-                      {analyticsData.topUsers.slice(0, 5).map((user, i) => (
-                        <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xl">{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '🏅'}</span>
-                            <span className="font-medium">{user.username || user.email.split('@')[0]}</span>
-                          </div>
-                          <div className="text-right">
-                            <div className="font-mono">{user.totalTokens.toLocaleString()} tokens</div>
-                            <div className="text-xs text-muted-foreground">{user.totalRuns} runs • {user.avgEfficiency.toFixed(1)} T/L</div>
                           </div>
                         </div>
                       ))}
