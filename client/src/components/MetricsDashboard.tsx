@@ -30,6 +30,8 @@ export function MetricsDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [debugData, setDebugData] = useState<any>(null);
   const [syncLoading, setSyncLoading] = useState(false);
+  const [localData, setLocalData] = useState<any[]>([]);
+  const [showLocalData, setShowLocalData] = useState(false);
 
   const fetchDebugData = async () => {
     try {
@@ -138,6 +140,38 @@ export function MetricsDashboard() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const viewLocalData = () => {
+    console.log('VIEW: Coletando dados locais...');
+    const allData = [];
+    
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (!key || !key.startsWith('worldshards-mapdrops-')) continue;
+      
+      try {
+        const data = JSON.parse(localStorage.getItem(key) || '[]');
+        const userEmail = key.replace('worldshards-mapdrops-', '');
+        
+        data.forEach((entry: any) => {
+          allData.push({
+            ...entry,
+            userEmail,
+            mapName: entry.mapSize || 'unknown',
+            date: new Date(entry.timestamp).toLocaleDateString('pt-BR'),
+            time: new Date(entry.timestamp).toLocaleTimeString('pt-BR')
+          });
+        });
+        
+      } catch (error) {
+        console.log('VIEW: Erro ao processar', key, error);
+      }
+    }
+    
+    console.log('VIEW: Total coletado:', allData.length);
+    setLocalData(allData);
+    setShowLocalData(true);
   };
 
   const syncLocalData = async () => {
@@ -297,10 +331,18 @@ export function MetricsDashboard() {
               Check User
             </Button>
             <Button 
-              onClick={syncLocalData} 
+              onClick={viewLocalData} 
               variant="outline" 
               size="sm" 
               className="bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300"
+            >
+              View Local Data
+            </Button>
+            <Button 
+              onClick={syncLocalData} 
+              variant="outline" 
+              size="sm" 
+              className="bg-green-100 hover:bg-green-200 text-green-700 border-green-300"
             >
               Sync Local Data
             </Button>
@@ -550,6 +592,45 @@ export function MetricsDashboard() {
                   clique em "Fix Timestamps" e depois "Refresh" para recarregar os dados.
                 </div>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Local Data Section */}
+      {showLocalData && localData.length > 0 && (
+        <Card className="mt-6 border-gray-400 bg-gray-800 text-white">
+          <CardHeader>
+            <CardTitle className="text-yellow-300">💾 Dados Locais do Map Planner</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left p-2">Usuário</th>
+                    <th className="text-left p-2">Mapa</th>
+                    <th className="text-left p-2">Data</th>
+                    <th className="text-left p-2">Hora</th>
+                    <th className="text-left p-2">Luck</th>
+                    <th className="text-left p-2">Tokens</th>
+                    <th className="text-left p-2">Eficiência</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {localData.map((item, index) => (
+                    <tr key={index} className="border-b hover:bg-muted/50">
+                      <td className="p-2 font-medium">{item.userEmail}</td>
+                      <td className="p-2 font-medium">{item.mapName}</td>
+                      <td className="p-2">{item.date}</td>
+                      <td className="p-2">{item.time}</td>
+                      <td className="p-2 text-green-600 font-semibold">{item.luck.toFixed(1)}</td>
+                      <td className="p-2 text-blue-600 font-semibold">{item.tokens.toFixed(1)}</td>
+                      <td className="p-2 text-blue-600">{item.efficiency.toFixed(2)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </CardContent>
         </Card>
