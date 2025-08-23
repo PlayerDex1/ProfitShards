@@ -43,6 +43,7 @@ export function MetricsDashboard() {
   const [globalData, setGlobalData] = useState<GlobalMetricsData | null>(null);
   const [globalLoading, setGlobalLoading] = useState(false);
   const [globalError, setGlobalError] = useState<string | null>(null);
+  const [tableStatus, setTableStatus] = useState<any>(null);
 
   const loadLocalData = () => {
     console.log('📊 Carregando dados locais...');
@@ -148,6 +149,17 @@ export function MetricsDashboard() {
       setGlobalError(error.message);
     } finally {
       setGlobalLoading(false);
+    }
+  };
+
+  const checkTableStatus = async () => {
+    try {
+      const response = await fetch('/api/admin/check-metrics-table');
+      const data = await response.json();
+      setTableStatus(data);
+      console.log('🔍 Status da tabela:', data);
+    } catch (error) {
+      console.error('❌ Erro ao verificar tabela:', error);
     }
   };
 
@@ -298,13 +310,41 @@ export function MetricsDashboard() {
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               🌍 Faixas de Luck - Todos os Usuários
-              <Button onClick={loadGlobalData} variant="outline" size="sm">
-                🔄 Atualizar
-              </Button>
+              <div className="flex space-x-2">
+                <Button onClick={checkTableStatus} variant="outline" size="sm">
+                  🔍 Status Tabela
+                </Button>
+                <Button onClick={loadGlobalData} variant="outline" size="sm">
+                  🔄 Atualizar
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent>
             {renderLuckTable(globalData.luckRanges, globalData.totalRuns, true)}
+            
+            {/* Status da Tabela */}
+            {tableStatus && (
+              <div className="mt-6 p-4 bg-gray-100 rounded-lg">
+                <h4 className="font-semibold mb-2">📊 Status da Tabela de Métricas:</h4>
+                <div className="text-sm space-y-1">
+                  <p><strong>Existe:</strong> {tableStatus.table.exists ? '✅ Sim' : '❌ Não'}</p>
+                  <p><strong>Total de Registros:</strong> {tableStatus.table.totalRecords}</p>
+                  {tableStatus.table.lastInsert && (
+                    <p><strong>Último Insert:</strong> {tableStatus.table.lastInsert}</p>
+                  )}
+                  <p><strong>Verificado em:</strong> {tableStatus.timestamp}</p>
+                  {tableStatus.table.recentRecords.length > 0 && (
+                    <details className="mt-2">
+                      <summary className="cursor-pointer font-medium">Ver últimos registros</summary>
+                      <pre className="mt-2 text-xs bg-white p-2 rounded border overflow-auto">
+                        {JSON.stringify(tableStatus.table.recentRecords, null, 2)}
+                      </pre>
+                    </details>
+                  )}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

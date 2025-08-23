@@ -128,24 +128,16 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     console.log('📊 Total de dados globais coletados:', globalData.length);
 
-    // Se não há dados reais, vamos criar alguns dados de exemplo para testar a interface
-    if (globalData.length === 0) {
-      console.log('📊 Nenhum dado real encontrado, criando dados de exemplo...');
-      
-      // Dados de exemplo para testar a interface
-      const exampleData = [
-        { userEmail: 'user1@example.com', totalLuck: 1500, tokensDropped: 85, timestamp: Date.now() },
-        { userEmail: 'user1@example.com', totalLuck: 2200, tokensDropped: 92, timestamp: Date.now() },
-        { userEmail: 'user2@example.com', totalLuck: 3400, tokensDropped: 105, timestamp: Date.now() },
-        { userEmail: 'user2@example.com', totalLuck: 4100, tokensDropped: 118, timestamp: Date.now() },
-        { userEmail: 'user3@example.com', totalLuck: 5500, tokensDropped: 145, timestamp: Date.now() },
-        { userEmail: 'user3@example.com', totalLuck: 6200, tokensDropped: 158, timestamp: Date.now() },
-        { userEmail: 'user4@example.com', totalLuck: 7800, tokensDropped: 185, timestamp: Date.now() },
-        { userEmail: 'user4@example.com', totalLuck: 8500, tokensDropped: 195, timestamp: Date.now() },
-      ];
-      
-      globalData.push(...exampleData);
-      console.log('📊 Dados de exemplo adicionados:', exampleData.length);
+    // Logs detalhados para debug
+    console.log('🔍 DEBUG: Verificando dados coletados...');
+    if (globalData.length > 0) {
+      console.log('📊 Primeiros 3 registros:', globalData.slice(0, 3));
+    } else {
+      console.log('❌ Nenhum dado real encontrado no banco');
+      console.log('💡 Possíveis causas:');
+      console.log('   - Tabela map_drop_metrics não existe ou está vazia');
+      console.log('   - Usuários não estão salvando dados no banco');
+      console.log('   - Dados estão apenas no localStorage local');
     }
 
     // Processar dados por faixas de luck
