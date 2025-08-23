@@ -25,16 +25,35 @@ interface MapMetricsData {
 
 export function MetricsDashboard() {
   const [metrics, setMetrics] = useState<MapMetricsData | null>(null);
+  const [period, setPeriod] = useState(30);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPeriod, setSelectedPeriod] = useState(30);
+  const [debugData, setDebugData] = useState<any>(null);
+
+  const fetchDebugData = async () => {
+    try {
+      const response = await fetch('/api/admin/debug-data', {
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const data = await response.json();
+      setDebugData(data);
+      console.log('🔍 DEBUG DATA COMPLETO:', data);
+    } catch (err) {
+      console.error('Erro ao buscar debug data:', err);
+    }
+  };
 
   const loadMetrics = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`/api/admin/metrics?days=${selectedPeriod}`, {
+      const response = await fetch(`/api/admin/metrics?days=${period}`, {
         credentials: 'include'
       });
       
@@ -54,7 +73,7 @@ export function MetricsDashboard() {
 
   useEffect(() => {
     loadMetrics();
-  }, [selectedPeriod]);
+  }, [period]);
 
   if (loading) {
     return (
@@ -98,22 +117,25 @@ export function MetricsDashboard() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-2xl font-bold">🗺️ Métricas do Map Planner</h2>
-          <p className="text-muted-foreground">Análise simples das runs de mapa - {selectedPeriod} dias</p>
+          <p className="text-muted-foreground">Análise simples das runs de mapa - {period} dias</p>
         </div>
         
         <div className="flex space-x-2">
           {[7, 30, 90].map(days => (
             <Button
               key={days}
-              variant={selectedPeriod === days ? "default" : "outline"}
+              variant={period === days ? "default" : "outline"}
               size="sm"
-              onClick={() => setSelectedPeriod(days)}
+              onClick={() => setPeriod(days)}
             >
               {days}d
             </Button>
           ))}
           <Button onClick={loadMetrics} variant="outline" size="sm">
             <RefreshCw className="h-4 w-4" />
+          </Button>
+          <Button onClick={fetchDebugData} variant="outline" size="sm">
+            Debug Data
           </Button>
         </div>
       </div>
@@ -301,6 +323,38 @@ export function MetricsDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Debug Data Section */}
+      {debugData && (
+        <Card className="mt-6 border-yellow-200 bg-yellow-50">
+          <CardHeader>
+            <CardTitle className="text-yellow-800">🔍 Debug Data</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-sm space-y-2">
+              <div><strong>Admin:</strong> {debugData.admin_user}</div>
+              <div><strong>Tabelas no banco:</strong> {debugData.database_info.total_tables}</div>
+              <div><strong>Map Drop Metrics:</strong> 
+                {debugData.map_drop_metrics.table_exists ? 
+                  `✅ Tabela existe (${debugData.map_drop_metrics.total_records} registros)` : 
+                  '❌ Tabela não existe'
+                }
+              </div>
+              <div><strong>Usuários:</strong> {debugData.other_tables.users.count}</div>
+              <div><strong>Sessões ativas:</strong> {debugData.other_tables.sessions.active_count}</div>
+              
+              {debugData.map_drop_metrics.recent_data && debugData.map_drop_metrics.recent_data.length > 0 && (
+                <details className="mt-4">
+                  <summary className="cursor-pointer font-semibold">📊 Últimos registros ({debugData.map_drop_metrics.recent_data.length})</summary>
+                  <pre className="mt-2 p-2 bg-gray-100 rounded text-xs overflow-auto max-h-40">
+                    {JSON.stringify(debugData.map_drop_metrics.recent_data, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
