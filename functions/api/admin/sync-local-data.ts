@@ -124,6 +124,10 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           continue;
         }
 
+        // Normalizar campo luck (pode vir como 'luck' ou 'totalLuck')
+        const luckValue = entry.luck || entry.totalLuck || 0;
+        console.log('✅ Luck normalizado:', entry.luck, '||', entry.totalLuck, '→', luckValue);
+
         console.log('✅ Validação básica passou para:', entry.userEmail);
 
         // Buscar usuário no banco
@@ -179,7 +183,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           id: crypto.randomUUID(),
           user_hash: userHash,
           map_name: mapName,
-          luck_value: entry.totalLuck || entry.luck || 0,
+          luck_value: luckValue,
           loads_completed: entry.loads || 0,
           charges_consumed: chargesConsumed,
           tokens_dropped: entry.tokensDropped || 0,
