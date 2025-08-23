@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
-import { getCurrentUsername } from '@/hooks/use-auth';
+import { getCurrentUsername, useAuth } from '@/hooks/use-auth';
 import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
@@ -22,6 +22,7 @@ function storageKeyForUser(user: string | null) {
 
 export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+	const { isAuthenticated } = useAuth();
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -158,7 +159,7 @@ export function useCalculator() {
 		];
 	}, [results]);
 
-	const saveToHistory = useCallback((formData: CalculatorFormData, results: CalculationResults) => {
+	const saveToHistory = useCallback(async (formData: CalculatorFormData, results: CalculationResults) => {
 		// Manual save - immediate save
 		const historyItem: HistoryItem = {
 			timestamp: Date.now(),
@@ -167,7 +168,27 @@ export function useCalculator() {
 		};
 
 		appendHistoryItem(historyItem);
-	}, []);
+		
+		// Salvar métricas anônimas se usuário autenticado
+		if (isAuthenticated && results.finalProfit !== undefined) {
+			try {
+				await fetch('/api/admin/save-metrics', {
+					method: 'POST',
+					credentials: 'include',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						type: 'calculation',
+						data: formData,
+						results: results
+					})
+				});
+			} catch (error) {
+				console.log('Metrics save failed (non-critical):', error);
+			}
+		}
+	}, [isAuthenticated]);
 
 	return {
 		formData,
