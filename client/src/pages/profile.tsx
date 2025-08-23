@@ -12,7 +12,6 @@ import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
-import { BackupPanel } from "@/components/BackupPanel";
 import { Trash2, Download, Upload, User, Calculator, Map, Settings, Flask } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 
@@ -61,7 +60,6 @@ export default function Profile() {
 		{ id: 'history', label: 'Histórico', icon: Calculator },
 		{ id: 'planner', label: 'Planejador', icon: Map },
 		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
-		{ id: 'backup', label: 'Backup', icon: Download },
 		{ id: 'test', label: 'Test', icon: Flask },
 	];
 
@@ -286,11 +284,6 @@ export default function Profile() {
 							onUpdateEquipment={updateEquipment}
 							totalLuck={totalLuck}
 						/>
-					)}
-
-					{/* Backup */}
-					{activeTab === 'backup' && (
-						<BackupPanel />
 					)}
 
 					{/* Test - Funcionalidades Experimentais */}
