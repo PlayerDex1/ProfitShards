@@ -29,6 +29,7 @@ export function MetricsDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [debugData, setDebugData] = useState<any>(null);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const fetchDebugData = async () => {
     try {
@@ -140,81 +141,80 @@ export function MetricsDashboard() {
   };
 
   const syncLocalData = async () => {
-    if (!confirm('🔄 Sincronizar dados do histórico local com métricas admin?\n\nIsso vai coletar TODOS os dados do histórico local dos usuários logados e converter para métricas.')) {
+    if (!confirm('Isso vai coletar TODOS os dados do histórico local e sincronizar com o banco. Continuar?')) {
       return;
     }
+
+    setSyncLoading(true);
+    console.log('%c🔄 INICIANDO SINCRONIZAÇÃO LOCAL DATA', 'color: blue; font-weight: bold; font-size: 16px;');
     
     try {
-      setLoading(true);
-      
-      // Coletar dados de TODOS os históricos locais
+      // Coletar todos os dados do localStorage
       const allHistoryData = [];
+      console.log('%c📊 Verificando localStorage...', 'color: cyan;');
       
-      // Percorrer localStorage procurando históricos
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (!key || !key.startsWith('worldshards-mapdrops-')) continue;
         
+        console.log(`%c🔍 Encontrada chave: ${key}`, 'color: yellow;');
+        
         try {
-          const data = localStorage.getItem(key);
-          if (!data) continue;
+          const data = JSON.parse(localStorage.getItem(key) || '[]');
+          console.log(`%c📈 Dados da chave ${key}:`, 'color: green;', data);
           
-          const historyEntries = JSON.parse(data);
-          if (!Array.isArray(historyEntries)) continue;
-          
-          // Extrair email do usuário da chave (worldshards-mapdrops-email@domain.com)
+          // Extrair email da chave (formato: worldshards-mapdrops-email@domain.com)
           const userEmail = key.replace('worldshards-mapdrops-', '');
+          console.log(`%c👤 Email extraído: ${userEmail}`, 'color: magenta;');
           
           // Adicionar email a cada entrada
-          for (const entry of historyEntries) {
-            allHistoryData.push({
-              ...entry,
-              userEmail: userEmail
-            });
-          }
+          data.forEach((entry: any) => {
+            const entryWithEmail = { ...entry, userEmail };
+            allHistoryData.push(entryWithEmail);
+            console.log(`%c➕ Entrada adicionada:`, 'color: lime;', entryWithEmail);
+          });
           
-          console.log(`📊 Coletado ${historyEntries.length} registros de ${userEmail}`);
         } catch (error) {
-          console.error('Erro ao processar histórico:', key, error);
+          console.log(`%c❌ Erro ao processar ${key}:`, 'color: red;', error);
         }
       }
       
-      console.log(`🔄 Total coletado: ${allHistoryData.length} registros de ${new Set(allHistoryData.map(d => d.userEmail)).size} usuários`);
+      console.log(`%c📊 TOTAL DE ENTRADAS COLETADAS: ${allHistoryData.length}`, 'color: blue; font-weight: bold;');
+      console.log('%c📋 DADOS COMPLETOS:', 'color: purple;', allHistoryData);
+
+      // Enviar para o servidor
+      console.log('%c🚀 Enviando para o servidor...', 'color: orange;');
       
-      if (allHistoryData.length === 0) {
-        alert('❌ Nenhum dado encontrado no histórico local!');
-        return;
-      }
-      
-      // Enviar para sincronização
       const response = await fetch('/api/admin/sync-local-data', {
         method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ historyData: allHistoryData })
       });
+
+      const result = await response.json();
+      console.log('%c📥 RESPOSTA DO SERVIDOR:', 'color: teal; font-weight: bold;', result);
       
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
+      if (result.success) {
+        console.log(`%c✅ SINCRONIZAÇÃO CONCLUÍDA!`, 'color: green; font-weight: bold; font-size: 16px;');
+        console.log(`%c📊 Recebidos: ${result.received}`, 'color: blue;');
+        console.log(`%c💾 Salvos: ${result.saved}`, 'color: green;');
+        console.log(`%c⏭️ Ignorados: ${result.skipped}`, 'color: orange;');
+        
+        alert(`Sincronização concluída!\nRecebidos: ${result.received}\nSalvos: ${result.saved}\nIgnorados: ${result.skipped}`);
+        
+        // Recarregar métricas
+        await loadMetrics();
+      } else {
+        console.log(`%c❌ ERRO NA SINCRONIZAÇÃO:`, 'color: red; font-weight: bold;', result.error);
+        alert(`Erro: ${result.error}`);
       }
       
-      const result = await response.json();
-      console.log('🔄 SINCRONIZAÇÃO COMPLETA:', result);
-      
-      // Mostrar resultado
-      alert(`✅ Sincronização concluída!\n\n📊 Recebidos: ${result.total_received}\n✅ Salvos: ${result.saved_count}\n⏭️ Ignorados: ${result.skipped_count}\n\n${result.message}`);
-      
-      // Recarregar dados
-      await loadMetrics();
-      await fetchDebugData();
-      
-    } catch (err) {
-      console.error('Erro ao sincronizar dados:', err);
-      alert('❌ Erro na sincronização. Veja console para detalhes.');
+    } catch (error) {
+      console.log(`%c💥 ERRO CRÍTICO:`, 'color: red; font-weight: bold; font-size: 16px;', error);
+      alert(`Erro: ${error}`);
     } finally {
-      setLoading(false);
+      setSyncLoading(false);
+      console.log('%c🏁 SINCRONIZAÇÃO FINALIZADA', 'color: gray;');
     }
   };
 
