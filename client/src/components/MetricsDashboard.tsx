@@ -9,6 +9,7 @@ interface LuckRange {
   runs: number;
   totalTokens: number;
   avgTokens: number;
+  users?: number;
 }
 
 interface LocalMapData {
@@ -20,10 +21,28 @@ interface LocalMapData {
   loads?: number;
 }
 
+interface GlobalMetricsData {
+  success: boolean;
+  totalRuns: number;
+  totalTokens: number;
+  uniqueUsers: number;
+  totalRegisteredUsers: number;
+  luckRanges: LuckRange[];
+  rawData: any[];
+}
+
 export function MetricsDashboard() {
+  const [activeTab, setActiveTab] = useState<'local' | 'global'>('local');
+  
+  // Local data state
   const [luckRanges, setLuckRanges] = useState<LuckRange[]>([]);
   const [totalRuns, setTotalRuns] = useState(0);
   const [totalTokens, setTotalTokens] = useState(0);
+  
+  // Global data state
+  const [globalData, setGlobalData] = useState<GlobalMetricsData | null>(null);
+  const [globalLoading, setGlobalLoading] = useState(false);
+  const [globalError, setGlobalError] = useState<string | null>(null);
 
   const loadLocalData = () => {
     console.log('📊 Carregando dados locais...');
@@ -106,17 +125,49 @@ export function MetricsDashboard() {
     });
   };
 
+  const loadGlobalData = async () => {
+    console.log('🌍 Carregando dados globais...');
+    setGlobalLoading(true);
+    setGlobalError(null);
+    
+    try {
+      const response = await fetch('/api/admin/global-metrics', {
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log('🌍 Dados globais carregados:', data);
+      setGlobalData(data);
+      
+    } catch (error) {
+      console.error('❌ Erro ao carregar dados globais:', error);
+      setGlobalError(error.message);
+    } finally {
+      setGlobalLoading(false);
+    }
+  };
+
   useEffect(() => {
     loadLocalData();
   }, []);
 
-  return (
+  useEffect(() => {
+    if (activeTab === 'global' && !globalData) {
+      loadGlobalData();
+    }
+  }, [activeTab]);
+
+  const renderLocalTab = () => (
     <div className="space-y-6">
-      {/* Resumo Geral */}
+      {/* Resumo Geral Local */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total de Runs</CardTitle>
+            <CardTitle className="text-sm font-medium">Minhas Runs</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-blue-600">{totalRuns}</div>
@@ -125,7 +176,7 @@ export function MetricsDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Total de Tokens</CardTitle>
+            <CardTitle className="text-sm font-medium">Meus Tokens</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{totalTokens.toLocaleString()}</div>
@@ -134,7 +185,7 @@ export function MetricsDashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">Média por Run</CardTitle>
+            <CardTitle className="text-sm font-medium">Minha Média</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-purple-600">
@@ -144,69 +195,211 @@ export function MetricsDashboard() {
         </Card>
       </div>
 
-      {/* Análise por Faixas de Luck */}
+      {/* Tabela Local */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
-            📊 Análise por Faixas de Luck
+            📊 Minhas Faixas de Luck
             <Button onClick={loadLocalData} variant="outline" size="sm">
               🔄 Atualizar
             </Button>
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-3 font-semibold">Faixa de Luck</th>
-                  <th className="text-center p-3 font-semibold">Runs</th>
-                  <th className="text-center p-3 font-semibold">Total Tokens</th>
-                  <th className="text-center p-3 font-semibold">Média/Run</th>
-                  <th className="text-center p-3 font-semibold">% do Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {luckRanges.map((range, index) => {
-                  const percentage = totalRuns > 0 ? (range.runs / totalRuns * 100) : 0;
-                  return (
-                    <tr key={index} className="border-b hover:bg-muted/50">
-                      <td className="p-3 font-medium">{range.range}</td>
-                      <td className="p-3 text-center">
-                        <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold">
-                          {range.runs}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold">
-                          {range.totalTokens.toLocaleString()}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold">
-                          {range.avgTokens.toFixed(1)}
-                        </span>
-                      </td>
-                      <td className="p-3 text-center">
-                        <span className="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
-                          {percentage.toFixed(1)}%
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          {totalRuns === 0 && (
-            <div className="text-center py-8 text-muted-foreground">
-              <p>📊 Nenhum dado encontrado no histórico local.</p>
-              <p>Faça algumas runs no Map Planner para ver as estatísticas aqui!</p>
-            </div>
-          )}
+          {renderLuckTable(luckRanges, totalRuns, false)}
         </CardContent>
       </Card>
+    </div>
+  );
+
+  const renderGlobalTab = () => {
+    if (globalLoading) {
+      return (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p>Carregando dados de todos os usuários...</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (globalError) {
+      return (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="text-center py-6">
+              <p className="text-red-500 mb-4">Erro ao carregar dados globais: {globalError}</p>
+              <Button onClick={loadGlobalData} variant="outline">
+                Tentar Novamente
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (!globalData) {
+      return (
+        <div className="text-center py-12">
+          <Button onClick={loadGlobalData} variant="outline">
+            Carregar Dados Globais
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        {/* Resumo Geral Global */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Total de Runs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{globalData.totalRuns}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Total de Tokens</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{globalData.totalTokens.toLocaleString()}</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Usuários Ativos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{globalData.uniqueUsers}</div>
+              <div className="text-xs text-muted-foreground">de {globalData.totalRegisteredUsers} registrados</div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-medium">Média Global</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">
+                {globalData.totalRuns > 0 ? (globalData.totalTokens / globalData.totalRuns).toFixed(1) : '0'}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Tabela Global */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              🌍 Faixas de Luck - Todos os Usuários
+              <Button onClick={loadGlobalData} variant="outline" size="sm">
+                🔄 Atualizar
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {renderLuckTable(globalData.luckRanges, globalData.totalRuns, true)}
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderLuckTable = (ranges: LuckRange[], totalRunsCount: number, showUsers: boolean) => (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="border-b">
+            <th className="text-left p-3 font-semibold">Faixa de Luck</th>
+            <th className="text-center p-3 font-semibold">Runs</th>
+            <th className="text-center p-3 font-semibold">Total Tokens</th>
+            <th className="text-center p-3 font-semibold">Média/Run</th>
+            {showUsers && <th className="text-center p-3 font-semibold">Usuários</th>}
+            <th className="text-center p-3 font-semibold">% do Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {ranges.map((range, index) => {
+            const percentage = totalRunsCount > 0 ? (range.runs / totalRunsCount * 100) : 0;
+            return (
+              <tr key={index} className="border-b hover:bg-muted/50">
+                <td className="p-3 font-medium">{range.range}</td>
+                <td className="p-3 text-center">
+                  <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm font-semibold">
+                    {range.runs}
+                  </span>
+                </td>
+                <td className="p-3 text-center">
+                  <span className="inline-block bg-green-100 text-green-800 px-2 py-1 rounded text-sm font-semibold">
+                    {range.totalTokens.toLocaleString()}
+                  </span>
+                </td>
+                <td className="p-3 text-center">
+                  <span className="inline-block bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm font-semibold">
+                    {range.avgTokens.toFixed(1)}
+                  </span>
+                </td>
+                {showUsers && (
+                  <td className="p-3 text-center">
+                    <span className="inline-block bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm font-semibold">
+                      {range.users || 0}
+                    </span>
+                  </td>
+                )}
+                <td className="p-3 text-center">
+                  <span className="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                    {percentage.toFixed(1)}%
+                  </span>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+
+      {totalRunsCount === 0 && (
+        <div className="text-center py-8 text-muted-foreground">
+          <p>📊 Nenhum dado encontrado.</p>
+          <p>Faça algumas runs no Map Planner para ver as estatísticas aqui!</p>
+        </div>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Tabs */}
+      <div className="flex space-x-1 bg-muted p-1 rounded-lg">
+        <button
+          onClick={() => setActiveTab('local')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'local'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          📊 Meus Dados
+        </button>
+        <button
+          onClick={() => setActiveTab('global')}
+          className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            activeTab === 'global'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🌍 Dados Globais
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === 'local' ? renderLocalTab() : renderGlobalTab()}
     </div>
   );
 }
