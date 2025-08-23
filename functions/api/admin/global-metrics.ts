@@ -1,4 +1,5 @@
 import { addSecurityHeaders, checkRateLimit, getClientIP } from '../../_lib/security';
+import { createUserHash } from '../../_lib/metrics';
 
 interface Env {
   DB: D1Database;
@@ -60,13 +61,16 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     const globalData = [];
 
-    // Para cada usuário, tentar encontrar dados no localStorage
+    // Para cada usuário, buscar dados usando o hash
     for (const user of users.results || []) {
       const userRecord = user as { id: string; email: string; created_at: number };
       
       try {
+        // Gerar hash do usuário
+        const userHash = createUserHash(userRecord.id);
+        console.log(`📊 Processando usuário ${userRecord.email} - hash: ${userHash}`);
+        
         // Buscar dados de map drops para este usuário
-        // Primeiro tentar buscar na tabela map_drop_metrics se existir
         const userMetrics = await env.DB.prepare(`
           SELECT 
             map_name,
@@ -76,13 +80,9 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
             session_date,
             created_at
           FROM map_drop_metrics 
-          WHERE user_hash = (
-            SELECT substr(hex(sha256(id)), 1, 6) 
-            FROM users 
-            WHERE email = ?
-          )
+          WHERE user_hash = ?
           ORDER BY created_at DESC
-        `).bind(userRecord.email).all();
+        `).bind(userHash).all();
 
         if (userMetrics.results && userMetrics.results.length > 0) {
           console.log(`📊 Usuário ${userRecord.email}: ${userMetrics.results.length} métricas encontradas`);
