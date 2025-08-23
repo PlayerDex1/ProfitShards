@@ -139,6 +139,85 @@ export function MetricsDashboard() {
     }
   };
 
+  const syncLocalData = async () => {
+    if (!confirm('🔄 Sincronizar dados do histórico local com métricas admin?\n\nIsso vai coletar TODOS os dados do histórico local dos usuários logados e converter para métricas.')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      
+      // Coletar dados de TODOS os históricos locais
+      const allHistoryData = [];
+      
+      // Percorrer localStorage procurando históricos
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (!key || !key.startsWith('worldshards-mapdrops-')) continue;
+        
+        try {
+          const data = localStorage.getItem(key);
+          if (!data) continue;
+          
+          const historyEntries = JSON.parse(data);
+          if (!Array.isArray(historyEntries)) continue;
+          
+          // Extrair email do usuário da chave (worldshards-mapdrops-email@domain.com)
+          const userEmail = key.replace('worldshards-mapdrops-', '');
+          
+          // Adicionar email a cada entrada
+          for (const entry of historyEntries) {
+            allHistoryData.push({
+              ...entry,
+              userEmail: userEmail
+            });
+          }
+          
+          console.log(`📊 Coletado ${historyEntries.length} registros de ${userEmail}`);
+        } catch (error) {
+          console.error('Erro ao processar histórico:', key, error);
+        }
+      }
+      
+      console.log(`🔄 Total coletado: ${allHistoryData.length} registros de ${new Set(allHistoryData.map(d => d.userEmail)).size} usuários`);
+      
+      if (allHistoryData.length === 0) {
+        alert('❌ Nenhum dado encontrado no histórico local!');
+        return;
+      }
+      
+      // Enviar para sincronização
+      const response = await fetch('/api/admin/sync-local-data', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ historyData: allHistoryData })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('🔄 SINCRONIZAÇÃO COMPLETA:', result);
+      
+      // Mostrar resultado
+      alert(`✅ Sincronização concluída!\n\n📊 Recebidos: ${result.total_received}\n✅ Salvos: ${result.saved_count}\n⏭️ Ignorados: ${result.skipped_count}\n\n${result.message}`);
+      
+      // Recarregar dados
+      await loadMetrics();
+      await fetchDebugData();
+      
+    } catch (err) {
+      console.error('Erro ao sincronizar dados:', err);
+      alert('❌ Erro na sincronização. Veja console para detalhes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadMetrics = async () => {
     try {
       setLoading(true);
@@ -244,6 +323,14 @@ export function MetricsDashboard() {
               className="bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300"
             >
               Check User
+            </Button>
+            <Button 
+              onClick={syncLocalData} 
+              variant="outline" 
+              size="sm" 
+              className="bg-blue-100 hover:bg-blue-200 text-blue-700 border-blue-300"
+            >
+              Sync Local Data
             </Button>
         </div>
       </div>
