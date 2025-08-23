@@ -91,7 +91,7 @@ export function MapPlanner({}: MapPlannerProps) {
       
       // Salvar métricas anônimas se usuário autenticado
       if (isAuthenticated && tokensDropped > 0) {
-        console.log('%c🔍 DEBUG: Tentando salvar métricas', 'color: #3B82F6; font-weight: bold; font-size: 14px;', {
+        console.log('%c🔍 DEBUG: Tentando salvar métricas no D1', 'color: #3B82F6; font-weight: bold; font-size: 14px;', {
           isAuthenticated,
           tokensDropped,
           mapSize,
@@ -100,38 +100,30 @@ export function MapPlanner({}: MapPlannerProps) {
         });
         
         try {
-          const metricsResponse = await fetch('/api/admin/save-metrics', {
+          const metricsResponse = await fetch('/api/admin/save-user-metrics', {
             method: 'POST',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              type: 'map_drop',
-              data: {
-                mapName: mapSize,
-                luck: luck,
-                loads: loads,
-                tokensDropped: tokensDropped
-              }
+              mapSize: mapSize,
+              luck: luck,
+              loads: loads,
+              tokensDropped: tokensDropped,
+              timestamp: Date.now()
             })
           });
           
           const metricsResult = await metricsResponse.json();
+          console.log('%c✅ SUCCESS: Métricas salvas no D1', 'color: #10B981; font-weight: bold;', metricsResult);
           
-          if (!metricsResponse.ok) {
-            console.log('%c❌ Erro ao salvar métricas', 'color: #EF4444; font-weight: bold; font-size: 14px;', {
-              status: metricsResponse.status,
-              error: metricsResult
-            });
-          } else {
-            console.log('%c✅ Métricas salvas com sucesso!', 'color: #10B981; font-weight: bold; font-size: 14px;', {
-              status: metricsResponse.status,
-              result: metricsResult
-            });
+          if (!metricsResult.success) {
+            console.log('%c⚠️ WARNING: Falha ao salvar métricas', 'color: #F59E0B;', metricsResult.error);
           }
-        } catch (metricsError) {
-          console.log('%c❌ Erro completo ao salvar métricas', 'color: #EF4444; font-weight: bold; font-size: 14px;', metricsError);
+          
+        } catch (error) {
+          console.log('%c❌ ERROR: Erro ao salvar métricas no D1', 'color: #EF4444; font-weight: bold;', error);
         }
       } else {
         console.log('%c⚠️ Métricas não enviadas', 'color: #F59E0B; font-weight: bold; font-size: 14px;', {
@@ -215,152 +207,4 @@ export function MapPlanner({}: MapPlannerProps) {
                 value={loads} 
                 readOnly
                 className="h-9 bg-muted/50 cursor-not-allowed"
-                title={`Cargas calculadas automaticamente: ${mapSize} = ${loads} cargas`}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.tokensDropped')}</label>
-              <Input 
-                type="number" 
-                value={tokensDropped} 
-                onChange={(e) => setTokensDropped(parseInt(e.target.value || '0'))} 
-                className="h-9" 
-                placeholder="0"
-                min="0"
-              />
-            </div>
-          </div>
-
-          {/* Info sobre cargas automáticas */}
-          <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded border">
-            💡 <strong>Cargas automáticas:</strong> Small=4, Medium=8, Large=16, XLarge=24 cargas
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.luck')}</label>
-              <Input 
-                type="number" 
-                value={luck} 
-                onChange={(e) => setLuck(parseInt(e.target.value || '0'))} 
-                className="h-9"
-                min="0"
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.status')}</label>
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
-              >
-                <option value="neutral">{t('status.neutral')}</option>
-                <option value="positive">{t('status.positive')}</option>
-                <option value="negative">{t('status.negative')}</option>
-                <option value="excellent">{t('status.excellent')}</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Efficiency Metrics */}
-          {tokensDropped > 0 && loads > 0 && (
-            <div className="p-3 bg-muted/50 rounded-lg border">
-              <div className="text-sm font-medium text-foreground mb-2">Métricas de Eficiência</div>
-              <div className="grid grid-cols-3 gap-3 text-xs">
-                <div>
-                  <div className="text-muted-foreground">Tokens/Load</div>
-                  <div className="font-mono font-medium">{tokensPerLoad.toFixed(1)}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Tokens/Energia</div>
-                  <div className="font-mono font-medium">{tokensPerEnergy.toFixed(2)}</div>
-                </div>
-                <div>
-                  <div className="text-muted-foreground">Energia Total</div>
-                  <div className="font-mono font-medium">{totalEnergy}</div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          <div className="flex items-center gap-2">
-            <Button onClick={apply} className="flex-1">
-              {t('planner.apply')}
-            </Button>
-            {history.length > 0 && (
-              <Button variant="outline" onClick={() => clearMapDropsHistory()}>
-                {t('planner.clear')}
-              </Button>
-            )}
-          </div>
-
-          {saveMessage && (
-            <div className="text-sm text-center p-2 rounded border bg-muted/50">
-              {saveMessage}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="py-3">
-          <CardTitle className="text-base">{t('planner.history')}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {history.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t('planner.noHistory')}</p>
-          ) : (
-            <div className="space-y-2 max-h-96 overflow-auto">
-              {history.slice(0, 10).map((h, i) => (
-                <div key={i} className="border rounded-lg p-3 bg-muted/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-2 py-1 rounded text-xs bg-primary/10 text-primary border border-primary/20">
-                        {t(`planner.${h.mapSize}`)}
-                      </span>
-                      <div className={`flex items-center space-x-1 px-2 py-1 rounded text-xs border ${getStatusColor(h.status || 'neutral')}`}>
-                        {getStatusIcon(h.status || 'neutral')}
-                        <span>{h.status ? t(`status.${h.status}`) : '-'}</span>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => deleteMapDropEntry(h.timestamp)}
-                      className="h-6 px-2 text-xs"
-                    >
-                      ✕
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-4 gap-2 text-xs">
-                    <div>
-                      <div className="text-muted-foreground">Tokens</div>
-                      <div className="font-mono font-medium">{h.tokensDropped.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Loads</div>
-                      <div className="font-mono font-medium">{h.loads}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Luck</div>
-                      <div className="font-mono font-medium">{h.totalLuck ?? '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">T/Load</div>
-                      <div className="font-mono font-medium">{h.loads > 0 ? (h.tokensDropped / h.loads).toFixed(1) : '-'}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {new Date(h.timestamp).toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
+                title={`Cargas calculadas automaticamente: ${mapSize} = ${loads} cargas`
