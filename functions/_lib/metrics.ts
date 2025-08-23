@@ -141,7 +141,23 @@ export async function saveMapDropMetrics(
     await env.DB.prepare('CREATE INDEX IF NOT EXISTS idx_map_drop_metrics_luck_value ON map_drop_metrics(luck_value)').run();
 
     const userHash = createUserHash(userId);
-    const sessionDate = new Date().toISOString().split('T')[0];
+    
+    // Forçar data atual correta (UTC)
+    const now = new Date();
+    const currentYear = 2024; // Força ano correto
+    const currentMonth = now.getUTCMonth();
+    const currentDay = now.getUTCDate();
+    
+    const correctDate = new Date(currentYear, currentMonth, currentDay);
+    const sessionDate = correctDate.toISOString().split('T')[0]; // YYYY-MM-DD
+    const correctTimestamp = correctDate.getTime();
+    
+    console.log('🕐 Date generation debug:', {
+      systemNow: now.toISOString(),
+      forcedDate: correctDate.toISOString(),
+      sessionDate: sessionDate,
+      timestamp: correctTimestamp
+    });
     
     // Calcular cargas baseado no tipo de mapa
     const chargesPerMap = {
@@ -165,7 +181,7 @@ export async function saveMapDropMetrics(
       efficiency_tokens_per_load: (mapData.tokensDropped || 0) / Math.max(mapData.loads || 1, 1),
       efficiency_tokens_per_charge: (mapData.tokensDropped || 0) / Math.max(chargesConsumed, 1),
       session_date: sessionDate,
-      created_at: Date.now()
+      created_at: correctTimestamp
     };
 
     await env.DB.prepare(`

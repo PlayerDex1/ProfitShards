@@ -74,6 +74,36 @@ export function MetricsDashboard() {
     }
   };
 
+  const resetMetrics = async () => {
+    if (!confirm('⚠️ ATENÇÃO: Isso vai apagar TODOS os dados de métricas! Continuar?')) {
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/reset-metrics', {
+        method: 'POST',
+        credentials: 'include'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('🗑️ MÉTRICAS RESETADAS:', result);
+      
+      // Recarregar dados após reset
+      await loadMetrics();
+      await fetchDebugData();
+      
+    } catch (err) {
+      console.error('Erro ao resetar métricas:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadMetrics = async () => {
     try {
       setLoading(true);
@@ -173,6 +203,14 @@ export function MetricsDashboard() {
               className="bg-green-600 hover:bg-green-700"
             >
               Reload All
+            </Button>
+            <Button 
+              onClick={resetMetrics} 
+              variant="outline" 
+              size="sm" 
+              className="bg-red-100 hover:bg-red-200 text-red-700 border-red-300"
+            >
+              Reset Data
             </Button>
         </div>
       </div>
