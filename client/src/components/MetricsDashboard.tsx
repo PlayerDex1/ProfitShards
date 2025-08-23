@@ -256,17 +256,27 @@ export function MetricsDashboard() {
       )}
 
       {/* Placeholder quando não há dados */}
-      {metrics.mapBreakdown.length === 0 && (
+      {metrics.totalRuns === 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>📊 Aguardando Dados</CardTitle>
+            <CardTitle>📊 Coletando Dados Reais</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-center py-8 text-muted-foreground">
               <Map className="h-8 w-8 mx-auto mb-3 opacity-50" />
-              <p className="text-sm">
-                As tabelas de breakdown aparecerão quando houver dados de map runs coletados.
+              <p className="text-lg font-medium mb-2">Sistema Ativo</p>
+              <p className="text-sm mb-4">
+                As métricas aparecerão conforme os usuários salvarem suas runs no Map Planner.
               </p>
+              <div className="p-4 bg-muted/50 rounded-lg text-left">
+                <h4 className="font-semibold mb-2">🔄 Como funciona:</h4>
+                <ul className="text-sm space-y-1">
+                  <li>• Usuários fazem runs e salvam no Map Planner</li>
+                  <li>• Dados são coletados automaticamente (anônimos)</li>
+                  <li>• Métricas são calculadas em tempo real</li>
+                  <li>• Dashboard atualiza com dados reais</li>
+                </ul>
+              </div>
             </div>
           </CardContent>
         </Card>
