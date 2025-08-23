@@ -57,8 +57,8 @@ export default function Profile() {
 	};
 
 	// Lista de usuários que podem ver funcionalidades experimentais
-	const adminUsers = ['profitshards@gmail.com', 'admin@profitshards.com']; // Adicione seu email aqui
-	const isAdmin = user && adminUsers.includes(user);
+	const adminUsers = ['profitshards@gmail.com', 'admin@profitshards.com', 'holdboy01@gmail.com']; // Emails de administradores
+	const isAdmin = user && adminUsers.includes(user.email);
 
 	const tabs = [
 		{ id: 'history', label: 'Histórico', icon: Calculator },
