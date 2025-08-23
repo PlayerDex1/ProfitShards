@@ -18,7 +18,7 @@ import { MetricsDashboard } from "@/components/MetricsDashboard";
 
 export default function Profile() {
 	const { t } = useI18n();
-	const { user, isAuthenticated } = useAuth();
+	const { user, userProfile, isAuthenticated } = useAuth();
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const { session, totalLuck, updateEquipment } = useEquipment();
 	const { results, breakdown } = useCalculator();
@@ -83,11 +83,11 @@ export default function Profile() {
 							</div>
 							<div>
 								<h1 className="text-2xl font-bold text-foreground">
-									{isAuthenticated ? `Perfil de ${user}` : t('profile.title')}
+									{isAuthenticated ? `Perfil de ${userProfile?.username || user?.split('@')[0] || 'Usuário'}` : t('profile.title')}
 								</h1>
 								<p className="text-muted-foreground">
 									{isAuthenticated 
-										? 'Dados salvos na nuvem automaticamente'
+										? 'Configurações e histórico sincronizados automaticamente'
 										: 'Dados salvos localmente no navegador'
 									}
 								</p>
