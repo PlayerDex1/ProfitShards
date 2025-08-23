@@ -18,7 +18,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
   const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
-  const [loads, setLoads] = useState<number>(prefs.loadsPerMap || 1);
+  const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
   const { totalLuck } = useEquipment();
@@ -38,6 +38,18 @@ export function MapPlanner({}: MapPlannerProps) {
       setLuck(totalLuck);
     }
   }, [totalLuck]);
+
+  // Auto-calculate loads based on map size
+  useEffect(() => {
+    const loadsPerMap = {
+      small: 4,    // 1 carga × 4 equipamentos
+      medium: 8,   // 2 cargas × 4 equipamentos  
+      large: 16,   // 4 cargas × 4 equipamentos
+      xlarge: 24   // 6 cargas × 4 equipamentos
+    };
+    
+    setLoads(loadsPerMap[mapSize] || loadsPerMap.medium);
+  }, [mapSize]);
 
   const costs = prefs.energyCosts;
   const costBySize: Record<SizeKey, number> = {
@@ -60,11 +72,6 @@ export function MapPlanner({}: MapPlannerProps) {
   const tokensPerLoad = loads > 0 ? tokensDropped / loads : 0;
 
   const apply = async () => {
-    if (loads <= 0) {
-      setSaveMessage('⚠️ Número de loads deve ser maior que 0');
-      setTimeout(() => setSaveMessage(''), 3000);
-      return;
-    }
 
     const entry = {
       timestamp: Date.now(),
@@ -77,7 +84,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
     try {
       // Save preferences
-      save({ mapSize, loadsPerMap: loads });
+      save({ mapSize });
       
       // Save to history
       appendMapDropEntry(entry);
@@ -172,13 +179,15 @@ export function MapPlanner({}: MapPlannerProps) {
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.loads')}</label>
+              <label className="text-sm font-medium text-foreground mb-1 block">
+                {t('planner.loads')} <span className="text-xs text-muted-foreground">(automático)</span>
+              </label>
               <Input 
                 type="number" 
                 value={loads} 
-                onChange={(e) => setLoads(parseInt(e.target.value || '1'))} 
-                className="h-9"
-                min="1"
+                readOnly
+                className="h-9 bg-muted/50 cursor-not-allowed"
+                title={`Cargas calculadas automaticamente: ${mapSize} = ${loads} cargas`}
               />
             </div>
             <div>
@@ -192,6 +201,11 @@ export function MapPlanner({}: MapPlannerProps) {
                 min="0"
               />
             </div>
+          </div>
+
+          {/* Info sobre cargas automáticas */}
+          <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded border">
+            💡 <strong>Cargas automáticas:</strong> Small=4, Medium=8, Large=16, XLarge=24 cargas
           </div>
 
           <div className="grid grid-cols-2 gap-3">
