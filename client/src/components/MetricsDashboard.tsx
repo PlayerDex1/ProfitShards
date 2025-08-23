@@ -161,7 +161,9 @@ export function MetricsDashboard() {
         console.log('SYNC: Email:', userEmail, 'Entradas:', data.length);
         
         data.forEach((entry) => {
-          allHistoryData.push({ ...entry, userEmail });
+          const entryWithEmail = { ...entry, userEmail };
+          allHistoryData.push(entryWithEmail);
+          console.log('SYNC: Entrada adicionada:', JSON.stringify(entryWithEmail, null, 2));
         });
         
       } catch (error) {
