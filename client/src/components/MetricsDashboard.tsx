@@ -141,14 +141,14 @@ export function MetricsDashboard() {
   };
 
   const syncLocalData = async () => {
-    // Log simples para confirmar execução
-    console.log('=== TESTE SYNC INICIADO ===');
-    alert('TESTE: Função syncLocalData foi chamada!');
-    
     if (!confirm('Isso vai coletar TODOS os dados do histórico local e sincronizar com o banco. Continuar?')) {
       console.log('=== TESTE CANCELADO PELO USUÁRIO ===');
       return;
     }
+
+    // Log simples para confirmar execução
+    console.log('=== TESTE SYNC INICIADO ===');
+    alert('TESTE: Função syncLocalData foi chamada!');
 
     setSyncLoading(true);
     console.log('%c🔄 INICIANDO SINCRONIZAÇÃO LOCAL DATA', 'color: blue; font-weight: bold; font-size: 16px;');
@@ -220,8 +220,9 @@ export function MetricsDashboard() {
         
         alert(`Sincronização concluída!\nRecebidos: ${result.received}\nSalvos: ${result.saved}\nIgnorados: ${result.skipped}`);
         
-        // Recarregar métricas
-        await loadMetrics();
+        // Recarregar métricas - TEMPORARIAMENTE DESABILITADO PARA DEBUG
+        console.log('%c🔄 Pulando loadMetrics() para evitar travamento', 'color: orange;');
+        // await loadMetrics();
       } else {
         console.log(`%c❌ ERRO NA SINCRONIZAÇÃO:`, 'color: red; font-weight: bold;', result.error);
         alert(`Erro: ${result.error}`);
