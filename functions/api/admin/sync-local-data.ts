@@ -91,11 +91,40 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     // Processar cada entrada do histórico
     for (const entry of historyData) {
       try {
+        console.log('🔍 Processando entrada:', JSON.stringify(entry, null, 2));
+        
         // Validar dados obrigatórios
-        if (!entry.userEmail || !entry.mapSize || !entry.tokensDropped || !entry.loads || !entry.timestamp) {
+        if (!entry.userEmail) {
+          console.log('❌ Ignorado: userEmail ausente');
           skippedCount++;
           continue;
         }
+        
+        if (!entry.mapSize) {
+          console.log('❌ Ignorado: mapSize ausente');
+          skippedCount++;
+          continue;
+        }
+        
+        if (!entry.tokensDropped && entry.tokensDropped !== 0) {
+          console.log('❌ Ignorado: tokensDropped ausente');
+          skippedCount++;
+          continue;
+        }
+        
+        if (!entry.loads && entry.loads !== 0) {
+          console.log('❌ Ignorado: loads ausente');
+          skippedCount++;
+          continue;
+        }
+        
+        if (!entry.timestamp) {
+          console.log('❌ Ignorado: timestamp ausente');
+          skippedCount++;
+          continue;
+        }
+
+        console.log('✅ Validação básica passou para:', entry.userEmail);
 
         // Buscar usuário no banco
         const targetUser = await env.DB.prepare(
@@ -103,13 +132,16 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         ).bind(entry.userEmail).first() as { id: string } | null;
 
         if (!targetUser) {
-          console.log('⚠️ Usuário não encontrado:', entry.userEmail);
+          console.log('❌ Usuário não encontrado no banco:', entry.userEmail);
           skippedCount++;
           continue;
         }
 
+        console.log('✅ Usuário encontrado:', entry.userEmail, '→', targetUser.id);
+
         // Gerar hash do usuário
         const userHash = createUserHash(targetUser.id);
+        console.log('✅ Hash gerado:', userHash);
 
         // Calcular cargas baseado no tipo de mapa
         const chargesPerMap = {
@@ -121,10 +153,12 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
         const mapName = (entry.mapSize || 'medium').toLowerCase();
         const chargesConsumed = chargesPerMap[mapName] || chargesPerMap.medium;
+        console.log('✅ Mapa processado:', entry.mapSize, '→', mapName, '→', chargesConsumed, 'cargas');
 
         // Converter timestamp para data
         const entryDate = new Date(entry.timestamp);
         const sessionDate = entryDate.toISOString().split('T')[0]; // YYYY-MM-DD
+        console.log('✅ Data processada:', entry.timestamp, '→', sessionDate);
 
         // Verificar se já existe registro idêntico
         const existingRecord = await env.DB.prepare(`
@@ -133,9 +167,12 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         `).bind(userHash, entry.timestamp).first();
 
         if (existingRecord) {
+          console.log('⚠️ Registro já existe (duplicado):', userHash, entry.timestamp);
           skippedCount++;
           continue; // Pular duplicados
         }
+
+        console.log('✅ Não é duplicado, preparando para salvar...');
 
         // Criar métrica
         const metrics = {
@@ -152,6 +189,8 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           created_at: entry.timestamp
         };
 
+        console.log('📊 Métrica preparada:', JSON.stringify(metrics, null, 2));
+
         // Salvar no banco
         await env.DB.prepare(`
           INSERT INTO map_drop_metrics (
@@ -166,10 +205,11 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         ).run();
 
         savedCount++;
-        console.log('✅ Salvo:', entry.userEmail, mapName, entry.tokensDropped, 'tokens');
+        console.log('✅ SALVO COM SUCESSO:', entry.userEmail, mapName, entry.tokensDropped, 'tokens');
 
       } catch (error) {
         console.error('❌ Erro ao processar entrada:', error);
+        console.error('❌ Entrada que causou erro:', JSON.stringify(entry, null, 2));
         skippedCount++;
       }
     }
