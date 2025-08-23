@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/use-auth';
 
 interface LuckRange {
   range: string;
@@ -45,7 +45,7 @@ export default function MetricsDashboard() {
   // Estados para Admin Tools
   const [adminLoading, setAdminLoading] = useState(false);
 
-  const isAdmin = user?.email === 'holdboy01@gmail.com';
+  const isAdmin = user === 'holdboy01@gmail.com';
 
   // Função para carregar Analytics Avançados
   const loadAnalytics = async () => {
