@@ -1,5 +1,4 @@
 import { addSecurityHeaders } from '../../_lib/security';
-import { createUserHash } from '../../_lib/metrics';
 
 interface Env {
   DB: D1Database;
@@ -8,6 +7,18 @@ interface Env {
 export async function onRequestPost({ env, request }: { env: Env; request: Request }) {
   try {
     console.log('🧪 TEST SAVE: Endpoint chamado');
+
+    // Verificar se DB existe
+    if (!env.DB) {
+      console.log('❌ DB não está disponível');
+      const response = Response.json({ 
+        error: 'Database not available',
+        message: 'D1 database binding not found' 
+      }, { status: 500 });
+      return addSecurityHeaders(response);
+    }
+
+    console.log('✅ DB disponível, criando tabela...');
 
     // Criar tabela se não existir
     await env.DB.prepare(`
@@ -28,9 +39,12 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
     console.log('✅ Tabela criada/verificada');
 
+    // Gerar ID simples sem crypto.randomUUID()
+    const testId = 'test_' + Date.now();
+
     // Dados de teste
     const testData = {
-      id: crypto.randomUUID(),
+      id: testId,
       user_hash: 'test123',
       map_name: 'xlarge',
       luck_value: 5000,
@@ -46,7 +60,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     console.log('📊 Inserindo dados de teste:', testData);
 
     // Inserir dados de teste
-    await env.DB.prepare(`
+    const insertResult = await env.DB.prepare(`
       INSERT INTO map_drop_metrics (
         id, user_hash, map_name, luck_value, loads_completed, charges_consumed, tokens_dropped,
         efficiency_tokens_per_load, efficiency_tokens_per_charge, session_date, created_at
@@ -58,7 +72,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       testData.session_date, testData.created_at
     ).run();
 
-    console.log('✅ Dados de teste inseridos com sucesso');
+    console.log('✅ Insert result:', insertResult);
 
     // Verificar se foi salvo
     const count = await env.DB.prepare(`SELECT COUNT(*) as count FROM map_drop_metrics`).first() as { count: number };
@@ -69,6 +83,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       success: true,
       message: 'Dados de teste salvos com sucesso',
       totalRecords: count?.count || 0,
+      insertResult,
       testData
     });
     
@@ -76,9 +91,17 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
   } catch (error) {
     console.error('❌ Erro no teste:', error);
+    console.error('❌ Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
+    
     const response = Response.json({ 
       error: 'Test failed',
-      message: error.message 
+      message: error.message,
+      name: error.name,
+      stack: error.stack
     }, { status: 500 });
     return addSecurityHeaders(response);
   }

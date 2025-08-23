@@ -3,6 +3,12 @@ compatibility_date = "2024-01-15"
 
 pages_build_output_dir = "dist/public"
 
+# Default environment
+[[d1_databases]]
+binding = "DB"
+database_name = "profitshards"
+database_id = "0565dee6-30b3-48d5-ad6d-7f7e19d26d24"
+
 [env.production]
 d1_databases = [
   { binding = "DB", database_name = "profitshards", database_id = "0565dee6-30b3-48d5-ad6d-7f7e19d26d24" }
