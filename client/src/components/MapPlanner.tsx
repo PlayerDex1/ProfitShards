@@ -6,6 +6,7 @@ import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
+import { useAuth } from "@/hooks/use-auth";
 import { Calculator, TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 interface MapPlannerProps {}
@@ -15,6 +16,7 @@ type SizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save } = usePreferences();
   const { t } = useI18n();
+  const { isAuthenticated } = useAuth();
   const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
   const [loads, setLoads] = useState<number>(prefs.loadsPerMap || 1);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
@@ -57,7 +59,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const tokensPerEnergy = totalEnergy > 0 ? tokensDropped / totalEnergy : 0;
   const tokensPerLoad = loads > 0 ? tokensDropped / loads : 0;
 
-  const apply = () => {
+  const apply = async () => {
     if (loads <= 0) {
       setSaveMessage('⚠️ Número de loads deve ser maior que 0');
       setTimeout(() => setSaveMessage(''), 3000);
@@ -79,6 +81,30 @@ export function MapPlanner({}: MapPlannerProps) {
       
       // Save to history
       appendMapDropEntry(entry);
+      
+      // Salvar métricas anônimas se usuário autenticado
+      if (isAuthenticated && tokensDropped > 0) {
+        try {
+          await fetch('/api/admin/save-metrics', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: 'map_drop',
+              data: {
+                mapName: mapSize,
+                luck: luck,
+                loads: loads,
+                tokensDropped: tokensDropped
+              }
+            })
+          });
+        } catch (metricsError) {
+          console.log('Metrics save failed (non-critical):', metricsError);
+        }
+      }
       
       // Reset form
       setTokensDropped(0);

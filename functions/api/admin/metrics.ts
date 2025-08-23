@@ -1,5 +1,5 @@
 import { addSecurityHeaders, checkRateLimit, getClientIP } from "../../_lib/security";
-import { getAggregatedMetrics } from "../../_lib/metrics";
+import { getMapPlannerMetrics } from "../../_lib/metrics";
 
 export interface Env {
   DB: D1Database;
@@ -67,8 +67,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       return addSecurityHeaders(response);
     }
 
-    // Buscar métricas agregadas
-    const metrics = await getAggregatedMetrics(env, days);
+    // Buscar métricas do map planner
+    const metrics = await getMapPlannerMetrics(env, days);
     
     if (!metrics) {
       const response = Response.json({ error: 'Failed to fetch metrics' }, { status: 500 });

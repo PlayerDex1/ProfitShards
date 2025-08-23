@@ -172,78 +172,76 @@ export async function saveMapDropMetrics(
   }
 }
 
-// Buscar métricas agregadas (apenas para admin)
-export async function getAggregatedMetrics(env: Env, days: number = 30) {
+// Buscar métricas simples do map planner (apenas para admin)
+export async function getMapPlannerMetrics(env: Env, days: number = 30) {
   try {
     const daysAgo = Date.now() - (days * 24 * 60 * 60 * 1000);
     
-    // Métricas de farming por luck
-    const farmingByLuck = await env.DB.prepare(`
+    // Estatísticas gerais de map drops
+    const generalStats = await env.DB.prepare(`
       SELECT 
-        ROUND(luck_value / 10) * 10 as luck_range,
-        COUNT(*) as total_calculations,
-        AVG(final_profit) as avg_profit,
-        AVG(roi) as avg_roi,
-        AVG(efficiency_tokens_per_load) as avg_tokens_per_load,
-        AVG(efficiency_tokens_per_energy) as avg_tokens_per_energy,
-        COUNT(DISTINCT user_hash) as unique_users
-      FROM farming_metrics 
+        COUNT(*) as total_runs,
+        COUNT(DISTINCT user_hash) as unique_users,
+        AVG(luck_value) as avg_luck,
+        AVG(tokens_dropped) as avg_tokens
+      FROM map_drop_metrics 
       WHERE created_at > ?
-      GROUP BY luck_range
-      ORDER BY luck_range
+    `).bind(daysAgo).first();
+
+    // Métricas por mapa
+    const mapBreakdown = await env.DB.prepare(`
+      SELECT 
+        map_name,
+        COUNT(*) as total_runs,
+        AVG(luck_value) as avg_luck,
+        AVG(tokens_dropped) as avg_tokens,
+        AVG(efficiency_tokens_per_load) as avg_efficiency
+      FROM map_drop_metrics 
+      WHERE created_at > ?
+      GROUP BY map_name
+      ORDER BY total_runs DESC
     `).bind(daysAgo).all();
 
-    // Métricas de map drops por luck
-    const mapDropsByLuck = await env.DB.prepare(`
+    // Métricas por faixa de luck
+    const luckRanges = await env.DB.prepare(`
       SELECT 
-        ROUND(luck_value / 10) * 10 as luck_range,
+        CASE 
+          WHEN luck_value < 50 THEN '0-49'
+          WHEN luck_value < 100 THEN '50-99'
+          WHEN luck_value < 150 THEN '100-149'
+          WHEN luck_value < 200 THEN '150-199'
+          ELSE '200+'
+        END as luck_range,
         COUNT(*) as total_runs,
-        AVG(tokens_dropped) as avg_tokens_dropped,
-        AVG(efficiency_tokens_per_load) as avg_efficiency,
-        COUNT(DISTINCT user_hash) as unique_users
+        AVG(tokens_dropped) as avg_tokens,
+        AVG(efficiency_tokens_per_load) as avg_efficiency
       FROM map_drop_metrics 
       WHERE created_at > ?
       GROUP BY luck_range
       ORDER BY luck_range
     `).bind(daysAgo).all();
 
-    // Top performers (anônimos)
-    const topPerformers = await env.DB.prepare(`
-      SELECT 
-        user_hash,
-        COUNT(*) as total_calculations,
-        AVG(final_profit) as avg_profit,
-        MAX(final_profit) as best_profit,
-        AVG(luck_value) as avg_luck
-      FROM farming_metrics 
-      WHERE created_at > ? AND final_profit > 0
-      GROUP BY user_hash
-      ORDER BY avg_profit DESC
-      LIMIT 10
-    `).bind(daysAgo).all();
-
-    // Estatísticas gerais
-    const generalStats = await env.DB.prepare(`
-      SELECT 
-        COUNT(*) as total_calculations,
-        COUNT(DISTINCT user_hash) as active_users,
-        AVG(final_profit) as global_avg_profit,
-        AVG(luck_value) as global_avg_luck,
-        SUM(CASE WHEN final_profit > 0 THEN 1 ELSE 0 END) as profitable_calculations
-      FROM farming_metrics 
-      WHERE created_at > ?
-    `).bind(daysAgo).first();
-
     return {
-      farmingByLuck: farmingByLuck.results,
-      mapDropsByLuck: mapDropsByLuck.results,
-      topPerformers: topPerformers.results,
-      generalStats,
+      totalRuns: generalStats?.total_runs || 0,
+      uniqueUsers: generalStats?.unique_users || 0,
+      averageLuck: generalStats?.avg_luck || 0,
+      averageTokens: generalStats?.avg_tokens || 0,
+      mapBreakdown: mapBreakdown.results || [],
+      luckRanges: luckRanges.results || [],
       period: `${days} days`,
       generated_at: new Date().toISOString()
     };
   } catch (error) {
-    console.error('Failed to get aggregated metrics:', error);
-    return null;
+    console.error('Failed to get map planner metrics:', error);
+    return {
+      totalRuns: 0,
+      uniqueUsers: 0,
+      averageLuck: 0,
+      averageTokens: 0,
+      mapBreakdown: [],
+      luckRanges: [],
+      period: `${days} days`,
+      generated_at: new Date().toISOString()
+    };
   }
 }
