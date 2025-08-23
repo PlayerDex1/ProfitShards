@@ -18,17 +18,17 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 	const [editingNickname, setEditingNickname] = useState(false);
 	const [newNickname, setNewNickname] = useState('');
 	const [nicknameLoading, setNicknameLoading] = useState(false);
-	const { user } = useAuth();
+	const { userProfile } = useAuth();
 	const { t } = useI18n();
 
 	useEffect(() => {
-		if (user?.username) {
-			setNewNickname(user.username);
+		if (userProfile?.username) {
+			setNewNickname(userProfile.username);
 		}
-	}, [user?.username]);
+	}, [userProfile?.username]);
 
 	const handleUpdateNickname = async () => {
-		if (!newNickname.trim() || newNickname === user?.username) {
+		if (!newNickname.trim() || newNickname === userProfile?.username) {
 			setEditingNickname(false);
 			return;
 		}
@@ -51,12 +51,12 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 				window.location.reload();
 			} else {
 				alert(`❌ Erro: ${result.error}`);
-				setNewNickname(user?.username || '');
+				setNewNickname(userProfile?.username || '');
 			}
 		} catch (error) {
 			console.error('Erro ao atualizar nickname:', error);
 			alert('❌ Erro ao atualizar nickname');
-			setNewNickname(user?.username || '');
+			setNewNickname(userProfile?.username || '');
 		} finally {
 			setNicknameLoading(false);
 			setEditingNickname(false);
@@ -160,7 +160,7 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 									<button
 										onClick={() => {
 											setEditingNickname(false);
-											setNewNickname(user?.username || '');
+											setNewNickname(userProfile?.username || '');
 										}}
 										disabled={nicknameLoading}
 										className="px-3 py-2 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-500 text-white rounded transition-colors"
@@ -170,7 +170,7 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 								</div>
 							) : (
 								<div className="flex items-center justify-between bg-slate-700/50 px-3 py-2 rounded border border-slate-600">
-									<span className="text-white font-medium">{user?.username || 'Carregando...'}</span>
+									<span className="text-white font-medium">{userProfile?.username || 'Carregando...'}</span>
 									<button
 										onClick={() => setEditingNickname(true)}
 										className="text-blue-400 hover:text-blue-300 transition-colors flex items-center space-x-1"

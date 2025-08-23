@@ -13,7 +13,8 @@ export function getCurrentUsername(): string | null {
 }
 
 export function useAuth() {
-  const [user, setUser] = useState<{ email: string; username: string } | null>(null);
+  const [user, setUser] = useState<string | null>(null);
+  const [userProfile, setUserProfile] = useState<{ email: string; username: string } | null>(null);
   const [loading, setLoading] = useState(true);
 
   const checkAuth = useCallback(async () => {
@@ -25,10 +26,15 @@ export function useAuth() {
       
       const email = me.user?.email ?? null;
       const username = me.user?.username ?? null;
-      if (email && username) {
+      if (email) {
         localStorage.setItem(CURRENT_USER_KEY, email);
         console.log('✅ [PROFITSHARDS AUTH] User authenticated:', email, 'username:', username);
-        setUser({ email, username });
+        
+        // Manter compatibilidade: user = email (string)
+        setUser(email);
+        
+        // Novo: userProfile = objeto completo
+        setUserProfile({ email, username: username || email.split('@')[0] });
         
         // Trigger migration if user just logged in
         try {
@@ -45,11 +51,13 @@ export function useAuth() {
         localStorage.removeItem(CURRENT_USER_KEY);
         console.log('❌ [PROFITSHARDS AUTH] No user authenticated');
         setUser(null);
+        setUserProfile(null);
       }
     } catch (error) {
       console.log('❌ [PROFITSHARDS AUTH] Auth check failed:', error);
       localStorage.removeItem(CURRENT_USER_KEY);
       setUser(null);
+      setUserProfile(null);
     } finally {
       setLoading(false);
     }
@@ -131,6 +139,7 @@ export function useAuth() {
     }
     localStorage.removeItem(CURRENT_USER_KEY);
     setUser(null);
+    setUserProfile(null);
     window.dispatchEvent(new CustomEvent("worldshards-auth-updated"));
   }, []);
 
@@ -142,5 +151,5 @@ export function useAuth() {
     return { ok: true as const };
   }, []);
 
-  return { user, isAuthenticated, loading, register, login, logout, requestReset, resetPassword, refreshAuth };
+  return { user, userProfile, isAuthenticated, loading, register, login, logout, requestReset, resetPassword, refreshAuth };
 }

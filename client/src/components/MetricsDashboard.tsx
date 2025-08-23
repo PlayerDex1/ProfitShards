@@ -45,7 +45,7 @@ export function MetricsDashboard() {
   // Estados para Admin Tools
   const [adminLoading, setAdminLoading] = useState(false);
 
-  const isAdmin = user?.email === 'holdboy01@gmail.com';
+  const isAdmin = user === 'holdboy01@gmail.com';
 
   // Função para carregar Analytics Avançados
   const loadAnalytics = async () => {

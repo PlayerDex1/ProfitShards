@@ -15,7 +15,7 @@ export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const { totalLuck } = useEquipment();
 	const { t } = useI18n();
-	const { user, isAuthenticated } = useAuth();
+	const { user, userProfile, isAuthenticated } = useAuth();
 
 	useEffect(() => {
 		importBuildsFromUrl();
@@ -53,7 +53,7 @@ export default function Home() {
 								<TrendingUp className="h-6 w-6 text-primary" />
 								<div>
 									<h2 className="text-lg font-semibold text-foreground">
-										Olá, {user?.username || 'Usuário'}! 👋
+										Olá, {userProfile?.username || (user ? user.split('@')[0] : 'Usuário')}! 👋
 									</h2>
 									<p className="text-sm text-muted-foreground">
 										Seus cálculos e configurações são sincronizados automaticamente
