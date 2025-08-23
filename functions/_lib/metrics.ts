@@ -205,24 +205,15 @@ export async function saveMapDropMetrics(
 // Buscar métricas simples do map planner (apenas para admin)
 export async function getMapPlannerMetrics(env: Env, days: number = 30) {
   try {
-    const now = Date.now();
-    const daysAgo = now - (days * 24 * 60 * 60 * 1000);
+    console.log('🔍 getMapPlannerMetrics - MOSTRANDO TODOS OS DADOS (sem filtro de dias)');
     
-    console.log('🔍 getMapPlannerMetrics DEBUG:', {
-      now: now,
-      daysAgo: daysAgo,
-      days: days,
-      nowDate: new Date(now).toISOString(),
-      daysAgoDate: new Date(daysAgo).toISOString()
-    });
-    
-    // Primeiro, vamos ver TODOS os registros
+    // Primeiro, vamos ver TODOS os registros (sem filtro de data)
     const allRecords = await env.DB.prepare(`
       SELECT COUNT(*) as total, MIN(created_at) as oldest, MAX(created_at) as newest
       FROM map_drop_metrics
     `).first();
     
-    console.log('📊 Todos os registros:', {
+    console.log('📊 Todos os registros na tabela:', {
       total: allRecords?.total,
       oldest: allRecords?.oldest,
       newest: allRecords?.newest,
@@ -230,20 +221,19 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       newestDate: allRecords?.newest ? new Date(allRecords.newest).toISOString() : null
     });
     
-    // Estatísticas gerais de map drops
+    // Estatísticas gerais de map drops (TODOS OS DADOS - SEM FILTRO)
     const generalStats = await env.DB.prepare(`
       SELECT 
         COUNT(*) as total_runs,
         COUNT(DISTINCT user_hash) as unique_users,
         AVG(luck_value) as avg_luck,
         AVG(tokens_dropped) as avg_tokens
-      FROM map_drop_metrics 
-      WHERE created_at > ?
-    `).bind(daysAgo).first();
+      FROM map_drop_metrics
+    `).first();
 
-    console.log('📈 General stats result:', generalStats);
+    console.log('📈 General stats result (TODOS OS DADOS):', generalStats);
 
-    // Métricas por mapa
+    // Métricas por mapa (TODOS OS DADOS)
     const mapBreakdown = await env.DB.prepare(`
       SELECT 
         map_name,
@@ -252,14 +242,13 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
         AVG(tokens_dropped) as avg_tokens,
         AVG(efficiency_tokens_per_load) as avg_efficiency
       FROM map_drop_metrics 
-      WHERE created_at > ?
       GROUP BY map_name
       ORDER BY total_runs DESC
-    `).bind(daysAgo).all();
+    `).all();
 
-    console.log('🗺️ Map breakdown result:', mapBreakdown);
+    console.log('🗺️ Map breakdown result (TODOS OS DADOS):', mapBreakdown);
 
-    // Métricas por faixa de luck
+    // Métricas por faixa de luck (TODOS OS DADOS)
     const luckRanges = await env.DB.prepare(`
       SELECT 
         CASE 
@@ -273,14 +262,11 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
         AVG(tokens_dropped) as avg_tokens,
         AVG(efficiency_tokens_per_load) as avg_efficiency
       FROM map_drop_metrics 
-      WHERE created_at > ?
       GROUP BY luck_range
       ORDER BY luck_range
-    `).bind(daysAgo).all();
+    `).all();
 
-    console.log('🎯 Luck ranges result:', luckRanges);
-
-    // Retornar apenas dados reais - sem dados fake
+    console.log('🎯 Luck ranges result (TODOS OS DADOS):', luckRanges);
 
     const result = {
       totalRuns: generalStats?.total_runs || 0,
@@ -289,11 +275,11 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       averageTokens: generalStats?.avg_tokens || 0,
       mapBreakdown: mapBreakdown.results || [],
       luckRanges: luckRanges.results || [],
-      period: `${days} days`,
+      period: `TODOS OS DADOS (${allRecords?.total || 0} registros)`,
       generated_at: new Date().toISOString()
     };
     
-    console.log('✅ Final result:', result);
+    console.log('✅ Final result (TODOS OS DADOS):', result);
     
     return result;
   } catch (error) {
@@ -307,7 +293,7 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       averageTokens: 0,
       mapBreakdown: [],
       luckRanges: [],
-      period: `${days} days`,
+      period: `ERRO - 0 registros`,
       generated_at: new Date().toISOString()
     };
   }

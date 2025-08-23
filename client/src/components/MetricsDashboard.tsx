@@ -104,6 +104,41 @@ export function MetricsDashboard() {
     }
   };
 
+  const checkUser = async () => {
+    const email = prompt('Digite o email do usuário para verificar:');
+    if (!email) return;
+    
+    try {
+      setLoading(true);
+      const response = await fetch('/api/admin/check-user', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email })
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      const result = await response.json();
+      console.log('🔍 VERIFICAÇÃO DE USUÁRIO:', result);
+      
+      // Mostrar resultado em alert também
+      const metrics = result.metrics?.total_records || 0;
+      const sessions = result.sessions?.active_sessions || 0;
+      alert(`👤 Usuário: ${email}\n📊 Métricas: ${metrics} registros\n🔐 Sessões: ${sessions} ativas\n\nVeja console para detalhes completos`);
+      
+    } catch (err) {
+      console.error('Erro ao verificar usuário:', err);
+      alert('Erro ao verificar usuário. Veja console para detalhes.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const loadMetrics = async () => {
     try {
       setLoading(true);
@@ -170,26 +205,16 @@ export function MetricsDashboard() {
   return (
     <div className="space-y-6">
       {/* Header e Controles */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h2 className="text-2xl font-bold">🗺️ Métricas do Map Planner</h2>
-          <p className="text-muted-foreground">Análise simples das runs de mapa - {period} dias</p>
-        </div>
-        
-        <div className="flex space-x-2">
-          {[7, 30, 90].map(days => (
-            <Button
-              key={days}
-              variant={period === days ? "default" : "outline"}
-              size="sm"
-              onClick={() => setPeriod(days)}
-            >
-              {days}d
+              <div className="flex justify-between items-center">
+          <div>
+            <h2 className="text-2xl font-bold">🗺️ Métricas do Map Planner</h2>
+            <p className="text-muted-foreground">Análise de TODAS as runs de mapa (sem filtro de período)</p>
+          </div>
+          
+          <div className="flex space-x-2">
+            <Button onClick={loadMetrics} variant="outline" size="sm">
+              <RefreshCw className="h-4 w-4" />
             </Button>
-          ))}
-          <Button onClick={loadMetrics} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4" />
-          </Button>
                       <Button onClick={fetchDebugData} variant="outline" size="sm">
               Debug Data
             </Button>
@@ -211,6 +236,14 @@ export function MetricsDashboard() {
               className="bg-red-100 hover:bg-red-200 text-red-700 border-red-300"
             >
               Reset Data
+            </Button>
+            <Button 
+              onClick={checkUser} 
+              variant="outline" 
+              size="sm" 
+              className="bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300"
+            >
+              Check User
             </Button>
         </div>
       </div>
