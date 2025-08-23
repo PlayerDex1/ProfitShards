@@ -189,7 +189,30 @@ export async function saveMapDropMetrics(
 // Buscar métricas simples do map planner (apenas para admin)
 export async function getMapPlannerMetrics(env: Env, days: number = 30) {
   try {
-    const daysAgo = Date.now() - (days * 24 * 60 * 60 * 1000);
+    const now = Date.now();
+    const daysAgo = now - (days * 24 * 60 * 60 * 1000);
+    
+    console.log('🔍 getMapPlannerMetrics DEBUG:', {
+      now: now,
+      daysAgo: daysAgo,
+      days: days,
+      nowDate: new Date(now).toISOString(),
+      daysAgoDate: new Date(daysAgo).toISOString()
+    });
+    
+    // Primeiro, vamos ver TODOS os registros
+    const allRecords = await env.DB.prepare(`
+      SELECT COUNT(*) as total, MIN(created_at) as oldest, MAX(created_at) as newest
+      FROM map_drop_metrics
+    `).first();
+    
+    console.log('📊 Todos os registros:', {
+      total: allRecords?.total,
+      oldest: allRecords?.oldest,
+      newest: allRecords?.newest,
+      oldestDate: allRecords?.oldest ? new Date(allRecords.oldest).toISOString() : null,
+      newestDate: allRecords?.newest ? new Date(allRecords.newest).toISOString() : null
+    });
     
     // Estatísticas gerais de map drops
     const generalStats = await env.DB.prepare(`
@@ -201,6 +224,8 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       FROM map_drop_metrics 
       WHERE created_at > ?
     `).bind(daysAgo).first();
+
+    console.log('📈 General stats result:', generalStats);
 
     // Métricas por mapa
     const mapBreakdown = await env.DB.prepare(`
@@ -215,6 +240,8 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       GROUP BY map_name
       ORDER BY total_runs DESC
     `).bind(daysAgo).all();
+
+    console.log('🗺️ Map breakdown result:', mapBreakdown);
 
     // Métricas por faixa de luck
     const luckRanges = await env.DB.prepare(`
@@ -235,9 +262,11 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       ORDER BY luck_range
     `).bind(daysAgo).all();
 
+    console.log('🎯 Luck ranges result:', luckRanges);
+
     // Retornar apenas dados reais - sem dados fake
 
-    return {
+    const result = {
       totalRuns: generalStats?.total_runs || 0,
       uniqueUsers: generalStats?.unique_users || 0,
       averageLuck: generalStats?.avg_luck || 0,
@@ -247,6 +276,10 @@ export async function getMapPlannerMetrics(env: Env, days: number = 30) {
       period: `${days} days`,
       generated_at: new Date().toISOString()
     };
+    
+    console.log('✅ Final result:', result);
+    
+    return result;
   } catch (error) {
     console.error('Failed to get map planner metrics:', error);
     
