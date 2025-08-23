@@ -191,6 +191,19 @@ export function MetricsDashboard() {
         body: JSON.stringify({ historyData: allHistoryData })
       });
 
+      console.log('%c📡 RESPOSTA HTTP:', 'color: cyan;', {
+        status: response.status,
+        statusText: response.statusText,
+        ok: response.ok,
+        headers: Object.fromEntries(response.headers.entries())
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.log('%c❌ RESPOSTA DE ERRO:', 'color: red;', errorText);
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
+      }
+
       const result = await response.json();
       console.log('%c📥 RESPOSTA DO SERVIDOR:', 'color: teal; font-weight: bold;', result);
       
@@ -211,7 +224,17 @@ export function MetricsDashboard() {
       
     } catch (error) {
       console.log(`%c💥 ERRO CRÍTICO:`, 'color: red; font-weight: bold; font-size: 16px;', error);
-      alert(`Erro: ${error}`);
+      console.log(`%c🔍 TIPO DO ERRO:`, 'color: orange;', typeof error);
+      console.log(`%c📝 ERRO DETALHADO:`, 'color: yellow;', {
+        message: error?.message || 'Sem mensagem',
+        stack: error?.stack || 'Sem stack trace',
+        name: error?.name || 'Sem nome',
+        toString: error?.toString() || 'Sem toString',
+        errorObject: error
+      });
+      
+      const errorMessage = error?.message || error?.toString() || JSON.stringify(error) || 'Erro desconhecido';
+      alert(`Erro: ${errorMessage}`);
     } finally {
       setSyncLoading(false);
       console.log('%c🏁 SINCRONIZAÇÃO FINALIZADA', 'color: gray;');
