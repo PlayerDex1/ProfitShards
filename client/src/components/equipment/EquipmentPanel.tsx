@@ -117,7 +117,7 @@ export function EquipmentPanel({ session, totalLuck, onEquipmentChange, visible 
 		<div className="bg-black/50 border border-slate-700 rounded-lg">
 			<div className="flex items-center justify-between p-6 border-b border-slate-700">
 				<div>
-					<h1 className="text-2xl font-bold text-white">{t('equipment.title')}{username}</h1>
+					<h1 className="text-2xl font-bold text-white">{t('equipment.title')}{userProfile?.username || 'Usuário'}</h1>
 					<p className="text-gray-400 text-sm mt-1">{t('equipment.config')}</p>
 				</div>
 				<button onClick={() => onChangeVisibility?.(false)} className="text-gray-300 hover:text-white transition-colors p-2 rounded hover:bg-slate-800" aria-label="Ocultar seção">
