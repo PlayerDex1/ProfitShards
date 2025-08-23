@@ -141,7 +141,12 @@ export function MetricsDashboard() {
   };
 
   const syncLocalData = async () => {
+    // Log simples para confirmar execução
+    console.log('=== TESTE SYNC INICIADO ===');
+    alert('TESTE: Função syncLocalData foi chamada!');
+    
     if (!confirm('Isso vai coletar TODOS os dados do histórico local e sincronizar com o banco. Continuar?')) {
+      console.log('=== TESTE CANCELADO PELO USUÁRIO ===');
       return;
     }
 
