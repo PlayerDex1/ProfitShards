@@ -88,6 +88,37 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
     console.log('✅ Métricas removidas:', deleteMetricsResult);
 
+    // 1.1. REMOVER usuários de teste específicos
+    const testEmails = ['holdboy02@gmail.com', 'catdrizi@gmail.com'];
+    console.log('🗑️ Removendo usuários de teste específicos:', testEmails);
+    
+    for (const email of testEmails) {
+      try {
+        // Remover sessões do usuário de teste
+        const userResult = await env.DB.prepare(`
+          SELECT id FROM users WHERE email = ?
+        `).bind(email).first() as { id: string } | null;
+
+        if (userResult) {
+          console.log(`🗑️ Removendo sessões do usuário: ${email}`);
+          await env.DB.prepare(`
+            DELETE FROM sessions WHERE user_id = ?
+          `).bind(userResult.id).run();
+
+          console.log(`🗑️ Removendo usuário de teste: ${email}`);
+          await env.DB.prepare(`
+            DELETE FROM users WHERE email = ?
+          `).bind(email).run();
+
+          console.log(`✅ Usuário ${email} removido completamente`);
+        } else {
+          console.log(`ℹ️ Usuário ${email} não encontrado`);
+        }
+      } catch (userError) {
+        console.log(`⚠️ Erro ao remover usuário ${email}:`, userError);
+      }
+    }
+
     // 2. REMOVER sessões expiradas
     console.log('🗑️ Removendo sessões expiradas...');
     const deleteSessionsResult = await env.DB.prepare(`
@@ -133,6 +164,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       userMapMetricsRemoved: countsBefore.userMapMetrics,
       expiredSessionsRemoved: countsBefore.expiredSessions,
       backupTablesRemoved: backupTablesRemoved,
+      testUsersRemoved: testEmails,
       resetTimestamp: new Date().toISOString()
     };
 
@@ -146,7 +178,8 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         userMapMetrics: `${summary.userMapMetricsRemoved} registros removidos`,
         expiredSessions: `${summary.expiredSessionsRemoved} sessões removidas`,
         backupTables: `${summary.backupTablesRemoved} tabelas de backup removidas`,
-        status: 'Dashboard resetado com sucesso'
+        testUsers: `${summary.testUsersRemoved.join(', ')} removidos`,
+        status: 'Dashboard resetado com sucesso - Todos os dados de teste limpos'
       }
     });
     

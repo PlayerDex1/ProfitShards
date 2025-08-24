@@ -173,6 +173,59 @@ export function HybridDashboard() {
     }
   };
 
+  const handleResetTestData = async () => {
+    const confirmMessage = `🚨 RESET COMPLETO DO DASHBOARD 🚨
+
+Esta ação vai remover TODOS os dados de teste:
+• Todas as métricas de usuários
+• Usuários: holdboy02@gmail.com, catdrizi@gmail.com  
+• Todas as sessões expiradas
+• Todas as tabelas de backup
+• Todos os logs
+
+⚠️ ESTA AÇÃO É IRREVERSÍVEL!
+
+Digite "RESET" para confirmar:`;
+    
+    const confirmation = prompt(confirmMessage);
+    if (confirmation !== 'RESET') {
+      alert('❌ Reset cancelado. Digite exatamente "RESET" para confirmar.');
+      return;
+    }
+    
+    setAdminLoading(true);
+    try {
+      const response = await fetch('/api/admin/reset-test-data', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      const result = await response.json();
+      if (result.success) {
+        alert(`✅ DASHBOARD COMPLETAMENTE LIMPO!
+
+${result.message}
+
+Detalhes:
+• ${result.details.userMapMetrics}
+• ${result.details.expiredSessions}  
+• ${result.details.backupTables}
+• ${result.details.testUsers}
+
+${result.details.status}`);
+        
+        // Recarregar dados após reset
+        loadGlobalData();
+        loadAnalytics();
+      } else {
+        alert(`❌ Erro no reset: ${result.error}`);
+      }
+    } catch (error) {
+      alert(`❌ Erro no reset: ${error.message}`);
+    } finally {
+      setAdminLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header com navegação */}
@@ -815,15 +868,26 @@ export function HybridDashboard() {
                     <span>Limpeza de Dados</span>
                   </h4>
                   <p className="text-sm text-muted-foreground">Remover dados antigos (90+ dias)</p>
-                  <Button 
-                    onClick={handleCleanOld}
-                    variant="destructive" 
-                    size="sm"
-                    disabled={adminLoading}
-                    className="w-full"
-                  >
-                    {adminLoading ? 'Processando...' : 'Limpar Antigos'}
-                  </Button>
+                  <div className="space-y-2">
+                    <Button 
+                      onClick={handleCleanOld}
+                      variant="destructive" 
+                      size="sm"
+                      disabled={adminLoading}
+                      className="w-full"
+                    >
+                      {adminLoading ? 'Processando...' : 'Limpar Antigos'}
+                    </Button>
+                    <Button 
+                      onClick={handleResetTestData}
+                      variant="destructive" 
+                      size="sm"
+                      disabled={adminLoading}
+                      className="w-full bg-red-600 hover:bg-red-700"
+                    >
+                      {adminLoading ? 'Processando...' : '🧹 Reset Completo'}
+                    </Button>
+                  </div>
                 </div>
               </div>
             </CardContent>
