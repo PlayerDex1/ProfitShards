@@ -103,7 +103,7 @@ export function MapPlanner({}: MapPlannerProps) {
         });
         
         try {
-          const metricsResponse = await fetch('/api/admin/save-user-metrics', {
+          const metricsResponse = await fetch('/api/admin/save-map-run', {
             method: 'POST',
             credentials: 'include',
             headers: {
