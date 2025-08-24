@@ -56,6 +56,10 @@ export function TestMapPlanner() {
   const [isEditingLuck, setIsEditingLuck] = useState<boolean>(false);
   const [tempLuck, setTempLuck] = useState<number>(0);
   
+  // Estados para tracking de dados detalhados
+  const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [lastSavedRun, setLastSavedRun] = useState<string | null>(null);
+  
   // Carregar luck salvo do localStorage
   useEffect(() => {
     const saved = localStorage.getItem('test-saved-luck');
@@ -96,6 +100,66 @@ export function TestMapPlanner() {
     setSavedLuck(null);
     setLuck(0);
     localStorage.removeItem('test-saved-luck');
+  };
+  
+  // Função para salvar run detalhada no D1
+  const saveDetailedRun = async () => {
+    if (tokensDropped === 0) {
+      alert('⚠️ Digite a quantidade de tokens dropados antes de salvar');
+      return;
+    }
+    
+    setIsSaving(true);
+    
+    try {
+      const runData = {
+        mapId: selectedMap,
+        mapName: currentMap.name,
+        level: currentMap.level,
+        tier: currentMap.tier,
+        luck: luck,
+        tokensDropped: tokensDropped,
+        energyCost: currentMap.energyCost,
+        gemCost: gemCost,
+        efficiency: efficiency,
+        estimatedTokens: estimatedTokens,
+        timestamp: Date.now(),
+        source: 'test-map-planner'
+      };
+      
+      // Salvar no localStorage para backup
+      const existingRuns = JSON.parse(localStorage.getItem('test-detailed-runs') || '[]');
+      existingRuns.push(runData);
+      localStorage.setItem('test-detailed-runs', JSON.stringify(existingRuns));
+      
+      // Tentar salvar no D1
+      try {
+        const response = await fetch('/api/admin/save-test-run', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify(runData)
+        });
+        
+        if (response.ok) {
+          setLastSavedRun(`${currentMap.name} - ${tokensDropped} tokens`);
+          console.log('✅ Run salva no D1 com sucesso');
+        } else {
+          console.log('⚠️ Erro ao salvar no D1, mantido no localStorage');
+        }
+      } catch (error) {
+        console.log('⚠️ D1 indisponível, mantido no localStorage');
+      }
+      
+      // Reset dos campos após salvar
+      setTokensDropped(0);
+      setGemCost(0);
+      
+    } catch (error) {
+      console.error('Erro ao salvar run:', error);
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   // Encontrar melhor mapa para o luck atual
@@ -220,45 +284,92 @@ export function TestMapPlanner() {
           )}
         </div>
         
-        {/* Seletor de Mapa */}
+        {/* Seletor de Mapa com Dropdown/Scroll */}
         <div className="space-y-3">
           <label className="text-sm font-medium text-foreground">🗺️ Selecionar Mapa</label>
-          <div className="grid grid-cols-4 gap-2">
-            {[1, 2, 3, 4, 5].map(level => (
-              <div key={level} className="space-y-1">
-                <div className="text-xs font-medium text-center text-muted-foreground">
-                  Level {level}
-                </div>
-                {[1, 2, 3, 4].map(tier => {
-                  const mapId = `L${level}t${tier}`;
-                  const isSelected = selectedMap === mapId;
-                  const isRecommended = recommendedMap?.id === mapId;
-                  
-                  return (
-                    <button
-                      key={mapId}
-                      onClick={() => setSelectedMap(mapId)}
-                      className={`w-full px-2 py-1 text-xs rounded border transition-colors ${
-                        isSelected
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : isRecommended
-                          ? 'bg-green-100 text-green-700 border-green-300 hover:bg-green-200'
-                          : 'bg-background border-border hover:bg-muted'
-                      }`}
-                    >
-                      {mapId}
-                      {isRecommended && <span className="ml-1">⭐</span>}
-                    </button>
-                  );
-                })}
+          
+          {/* Dropdown com scroll para seleção de mapa */}
+          <div className="relative">
+            <select
+              value={selectedMap}
+              onChange={(e) => setSelectedMap(e.target.value)}
+              className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer hover:border-blue-300 transition-colors"
+              onWheel={(e) => {
+                e.preventDefault();
+                const currentIndex = MAPS.findIndex(m => m.id === selectedMap);
+                if (e.deltaY > 0 && currentIndex < MAPS.length - 1) {
+                  setSelectedMap(MAPS[currentIndex + 1].id);
+                } else if (e.deltaY < 0 && currentIndex > 0) {
+                  setSelectedMap(MAPS[currentIndex - 1].id);
+                }
+              }}
+            >
+              {MAPS.map(map => {
+                const isRecommended = recommendedMap?.id === map.id;
+                return (
+                  <option 
+                    key={map.id} 
+                    value={map.id}
+                    className={isRecommended ? 'bg-green-100' : ''}
+                  >
+                    {map.name} - Level {map.level} Tier {map.tier} (⚡{map.energyCost}) {isRecommended ? '⭐ Recomendado' : ''}
+                  </option>
+                );
+              })}
+            </select>
+            
+            {/* Info visual do mapa selecionado */}
+            <div className="mt-2 p-3 bg-muted/50 rounded-md">
+              <div className="flex items-center justify-between text-sm">
+                <span className="font-medium">{currentMap.name}</span>
+                <span className="text-blue-600">Level {currentMap.level} • Tier {currentMap.tier}</span>
               </div>
-            ))}
+              <div className="text-xs text-muted-foreground mt-1">
+                ⚡ Energia: {currentMap.energyCost} • 💰 Mais eficiente para luck {(currentMap.level * currentMap.tier * 100).toLocaleString()}+
+              </div>
+            </div>
           </div>
+          
           {recommendedMap && luck > 0 && (
             <div className="text-xs text-green-600 bg-green-50 p-2 rounded">
-              ⭐ <strong>Recomendado:</strong> {recommendedMap.name} é o melhor mapa para seu luck atual
+              ⭐ <strong>Recomendado:</strong> {recommendedMap.name} é o melhor mapa para seu luck atual ({luck.toLocaleString()})
             </div>
           )}
+          
+          {/* Grid visual compacto para referência rápida */}
+          <div className="mt-3">
+            <div className="text-xs font-medium text-muted-foreground mb-2">💡 Referência rápida (clique para selecionar):</div>
+            <div className="grid grid-cols-5 gap-1">
+              {[1, 2, 3, 4, 5].map(level => (
+                <div key={level} className="space-y-1">
+                  <div className="text-xs font-medium text-center text-muted-foreground">L{level}</div>
+                  {[1, 2, 3, 4].map(tier => {
+                    const mapId = `L${level}t${tier}`;
+                    const isSelected = selectedMap === mapId;
+                    const isRecommended = recommendedMap?.id === mapId;
+                    
+                    return (
+                      <button
+                        key={mapId}
+                        onClick={() => setSelectedMap(mapId)}
+                        className={`w-full px-1 py-1 text-xs rounded border transition-colors ${
+                          isSelected
+                            ? 'bg-blue-600 text-white border-blue-600'
+                            : isRecommended
+                            ? 'bg-green-100 text-green-700 border-green-300'
+                            : 'bg-background border-border hover:bg-muted'
+                        }`}
+                        title={`${mapId} - ${MAPS.find(m => m.id === mapId)?.energyCost} energia`}
+                      >
+                        t{tier}
+                        {isRecommended && <span className="ml-1">⭐</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
         
         {/* Inputs de dados */}
@@ -343,14 +454,45 @@ export function TestMapPlanner() {
           </div>
         )}
         
+        {/* Botão de Salvar Run */}
+        {tokensDropped > 0 && (
+          <div className="space-y-3">
+            <Button 
+              onClick={saveDetailedRun}
+              disabled={isSaving}
+              className="w-full h-10 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+            >
+              {isSaving ? (
+                <>⏳ Salvando...</>
+              ) : (
+                <>💾 Salvar Run Detalhada (Level {currentMap.level} • Tier {currentMap.tier})</>
+              )}
+            </Button>
+            
+            {lastSavedRun && (
+              <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
+                ✅ Última run salva: {lastSavedRun}
+              </div>
+            )}
+            
+            {/* Resumo dos dados que serão coletados */}
+            <div className="text-xs text-muted-foreground bg-muted/30 p-2 rounded">
+              📊 <strong>Dados coletados:</strong> {currentMap.name} (L{currentMap.level}t{currentMap.tier}), 
+              Luck {luck.toLocaleString()}, {tokensDropped} tokens, 
+              Eficiência {efficiency.toFixed(2)}, Energia {currentMap.energyCost}
+            </div>
+          </div>
+        )}
+        
         {/* Info sobre o teste */}
         <div className="text-xs text-blue-600 bg-blue-50 p-3 rounded border border-blue-200">
           <div className="font-medium mb-1">🧪 Versão de Teste - Melhorias:</div>
           <ul className="space-y-1 text-xs">
             <li>• <strong>Luck Persistente:</strong> Salve seu valor para não digitar toda vez</li>
-            <li>• <strong>20 Mapas:</strong> L1t1 até L5t4 baseados na interface do jogo</li>
+            <li>• <strong>Seleção Granular:</strong> L1t1 até L5t4 com scroll do mouse</li>
             <li>• <strong>Recomendações:</strong> Sistema sugere melhor mapa para seu luck</li>
-            <li>• <strong>Custo Completo:</strong> Energia + Gemas para ROI real</li>
+            <li>• <strong>Coleta de Dados:</strong> Métricas detalhadas por Level/Tier para análise</li>
+            <li>• <strong>Dropdown + Grid:</strong> Duas formas de seleção para melhor UX</li>
           </ul>
         </div>
         
