@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
+import { WorldShardsDashboard } from './WorldShardsDashboard';
 
 interface LuckRange {
   range: string;
@@ -31,7 +32,7 @@ interface AnalyticsData {
 export function MetricsDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin' | 'test'>('analytics');
   
   // Estados para Analytics
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
@@ -262,6 +263,16 @@ export function MetricsDashboard() {
         >
           🔧 {t('analytics.adminTools')}
         </button>
+        <button
+          onClick={() => setActiveTab('test')}
+          className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            activeTab === 'test'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🧪 Test Dashboard
+        </button>
       </div>
 
       {/* Analytics Tab */}
@@ -466,6 +477,13 @@ export function MetricsDashboard() {
               )}
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Test Dashboard Tab */}
+      {activeTab === 'test' && (
+        <div className="space-y-4">
+          <WorldShardsDashboard />
         </div>
       )}
     </div>

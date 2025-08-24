@@ -218,6 +218,19 @@ const dicts: Record<Lang, Dict> = {
     'admin.testDatabase': 'Testar D1',
     'admin.processing': 'Processando...',
 
+    // Test Dashboard
+    'test.dashboard': 'Dashboard Teste',
+    'test.worldshards': 'WorldShards Dashboard',
+    'test.subtitle': 'Análises em tempo real e insights de farming',
+    'test.totalFarms': 'Total de Farms',
+    'test.totalTokens': 'Total de Tokens',
+    'test.avgEfficiency': 'Eficiência Média',
+    'test.activeUsers': 'Usuários Ativos',
+    'test.hourlyActivity': 'Atividade por Hora',
+    'test.topMaps': 'Top Mapas',
+    'test.recentActivity': 'Atividade Recente',
+    'test.efficiencyTrends': 'Tendências de Eficiência',
+
     // Common
     'common.error': 'Erro',
     'common.success': 'Sucesso',
@@ -441,6 +454,19 @@ const dicts: Record<Lang, Dict> = {
     'admin.testD1Description': 'Test database connectivity',
     'admin.testDatabase': 'Test D1',
     'admin.processing': 'Processing...',
+
+    // Test Dashboard
+    'test.dashboard': 'Test Dashboard',
+    'test.worldshards': 'WorldShards Dashboard',
+    'test.subtitle': 'Real-time farming analytics and insights',
+    'test.totalFarms': 'Total Farms',
+    'test.totalTokens': 'Total Tokens',
+    'test.avgEfficiency': 'Average Efficiency',
+    'test.activeUsers': 'Active Users',
+    'test.hourlyActivity': 'Hourly Activity',
+    'test.topMaps': 'Top Maps',
+    'test.recentActivity': 'Recent Activity',
+    'test.efficiencyTrends': 'Efficiency Trends',
 
     // Common
     'common.error': 'Error',
