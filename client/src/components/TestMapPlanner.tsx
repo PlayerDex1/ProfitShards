@@ -13,33 +13,41 @@ interface MapData {
   energyCost: number;
 }
 
+// Sistema de cargas por tier (como funciona realmente)
+const ENERGY_PER_TIER = {
+  1: 1, // 1 carga por equipamento × 4 equipamentos = 4 total
+  2: 2, // 2 cargas por equipamento × 4 equipamentos = 8 total  
+  3: 4, // 4 cargas por equipamento × 4 equipamentos = 16 total
+  4: 6  // 6 cargas por equipamento × 4 equipamentos = 24 total
+};
+
 // Dados dos mapas L1-L5 baseados na interface do jogo
 const MAPS: MapData[] = [
   // Level 1
-  { id: 'L1t1', name: 'L1t1', level: 1, tier: 1, energyCost: 4 },
-  { id: 'L1t2', name: 'L1t2', level: 1, tier: 2, energyCost: 5 },
-  { id: 'L1t3', name: 'L1t3', level: 1, tier: 3, energyCost: 6 },
-  { id: 'L1t4', name: 'L1t4', level: 1, tier: 4, energyCost: 7 },
+  { id: 'L1t1', name: 'L1t1', level: 1, tier: 1, energyCost: ENERGY_PER_TIER[1] * 4 },
+  { id: 'L1t2', name: 'L1t2', level: 1, tier: 2, energyCost: ENERGY_PER_TIER[2] * 4 },
+  { id: 'L1t3', name: 'L1t3', level: 1, tier: 3, energyCost: ENERGY_PER_TIER[3] * 4 },
+  { id: 'L1t4', name: 'L1t4', level: 1, tier: 4, energyCost: ENERGY_PER_TIER[4] * 4 },
   // Level 2
-  { id: 'L2t1', name: 'L2t1', level: 2, tier: 1, energyCost: 8 },
-  { id: 'L2t2', name: 'L2t2', level: 2, tier: 2, energyCost: 9 },
-  { id: 'L2t3', name: 'L2t3', level: 2, tier: 3, energyCost: 10 },
-  { id: 'L2t4', name: 'L2t4', level: 2, tier: 4, energyCost: 11 },
+  { id: 'L2t1', name: 'L2t1', level: 2, tier: 1, energyCost: ENERGY_PER_TIER[1] * 4 },
+  { id: 'L2t2', name: 'L2t2', level: 2, tier: 2, energyCost: ENERGY_PER_TIER[2] * 4 },
+  { id: 'L2t3', name: 'L2t3', level: 2, tier: 3, energyCost: ENERGY_PER_TIER[3] * 4 },
+  { id: 'L2t4', name: 'L2t4', level: 2, tier: 4, energyCost: ENERGY_PER_TIER[4] * 4 },
   // Level 3
-  { id: 'L3t1', name: 'L3t1', level: 3, tier: 1, energyCost: 12 },
-  { id: 'L3t2', name: 'L3t2', level: 3, tier: 2, energyCost: 13 },
-  { id: 'L3t3', name: 'L3t3', level: 3, tier: 3, energyCost: 14 },
-  { id: 'L3t4', name: 'L3t4', level: 3, tier: 4, energyCost: 15 },
+  { id: 'L3t1', name: 'L3t1', level: 3, tier: 1, energyCost: ENERGY_PER_TIER[1] * 4 },
+  { id: 'L3t2', name: 'L3t2', level: 3, tier: 2, energyCost: ENERGY_PER_TIER[2] * 4 },
+  { id: 'L3t3', name: 'L3t3', level: 3, tier: 3, energyCost: ENERGY_PER_TIER[3] * 4 },
+  { id: 'L3t4', name: 'L3t4', level: 3, tier: 4, energyCost: ENERGY_PER_TIER[4] * 4 },
   // Level 4
-  { id: 'L4t1', name: 'L4t1', level: 4, tier: 1, energyCost: 16 },
-  { id: 'L4t2', name: 'L4t2', level: 4, tier: 2, energyCost: 17 },
-  { id: 'L4t3', name: 'L4t3', level: 4, tier: 3, energyCost: 18 },
-  { id: 'L4t4', name: 'L4t4', level: 4, tier: 4, energyCost: 19 },
+  { id: 'L4t1', name: 'L4t1', level: 4, tier: 1, energyCost: ENERGY_PER_TIER[1] * 4 },
+  { id: 'L4t2', name: 'L4t2', level: 4, tier: 2, energyCost: ENERGY_PER_TIER[2] * 4 },
+  { id: 'L4t3', name: 'L4t3', level: 4, tier: 3, energyCost: ENERGY_PER_TIER[3] * 4 },
+  { id: 'L4t4', name: 'L4t4', level: 4, tier: 4, energyCost: ENERGY_PER_TIER[4] * 4 },
   // Level 5
-  { id: 'L5t1', name: 'L5t1', level: 5, tier: 1, energyCost: 20 },
-  { id: 'L5t2', name: 'L5t2', level: 5, tier: 2, energyCost: 21 },
-  { id: 'L5t3', name: 'L5t3', level: 5, tier: 3, energyCost: 22 },
-  { id: 'L5t4', name: 'L5t4', level: 5, tier: 4, energyCost: 23 },
+  { id: 'L5t1', name: 'L5t1', level: 5, tier: 1, energyCost: ENERGY_PER_TIER[1] * 4 },
+  { id: 'L5t2', name: 'L5t2', level: 5, tier: 2, energyCost: ENERGY_PER_TIER[2] * 4 },
+  { id: 'L5t3', name: 'L5t3', level: 5, tier: 3, energyCost: ENERGY_PER_TIER[3] * 4 },
+  { id: 'L5t4', name: 'L5t4', level: 5, tier: 4, energyCost: ENERGY_PER_TIER[4] * 4 },
 ];
 
 type MapKey = string;
@@ -213,7 +221,7 @@ export function TestMapPlanner() {
       setSaveMessage(`✅ ${currentMap.name} salvo com ${tokensDropped} tokens (T/E: ${tokensPerEnergy.toFixed(2)})`);
       setTimeout(() => setSaveMessage(''), 5000);
       
-      console.log('🧪 TEST: Entrada salva localmente (isolado do D1):', entry);
+      console.log('🧪 TEST: Entrada salva localmente:', entry);
       
     } catch (error) {
       console.error('Erro ao salvar entrada de teste:', error);
@@ -332,7 +340,7 @@ export function TestMapPlanner() {
                   const isRecommended = recommendedMap?.id === map.id;
                   return (
                     <option key={map.id} value={map.id}>
-                      {map.name} • L{map.level}t{map.tier} • ⚡{map.energyCost}{isRecommended ? ' ⭐' : ''}
+                      {map.name} • L{map.level}t{map.tier} • ⚡{map.energyCost} ({ENERGY_PER_TIER[map.tier as keyof typeof ENERGY_PER_TIER]}×4){isRecommended ? ' ⭐' : ''}
                     </option>
                   );
                 })}
@@ -351,7 +359,7 @@ export function TestMapPlanner() {
               <div className="flex items-center space-x-3">
                 <span className="font-medium text-primary">{currentMap.name}</span>
                 <span className="text-muted-foreground">L{currentMap.level}t{currentMap.tier}</span>
-                <span className="text-muted-foreground">⚡{currentMap.energyCost}</span>
+                <span className="text-muted-foreground">⚡{currentMap.energyCost} ({ENERGY_PER_TIER[currentMap.tier as keyof typeof ENERGY_PER_TIER]}×4)</span>
               </div>
               {recommendedMap && recommendedMap.id === currentMap.id && (
                 <span className="text-green-600 font-medium">⭐ Recomendado</span>
@@ -360,20 +368,20 @@ export function TestMapPlanner() {
 
             {/* Indicador de navegação por scroll */}
             <div className="text-xs text-center text-muted-foreground bg-muted/50 p-1 rounded">
-              🖱️ Use o scroll do mouse sobre o dropdown para navegar rapidamente
+              🖱️ Use o scroll do mouse para navegar • Sistema: t1=1×4, t2=2×4, t3=4×4, t4=6×4 energia
             </div>
           </div>
 
           {/* Inputs principais (Compactos) */}
           <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="text-xs font-medium text-foreground mb-1 block">⚡ Energia</label>
+              <label className="text-xs font-medium text-foreground mb-1 block">⚡ Energia ({ENERGY_PER_TIER[currentMap.tier as keyof typeof ENERGY_PER_TIER]}×4)</label>
               <Input 
                 type="number" 
                 value={currentMap.energyCost} 
                 readOnly
                 className="h-8 bg-muted/50 cursor-not-allowed text-sm"
-                title={`${currentMap.name} consome ${currentMap.energyCost} energia`}
+                title={`${currentMap.name}: ${ENERGY_PER_TIER[currentMap.tier as keyof typeof ENERGY_PER_TIER]} cargas por equipamento × 4 equipamentos = ${currentMap.energyCost} energia total`}
               />
             </div>
             <div>
@@ -454,11 +462,11 @@ export function TestMapPlanner() {
 
       {/* Info sobre teste */}
       <div className="text-xs text-muted-foreground bg-green-50/50 p-3 rounded border border-green-200/50">
-        <div className="font-medium text-green-700 mb-1">🧪 Ambiente de Teste Isolado:</div>
+        <div className="font-medium text-green-700 mb-1">🧪 Ambiente de Teste:</div>
         <div className="text-xs">
           • <strong>20 mapas granulares:</strong> L1t1 até L5t4 para análise detalhada<br/>
-          • <strong>Dados locais:</strong> Salvos apenas no localStorage (não afeta D1)<br/>
-          • <strong>Dashboard protegido:</strong> Métricas globais permanecem intactas<br/>
+          • <strong>Sistema de cargas:</strong> t1=1×4, t2=2×4, t3=4×4, t4=6×4 energia<br/>
+          • <strong>Dados locais:</strong> Histórico salvo no navegador<br/>
           • <strong>Navegação otimizada:</strong> Use scroll do mouse no dropdown
         </div>
       </div>
