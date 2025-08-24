@@ -7,7 +7,7 @@ import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
-import { Calculator, TrendingUp, TrendingDown, Minus } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2 } from "lucide-react";
 
 interface MapPlannerProps {}
 
@@ -276,11 +276,20 @@ export function MapPlanner({}: MapPlannerProps) {
           )}
 
           <div className="flex items-center gap-2">
-            <Button onClick={apply} className="flex-1">
+            <Button 
+              onClick={apply} 
+              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+            >
+              <MapPin className="w-4 h-4 mr-2" />
               {t('planner.apply')}
             </Button>
             {history.length > 0 && (
-              <Button variant="outline" onClick={() => clearMapDropsHistory()}>
+              <Button 
+                variant="outline" 
+                onClick={() => clearMapDropsHistory()}
+                className="hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500 transition-all duration-300"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
                 {t('planner.clear')}
               </Button>
             )}

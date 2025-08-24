@@ -322,23 +322,26 @@ export const Results = memo(function Results({
           </CardHeader>
           <CardContent className="pt-0">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-3 bg-gradient-to-br from-blue-500/10 to-indigo-600/10 border border-blue-500/20 rounded-lg hover:shadow-md transition-shadow">
+                <Zap className="w-6 h-6 mx-auto mb-1 text-blue-600" />
                 <div className="text-xs text-muted-foreground mb-1">{t('results.totalTokensLabel')}</div>
-                <div className="text-xl font-bold text-foreground font-mono">
+                <div className="text-xl font-bold text-blue-600 font-mono">
                   {results.totalTokens.toLocaleString()}
                 </div>
               </div>
               
-              <div className="text-center p-3 bg-muted/50 rounded-lg">
+              <div className="text-center p-3 bg-gradient-to-br from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-lg hover:shadow-md transition-shadow">
+                <BarChart3 className="w-6 h-6 mx-auto mb-1 text-green-600" />
                 <div className="text-xs text-muted-foreground mb-1">{t('results.farmEfficiency')}</div>
-                <div className="text-xl font-bold text-foreground font-mono">
+                <div className="text-xl font-bold text-green-600 font-mono">
                   {results.efficiency.toFixed(1)} {t('results.tokenLabel')}/carga
                 </div>
               </div>
 
-              <div className="text-center p-3 bg-primary/10 border border-primary/20 rounded-lg">
+              <div className="text-center p-3 bg-gradient-to-br from-purple-500/10 to-violet-600/10 border border-purple-500/20 rounded-lg hover:shadow-md transition-shadow">
+                <TrendingUp className="w-6 h-6 mx-auto mb-1 text-purple-600" />
                 <div className="text-xs text-muted-foreground mb-1">{t('results.roi')}</div>
-                <div className="text-xl font-bold text-foreground font-mono">
+                <div className="text-xl font-bold text-purple-600 font-mono">
                   {results.roi > 0 ? '+' : ''}{results.roi.toFixed(1)}%
                 </div>
               </div>

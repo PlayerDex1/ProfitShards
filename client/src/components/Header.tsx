@@ -16,9 +16,11 @@ export function Header() {
     <>
       <header className="sticky top-0 z-40 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container mx-auto px-4 flex h-16 items-center">
-          <div className="mr-6 flex items-center">
-            <Calculator className="h-7 w-7 mr-3 text-primary" />
-            <span className="font-bold text-xl text-foreground">
+          <div className="mr-6 flex items-center group">
+            <div className="p-2 bg-primary/10 rounded-full mr-3 group-hover:bg-primary/20 transition-colors">
+              <Calculator className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+            </div>
+            <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
               ProfitShards
             </span>
           </div>
@@ -58,14 +60,14 @@ export function Header() {
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
-                  <span className="text-sm font-medium text-muted-foreground">
-                    Olá, <span className="text-foreground">{user}</span>
+                  <span className="text-sm font-medium px-3 py-1 bg-gradient-to-r from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-full">
+                    Olá, <span className="text-green-600 font-bold">{user}</span>
                   </span>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={logout}
-                    className="text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    className="text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-all duration-300"
                   >
                     <LogOut className="h-4 w-4 mr-2" /> {t('header.logout')}
                   </Button>
@@ -75,7 +77,7 @@ export function Header() {
                   variant="default"
                   size="sm"
                   onClick={() => setShowAuth(true)}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                  className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 hover:shadow-lg hover:scale-105 transition-all duration-300"
                 >
                   <LogIn className="h-4 w-4 mr-2" /> {t('header.login')}
                 </Button>

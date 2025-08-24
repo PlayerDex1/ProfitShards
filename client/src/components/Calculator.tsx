@@ -266,7 +266,12 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 						<p className="text-xs text-muted-foreground mb-3">
 							💡 Clique no botão abaixo para salvar este cálculo no seu histórico
 						</p>
-						<Button onClick={handleManualSave} className="w-full" size="lg">
+						<Button 
+							onClick={handleManualSave} 
+							className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 hover:shadow-lg hover:scale-[1.02] transition-all duration-300" 
+							size="lg"
+						>
+							<Zap className="w-4 h-4 mr-2" />
 							{t('calc.button')}
 						</Button>
 					</div>

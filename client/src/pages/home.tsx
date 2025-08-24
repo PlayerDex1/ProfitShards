@@ -34,9 +34,9 @@ export default function Home() {
 			<div className="container mx-auto px-4 py-6">
 				{/* Profile Link */}
 				<div className="flex justify-end items-center mb-6">
-					<Link href="/perfil" className="flex items-center space-x-2 text-primary hover:text-primary/80 transition-colors">
-						<User className="h-5 w-5" />
-						<span className="font-medium">
+					<Link href="/perfil" className="group flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-blue-600/10 border border-primary/20 rounded-lg hover:from-primary/20 hover:to-blue-600/20 hover:shadow-md transition-all duration-300">
+						<User className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
+						<span className="font-medium text-primary">
 							{isAuthenticated 
 								? `Perfil de ${user}`
 								: t('nav.profile')
@@ -47,10 +47,12 @@ export default function Home() {
 
 				{/* Welcome message for authenticated users */}
 				{isAuthenticated && (
-					<Card className="mb-6 bg-primary/5 border-primary/20">
+					<Card className="mb-6 bg-gradient-to-br from-primary/5 to-blue-600/10 border border-primary/20 hover:shadow-lg hover:scale-[1.01] transition-all duration-300">
 						<CardContent className="pt-6">
 							<div className="flex items-center space-x-3">
-								<TrendingUp className="h-6 w-6 text-primary" />
+								<div className="p-2 bg-primary/10 rounded-full">
+									<TrendingUp className="h-6 w-6 text-primary animate-pulse" />
+								</div>
 								<div>
 									<h2 className="text-lg font-semibold text-foreground">
 										{t('profile.welcome', { name: userProfile?.username || (user ? user.split('@')[0] : t('auth.guest')) })}
@@ -87,10 +89,10 @@ export default function Home() {
 			</div>
 			
 			{/* Footer */}
-			<footer className="mt-12 py-8 border-t border-border/50">
+			<footer className="mt-12 py-8 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
 				<div className="container mx-auto px-4">
 					<div className="text-center">
-						<h2 className="text-2xl font-bold text-foreground mb-2">WorldShards Game</h2>
+						<h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-2">WorldShards Game</h2>
 						<p className="text-sm text-muted-foreground">
 							Ferramenta de cálculo de lucro desenvolvida pela comunidade
 						</p>
