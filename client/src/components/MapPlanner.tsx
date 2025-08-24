@@ -7,7 +7,7 @@ import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
-import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2 } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
 
 interface MapPlannerProps {}
 
@@ -22,9 +22,11 @@ export function MapPlanner({}: MapPlannerProps) {
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
   const { totalLuck } = useEquipment();
-  const [luck, setLuck] = useState<number>(totalLuck || 0);
+  const [luck, setLuck] = useState<number>(prefs.savedLuck || totalLuck || 0);
   const [status, setStatus] = useState<'excellent' | 'positive' | 'negative' | 'neutral'>('neutral');
   const [saveMessage, setSaveMessage] = useState<string>('');
+  const [isEditingLuck, setIsEditingLuck] = useState<boolean>(false);
+  const [tempLuck, setTempLuck] = useState<number>(luck);
 
   useEffect(() => {
     const onUpd = () => setHistory(getMapDropsHistory());
@@ -32,12 +34,13 @@ export function MapPlanner({}: MapPlannerProps) {
     return () => window.removeEventListener('worldshards-mapdrops-updated', onUpd);
   }, []);
 
-  // Update luck from equipment
+  // Update luck from equipment only if no saved luck exists
   useEffect(() => {
-    if (totalLuck && totalLuck > 0) {
+    if (totalLuck && totalLuck > 0 && !prefs.savedLuck) {
       setLuck(totalLuck);
+      setTempLuck(totalLuck);
     }
-  }, [totalLuck]);
+  }, [totalLuck, prefs.savedLuck]);
 
   // Auto-calculate loads based on map size
   useEffect(() => {
