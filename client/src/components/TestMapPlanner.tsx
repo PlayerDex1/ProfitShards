@@ -250,36 +250,27 @@ export function TestMapPlanner() {
             <span>Map Planner - Versão Teste Completa (L1-L5)</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3">
           
-          {/* Sistema de Luck (baseado no MapPlanner original) */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-foreground flex items-center space-x-2">
-              <span>🍀 Luck (The Final Attraction Force)</span>
-              {savedLuck && (
-                <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center space-x-1">
-                  <Save className="h-3 w-3" />
-                  <span>Salvo</span>
-                </span>
-              )}
-            </label>
+          {/* Sistema de Luck (Compacto) */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">🍀 Luck {savedLuck && <span className="text-xs text-green-600">💾</span>}</label>
             
-            {savedLuck && !isEditingLuck ? (
-              <div className="flex items-center space-x-2">
-                <div className="flex-1 h-9 px-3 bg-green-50 border border-green-200 rounded-md flex items-center">
-                  <span className="font-mono text-green-700">{savedLuck.toLocaleString()}</span>
-                  <span className="ml-2 text-xs text-green-600">💾 Salvo</span>
-                </div>
-                <Button onClick={() => { setTempLuck(savedLuck); setIsEditingLuck(true); }} variant="outline" size="sm" className="h-9">
-                  <Edit2 className="h-4 w-4" />
-                </Button>
-                <Button onClick={unlockLuck} variant="outline" size="sm" className="h-9 text-red-600 hover:text-red-700">
-                  <X className="h-4 w-4" />
-                </Button>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
+              {savedLuck && !isEditingLuck ? (
+                <>
+                  <div className="flex-1 h-8 px-2 bg-green-50 border border-green-200 rounded text-sm flex items-center">
+                    <span className="font-mono text-green-700">{savedLuck.toLocaleString()}</span>
+                  </div>
+                  <Button onClick={() => { setTempLuck(savedLuck); setIsEditingLuck(true); }} variant="outline" size="sm" className="h-8 px-2">
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                  <Button onClick={unlockLuck} variant="outline" size="sm" className="h-8 px-2 text-red-600">
+                    <X className="h-3 w-3" />
+                  </Button>
+                </>
+              ) : (
+                <>
                   <Input
                     type="number"
                     value={isEditingLuck ? tempLuck : luck}
@@ -291,159 +282,116 @@ export function TestMapPlanner() {
                         setLuck(value);
                       }
                     }}
-                    placeholder="Digite seu luck (ex: 4517)"
-                    className="flex-1 h-9"
+                    placeholder="Luck (ex: 4517)"
+                    className="flex-1 h-8"
                     min="0"
                   />
                   {isEditingLuck ? (
                     <>
-                      <Button onClick={saveLuck} size="sm" className="h-9">
-                        <Save className="h-4 w-4" />
+                      <Button onClick={saveLuck} size="sm" className="h-8 px-2">
+                        <Save className="h-3 w-3" />
                       </Button>
-                      <Button onClick={cancelEdit} variant="outline" size="sm" className="h-9">
-                        <X className="h-4 w-4" />
+                      <Button onClick={cancelEdit} variant="outline" size="sm" className="h-8 px-2">
+                        <X className="h-3 w-3" />
                       </Button>
                     </>
                   ) : (
                     luck > 0 && (
-                      <Button onClick={() => { setTempLuck(luck); saveLuck(); }} size="sm" className="h-9">
-                        <Save className="h-4 w-4" />
+                      <Button onClick={() => { setTempLuck(luck); saveLuck(); }} size="sm" className="h-8 px-2">
+                        <Save className="h-3 w-3" />
                       </Button>
                     )
                   )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Seletor de Mapa L1-L5 */}
-          <div className="space-y-3">
-            <label className="text-sm font-medium text-foreground">🗺️ Selecionar Mapa (L1-L5)</label>
-            
-            {/* Dropdown principal */}
-            <select
-              value={selectedMap}
-              onChange={(e) => setSelectedMap(e.target.value)}
-              className="w-full h-10 px-3 bg-background border border-border rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 cursor-pointer hover:border-purple-300 transition-colors"
-              onWheel={(e) => {
-                e.preventDefault();
-                const currentIndex = MAPS.findIndex(m => m.id === selectedMap);
-                if (e.deltaY > 0 && currentIndex < MAPS.length - 1) {
-                  setSelectedMap(MAPS[currentIndex + 1].id);
-                } else if (e.deltaY < 0 && currentIndex > 0) {
-                  setSelectedMap(MAPS[currentIndex - 1].id);
-                }
-              }}
-            >
-              {MAPS.map(map => {
-                const isRecommended = recommendedMap?.id === map.id;
-                return (
-                  <option key={map.id} value={map.id}>
-                    {map.name} - Level {map.level} Tier {map.tier} (⚡{map.energyCost}) {isRecommended ? '⭐ Recomendado' : ''}
-                  </option>
-                );
-              })}
-            </select>
-            
-            {/* Info do mapa selecionado */}
-            <div className="p-3 bg-muted/50 rounded-md">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">{currentMap.name}</span>
-                <span className="text-purple-600">Level {currentMap.level} • Tier {currentMap.tier}</span>
-              </div>
-              <div className="text-xs text-muted-foreground mt-1">
-                ⚡ Energia: {currentMap.energyCost} • 💰 Recomendado para luck {(currentMap.level * currentMap.tier * 100).toLocaleString()}+
-              </div>
-            </div>
-
-            {/* Recomendação */}
-            {recommendedMap && luck > 0 && (
-              <div className="text-xs text-green-600 bg-green-50 p-2 rounded border border-green-200">
-                ⭐ <strong>Recomendado:</strong> {recommendedMap.name} é ideal para seu luck atual ({luck.toLocaleString()})
-              </div>
-            )}
-
-            {/* Grid visual de referência */}
-            <div className="mt-3">
-              <div className="text-xs font-medium text-muted-foreground mb-2">💡 Seleção rápida:</div>
-              <div className="grid grid-cols-5 gap-1">
-                {[1, 2, 3, 4, 5].map(level => (
-                  <div key={level} className="space-y-1">
-                    <div className="text-xs font-medium text-center text-muted-foreground">L{level}</div>
-                    {[1, 2, 3, 4].map(tier => {
-                      const mapId = `L${level}t${tier}`;
-                      const isSelected = selectedMap === mapId;
-                      const isRecommended = recommendedMap?.id === mapId;
-                      
-                      return (
-                        <button
-                          key={mapId}
-                          onClick={() => setSelectedMap(mapId)}
-                          className={`w-full px-1 py-1 text-xs rounded border transition-colors ${
-                            isSelected
-                              ? 'bg-purple-600 text-white border-purple-600'
-                              : isRecommended
-                              ? 'bg-green-100 text-green-700 border-green-300'
-                              : 'bg-background border-border hover:bg-muted'
-                          }`}
-                          title={`${mapId} - ${MAPS.find(m => m.id === mapId)?.energyCost} energia`}
-                        >
-                          t{tier}
-                          {isRecommended && <span className="ml-1">⭐</span>}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
           </div>
 
-          {/* Inputs principais */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* Seletor de Mapa L1-L5 (Otimizado) */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-foreground">🗺️ Mapa L1-L5 (Use scroll do mouse)</label>
+            
+            {/* Dropdown principal com scroll otimizado */}
+            <div className="relative">
+              <select
+                value={selectedMap}
+                onChange={(e) => setSelectedMap(e.target.value)}
+                className="w-full h-9 px-3 bg-background border border-border rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 cursor-pointer hover:border-purple-300 transition-colors appearance-none"
+                onWheel={(e) => {
+                  e.preventDefault();
+                  const currentIndex = MAPS.findIndex(m => m.id === selectedMap);
+                  if (e.deltaY > 0 && currentIndex < MAPS.length - 1) {
+                    setSelectedMap(MAPS[currentIndex + 1].id);
+                  } else if (e.deltaY < 0 && currentIndex > 0) {
+                    setSelectedMap(MAPS[currentIndex - 1].id);
+                  }
+                }}
+              >
+                {MAPS.map(map => {
+                  const isRecommended = recommendedMap?.id === map.id;
+                  return (
+                    <option key={map.id} value={map.id}>
+                      {map.name} • L{map.level}t{map.tier} • ⚡{map.energyCost}{isRecommended ? ' ⭐' : ''}
+                    </option>
+                  );
+                })}
+              </select>
+              
+              {/* Ícone de dropdown customizado */}
+              <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l4-4 4 4m0 6l-4 4-4-4" />
+                </svg>
+              </div>
+            </div>
+            
+            {/* Info compacta do mapa selecionado */}
+            <div className="flex items-center justify-between p-2 bg-muted/30 rounded text-xs">
+              <div className="flex items-center space-x-3">
+                <span className="font-medium text-purple-600">{currentMap.name}</span>
+                <span className="text-muted-foreground">L{currentMap.level}t{currentMap.tier}</span>
+                <span className="text-muted-foreground">⚡{currentMap.energyCost}</span>
+              </div>
+              {recommendedMap && recommendedMap.id === currentMap.id && (
+                <span className="text-green-600 font-medium">⭐ Recomendado</span>
+              )}
+            </div>
+
+            {/* Indicador de navegação por scroll */}
+            <div className="text-xs text-center text-muted-foreground bg-purple-50 p-1 rounded">
+              🖱️ Use o scroll do mouse sobre o dropdown para navegar rapidamente
+            </div>
+          </div>
+
+          {/* Inputs principais (Compactos) */}
+          <div className="grid grid-cols-3 gap-2">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">
-                ⚡ Energia <span className="text-xs text-muted-foreground">(automático)</span>
-              </label>
+              <label className="text-xs font-medium text-foreground mb-1 block">⚡ Energia</label>
               <Input 
                 type="number" 
                 value={currentMap.energyCost} 
                 readOnly
-                className="h-9 bg-muted/50 cursor-not-allowed"
+                className="h-8 bg-muted/50 cursor-not-allowed text-sm"
                 title={`${currentMap.name} consome ${currentMap.energyCost} energia`}
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">🪙 Tokens Dropados</label>
+              <label className="text-xs font-medium text-foreground mb-1 block">🪙 Tokens</label>
               <Input 
                 type="number" 
                 value={tokensDropped} 
                 onChange={(e) => setTokensDropped(parseInt(e.target.value || '0'))} 
-                className="h-9" 
+                className="h-8 text-sm" 
                 placeholder="0"
                 min="0"
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">🍀 Luck Atual</label>
-              <Input 
-                type="number" 
-                value={luck} 
-                onChange={(e) => setLuck(parseInt(e.target.value || '0'))} 
-                className="h-9"
-                min="0"
-                disabled={!!savedLuck}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">📊 Status</label>
+              <label className="text-xs font-medium text-foreground mb-1 block">📊 Status</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value as any)}
-                className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
+                className="h-8 w-full rounded border border-border bg-background text-foreground px-2 text-sm"
               >
                 <option value="neutral">Neutro</option>
                 <option value="positive">Positivo</option>
@@ -453,63 +401,56 @@ export function TestMapPlanner() {
             </div>
           </div>
 
-          {/* Métricas de Eficiência */}
+          {/* Métricas de Eficiência (Compactas) */}
           {tokensDropped > 0 && (
-            <div className="p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200">
-              <div className="text-sm font-medium text-foreground mb-2">📈 Métricas de Eficiência</div>
-              <div className="grid grid-cols-3 gap-3 text-xs">
+            <div className="flex items-center justify-between p-2 bg-gradient-to-r from-purple-50 to-blue-50 rounded border border-purple-200 text-xs">
+              <div className="flex items-center space-x-4">
                 <div>
-                  <div className="text-muted-foreground">Tokens/Energia</div>
-                  <div className="font-mono font-medium text-purple-600">{tokensPerEnergy.toFixed(2)}</div>
+                  <span className="text-muted-foreground">T/E:</span>
+                  <span className="font-mono font-medium text-purple-600 ml-1">{tokensPerEnergy.toFixed(2)}</span>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">Energia Total</div>
-                  <div className="font-mono font-medium">{totalEnergy}</div>
+                  <span className="text-muted-foreground">Energia:</span>
+                  <span className="font-mono font-medium ml-1">{totalEnergy}</span>
                 </div>
                 <div>
-                  <div className="text-muted-foreground">Level×Tier</div>
-                  <div className="font-mono font-medium">{currentMap.level}×{currentMap.tier}</div>
+                  <span className="text-muted-foreground">L×T:</span>
+                  <span className="font-mono font-medium ml-1">{currentMap.level}×{currentMap.tier}</span>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Botão de aplicar */}
+          {/* Botão de ação (Compacto) */}
           <div className="flex items-center gap-2">
             <Button 
               onClick={apply} 
-              className="flex-1 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
+              className="flex-1 h-8 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 text-sm"
             >
-              <MapPin className="w-4 h-4 mr-2" />
-              Salvar Run de Teste
+              <MapPin className="w-3 h-3 mr-1" />
+              Salvar Run
             </Button>
             {history.length > 0 && (
               <Button 
                 variant="outline" 
                 onClick={() => clearTestMapHistory()}
-                className="hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500 transition-all duration-300"
+                className="h-8 px-2 hover:bg-red-500/10 hover:text-red-500"
               >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Limpar
+                <Trash2 className="w-3 h-3" />
               </Button>
             )}
           </div>
 
           {saveMessage && (
-            <div className="text-sm text-center p-2 rounded border bg-muted/50">
+            <div className="text-xs text-center p-1 rounded bg-muted/50">
               {saveMessage}
             </div>
           )}
 
-          {/* Info sobre isolamento */}
-          <div className="text-xs text-purple-600 bg-purple-50 p-3 rounded border border-purple-200">
-            <div className="font-medium mb-1">🧪 Ambiente de Teste Isolado:</div>
-            <ul className="space-y-1 text-xs">
-              <li>• <strong>Dados locais:</strong> Salvos apenas no localStorage (não afeta D1)</li>
-              <li>• <strong>Dashboard protegido:</strong> Métricas globais permanecem intactas</li>
-              <li>• <strong>20 mapas granulares:</strong> L1t1 até L5t4 para análise detalhada</li>
-              <li>• <strong>Estrutura completa:</strong> Todas funcionalidades do MapPlanner original</li>
-            </ul>
+          {/* Info sobre teste (Compacta) */}
+          <div className="text-xs text-purple-600 bg-purple-50 p-2 rounded border border-purple-200">
+            <div className="font-medium">🧪 Teste Isolado:</div>
+            <div className="text-xs mt-1">Dados locais • 20 mapas L1-L5 • Dashboard protegido • Scroll otimizado</div>
           </div>
         </CardContent>
       </Card>
