@@ -102,31 +102,53 @@ export function MapPlanner({}: MapPlannerProps) {
           loads
         });
         
+        const timestamp = Date.now();
+        const runData = {
+          mapSize: mapSize,
+          luck: luck,
+          loads: loads,
+          tokensDropped: tokensDropped,
+          timestamp: timestamp
+        };
+
+        // CHAMADA 1: API original para manter dashboard global funcionando
         try {
-          const metricsResponse = await fetch('/api/admin/save-map-run', {
+          const dashboardResponse = await fetch('/api/admin/save-user-metrics', {
             method: 'POST',
             credentials: 'include',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({
-              mapSize: mapSize,
-              luck: luck,
-              loads: loads,
-              tokensDropped: tokensDropped,
-              timestamp: Date.now()
-            })
+            body: JSON.stringify(runData)
           });
           
-          const metricsResult = await metricsResponse.json();
-          console.log('%c✅ SUCCESS: Métricas salvas no D1', 'color: #10B981; font-weight: bold;', metricsResult);
+          const dashboardResult = await dashboardResponse.json();
+          console.log('%c✅ DASHBOARD: Métricas salvas para dashboard global', 'color: #8B5CF6; font-weight: bold;', dashboardResult);
           
-          if (!metricsResult.success) {
-            console.log('%c⚠️ WARNING: Falha ao salvar métricas', 'color: #F59E0B;', metricsResult.error);
+        } catch (error) {
+          console.log('%c❌ ERROR: Falha salvando para dashboard', 'color: #EF4444;', error);
+        }
+
+        // CHAMADA 2: Nova API para alimentar o feed
+        try {
+          const feedResponse = await fetch('/api/admin/save-map-run', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(runData)
+          });
+          
+          const feedResult = await feedResponse.json();
+          console.log('%c✅ FEED: Métricas salvas para feed da comunidade', 'color: #10B981; font-weight: bold;', feedResult);
+          
+          if (!feedResult.success) {
+            console.log('%c⚠️ WARNING: Falha ao salvar para feed', 'color: #F59E0B;', feedResult.error);
           }
           
         } catch (error) {
-          console.log('%c❌ ERROR: Erro ao salvar métricas no D1', 'color: #EF4444; font-weight: bold;', error);
+          console.log('%c❌ ERROR: Erro ao salvar para feed', 'color: #EF4444; font-weight: bold;', error);
         }
       } else {
         console.log('%c⚠️ Métricas não enviadas', 'color: #F59E0B; font-weight: bold; font-size: 14px;', {

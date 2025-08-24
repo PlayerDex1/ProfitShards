@@ -66,6 +66,18 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
     }
 
     console.log(`📊 Encontradas ${recentRuns.results?.length || 0} runs recentes`);
+    
+    // Debug: mostrar algumas runs encontradas
+    if (recentRuns.results && recentRuns.results.length > 0) {
+      console.log('🔍 SAMPLE: Primeiras runs encontradas:', recentRuns.results.slice(0, 3).map(r => ({
+        id: r.id,
+        user_id: r.user_id,
+        map_name: r.map_name,
+        tokens_earned: r.tokens_earned,
+        created_at: r.created_at,
+        created_at_date: new Date(r.created_at).toISOString()
+      })));
+    }
 
     const feedData: FeedRun[] = [];
     
