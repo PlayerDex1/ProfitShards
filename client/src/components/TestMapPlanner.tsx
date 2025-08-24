@@ -243,11 +243,12 @@ export function TestMapPlanner() {
 
   return (
     <div className="space-y-4">
-      <Card className="bg-gradient-to-br from-purple-50/50 to-blue-50/50 border-purple-200/50">
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <TestTube className="h-5 w-5 text-purple-600" />
-            <span>Map Planner - Versão Teste Completa (L1-L5)</span>
+      <Card>
+        <CardHeader className="py-3">
+          <CardTitle className="text-base flex items-center space-x-2">
+            <Calculator className="h-5 w-5" />
+            <span>Map Planner - Teste L1-L5</span>
+            <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">TEST</span>
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -309,14 +310,14 @@ export function TestMapPlanner() {
 
           {/* Seletor de Mapa L1-L5 (Otimizado) */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-foreground">🗺️ Mapa L1-L5 (Use scroll do mouse)</label>
+            <label className="text-sm font-medium text-foreground">🗺️ Selecionar Mapa (Use scroll do mouse)</label>
             
             {/* Dropdown principal com scroll otimizado */}
             <div className="relative">
               <select
                 value={selectedMap}
                 onChange={(e) => setSelectedMap(e.target.value)}
-                className="w-full h-9 px-3 bg-background border border-border rounded-md text-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 cursor-pointer hover:border-purple-300 transition-colors appearance-none"
+                className="w-full h-9 px-3 bg-background border border-border rounded-md text-sm focus:ring-2 focus:ring-primary focus:border-primary cursor-pointer hover:border-primary/50 transition-colors appearance-none"
                 onWheel={(e) => {
                   e.preventDefault();
                   const currentIndex = MAPS.findIndex(m => m.id === selectedMap);
@@ -348,7 +349,7 @@ export function TestMapPlanner() {
             {/* Info compacta do mapa selecionado */}
             <div className="flex items-center justify-between p-2 bg-muted/30 rounded text-xs">
               <div className="flex items-center space-x-3">
-                <span className="font-medium text-purple-600">{currentMap.name}</span>
+                <span className="font-medium text-primary">{currentMap.name}</span>
                 <span className="text-muted-foreground">L{currentMap.level}t{currentMap.tier}</span>
                 <span className="text-muted-foreground">⚡{currentMap.energyCost}</span>
               </div>
@@ -358,7 +359,7 @@ export function TestMapPlanner() {
             </div>
 
             {/* Indicador de navegação por scroll */}
-            <div className="text-xs text-center text-muted-foreground bg-purple-50 p-1 rounded">
+            <div className="text-xs text-center text-muted-foreground bg-muted/50 p-1 rounded">
               🖱️ Use o scroll do mouse sobre o dropdown para navegar rapidamente
             </div>
           </div>
@@ -401,68 +402,74 @@ export function TestMapPlanner() {
             </div>
           </div>
 
-          {/* Métricas de Eficiência (Compactas) */}
+          {/* Métricas de Eficiência */}
           {tokensDropped > 0 && (
-            <div className="flex items-center justify-between p-2 bg-gradient-to-r from-purple-50 to-blue-50 rounded border border-purple-200 text-xs">
-              <div className="flex items-center space-x-4">
+            <div className="p-3 bg-muted/50 rounded-lg border">
+              <div className="text-sm font-medium text-foreground mb-2">Métricas de Eficiência</div>
+              <div className="grid grid-cols-3 gap-3 text-xs">
                 <div>
-                  <span className="text-muted-foreground">T/E:</span>
-                  <span className="font-mono font-medium text-purple-600 ml-1">{tokensPerEnergy.toFixed(2)}</span>
+                  <div className="text-muted-foreground">Tokens/Energia</div>
+                  <div className="font-mono font-medium">{tokensPerEnergy.toFixed(2)}</div>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Energia:</span>
-                  <span className="font-mono font-medium ml-1">{totalEnergy}</span>
+                  <div className="text-muted-foreground">Energia Total</div>
+                  <div className="font-mono font-medium">{totalEnergy}</div>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">L×T:</span>
-                  <span className="font-mono font-medium ml-1">{currentMap.level}×{currentMap.tier}</span>
+                  <div className="text-muted-foreground">Level×Tier</div>
+                  <div className="font-mono font-medium">{currentMap.level}×{currentMap.tier}</div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Botão de ação (Compacto) */}
+          {/* Botões de ação */}
           <div className="flex items-center gap-2">
             <Button 
               onClick={apply} 
-              className="flex-1 h-8 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-400 hover:to-blue-500 text-sm"
+              className="flex-1 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 hover:shadow-lg hover:scale-[1.02] transition-all duration-300"
             >
-              <MapPin className="w-3 h-3 mr-1" />
-              Salvar Run
+              <MapPin className="w-4 h-4 mr-2" />
+              Salvar Run de Teste
             </Button>
             {history.length > 0 && (
               <Button 
                 variant="outline" 
                 onClick={() => clearTestMapHistory()}
-                className="h-8 px-2 hover:bg-red-500/10 hover:text-red-500"
+                className="hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500 transition-all duration-300"
               >
-                <Trash2 className="w-3 h-3" />
+                <Trash2 className="w-4 h-4 mr-2" />
+                Limpar
               </Button>
             )}
           </div>
 
           {saveMessage && (
-            <div className="text-xs text-center p-1 rounded bg-muted/50">
+            <div className="text-sm text-center p-2 rounded border bg-muted/50">
               {saveMessage}
             </div>
           )}
-
-          {/* Info sobre teste (Compacta) */}
-          <div className="text-xs text-purple-600 bg-purple-50 p-2 rounded border border-purple-200">
-            <div className="font-medium">🧪 Teste Isolado:</div>
-            <div className="text-xs mt-1">Dados locais • 20 mapas L1-L5 • Dashboard protegido • Scroll otimizado</div>
-          </div>
         </CardContent>
       </Card>
 
+      {/* Info sobre teste */}
+      <div className="text-xs text-muted-foreground bg-green-50/50 p-3 rounded border border-green-200/50">
+        <div className="font-medium text-green-700 mb-1">🧪 Ambiente de Teste Isolado:</div>
+        <div className="text-xs">
+          • <strong>20 mapas granulares:</strong> L1t1 até L5t4 para análise detalhada<br/>
+          • <strong>Dados locais:</strong> Salvos apenas no localStorage (não afeta D1)<br/>
+          • <strong>Dashboard protegido:</strong> Métricas globais permanecem intactas<br/>
+          • <strong>Navegação otimizada:</strong> Use scroll do mouse no dropdown
+        </div>
+      </div>
       {/* Histórico de Teste (isolado) */}
       <Card>
         <CardHeader className="py-3">
           <CardTitle className="text-base flex items-center space-x-2">
-            <TestTube className="h-4 w-4" />
-            <span>Histórico de Teste (Isolado)</span>
+            <Calculator className="h-4 w-4" />
+            <span>Histórico de Teste</span>
             {history.length > 0 && (
-              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
                 {history.length} runs
               </span>
             )}
@@ -477,10 +484,10 @@ export function TestMapPlanner() {
                 <div key={i} className="border rounded-lg p-3 bg-muted/30">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center space-x-2">
-                      <span className="px-2 py-1 rounded text-xs bg-purple-100 text-purple-700 border border-purple-200">
+                      <span className="px-2 py-1 rounded text-xs bg-primary/10 text-primary border border-primary/20">
                         {h.mapName}
                       </span>
-                      <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-700 border border-blue-200">
+                      <span className="px-2 py-1 rounded text-xs bg-green-100 text-green-700 border border-green-200">
                         L{h.level}t{h.tier}
                       </span>
                       <div className={`flex items-center space-x-1 px-2 py-1 rounded text-xs border ${getStatusColor(h.status || 'neutral')}`}>
@@ -513,7 +520,7 @@ export function TestMapPlanner() {
                     </div>
                     <div>
                       <div className="text-muted-foreground">T/E</div>
-                      <div className="font-mono font-medium text-purple-600">{h.efficiency.toFixed(2)}</div>
+                      <div className="font-mono font-medium">{h.efficiency.toFixed(2)}</div>
                     </div>
                     <div>
                       <div className="text-muted-foreground">Level×Tier</div>
