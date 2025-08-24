@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { WorldShardsDashboard } from './WorldShardsDashboard';
+import { HybridDashboard } from './HybridDashboard';
 
 interface LuckRange {
   range: string;
@@ -32,7 +33,7 @@ interface AnalyticsData {
 export function MetricsDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin' | 'test'>('analytics');
+  const [activeTab, setActiveTab] = useState<'analytics' | 'global' | 'admin' | 'test' | 'hybrid'>('analytics');
   
   // Estados para Analytics
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
@@ -273,6 +274,16 @@ export function MetricsDashboard() {
         >
           🧪 Test Dashboard
         </button>
+        <button
+          onClick={() => setActiveTab('hybrid')}
+          className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            activeTab === 'hybrid'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🔥 Híbrido
+        </button>
       </div>
 
       {/* Analytics Tab */}
@@ -484,6 +495,13 @@ export function MetricsDashboard() {
       {activeTab === 'test' && (
         <div className="space-y-4">
           <WorldShardsDashboard />
+        </div>
+      )}
+
+      {/* Hybrid Dashboard Tab */}
+      {activeTab === 'hybrid' && (
+        <div className="space-y-4">
+          <HybridDashboard />
         </div>
       )}
     </div>
