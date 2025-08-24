@@ -4,6 +4,7 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
+import { TestMapPlanner } from './TestMapPlanner';
 
 export function MetricsDashboard() {
   const { user } = useAuth();
@@ -167,6 +168,15 @@ Digite "RESET" para confirmar:`;
                     {adminLoading ? 'Testando...' : '🔌 Testar D1'}
                   </Button>
                 </div>
+              </div>
+
+              {/* Map Planner de Teste */}
+              <div className="mt-6">
+                <h4 className="font-semibold mb-4 flex items-center space-x-2">
+                  <span>🗺️</span>
+                  <span>Map Planner - Teste de Melhorias</span>
+                </h4>
+                <TestMapPlanner />
               </div>
 
               {/* Status de Desenvolvimento */}
