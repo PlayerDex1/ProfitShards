@@ -15,7 +15,8 @@ export function MetricsDashboard() {
   // Verificar se é admin
   const isAdmin = user === 'holdboy01@gmail.com';
 
-  // Função para testar D1
+  // Função para testar D1 (comentada - interface removida mas código preservado)
+  /*
   const testD1Direct = async () => {
     if (!isAdmin) {
       alert('❌ Acesso negado. Apenas admins podem executar testes.');
@@ -41,6 +42,7 @@ export function MetricsDashboard() {
       setAdminLoading(false);
     }
   };
+  */
 
   if (!isAdmin) {
     return (
@@ -150,24 +152,6 @@ Digite "RESET" para confirmar:`;
                   </Button>
                 </div>
 
-                {/* Teste de Conectividade */}
-                <div className="space-y-3">
-                  <h4 className="font-semibold flex items-center space-x-2">
-                    <span className="text-blue-500">🔌</span>
-                    <span>Teste de Conectividade</span>
-                  </h4>
-                  <p className="text-sm text-muted-foreground">
-                    Testa a conexão com o banco de dados D1
-                  </p>
-                  <Button 
-                    onClick={testD1Direct}
-                    variant="outline" 
-                    className="w-full"
-                    disabled={adminLoading}
-                  >
-                    {adminLoading ? 'Testando...' : '🔌 Testar D1'}
-                  </Button>
-                </div>
               </div>
 
               {/* Map Planner de Teste */}
