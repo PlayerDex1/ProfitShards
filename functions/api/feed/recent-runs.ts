@@ -18,7 +18,10 @@ export const onRequestGet = async (context) => {
   try {
     const { env } = context;
     
+    console.log('🔥 FEED: Iniciando busca de runs recentes...');
+    
     if (!env.DB) {
+      console.log('❌ D1 Database não disponível');
       return new Response(JSON.stringify({ 
         success: false, 
         error: 'Database not available' 
@@ -28,15 +31,30 @@ export const onRequestGet = async (context) => {
       });
     }
 
-    // Buscar runs recentes das últimas 4 horas
-    const fourHoursAgo = Date.now() - (4 * 60 * 60 * 1000);
+    console.log('✅ D1 Database disponível');
+
+    // Buscar runs recentes das últimas 8 horas (mais tempo para ter mais dados)
+    const eightHoursAgo = Date.now() - (8 * 60 * 60 * 1000);
+    
+    console.log('🔍 Buscando runs desde:', new Date(eightHoursAgo).toISOString());
     
     const recentRuns = await env.DB.prepare(`
-      SELECT * FROM user_map_drops 
+      SELECT 
+        id,
+        user_id,
+        map_name,
+        map_size,
+        tokens_earned,
+        efficiency_rating,
+        drop_data,
+        created_at
+      FROM user_map_drops 
       WHERE created_at > ? 
       ORDER BY created_at DESC 
-      LIMIT 12
-    `).bind(fourHoursAgo).all();
+      LIMIT 20
+    `).bind(eightHoursAgo).all();
+
+    console.log(`📊 Encontradas ${recentRuns.results?.length || 0} runs recentes`);
 
     const feedData: FeedRun[] = [];
     
@@ -44,7 +62,12 @@ export const onRequestGet = async (context) => {
       recentRuns.results.forEach((run: any, index: number) => {
         try {
           const dropData = JSON.parse(run.drop_data || '{}');
-          const userId = `Player${(index % 20) + 1}`; // Player1-Player20 para anonimato
+          
+          // Gerar nome anônimo baseado no user_id para consistência
+          const userHash = run.user_id ? 
+            parseInt(run.user_id.split('').slice(-3).join('')) % 50 + 1 : 
+            index % 50 + 1;
+          const userId = `Player${userHash}`;
           
           // Calcular tempo atrás
           const timeDiff = Date.now() - run.created_at;
@@ -60,19 +83,28 @@ export const onRequestGet = async (context) => {
             timeAgo = 'agora mesmo';
           }
 
+          // Calcular energia baseado no mapa ou usar dados salvos
+          let energy = dropData.energyCost || 0;
+          if (!energy && run.map_size) {
+            const energyMap = { 'small': 4, 'medium': 8, 'large': 16, 'xlarge': 24 };
+            energy = energyMap[run.map_size] || 0;
+          }
+
           feedData.push({
             id: run.id,
             user: userId,
-            mapName: run.map_name || 'Unknown',
+            mapName: run.map_name || run.map_size || 'Unknown',
             tokens: run.tokens_earned || 0,
-            energy: dropData.energyCost || 0,
+            energy: energy,
             efficiency: run.efficiency_rating || 0,
-            luck: dropData.luck || 0,
+            luck: dropData.luck || dropData.totalLuck || 0,
             timestamp: run.created_at,
             timeAgo
           });
+          
+          console.log(`✅ Run processada: ${userId} - ${run.map_name || run.map_size} - ${run.tokens_earned} tokens`);
         } catch (error) {
-          console.log('Error parsing run data:', error);
+          console.log('❌ Erro processando run:', error);
         }
       });
     }
