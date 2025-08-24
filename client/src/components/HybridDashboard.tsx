@@ -4,7 +4,9 @@ import { Button } from './ui/button';
 import { useI18n } from '../i18n';
 import { 
   TrendingUp, TrendingDown, Users, Target, Zap, MapPin, Clock, Trophy, 
-  Activity, BarChart3, Database, Download, Trash2, TestTube 
+  Activity, BarChart3, Database, Download, Trash2, TestTube, Calendar,
+  Percent, Star, Timer, ArrowUp, ArrowDown, Eye, Filter, RefreshCw,
+  PieChart, LineChart, BarChart, TrendingUp as TrendUp, Award, Flame
 } from 'lucide-react';
 
 interface LuckRange {
@@ -264,14 +266,71 @@ export function HybridDashboard() {
             </Card>
           </div>
 
-          {/* Gráficos lado a lado */}
+          {/* Métricas Detalhadas */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Eficiência Global */}
+            <Card className="bg-gradient-to-br from-emerald-500/10 to-green-600/10 border-emerald-500/20 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Eficiência Global</p>
+                    <p className="text-2xl font-bold text-emerald-600">
+                      {globalData ? (globalData.totalRuns > 0 ? (globalData.totalTokens / globalData.totalRuns).toFixed(1) : '0') : '...'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">tokens por run</p>
+                  </div>
+                  <Percent className="h-8 w-8 text-emerald-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Melhor Faixa */}
+            <Card className="bg-gradient-to-br from-yellow-500/10 to-amber-600/10 border-yellow-500/20 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Melhor Faixa</p>
+                    <p className="text-2xl font-bold text-yellow-600">
+                      {globalData?.luckRanges.length > 0 ? 
+                        globalData.luckRanges.reduce((best, current) => 
+                          current.avgTokens > best.avgTokens ? current : best
+                        ).range : '...'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">maior eficiência</p>
+                  </div>
+                  <Star className="h-8 w-8 text-yellow-600" />
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Atividade Recente */}
+            <Card className="bg-gradient-to-br from-indigo-500/10 to-purple-600/10 border-indigo-500/20 hover:shadow-lg transition-shadow">
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Última Atividade</p>
+                    <p className="text-2xl font-bold text-indigo-600">
+                      {analyticsData?.hourlyActivity.length > 0 ? 
+                        Math.max(...analyticsData.hourlyActivity.map(h => h.runs)) : '...'}
+                    </p>
+                    <p className="text-xs text-muted-foreground">runs no pico</p>
+                  </div>
+                  <Activity className="h-8 w-8 text-indigo-600" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Gráficos principais */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Atividade por Hora */}
+            {/* Atividade por Hora - Expandida */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Clock className="h-5 w-5 text-primary" />
-                  <span>Atividade por Horário</span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Clock className="h-5 w-5 text-primary" />
+                    <span>Atividade por Horário (24h)</span>
+                  </div>
                   <Button onClick={loadAnalytics} variant="ghost" size="sm" disabled={analyticsLoading}>
                     {analyticsLoading ? '⏳' : '🔄'}
                   </Button>
@@ -279,21 +338,66 @@ export function HybridDashboard() {
               </CardHeader>
               <CardContent>
                 {analyticsData?.hourlyActivity ? (
-                  <div className="space-y-2">
-                    {analyticsData.hourlyActivity.slice(0, 12).map((hour, i) => (
-                      <div key={i} className="flex items-center justify-between">
-                        <span className="text-sm text-muted-foreground w-12">{hour.hour}:00</span>
-                        <div className="flex items-center space-x-4 flex-1">
-                          <div className="w-full bg-muted rounded-full h-2 ml-4">
-                            <div 
-                              className="bg-gradient-to-r from-primary to-blue-600 rounded-full h-2 transition-all"
-                              style={{ width: `${Math.min((hour.runs / 50) * 100, 100)}%` }}
-                            ></div>
-                          </div>
-                          <span className="text-sm font-medium w-8 text-right">{hour.runs}</span>
-                        </div>
+                  <div className="space-y-3">
+                    {/* Resumo do período */}
+                    <div className="grid grid-cols-3 gap-4 mb-4 p-3 bg-muted/30 rounded-lg">
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">Pico</p>
+                        <p className="font-bold text-primary">
+                          {Math.max(...analyticsData.hourlyActivity.map(h => h.runs))}
+                        </p>
                       </div>
-                    ))}
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">Média</p>
+                        <p className="font-bold text-primary">
+                          {(analyticsData.hourlyActivity.reduce((sum, h) => sum + h.runs, 0) / analyticsData.hourlyActivity.length).toFixed(1)}
+                        </p>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">Total</p>
+                        <p className="font-bold text-primary">
+                          {analyticsData.hourlyActivity.reduce((sum, h) => sum + h.runs, 0)}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Gráfico de barras */}
+                    <div className="space-y-2">
+                      {analyticsData.hourlyActivity.map((hour, i) => {
+                        const maxRuns = Math.max(...analyticsData.hourlyActivity.map(h => h.runs));
+                        const percentage = maxRuns > 0 ? (hour.runs / maxRuns) * 100 : 0;
+                        const isPeak = hour.runs === maxRuns && hour.runs > 0;
+                        
+                        return (
+                          <div key={i} className="flex items-center justify-between">
+                            <span className="text-sm text-muted-foreground w-12">{hour.hour}:00</span>
+                            <div className="flex items-center space-x-4 flex-1">
+                              <div className="w-full bg-muted rounded-full h-3 ml-4 relative">
+                                <div 
+                                  className={`rounded-full h-3 transition-all ${
+                                    isPeak 
+                                      ? 'bg-gradient-to-r from-yellow-500 to-amber-600' 
+                                      : 'bg-gradient-to-r from-primary to-blue-600'
+                                  }`}
+                                  style={{ width: `${percentage}%` }}
+                                ></div>
+                                {isPeak && (
+                                  <Star className="absolute -top-1 -right-1 h-4 w-4 text-yellow-500" />
+                                )}
+                              </div>
+                              <span className="text-sm font-medium w-12 text-right">
+                                {hour.runs}
+                                {hour.tokens > 0 && (
+                                  <span className="block text-xs text-green-600">
+                                    {hour.tokens.toLocaleString()}T
+                                  </span>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
@@ -303,12 +407,14 @@ export function HybridDashboard() {
               </CardContent>
             </Card>
 
-            {/* Luck Ranges */}
+            {/* Análise de Faixas de Luck - Expandida */}
             <Card className="hover:shadow-lg transition-shadow">
               <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  <span>Faixas de Luck</span>
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    <span>Análise por Faixa de Luck</span>
+                  </div>
                   <Button onClick={loadGlobalData} variant="ghost" size="sm" disabled={globalLoading}>
                     {globalLoading ? '⏳' : '🔄'}
                   </Button>
@@ -316,28 +422,197 @@ export function HybridDashboard() {
               </CardHeader>
               <CardContent>
                 {globalData?.luckRanges ? (
-                  <div className="space-y-3">
-                    {globalData.luckRanges.map((range, i) => (
-                      <div key={i} className="flex items-center justify-between p-3 bg-gradient-to-r from-muted/50 to-muted/30 rounded-lg hover:from-muted/70 hover:to-muted/50 transition-colors">
-                        <div className="flex items-center space-x-3">
-                          <div className="w-2 h-8 bg-gradient-to-b from-primary to-blue-600 rounded-full"></div>
-                          <div>
-                            <p className="font-medium">{range.range}</p>
-                            <p className="text-sm text-muted-foreground">{range.runs} runs</p>
-                          </div>
-                        </div>
-                        <div className="text-right">
-                          <p className="font-bold text-green-600">{range.avgTokens.toFixed(1)}</p>
-                          <p className="text-xs text-muted-foreground">avg tokens</p>
-                        </div>
+                  <div className="space-y-4">
+                    {/* Resumo das faixas */}
+                    <div className="grid grid-cols-2 gap-4 mb-4 p-3 bg-muted/30 rounded-lg">
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">Faixas Ativas</p>
+                        <p className="font-bold text-primary">{globalData.luckRanges.length}</p>
                       </div>
-                    ))}
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground">Melhor Média</p>
+                        <p className="font-bold text-green-600">
+                          {globalData.luckRanges.length > 0 ? 
+                            Math.max(...globalData.luckRanges.map(r => r.avgTokens)).toFixed(1) : '0'}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {/* Lista detalhada */}
+                    <div className="space-y-3">
+                      {globalData.luckRanges.map((range, i) => {
+                        const maxAvg = Math.max(...globalData.luckRanges.map(r => r.avgTokens));
+                        const isBest = range.avgTokens === maxAvg;
+                        const efficiency = maxAvg > 0 ? (range.avgTokens / maxAvg) * 100 : 0;
+                        
+                        return (
+                          <div key={i} className={`flex items-center justify-between p-4 rounded-lg border transition-all hover:shadow-md ${
+                            isBest 
+                              ? 'bg-gradient-to-r from-yellow-500/10 to-amber-600/10 border-yellow-500/20' 
+                              : 'bg-gradient-to-r from-muted/50 to-muted/30 hover:from-muted/70 hover:to-muted/50'
+                          }`}>
+                            <div className="flex items-center space-x-4">
+                              <div className={`w-3 h-12 rounded-full ${
+                                isBest 
+                                  ? 'bg-gradient-to-b from-yellow-500 to-amber-600' 
+                                  : 'bg-gradient-to-b from-primary to-blue-600'
+                              }`}></div>
+                              <div>
+                                <div className="flex items-center space-x-2">
+                                  <p className="font-semibold">{range.range}</p>
+                                  {isBest && <Award className="h-4 w-4 text-yellow-500" />}
+                                </div>
+                                <p className="text-sm text-muted-foreground">
+                                  {range.runs.toLocaleString()} runs • {range.users} usuários
+                                </p>
+                                <div className="w-32 bg-muted rounded-full h-1.5 mt-1">
+                                  <div 
+                                    className="bg-gradient-to-r from-primary to-blue-600 rounded-full h-1.5 transition-all"
+                                    style={{ width: `${efficiency}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-bold text-green-600 text-lg">
+                                {range.avgTokens.toFixed(1)}
+                              </p>
+                              <p className="text-xs text-muted-foreground">avg tokens</p>
+                              <p className="text-xs text-primary">
+                                {range.totalTokens.toLocaleString()} total
+                              </p>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
                 ) : (
                   <div className="text-center py-8 text-muted-foreground">
                     {globalLoading ? 'Carregando...' : 'Sem dados disponíveis'}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Insights e Tendências */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Performance Insights */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <TrendUp className="h-5 w-5 text-primary" />
+                  <span>Insights de Performance</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {globalData && analyticsData && (
+                    <>
+                      {/* Horário mais produtivo */}
+                      <div className="flex items-center justify-between p-3 bg-gradient-to-r from-green-500/10 to-emerald-600/10 rounded-lg border border-green-500/20">
+                        <div className="flex items-center space-x-3">
+                          <Clock className="h-5 w-5 text-green-600" />
+                          <div>
+                            <p className="font-medium">Horário Mais Produtivo</p>
+                            <p className="text-sm text-muted-foreground">
+                              {analyticsData.hourlyActivity.reduce((best, current) => 
+                                current.runs > best.runs ? current : best
+                              ).hour}:00 - {analyticsData.hourlyActivity.reduce((best, current) => 
+                                current.runs > best.runs ? current : best
+                              ).hour + 1}:00
+                            </p>
+                          </div>
+                        </div>
+                        <ArrowUp className="h-5 w-5 text-green-600" />
+                      </div>
+
+                      {/* Faixa mais popular */}
+                      <div className="flex items-center justify-between p-3 bg-gradient-to-r from-blue-500/10 to-indigo-600/10 rounded-lg border border-blue-500/20">
+                        <div className="flex items-center space-x-3">
+                          <Users className="h-5 w-5 text-blue-600" />
+                          <div>
+                            <p className="font-medium">Faixa Mais Popular</p>
+                            <p className="text-sm text-muted-foreground">
+                              {globalData.luckRanges.reduce((most, current) => 
+                                current.users > most.users ? current : most
+                              ).range} ({globalData.luckRanges.reduce((most, current) => 
+                                current.users > most.users ? current : most
+                              ).users} usuários)
+                            </p>
+                          </div>
+                        </div>
+                        <Trophy className="h-5 w-5 text-blue-600" />
+                      </div>
+
+                      {/* Taxa de sucesso */}
+                      <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/10 to-violet-600/10 rounded-lg border border-purple-500/20">
+                        <div className="flex items-center space-x-3">
+                          <Percent className="h-5 w-5 text-purple-600" />
+                          <div>
+                            <p className="font-medium">Taxa de Participação</p>
+                            <p className="text-sm text-muted-foreground">
+                              {globalData.totalRegisteredUsers > 0 ? 
+                                ((globalData.uniqueUsers / globalData.totalRegisteredUsers) * 100).toFixed(1) : '0'}% 
+                              dos usuários ativos
+                            </p>
+                          </div>
+                        </div>
+                        <Activity className="h-5 w-5 text-purple-600" />
+                      </div>
+                    </>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Estatísticas Rápidas */}
+            <Card className="hover:shadow-lg transition-shadow">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <BarChart className="h-5 w-5 text-primary" />
+                  <span>Estatísticas Rápidas</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-4">
+                  {globalData && (
+                    <>
+                      <div className="text-center p-3 bg-gradient-to-br from-red-500/10 to-pink-600/10 rounded-lg border border-red-500/20">
+                        <Flame className="h-6 w-6 text-red-600 mx-auto mb-2" />
+                        <p className="text-lg font-bold text-red-600">
+                          {globalData.luckRanges.reduce((sum, range) => sum + range.runs, 0).toLocaleString()}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Total Runs</p>
+                      </div>
+
+                      <div className="text-center p-3 bg-gradient-to-br from-cyan-500/10 to-teal-600/10 rounded-lg border border-cyan-500/20">
+                        <Zap className="h-6 w-6 text-cyan-600 mx-auto mb-2" />
+                        <p className="text-lg font-bold text-cyan-600">
+                          {(globalData.totalTokens / 1000).toFixed(1)}K
+                        </p>
+                        <p className="text-xs text-muted-foreground">Total Tokens</p>
+                      </div>
+
+                      <div className="text-center p-3 bg-gradient-to-br from-lime-500/10 to-green-600/10 rounded-lg border border-lime-500/20">
+                        <Target className="h-6 w-6 text-lime-600 mx-auto mb-2" />
+                        <p className="text-lg font-bold text-lime-600">
+                          {globalData.totalRuns > 0 ? (globalData.totalTokens / globalData.totalRuns).toFixed(2) : '0'}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Média Global</p>
+                      </div>
+
+                      <div className="text-center p-3 bg-gradient-to-br from-violet-500/10 to-purple-600/10 rounded-lg border border-violet-500/20">
+                        <Users className="h-6 w-6 text-violet-600 mx-auto mb-2" />
+                        <p className="text-lg font-bold text-violet-600">
+                          {globalData.uniqueUsers}/{globalData.totalRegisteredUsers}
+                        </p>
+                        <p className="text-xs text-muted-foreground">Ativos/Total</p>
+                      </div>
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           </div>
