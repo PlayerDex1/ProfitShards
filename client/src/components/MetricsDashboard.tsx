@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
 import { TestMapPlanner } from './TestMapPlanner';
+import { TestActivityFeed } from './TestActivityFeed';
 
 export function MetricsDashboard() {
   const { user } = useAuth();
@@ -152,6 +153,11 @@ Digite "RESET" para confirmar:`;
                   </Button>
                 </div>
 
+              </div>
+
+              {/* Feed de Atividades de Teste */}
+              <div className="mt-6">
+                <TestActivityFeed />
               </div>
 
               {/* Map Planner de Teste */}
