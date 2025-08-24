@@ -14,7 +14,11 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
   try {
     const { env, request } = context;
     
-    console.log('🗺️ SAVE MAP RUN: Iniciando...');
+    console.log('🗺️ SAVE MAP RUN: Iniciando...', {
+      url: request.url,
+      method: request.method,
+      headers: Object.fromEntries(request.headers.entries())
+    });
     
     if (!env.DB) {
       console.log('❌ D1 Database não disponível');
@@ -81,8 +85,9 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     let runData: MapRunData;
     try {
       runData = await request.json();
+      console.log('📦 Dados recebidos:', runData);
     } catch (error) {
-      console.log('❌ Erro parsing JSON');
+      console.log('❌ Erro parsing JSON:', error);
       return new Response(JSON.stringify({ 
         success: false,
         error: 'Invalid JSON' 
@@ -128,11 +133,12 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     console.log('💾 Inserindo run no D1:', {
       map: insertData.map_name,
       tokens: insertData.tokens_earned,
-      efficiency: insertData.efficiency_rating
+      efficiency: insertData.efficiency_rating,
+      fullData: insertData
     });
 
     // Inserir no D1
-    await env.DB.prepare(`
+    const insertResult = await env.DB.prepare(`
       INSERT INTO user_map_drops (
         id, user_id, map_name, map_size, drop_data, tokens_earned, 
         time_spent, efficiency_rating, created_at
@@ -148,6 +154,8 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
       insertData.efficiency_rating,
       insertData.created_at
     ).run();
+
+    console.log('📋 Resultado do INSERT:', insertResult);
 
     console.log(`✅ Map run saved: ${runData.mapSize} - ${runData.tokensDropped} tokens - ${efficiency.toFixed(1)} T/E`);
 
