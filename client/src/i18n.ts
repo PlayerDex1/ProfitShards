@@ -454,7 +454,7 @@ const dicts: Record<Lang, Dict> = {
   },
 };
 
-const LangContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: string) => string }>({ lang: 'pt', setLang: () => {}, t: (k) => k });
+const LangContext = createContext<{ lang: Lang; setLang: (l: Lang) => void; t: (k: string, vars?: Record<string, string>) => string }>({ lang: 'pt', setLang: () => {}, t: (k) => k });
 
 export function I18nProvider({ children }: { children: React.ReactNode }) {
   const [lang, setLangState] = useState<Lang>('pt');
@@ -470,7 +470,15 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     window.dispatchEvent(new CustomEvent('worldshards-lang-updated'));
   };
 
-  const t = useMemo(() => (key: string) => dicts[lang][key] ?? key, [lang]);
+  const t = useMemo(() => (key: string, vars?: Record<string, string>) => {
+    let text = dicts[lang][key] ?? key;
+    if (vars) {
+      Object.entries(vars).forEach(([varKey, varValue]) => {
+        text = text.replace(`{${varKey}}`, varValue);
+      });
+    }
+    return text;
+  }, [lang]);
 
   return React.createElement(LangContext.Provider, { value: { lang, setLang, t } }, children);
 }
