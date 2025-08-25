@@ -14,6 +14,18 @@ interface FeedRun {
   timeAgo: string;
 }
 
+// Função para mapear formato small/medium/large/xlarge para formato de exibição
+function getMapDisplayName(mapSize: string): string {
+  const mapNames: Record<string, string> = {
+    'small': 'Small Map',
+    'medium': 'Medium Map', 
+    'large': 'Large Map',
+    'xlarge': 'XLarge Map'
+  };
+  
+  return mapNames[mapSize] || mapSize;
+}
+
 export async function onRequestGet(context: { env: Env; request: Request }) {
   try {
     const { env, request } = context;
@@ -135,10 +147,13 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
             energy = energyMap[run.map_size] || 8; // default para medium
           }
 
+          // Mapear formato small/medium/large/xlarge para formato de exibição
+          const mapDisplayName = getMapDisplayName(run.map_name || run.map_size || 'Unknown');
+
           const feedRun: FeedRun = {
             id: run.id,
             user: userId,
-            mapName: run.map_name || run.map_size || 'Unknown',
+            mapName: mapDisplayName,
             tokens: Math.max(0, run.tokens_earned || 0),
             energy: Math.max(1, energy), // mínimo 1 energia
             efficiency: Math.max(0, run.efficiency_rating || 0),
@@ -156,16 +171,16 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       });
     }
 
-    // Se não há dados reais, criar dados fake para teste
+    // Se não há dados reais, criar dados fake para teste (usando formato compatível)
     if (feedData.length === 0) {
       const fakeRuns: FeedRun[] = [
         {
           id: 'fake-1',
           user: 'Player7',
-          mapName: 'L3t2',
+          mapName: 'Medium Map',
           tokens: 245,
-          energy: 10,
-          efficiency: 24.5,
+          energy: 8,
+          efficiency: 30.6,
           luck: 4517,
           timestamp: Date.now() - 5 * 60 * 1000,
           timeAgo: 'há 5 min'
@@ -173,7 +188,7 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         {
           id: 'fake-2',
           user: 'Player3',
-          mapName: 'L5t4',
+          mapName: 'XLarge Map',
           tokens: 720,
           energy: 24,
           efficiency: 30.0,
@@ -184,10 +199,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         {
           id: 'fake-3',
           user: 'Player1',
-          mapName: 'L2t3',
-          tokens: 156,
+          mapName: 'Large Map',
+          tokens: 456,
           energy: 16,
-          efficiency: 9.75,
+          efficiency: 28.5,
           luck: 2100,
           timestamp: Date.now() - 18 * 60 * 1000,
           timeAgo: 'há 18 min'
@@ -195,7 +210,7 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         {
           id: 'fake-4',
           user: 'Player9',
-          mapName: 'L4t1',
+          mapName: 'Small Map',
           tokens: 89,
           energy: 4,
           efficiency: 22.25,
@@ -206,10 +221,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         {
           id: 'fake-5',
           user: 'Player12',
-          mapName: 'L1t4',
-          tokens: 180,
+          mapName: 'XLarge Map',
+          tokens: 580,
           energy: 24,
-          efficiency: 7.5,
+          efficiency: 24.2,
           luck: 1500,
           timestamp: Date.now() - 35 * 60 * 1000,
           timeAgo: 'há 35 min'
@@ -217,10 +232,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
         {
           id: 'fake-6',
           user: 'Player5',
-          mapName: 'L3t1',
-          tokens: 67,
-          energy: 4,
-          efficiency: 16.75,
+          mapName: 'Medium Map',
+          tokens: 167,
+          energy: 8,
+          efficiency: 20.9,
           luck: 2900,
           timestamp: Date.now() - 45 * 60 * 1000,
           timeAgo: 'há 45 min'
@@ -254,10 +269,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       {
         id: 'emergency-1',
         user: 'Player7',
-        mapName: 'L3t2',
+        mapName: 'Medium Map',
         tokens: 245,
-        energy: 10,
-        efficiency: 24.5,
+        energy: 8,
+        efficiency: 30.6,
         luck: 4517,
         timestamp: Date.now() - 5 * 60 * 1000,
         timeAgo: 'há 5 min'
@@ -265,10 +280,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       {
         id: 'emergency-2',
         user: 'Player15',
-        mapName: 'Large',
-        tokens: 1840,
+        mapName: 'Large Map',
+        tokens: 640,
         energy: 16,
-        efficiency: 115.0,
+        efficiency: 40.0,
         luck: 7200,
         timestamp: Date.now() - 12 * 60 * 1000,
         timeAgo: 'há 12 min'
@@ -276,10 +291,10 @@ export async function onRequestGet(context: { env: Env; request: Request }) {
       {
         id: 'emergency-3',
         user: 'Player3',
-        mapName: 'Medium',
-        tokens: 420,
-        energy: 8,
-        efficiency: 52.5,
+        mapName: 'Small Map',
+        tokens: 120,
+        energy: 4,
+        efficiency: 30.0,
         luck: 3100,
         timestamp: Date.now() - 18 * 60 * 1000,
         timeAgo: 'há 18 min'
