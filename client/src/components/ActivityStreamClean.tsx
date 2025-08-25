@@ -27,7 +27,7 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// 🎯 Card Layout Horizontal - Similar ao Worldshards Tracker
+// 🎯 Card Clean - Layout Horizontal Limpo
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
   // Extrair player do email (temporário até termos campo dedicado)
   const playerName = 'mergano'; // Placeholder - será dinâmico
