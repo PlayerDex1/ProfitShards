@@ -23,103 +23,206 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// Componente para cada run individual - versão melhorada
-const RunCard = ({ run }: { run: ActivityRun }) => {
-  // Cores baseadas no tipo de mapa - versão aprimorada
+// 🎨 Card Premium - Versão Melhorada com Design Avançado
+const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
+  // Configuração avançada por tipo de mapa
   const getMapConfig = (map: string) => {
     if (map.includes('Small')) return { 
-      color: 'bg-gradient-to-br from-green-500 to-green-600', 
-      text: 'text-white', 
-      badge: 'bg-green-100 text-green-800',
-      glow: 'shadow-green-200'
+      gradient: 'bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600', 
+      bgGlow: 'bg-emerald-50',
+      borderGlow: 'border-emerald-200',
+      textColor: 'text-white',
+      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
+      shadowColor: 'hover:shadow-emerald-500/20',
+      icon: '🌿',
+      difficulty: 'Fácil'
     };
     if (map.includes('Medium')) return { 
-      color: 'bg-gradient-to-br from-blue-500 to-blue-600', 
-      text: 'text-white', 
-      badge: 'bg-blue-100 text-blue-800',
-      glow: 'shadow-blue-200'
+      gradient: 'bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600', 
+      bgGlow: 'bg-blue-50',
+      borderGlow: 'border-blue-200',
+      textColor: 'text-white',
+      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
+      shadowColor: 'hover:shadow-blue-500/20',
+      icon: '💧',
+      difficulty: 'Médio'
     };
     if (map.includes('Large')) return { 
-      color: 'bg-gradient-to-br from-purple-500 to-purple-600', 
-      text: 'text-white', 
-      badge: 'bg-purple-100 text-purple-800',
-      glow: 'shadow-purple-200'
+      gradient: 'bg-gradient-to-br from-purple-500 via-violet-500 to-purple-600', 
+      bgGlow: 'bg-purple-50',
+      borderGlow: 'border-purple-200',
+      textColor: 'text-white',
+      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
+      shadowColor: 'hover:shadow-purple-500/20',
+      icon: '🔮',
+      difficulty: 'Difícil'
     };
     if (map.includes('XLarge')) return { 
-      color: 'bg-gradient-to-br from-orange-500 to-orange-600', 
-      text: 'text-white', 
-      badge: 'bg-orange-100 text-orange-800',
-      glow: 'shadow-orange-200'
+      gradient: 'bg-gradient-to-br from-orange-500 via-red-500 to-pink-600', 
+      bgGlow: 'bg-orange-50',
+      borderGlow: 'border-orange-200',
+      textColor: 'text-white',
+      badgeColor: 'bg-orange-100 text-orange-800 border-orange-300',
+      shadowColor: 'hover:shadow-orange-500/20',
+      icon: '🔥',
+      difficulty: 'Extremo'
     };
     return { 
-      color: 'bg-gradient-to-br from-gray-500 to-gray-600', 
-      text: 'text-white', 
-      badge: 'bg-gray-100 text-gray-800',
-      glow: 'shadow-gray-200'
+      gradient: 'bg-gradient-to-br from-slate-500 to-slate-600', 
+      bgGlow: 'bg-slate-50',
+      borderGlow: 'border-slate-200',
+      textColor: 'text-white',
+      badgeColor: 'bg-slate-100 text-slate-800 border-slate-300',
+      shadowColor: 'hover:shadow-slate-500/20',
+      icon: '❓',
+      difficulty: 'Desconhecido'
     };
   };
 
   const mapConfig = getMapConfig(run.map);
   
-  // Calcular eficiência estimada (tokens/luck)
+  // Calcular métricas avançadas
   const efficiency = run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0';
+  const efficiencyNum = parseFloat(efficiency);
+  
+  // Sistema de ranking baseado em eficiência
+  const getPerformanceRank = (eff: number) => {
+    if (eff >= 0.25) return { rank: 'Legendary', color: 'text-yellow-600', badge: '👑' };
+    if (eff >= 0.20) return { rank: 'Elite', color: 'text-purple-600', badge: '💎' };
+    if (eff >= 0.15) return { rank: 'Pro', color: 'text-blue-600', badge: '⭐' };
+    if (eff >= 0.10) return { rank: 'Good', color: 'text-green-600', badge: '✨' };
+    return { rank: 'Novice', color: 'text-gray-600', badge: '🔰' };
+  };
+
+  const performance = getPerformanceRank(efficiencyNum);
+  
+  // Determinar se é run recente (badge "Novo")
+  const isRecent = Date.now() - run.timestamp < 5 * 60 * 1000; // 5 minutos
   
   return (
-    <div className={cn(
-      "relative overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm",
-      "transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02]",
-      "group cursor-pointer"
-    )}>
-      {/* Header colorido do mapa */}
-      <div className={cn("px-4 py-3", mapConfig.color, mapConfig.text)}>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <MapPin className="h-4 w-4" />
-            <span className="font-semibold text-sm">{run.map}</span>
-          </div>
-          <Badge variant="secondary" className={cn("text-xs", mapConfig.badge)}>
-            {efficiency} eff
-          </Badge>
-        </div>
-      </div>
+    <div 
+      className={cn(
+        "relative overflow-hidden rounded-2xl border border-border/30",
+        "bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-md",
+        "transition-all duration-500 ease-out",
+        "hover:scale-[1.03] hover:shadow-2xl hover:border-primary/30",
+        mapConfig.shadowColor,
+        "group cursor-pointer transform-gpu"
+      )}
+      style={{
+        animationDelay: `${index * 100}ms`,
+        animation: 'slideInUp 0.6s ease-out forwards'
+      }}
+    >
+      {/* Glow effect background */}
+      <div className={cn(
+        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+        mapConfig.bgGlow,
+        "blur-xl scale-105 -z-10"
+      )} />
       
-      {/* Conteúdo principal */}
-      <div className="p-4 space-y-3">
-        {/* Estatísticas principais */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center space-x-2 text-sm">
-            <div className="p-1.5 rounded-md bg-yellow-100 text-yellow-800">
-              <Zap className="h-3 w-3" />
-            </div>
+      {/* Header Premium do Mapa */}
+      <div className={cn(
+        "relative px-5 py-4",
+        mapConfig.gradient,
+        mapConfig.textColor,
+        "overflow-hidden"
+      )}>
+        {/* Pattern decorativo */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="20" height="20" xmlns="http://www.w3.org/2000/svg"%3E%3Cdefs%3E%3Cpattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse"%3E%3Cpath d="M 20 0 L 0 0 0 20" fill="none" stroke="white" stroke-width="0.5"/%3E%3C/pattern%3E%3C/defs%3E%3Crect width="100%25" height="100%25" fill="url(%23grid)" /%3E%3C/svg%3E')]" />
+        </div>
+        
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="text-2xl">{mapConfig.icon}</div>
             <div>
-              <div className="text-xs text-muted-foreground">Luck</div>
-              <div className="font-semibold">{run.luck.toLocaleString()}</div>
+              <div className="font-bold text-lg leading-tight">{run.map}</div>
+              <div className="text-xs opacity-90">{mapConfig.difficulty}</div>
             </div>
           </div>
           
-          <div className="flex items-center space-x-2 text-sm">
-            <div className="p-1.5 rounded-md bg-blue-100 text-blue-800">
-              <Coins className="h-3 w-3" />
+          <div className="flex flex-col items-end space-y-1">
+            <Badge className={cn("text-xs font-semibold border", mapConfig.badgeColor)}>
+              {efficiency} eff
+            </Badge>
+            {isRecent && (
+              <Badge className="text-xs bg-green-500 text-white animate-pulse">
+                ✨ Novo
+              </Badge>
+            )}
+          </div>
+        </div>
+      </div>
+      
+      {/* Conteúdo Principal */}
+      <div className="p-5 space-y-4">
+        {/* Ranking e Performance */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <span className="text-lg">{performance.badge}</span>
+            <div>
+              <div className={cn("text-sm font-semibold", performance.color)}>
+                {performance.rank}
+              </div>
+              <div className="text-xs text-muted-foreground">Performance</div>
+            </div>
+          </div>
+          
+          <div className="text-right">
+            <div className="text-lg font-bold text-foreground">
+              {run.tokens.toLocaleString()}
+            </div>
+            <div className="text-xs text-muted-foreground">tokens</div>
+          </div>
+        </div>
+        
+        {/* Estatísticas Detalhadas */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200/50">
+            <div className="p-2 rounded-lg bg-yellow-100 text-yellow-700">
+              <Zap className="h-4 w-4" />
             </div>
             <div>
-              <div className="text-xs text-muted-foreground">Tokens</div>
-              <div className="font-semibold">{run.tokens.toLocaleString()}</div>
+              <div className="text-xs text-yellow-700 font-medium">Luck Total</div>
+              <div className="text-lg font-bold text-yellow-800">
+                {(run.luck / 1000).toFixed(1)}K
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/50">
+            <div className="p-2 rounded-lg bg-blue-100 text-blue-700">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="text-xs text-blue-700 font-medium">Eficiência</div>
+              <div className="text-lg font-bold text-blue-800">
+                {efficiency}
+              </div>
             </div>
           </div>
         </div>
         
-        {/* Tempo e indicador de atividade */}
-        <div className="flex items-center justify-between pt-2 border-t border-border/50">
-          <div className="text-xs text-muted-foreground flex items-center space-x-1">
-            <Activity className="h-3 w-3" />
-            <span>{run.timeAgo}</span>
+        {/* Footer com Tempo e Status */}
+        <div className="flex items-center justify-between pt-3 border-t border-border/50">
+          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+            <Activity className="h-4 w-4" />
+            <span className="font-medium">{run.timeAgo}</span>
           </div>
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+          
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+            <span className="text-xs text-green-600 font-medium">Live</span>
+          </div>
         </div>
       </div>
       
-      {/* Efeito de hover */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
+      {/* Efeito de Hover Avançado */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+      
+      {/* Shine effect no hover */}
+      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
     </div>
   );
 };
