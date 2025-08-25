@@ -136,6 +136,9 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     const now = Date.now();
     const efficiency = calculateEfficiency(runData.tokensDropped, runData.luck || 0);
     
+    // 🎯 FASE 2: Criar nome inteligente do usuário
+    const playerName = createPlayerNameFromEmail(runData.userEmail || 'anonymous@feed.com');
+    
     const newRun = {
       id: `feed_${now}_${Math.random().toString(36).substr(2, 6)}`,
       user_email: runData.userEmail || 'anonymous@feed.com',
@@ -148,7 +151,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       level: runData.level || 'I',
       tier: runData.tier || 'I',
       charge: runData.charge || 0,
-      player_name: runData.playerName || 'Player'
+      player_name: playerName
     };
 
     console.log('💾 Inserindo run:', newRun);
@@ -236,6 +239,34 @@ function getTimeAgo(timestamp: number): string {
   if (hours > 0) return `${hours}h atrás`;
   if (minutes > 0) return `${minutes}min atrás`;
   return 'agora mesmo';
+}
+
+// 🎯 FASE 2: Função para criar nome do player a partir do email
+function createPlayerNameFromEmail(email: string): string {
+  console.log('🎯 Criando nome do player para email:', email);
+  
+  // Se é anônimo, usar "Player"
+  if (email === 'anonymous@feed.com') {
+    return 'Player';
+  }
+  
+  try {
+    // Extrair parte antes do @
+    const localPart = email.split('@')[0];
+    
+    // Se tem ponto, pegar primeira parte (ex: "joao.silva" -> "joao")
+    const firstName = localPart.split('.')[0];
+    
+    // Capitalizar primeira letra
+    const playerName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    
+    console.log(`🎯 Email: ${email} -> Nome: ${playerName}`);
+    return playerName;
+    
+  } catch (error) {
+    console.log('⚠️ Erro ao processar email, usando Player:', error);
+    return 'Player';
+  }
 }
 
 function returnErrorResponse(message: string, status: number, details?: string) {
