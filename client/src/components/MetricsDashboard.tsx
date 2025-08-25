@@ -4,12 +4,13 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
+import { ActivityStream } from './ActivityStream';
 
 
 export function MetricsDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'test' | 'hybrid'>('hybrid');
+  const [activeTab, setActiveTab] = useState<'test' | 'hybrid' | 'feed'>('hybrid');
   const [adminLoading, setAdminLoading] = useState(false);
 
   // Verificar se é admin
@@ -85,6 +86,16 @@ export function MetricsDashboard() {
           }`}
         >
           🧪 Ferramentas de Teste
+        </button>
+        <button
+          onClick={() => setActiveTab('feed')}
+          className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            activeTab === 'feed'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🔥 Feed de Atividades
         </button>
       </div>
 
@@ -187,6 +198,13 @@ Digite "RESET" para confirmar:`;
               )}
             </CardContent>
           </Card>
+        </div>
+      )}
+
+      {/* Feed Tab */}
+      {activeTab === 'feed' && (
+        <div className="space-y-4">
+          <ActivityStream />
         </div>
       )}
 
