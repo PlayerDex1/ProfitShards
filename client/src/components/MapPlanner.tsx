@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/i18n";
-import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "@/lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
 import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
@@ -21,6 +21,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
+  const [groupedHistory, setGroupedHistory] = useState(getMapDropsHistoryGroupedByDay());
   const { totalLuck } = useEquipment();
   const [luck, setLuck] = useState<number>(prefs.savedLuck || totalLuck || 0);
   const [status, setStatus] = useState<'excellent' | 'positive' | 'negative' | 'neutral'>('neutral');
@@ -34,7 +35,10 @@ export function MapPlanner({}: MapPlannerProps) {
   const [charge, setCharge] = useState<number>(0);
 
   useEffect(() => {
-    const onUpd = () => setHistory(getMapDropsHistory());
+    const onUpd = () => {
+      setHistory(getMapDropsHistory());
+      setGroupedHistory(getMapDropsHistoryGroupedByDay());
+    };
     window.addEventListener('worldshards-mapdrops-updated', onUpd);
     return () => window.removeEventListener('worldshards-mapdrops-updated', onUpd);
   }, []);
@@ -78,7 +82,11 @@ export function MapPlanner({}: MapPlannerProps) {
       tokensDropped,
       loads: charge, // usar charge como loads
       totalLuck: luck,
-      status
+      status,
+      // 🆕 Novos campos Level/Tier/Charge
+      level: level,
+      tier: tier,
+      charge: charge
     };
 
     try {
@@ -358,59 +366,131 @@ export function MapPlanner({}: MapPlannerProps) {
 
       <Card>
         <CardHeader className="py-3">
-          <CardTitle className="text-base">{t('planner.history')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">📊 Histórico de Runs</CardTitle>
+            {history.length > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => clearMapDropsHistory()}
+                className="h-7 px-2 text-xs hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500"
+              >
+                <Trash2 className="w-3 h-3 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {history.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t('planner.noHistory')}</p>
+            <div className="text-center py-8 text-muted-foreground">
+              <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Nenhum histórico encontrado</p>
+              <p className="text-xs mt-1">Suas runs aparecerão aqui após serem salvas</p>
+            </div>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-auto">
-              {history.slice(0, 10).map((h, i) => (
-                <div key={i} className="border rounded-lg p-3 bg-muted/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-2 py-1 rounded text-xs bg-primary/10 text-primary border border-primary/20">
-                        {t(`planner.${h.mapSize}`)}
-                      </span>
-                      <div className={`flex items-center space-x-1 px-2 py-1 rounded text-xs border ${getStatusColor(h.status || 'neutral')}`}>
-                        {getStatusIcon(h.status || 'neutral')}
-                        <span>{h.status ? t(`status.${h.status}`) : '-'}</span>
+            <div className="space-y-4 max-h-96 overflow-auto">
+              {/* 🗓️ Agrupar por dias */}
+              {Object.entries(groupedHistory)
+                .sort(([a], [b]) => b.localeCompare(a)) // Mais recente primeiro
+                .slice(0, 7) // Últimos 7 dias
+                .map(([day, dayEntries]) => {
+                  const stats = getDayStats(day);
+                  const isToday = day === new Date().toISOString().split('T')[0];
+                  
+                  return (
+                    <div key={day} className="border rounded-lg bg-muted/20">
+                      {/* Header do Dia */}
+                      <div className="px-4 py-3 border-b bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div className="text-sm font-bold text-foreground">
+                              📅 {isToday ? 'Hoje' : new Date(day + 'T12:00:00Z').toLocaleDateString('pt-BR', { 
+                                weekday: 'short', 
+                                day: '2-digit', 
+                                month: '2-digit' 
+                              })}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {day}
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {stats.totalRuns} runs • {stats.totalTokens.toLocaleString()} tokens
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Runs do Dia - Layout Clean Horizontal */}
+                      <div className="p-3 space-y-2">
+                        {dayEntries.map((h, i) => (
+                          <div 
+                            key={h.timestamp} 
+                            className="bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-750 transition-colors duration-200 px-4 py-3"
+                          >
+                            <div className="grid grid-cols-6 gap-3 items-center text-xs">
+                              {/* LEVEL/TIER */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">LEVEL/TIER</div>
+                                <div className="text-white">
+                                  <div className="font-medium">Level {h.level || 'IV'}</div>
+                                  <div className="text-slate-300">Tier {h.tier || 'I'}</div>
+                                </div>
+                              </div>
+
+                              {/* MAP */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">MAP</div>
+                                <div className="bg-slate-600 text-white px-2 py-1 rounded text-center font-medium">
+                                  {h.mapSize}
+                                </div>
+                              </div>
+
+                              {/* TOKENS */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">TOKENS</div>
+                                <div className="bg-yellow-600 text-white px-2 py-1 rounded text-center font-bold">
+                                  {h.tokensDropped}
+                                </div>
+                              </div>
+
+                              {/* CHARGE */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">CHARGE</div>
+                                <div className="text-white font-medium">
+                                  {h.charge || h.loads}
+                                </div>
+                              </div>
+
+                              {/* TIME */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">TIME</div>
+                                <div className="text-white font-mono text-xs">
+                                  {new Date(h.timestamp).toLocaleTimeString('pt-BR', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* ACTIONS */}
+                              <div className="text-right">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => deleteMapDropEntry(h.timestamp)}
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                                >
+                                  ✕
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => deleteMapDropEntry(h.timestamp)}
-                      className="h-6 px-2 text-xs"
-                    >
-                      ✕
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-4 gap-2 text-xs">
-                    <div>
-                      <div className="text-muted-foreground">Tokens</div>
-                      <div className="font-mono font-medium">{h.tokensDropped.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Charges</div>
-                      <div className="font-mono font-medium">{h.loads}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Luck</div>
-                      <div className="font-mono font-medium">{h.totalLuck ?? '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">T/Charge</div>
-                      <div className="font-mono font-medium">{h.loads > 0 ? (h.tokensDropped / h.loads).toFixed(1) : '-'}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {new Date(h.timestamp).toLocaleString()}
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           )}
         </CardContent>
