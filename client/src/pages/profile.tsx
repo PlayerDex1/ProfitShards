@@ -11,6 +11,7 @@ import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
+import { Calculator as CalculatorComponent } from "@/components/Calculator";
 import { Trash2, Download, Upload, User, Calculator, Map, TestTube } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
@@ -20,7 +21,7 @@ export default function Profile() {
 	const { user, userProfile, isAuthenticated } = useAuth();
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	// Removido: useEquipment - simplificando interface
-	const { results, breakdown } = useCalculator();
+	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
 	const [activeTab, setActiveTab] = useState('history');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
