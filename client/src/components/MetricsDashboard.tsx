@@ -4,8 +4,7 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
-import { TestMapPlanner } from './TestMapPlanner';
-import { TestActivityFeed } from './TestActivityFeed';
+
 
 export function MetricsDashboard() {
   const { user } = useAuth();
@@ -155,18 +154,15 @@ Digite "RESET" para confirmar:`;
 
               </div>
 
-              {/* Feed de Atividades de Teste */}
-              <div className="mt-6">
-                <TestActivityFeed />
-              </div>
 
-              {/* Map Planner de Teste */}
+
+              {/* Dashboard Global */}
               <div className="mt-6">
                 <h4 className="font-semibold mb-4 flex items-center space-x-2">
-                  <span>🗺️</span>
-                  <span>Map Planner - Teste de Melhorias</span>
+                  <span>📊</span>
+                  <span>Dashboard Global</span>
                 </h4>
-                <TestMapPlanner />
+                <HybridDashboard />
               </div>
 
               {/* Status de Desenvolvimento */}
