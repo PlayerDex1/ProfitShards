@@ -156,15 +156,6 @@ Digite "RESET" para confirmar:`;
 
 
 
-              {/* Dashboard Global */}
-              <div className="mt-6">
-                <h4 className="font-semibold mb-4 flex items-center space-x-2">
-                  <span>📊</span>
-                  <span>Dashboard Global</span>
-                </h4>
-                <HybridDashboard />
-              </div>
-
               {/* Status de Desenvolvimento */}
               <div className="mt-6 p-4 bg-muted/30 rounded-lg">
                 <h4 className="font-semibold mb-2 flex items-center space-x-2">
