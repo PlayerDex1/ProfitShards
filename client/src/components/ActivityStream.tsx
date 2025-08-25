@@ -27,259 +27,174 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// 🎨 Card Limpo - Layout Horizontal Similar ao Worldshards Tracker
+// 🎯 Card Clean - Layout Horizontal Igual ao Planejador
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
-  // Configuração avançada por tipo de mapa
-  const getMapConfig = (map: string) => {
-    if (map.includes('Small')) return { 
-      gradient: 'bg-gradient-to-br from-emerald-500 via-green-500 to-teal-600', 
-      bgGlow: 'bg-emerald-50',
-      borderGlow: 'border-emerald-200',
-      textColor: 'text-white',
-      badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-300',
-      shadowColor: 'hover:shadow-emerald-500/20',
-      icon: '🌿',
-      difficulty: 'Fácil'
-    };
-    if (map.includes('Medium')) return { 
-      gradient: 'bg-gradient-to-br from-blue-500 via-indigo-500 to-blue-600', 
-      bgGlow: 'bg-blue-50',
-      borderGlow: 'border-blue-200',
-      textColor: 'text-white',
-      badgeColor: 'bg-blue-100 text-blue-800 border-blue-300',
-      shadowColor: 'hover:shadow-blue-500/20',
-      icon: '💧',
-      difficulty: 'Médio'
-    };
-    if (map.includes('Large')) return { 
-      gradient: 'bg-gradient-to-br from-purple-500 via-violet-500 to-purple-600', 
-      bgGlow: 'bg-purple-50',
-      borderGlow: 'border-purple-200',
-      textColor: 'text-white',
-      badgeColor: 'bg-purple-100 text-purple-800 border-purple-300',
-      shadowColor: 'hover:shadow-purple-500/20',
-      icon: '🔮',
-      difficulty: 'Difícil'
-    };
-    if (map.includes('XLarge')) return { 
-      gradient: 'bg-gradient-to-br from-orange-500 via-red-500 to-pink-600', 
-      bgGlow: 'bg-orange-50',
-      borderGlow: 'border-orange-200',
-      textColor: 'text-white',
-      badgeColor: 'bg-orange-100 text-orange-800 border-orange-300',
-      shadowColor: 'hover:shadow-orange-500/20',
-      icon: '🔥',
-      difficulty: 'Extremo'
-    };
-    return { 
-      gradient: 'bg-gradient-to-br from-slate-500 to-slate-600', 
-      bgGlow: 'bg-slate-50',
-      borderGlow: 'border-slate-200',
-      textColor: 'text-white',
-      badgeColor: 'bg-slate-100 text-slate-800 border-slate-300',
-      shadowColor: 'hover:shadow-slate-500/20',
-      icon: '❓',
-      difficulty: 'Desconhecido'
-    };
+  // Extrair player do email (temporário até termos campo dedicado)
+  const playerName = run.id.includes('demo') ? 'demo_user' : 'mergano'; // Placeholder
+
+  // Formatar data
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toISOString().split('T')[0]; // YYYY-MM-DD
   };
 
-  const mapConfig = getMapConfig(run.map);
-  
-  // Calcular métricas avançadas
-  const efficiency = run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0';
-  const efficiencyNum = parseFloat(efficiency);
-  
-  // Sistema de ranking baseado em eficiência
-  const getPerformanceRank = (eff: number) => {
-    if (eff >= 0.25) return { rank: 'Legendary', color: 'text-yellow-600', badge: '👑' };
-    if (eff >= 0.20) return { rank: 'Elite', color: 'text-purple-600', badge: '💎' };
-    if (eff >= 0.15) return { rank: 'Pro', color: 'text-blue-600', badge: '⭐' };
-    if (eff >= 0.10) return { rank: 'Good', color: 'text-green-600', badge: '✨' };
-    return { rank: 'Novice', color: 'text-gray-600', badge: '🔰' };
+  // Formatar horário
+  const formatTime = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
   };
 
-  const performance = getPerformanceRank(efficiencyNum);
-  
-  // Determinar se é run recente (badge "Novo")
-  const isRecent = Date.now() - run.timestamp < 5 * 60 * 1000; // 5 minutos
-  
   return (
-    <div 
+    <div
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-border/30",
-        "bg-gradient-to-br from-card/80 via-card/60 to-card/40 backdrop-blur-md",
-        "transition-all duration-500 ease-out",
-        "hover:scale-[1.03] hover:shadow-2xl hover:border-primary/30",
-        mapConfig.shadowColor,
-        "group cursor-pointer transform-gpu"
+        "bg-slate-800 rounded-lg border border-slate-700",
+        "hover:bg-slate-750 hover:border-slate-600 transition-all duration-200",
+        "px-6 py-4"
       )}
       style={{
-        animationDelay: `${index * 100}ms`,
-        animation: 'slideInUp 0.6s ease-out forwards'
+        animationDelay: `${index * 50}ms`,
+        animation: 'fadeInUp 0.4s ease-out forwards'
       }}
     >
-      {/* Glow effect background */}
-      <div className={cn(
-        "absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-        mapConfig.bgGlow,
-        "blur-xl scale-105 -z-10"
-      )} />
-      
-      {/* Header Premium do Mapa */}
-      <div className={cn(
-        "relative px-5 py-4",
-        mapConfig.gradient,
-        mapConfig.textColor,
-        "overflow-hidden"
-      )}>
-        {/* Pattern decorativo */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent" />
+      <div className="grid grid-cols-6 gap-4 items-center text-sm">
+        {/* PLAYER */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">PLAYER</div>
+          <div className="text-white font-medium">{playerName}</div>
         </div>
-        
-        <div className="relative flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="text-2xl">{mapConfig.icon}</div>
-            <div>
-              <div className="font-bold text-lg leading-tight">{run.map}</div>
-              <div className="text-xs opacity-90">{mapConfig.difficulty}</div>
-            </div>
-          </div>
-          
-          <div className="flex flex-col items-end space-y-1">
-            <Badge className={cn("text-xs font-semibold border", mapConfig.badgeColor)}>
-              {efficiency} eff
-            </Badge>
-            {isRecent && (
-              <Badge className="text-xs bg-green-500 text-white animate-pulse">
-                ✨ Novo
-              </Badge>
-            )}
+
+        {/* MAP */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">MAP</div>
+          <div className="bg-slate-600 text-white px-2 py-1 rounded text-center font-medium text-xs">
+            {run.map.replace(' Map', '')}
           </div>
         </div>
-      </div>
-      
-      {/* Conteúdo Principal */}
-      <div className="p-5 space-y-4">
-        {/* Ranking e Performance */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <span className="text-lg">{performance.badge}</span>
-            <div>
-              <div className={cn("text-sm font-semibold", performance.color)}>
-                {performance.rank}
-              </div>
-              <div className="text-xs text-muted-foreground">Performance</div>
-            </div>
-          </div>
-          
-          <div className="text-right">
-            <div className="text-lg font-bold text-foreground">
-              {run.tokens.toLocaleString()}
-            </div>
-            <div className="text-xs text-muted-foreground">tokens</div>
+
+        {/* LEVEL/TIER */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">LEVEL/TIER</div>
+          <div className="text-white">
+            <div className="font-medium">Level {run.level || 'IV'}</div>
+            <div className="text-slate-300 text-xs">Tier {run.tier || 'I'}</div>
           </div>
         </div>
-        
-        {/* Estatísticas Detalhadas */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-yellow-50 to-amber-50 border border-yellow-200/50">
-            <div className="p-2 rounded-lg bg-yellow-100 text-yellow-700">
-              <Zap className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="text-xs text-yellow-700 font-medium">Luck Total</div>
-              <div className="text-lg font-bold text-yellow-800">
-                {(run.luck / 1000).toFixed(1)}K
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200/50">
-            <div className="p-2 rounded-lg bg-blue-100 text-blue-700">
-              <TrendingUp className="h-4 w-4" />
-            </div>
-            <div>
-              <div className="text-xs text-blue-700 font-medium">Eficiência</div>
-              <div className="text-lg font-bold text-blue-800">
-                {efficiency}
-              </div>
-            </div>
+
+        {/* TOKEN */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">TOKEN</div>
+          <div className="bg-yellow-600 text-white px-3 py-1 rounded text-center font-bold text-sm">
+            {run.tokens}
           </div>
         </div>
-        
-        {/* Footer com Tempo e Status */}
-        <div className="flex items-center justify-between pt-3 border-t border-border/50">
-          <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-            <Activity className="h-4 w-4" />
-            <span className="font-medium">{run.timeAgo}</span>
+
+        {/* DATE */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">DATE</div>
+          <div className="text-white font-mono text-sm">
+            {formatDate(run.timestamp)}
           </div>
-          
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
-            <span className="text-xs text-green-600 font-medium">Live</span>
+        </div>
+
+        {/* CHARGE */}
+        <div>
+          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">CHARGE</div>
+          <div className="text-white text-sm">
+            <span className="text-slate-400">CHARGE:</span> <span className="font-medium">{run.charge || 4}</span>
           </div>
         </div>
       </div>
-      
-      {/* Efeito de Hover Avançado */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
-      
-      {/* Shine effect no hover */}
-      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white/60 to-transparent scale-x-0 group-hover:scale-x-100 transition-transform duration-700" />
+
+      {/* Segunda linha com informações adicionais */}
+      <div className="mt-3 pt-3 border-t border-slate-700">
+        <div className="grid grid-cols-4 gap-4 text-xs">
+          <div>
+            <span className="text-slate-400">Luck:</span>
+            <span className="text-white ml-1 font-medium">{run.luck.toLocaleString()}</span>
+          </div>
+          <div>
+            <span className="text-slate-400">Efficiency:</span>
+            <span className="text-white ml-1 font-medium">
+              {run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0'}
+            </span>
+          </div>
+          <div>
+            <span className="text-slate-400">Time:</span>
+            <span className="text-white ml-1 font-medium">{formatTime(run.timestamp)}</span>
+          </div>
+          <div>
+            <span className="text-slate-400">Status:</span>
+            <span className="text-green-400 ml-1 font-medium">{run.timeAgo}</span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
 
 // Skeleton loading
 const RunSkeleton = () => (
-  <div className="p-3 rounded-lg border border-gray-200 bg-gray-50 animate-pulse">
-    <div className="flex items-center space-x-2 mb-2">
-      <div className="h-4 w-4 bg-gray-300 rounded"></div>
-      <div className="h-4 w-20 bg-gray-300 rounded"></div>
+  <div className="bg-slate-800 rounded-lg border border-slate-700 px-6 py-4 animate-pulse">
+    <div className="grid grid-cols-6 gap-4 items-center">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div key={i} className="space-y-2">
+          <div className="h-3 bg-slate-700 rounded w-16"></div>
+          <div className="h-4 bg-slate-600 rounded w-20"></div>
+        </div>
+      ))}
     </div>
-    <div className="grid grid-cols-2 gap-2 mb-2">
-      <div className="h-3 w-16 bg-gray-300 rounded"></div>
-      <div className="h-3 w-20 bg-gray-300 rounded"></div>
+    <div className="mt-3 pt-3 border-t border-slate-700">
+      <div className="grid grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-3 bg-slate-700 rounded w-16"></div>
+        ))}
+      </div>
     </div>
-    <div className="h-3 w-12 bg-gray-300 rounded mt-2"></div>
   </div>
 );
 
 export function ActivityStream() {
   const [runs, setRuns] = useState<ActivityRun[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdate, setLastUpdate] = useState<string>('');
 
-  const loadActivity = async () => {
-    setLoading(true);
-    setError(null);
-    
+  const fetchRuns = async () => {
     try {
+      setLoading(true);
+      setError(null);
+      
+      console.log('🔍 Buscando runs do feed...');
+      
       const response = await fetch('/api/feed/feed-runs', {
         method: 'GET',
         credentials: 'include',
-      });
-      
-      const result: ActivityStreamResponse = await response.json();
-      
-      if (result.success) {
-        setRuns(result.runs || []);
-        setLastUpdate(new Date().toLocaleTimeString());
-        
-        // Log informativo no console
-        console.log(`🔥 Feed carregado: ${result.runs?.length || 0} runs ${result.cached ? '(cache)' : '(fresh)'}`);
-        
-        if (result.fallback) {
-          console.log('⚠️ Usando dados demo:', result.error);
+        headers: {
+          'Cache-Control': 'no-cache',
         }
-      } else {
-        setError(result.error || 'Erro ao carregar atividades');
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
-    } catch (error) {
-      console.error('Erro ao carregar activity stream:', error);
-      setError('Erro de conexão');
+
+      const data: ActivityStreamResponse = await response.json();
+      console.log('📊 Dados recebidos:', data);
+
+      if (data.success && data.runs) {
+        setRuns(data.runs);
+        setLastUpdate(new Date().toLocaleTimeString());
+        setError(null);
+      } else {
+        throw new Error(data.error || 'Dados inválidos recebidos');
+      }
+    } catch (err) {
+      console.error('❌ Erro ao carregar feed:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      setRuns([]);
     } finally {
       setLoading(false);
     }
@@ -287,11 +202,10 @@ export function ActivityStream() {
 
   // Carregar dados iniciais e configurar auto-refresh
   useEffect(() => {
-    loadActivity();
+    fetchRuns();
     
-    // Auto-refresh a cada 5 minutos (menos agressivo)
-    const interval = setInterval(loadActivity, 5 * 60 * 1000);
-    
+    // Auto-refresh a cada 30 segundos
+    const interval = setInterval(fetchRuns, 30000);
     return () => clearInterval(interval);
   }, []);
 
@@ -299,74 +213,78 @@ export function ActivityStream() {
     <Card className="w-full">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="text-lg flex items-center space-x-2">
-            <span className="text-2xl">🔥</span>
-            <span>Atividade Recente</span>
-            {runs.length > 0 && (
-              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-normal">
-                {runs.length} runs
-              </span>
-            )}
-          </CardTitle>
-          
-          <Button
-            onClick={loadActivity}
-            variant="outline"
-            size="sm"
+          <div>
+            <CardTitle className="text-lg font-bold flex items-center gap-2">
+              <Activity className="w-5 h-5 text-primary" />
+              Feed de Atividade - Layout Clean
+            </CardTitle>
+            <p className="text-sm text-muted-foreground mt-1">
+              Runs da comunidade com Level/Tier/Charge (última atualização: {lastUpdate || 'Carregando...'})
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={fetchRuns}
             disabled={loading}
-            className="h-8"
+            className="min-w-[100px]"
           >
-            <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
+            <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
+            {loading ? 'Carregando...' : 'Atualizar'}
           </Button>
         </div>
-        
-        {lastUpdate && (
-          <p className="text-xs text-muted-foreground">
-            Última atualização: {lastUpdate}
-          </p>
-        )}
       </CardHeader>
-      
+
       <CardContent>
-        {/* Estado de erro */}
-        {error && (
-          <div className="text-sm text-red-600 bg-red-50 p-3 rounded border border-red-200 mb-4">
-            ❌ {error}
-          </div>
-        )}
-        
-        {/* Loading skeleton */}
-        {loading && runs.length === 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {[...Array(6)].map((_, i) => <RunSkeleton key={i} />)}
-          </div>
-        ) : runs.length === 0 ? (
-          /* Estado vazio */
-          <div className="text-center py-8 text-muted-foreground">
-            <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
-            <p>Nenhuma atividade recente</p>
-            <p className="text-xs mt-1">As runs aparecerão aqui quando usuários usarem o MapPlanner</p>
-          </div>
-        ) : (
-          /* Grid de runs */
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {runs.slice(0, 12).map(run => (
-              <RunCard key={run.id} run={run} />
+        {/* Estados de Loading/Error */}
+        {loading && runs.length === 0 && (
+          <div className="space-y-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <RunSkeleton key={i} />
             ))}
           </div>
         )}
-        
-        {/* Info sobre dados */}
-        {runs.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-border/50 text-xs text-muted-foreground text-center">
-            📊 Feed automático baseado na atividade real dos usuários • Atualização a cada 5 min
+
+        {error && (
+          <div className="text-center py-8">
+            <div className="text-red-500 text-sm mb-2">❌ {error}</div>
+            <Button variant="outline" size="sm" onClick={fetchRuns}>
+              Tentar Novamente
+            </Button>
           </div>
         )}
-        
-        {runs.length > 12 && (
-          <div className="mt-2 text-xs text-muted-foreground text-center">
-            Mostrando 12 de {runs.length} atividades recentes
+
+        {/* Lista de Runs */}
+        {!loading && !error && runs.length === 0 && (
+          <div className="text-center py-8 text-muted-foreground">
+            <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>Nenhuma atividade recente encontrada</p>
+            <p className="text-xs mt-1">As runs aparecerão aqui quando os usuários salvarem suas atividades</p>
+          </div>
+        )}
+
+        {runs.length > 0 && (
+          <div className="space-y-3">
+            {runs.map((run, index) => (
+              <RunCard key={run.id} run={run} index={index} />
+            ))}
+          </div>
+        )}
+
+        {/* Footer com informações */}
+        {runs.length > 0 && (
+          <div className="mt-6 pt-4 border-t border-border">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <div className="flex items-center space-x-4">
+                <span>📊 {runs.length} runs encontradas</span>
+                <span>🔄 Auto-refresh: 30s</span>
+                <span>🎯 Layout: Clean Horizontal</span>
+              </div>
+              <div className="flex items-center space-x-1">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Ao vivo</span>
+              </div>
+            </div>
           </div>
         )}
       </CardContent>
