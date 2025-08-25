@@ -129,9 +129,9 @@ export function MapPlanner({}: MapPlannerProps) {
           console.log('%c❌ ERROR: Falha salvando para dashboard', 'color: #EF4444;', error);
         }
 
-        // CHAMADA 2: Nova API para alimentar o feed (versão simplificada para debug)
+        // CHAMADA 2: Nova API para alimentar o feed
         try {
-          const feedResponse = await fetch('/api/admin/save-map-run-simple', {
+          const feedResponse = await fetch('/api/admin/save-map-run', {
             method: 'POST',
             credentials: 'include',
             headers: {
