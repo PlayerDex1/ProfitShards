@@ -75,6 +75,13 @@ export function MapPlanner({}: MapPlannerProps) {
   const tokensPerCharge = charge > 0 ? tokensDropped / charge : 0;
 
   const apply = async () => {
+    // 🛠️ DEBUG GERAL - Sempre executa
+    console.log('🎯 APPLY FUNCTION - Estado geral:', {
+      isAuthenticated,
+      tokensDropped,
+      userProfileExists: !!userProfile,
+      userEmail: userProfile?.email
+    });
 
     const entry = {
       timestamp: Date.now(),
