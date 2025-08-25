@@ -49,7 +49,17 @@ export async function onRequestPost({ env }: { env: Env }) {
       console.log('⚠️ Coluna charge já existe ou erro:', error);
     }
 
-    // 4. Verificar estrutura final
+    // 4. Adicionar coluna player_name
+    try {
+      await env.DB.prepare(`
+        ALTER TABLE feed_runs ADD COLUMN player_name TEXT DEFAULT 'Player'
+      `).run();
+      console.log('✅ Coluna player_name adicionada');
+    } catch (error) {
+      console.log('⚠️ Coluna player_name já existe ou erro:', error);
+    }
+
+    // 5. Verificar estrutura final
     const schemaResult = await env.DB.prepare(`
       PRAGMA table_info(feed_runs)
     `).all();

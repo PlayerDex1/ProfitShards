@@ -17,6 +17,7 @@ interface FeedRun {
   level?: string;
   tier?: string;
   charge?: number;
+  playerName?: string;
 }
 
 interface NewRunData {
@@ -30,6 +31,8 @@ interface NewRunData {
   level?: string;
   tier?: string;
   charge?: number;
+  // 🆕 Nome do usuário do equipamento
+  playerName?: string;
 }
 
 // GET - Buscar runs para o feed
@@ -55,7 +58,8 @@ export async function onRequestGet({ env }: { env: Env }) {
         created_at,
         level,
         tier,
-        charge
+        charge,
+        player_name
       FROM feed_runs 
       WHERE created_at > ? 
       ORDER BY created_at DESC 
@@ -76,7 +80,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       // 🆕 Novos campos
       level: row.level || 'I',
       tier: row.tier || 'I',
-      charge: row.charge || 0
+      charge: row.charge || 0,
+      playerName: row.player_name || 'Player'
     }));
 
     return new Response(JSON.stringify({
@@ -142,15 +147,16 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       // 🆕 Novos campos
       level: runData.level || 'I',
       tier: runData.tier || 'I',
-      charge: runData.charge || 0
+      charge: runData.charge || 0,
+      player_name: runData.playerName || 'Player'
     };
 
     console.log('💾 Inserindo run:', newRun);
 
     // Inserir no D1
     const insertResult = await env.DB.prepare(`
-      INSERT INTO feed_runs (id, user_email, map_name, luck, tokens, efficiency, created_at, level, tier, charge)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO feed_runs (id, user_email, map_name, luck, tokens, efficiency, created_at, level, tier, charge, player_name)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       newRun.id,
       newRun.user_email,
@@ -161,7 +167,8 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       newRun.created_at,
       newRun.level,
       newRun.tier,
-      newRun.charge
+      newRun.charge,
+      newRun.player_name
     ).run();
 
     console.log('📋 Resultado INSERT:', insertResult);
