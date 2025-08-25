@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { Calculator } from "@/components/Calculator";
 import { Results } from "@/components/Results";
+import { ActivityStream } from "@/components/ActivityStream";
 import { useCalculator } from "@/hooks/use-calculator";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, User } from "lucide-react";
+import { TrendingUp, User, Activity } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 
