@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, Zap, MapPin, Coins } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface ActivityRun {
   id: string;
@@ -21,43 +23,103 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// Componente para cada run individual
+// Componente para cada run individual - versão melhorada
 const RunCard = ({ run }: { run: ActivityRun }) => {
-  // Cores baseadas no tipo de mapa
-  const getMapColor = (map: string) => {
-    if (map.includes('Small')) return 'text-green-700 bg-green-50 border-green-200';
-    if (map.includes('Medium')) return 'text-blue-700 bg-blue-50 border-blue-200';
-    if (map.includes('Large')) return 'text-purple-700 bg-purple-50 border-purple-200';
-    if (map.includes('XLarge')) return 'text-orange-700 bg-orange-50 border-orange-200';
-    return 'text-gray-700 bg-gray-50 border-gray-200';
+  // Cores baseadas no tipo de mapa - versão aprimorada
+  const getMapConfig = (map: string) => {
+    if (map.includes('Small')) return { 
+      color: 'bg-gradient-to-br from-green-500 to-green-600', 
+      text: 'text-white', 
+      badge: 'bg-green-100 text-green-800',
+      glow: 'shadow-green-200'
+    };
+    if (map.includes('Medium')) return { 
+      color: 'bg-gradient-to-br from-blue-500 to-blue-600', 
+      text: 'text-white', 
+      badge: 'bg-blue-100 text-blue-800',
+      glow: 'shadow-blue-200'
+    };
+    if (map.includes('Large')) return { 
+      color: 'bg-gradient-to-br from-purple-500 to-purple-600', 
+      text: 'text-white', 
+      badge: 'bg-purple-100 text-purple-800',
+      glow: 'shadow-purple-200'
+    };
+    if (map.includes('XLarge')) return { 
+      color: 'bg-gradient-to-br from-orange-500 to-orange-600', 
+      text: 'text-white', 
+      badge: 'bg-orange-100 text-orange-800',
+      glow: 'shadow-orange-200'
+    };
+    return { 
+      color: 'bg-gradient-to-br from-gray-500 to-gray-600', 
+      text: 'text-white', 
+      badge: 'bg-gray-100 text-gray-800',
+      glow: 'shadow-gray-200'
+    };
   };
 
-  const mapColorClass = getMapColor(run.map);
-
+  const mapConfig = getMapConfig(run.map);
+  
+  // Calcular eficiência estimada (tokens/luck)
+  const efficiency = run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0';
+  
   return (
-    <div className={`p-3 rounded-lg border transition-all duration-200 hover:shadow-sm ${mapColorClass}`}>
-      {/* Mapa */}
-      <div className="flex items-center space-x-2 mb-2">
-        <MapPin className="h-4 w-4" />
-        <span className="font-medium text-sm">{run.map}</span>
+    <div className={cn(
+      "relative overflow-hidden rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm",
+      "transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:scale-[1.02]",
+      "group cursor-pointer"
+    )}>
+      {/* Header colorido do mapa */}
+      <div className={cn("px-4 py-3", mapConfig.color, mapConfig.text)}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <MapPin className="h-4 w-4" />
+            <span className="font-semibold text-sm">{run.map}</span>
+          </div>
+          <Badge variant="secondary" className={cn("text-xs", mapConfig.badge)}>
+            {efficiency} eff
+          </Badge>
+        </div>
       </div>
       
-      {/* Estatísticas */}
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="flex items-center space-x-1">
-          <Zap className="h-3 w-3" />
-          <span>Luck: {run.luck.toLocaleString()}</span>
+      {/* Conteúdo principal */}
+      <div className="p-4 space-y-3">
+        {/* Estatísticas principais */}
+        <div className="grid grid-cols-2 gap-3">
+          <div className="flex items-center space-x-2 text-sm">
+            <div className="p-1.5 rounded-md bg-yellow-100 text-yellow-800">
+              <Zap className="h-3 w-3" />
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Luck</div>
+              <div className="font-semibold">{run.luck.toLocaleString()}</div>
+            </div>
+          </div>
+          
+          <div className="flex items-center space-x-2 text-sm">
+            <div className="p-1.5 rounded-md bg-blue-100 text-blue-800">
+              <Coins className="h-3 w-3" />
+            </div>
+            <div>
+              <div className="text-xs text-muted-foreground">Tokens</div>
+              <div className="font-semibold">{run.tokens.toLocaleString()}</div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center space-x-1">
-          <Coins className="h-3 w-3" />
-          <span>{run.tokens.toLocaleString()} tokens</span>
+        
+        {/* Tempo e indicador de atividade */}
+        <div className="flex items-center justify-between pt-2 border-t border-border/50">
+          <div className="text-xs text-muted-foreground flex items-center space-x-1">
+            <Activity className="h-3 w-3" />
+            <span>{run.timeAgo}</span>
+          </div>
+          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
         </div>
       </div>
       
-      {/* Tempo */}
-      <div className="text-xs opacity-70 mt-2 pt-2 border-t border-current/20">
-        {run.timeAgo}
-      </div>
+      {/* Efeito de hover */}
+      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></div>
     </div>
   );
 };
