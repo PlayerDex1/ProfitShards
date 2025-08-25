@@ -27,6 +27,11 @@ export function MapPlanner({}: MapPlannerProps) {
   const [saveMessage, setSaveMessage] = useState<string>('');
   const [isEditingLuck, setIsEditingLuck] = useState<boolean>(false);
   const [tempLuck, setTempLuck] = useState<number>(luck);
+  
+  // 🆕 Novos campos para Level/Tier/Charge
+  const [level, setLevel] = useState<string>('I');
+  const [tier, setTier] = useState<string>('I');
+  const [charge, setCharge] = useState<number>(0);
 
   useEffect(() => {
     const onUpd = () => setHistory(getMapDropsHistory());
@@ -108,7 +113,11 @@ export function MapPlanner({}: MapPlannerProps) {
           luck: luck,
           loads: loads,
           tokensDropped: tokensDropped,
-          timestamp: timestamp
+          timestamp: timestamp,
+          // 🆕 Novos campos
+          level: level,
+          tier: tier,
+          charge: charge
         };
 
         // CHAMADA 1: API original para manter dashboard global funcionando
@@ -276,6 +285,47 @@ export function MapPlanner({}: MapPlannerProps) {
                 <option value="negative">{t('status.negative')}</option>
                 <option value="excellent">{t('status.excellent')}</option>
               </select>
+            </div>
+          </div>
+
+          {/* 🆕 Novos campos Level/Tier/Charge */}
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">Level</label>
+              <select
+                value={level}
+                onChange={(e) => setLevel(e.target.value)}
+                className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
+              >
+                <option value="I">Level I</option>
+                <option value="II">Level II</option>
+                <option value="III">Level III</option>
+                <option value="IV">Level IV</option>
+                <option value="V">Level V</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">Tier</label>
+              <select
+                value={tier}
+                onChange={(e) => setTier(e.target.value)}
+                className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
+              >
+                <option value="I">Tier I</option>
+                <option value="II">Tier II</option>
+                <option value="III">Tier III</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground mb-1 block">Charge</label>
+              <Input 
+                type="number" 
+                value={charge} 
+                onChange={(e) => setCharge(parseInt(e.target.value || '0'))} 
+                className="h-9"
+                min="0"
+                max="99"
+              />
             </div>
           </div>
 

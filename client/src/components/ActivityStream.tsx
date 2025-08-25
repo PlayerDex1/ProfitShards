@@ -12,6 +12,10 @@ interface ActivityRun {
   tokens: number;        // Tokens dropados
   timeAgo: string;       // "há 5 min"
   timestamp: number;     // Para ordenação
+  // 🆕 Novos campos
+  level?: string;        // Level I-V
+  tier?: string;         // Tier I-III
+  charge?: number;       // Carga
 }
 
 interface ActivityStreamResponse {
@@ -23,7 +27,7 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// 🎨 Card Premium - Versão Melhorada com Design Avançado
+// 🎨 Card Limpo - Layout Horizontal Similar ao Worldshards Tracker
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
   // Configuração avançada por tipo de mapa
   const getMapConfig = (map: string) => {

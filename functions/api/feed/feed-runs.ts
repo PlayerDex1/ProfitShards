@@ -13,6 +13,10 @@ interface FeedRun {
   timeAgo: string;
   timestamp: number;
   efficiency?: number;
+  // 🆕 Novos campos
+  level?: string;
+  tier?: string;
+  charge?: number;
 }
 
 interface NewRunData {
@@ -22,6 +26,10 @@ interface NewRunData {
   loads?: number;
   timestamp?: number;
   userEmail?: string;
+  // 🆕 Novos campos
+  level?: string;
+  tier?: string;
+  charge?: number;
 }
 
 // GET - Buscar runs para o feed
@@ -44,7 +52,10 @@ export async function onRequestGet({ env }: { env: Env }) {
         luck,
         tokens,
         efficiency,
-        created_at
+        created_at,
+        level,
+        tier,
+        charge
       FROM feed_runs 
       WHERE created_at > ? 
       ORDER BY created_at DESC 
@@ -61,7 +72,11 @@ export async function onRequestGet({ env }: { env: Env }) {
       tokens: row.tokens,
       efficiency: row.efficiency || 0,
       timeAgo: getTimeAgo(row.created_at),
-      timestamp: row.created_at
+      timestamp: row.created_at,
+      // 🆕 Novos campos
+      level: row.level || 'I',
+      tier: row.tier || 'I',
+      charge: row.charge || 0
     }));
 
     return new Response(JSON.stringify({
@@ -123,15 +138,19 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       luck: runData.luck || 0,
       tokens: runData.tokensDropped,
       efficiency: efficiency,
-      created_at: runData.timestamp || now
+      created_at: runData.timestamp || now,
+      // 🆕 Novos campos
+      level: runData.level || 'I',
+      tier: runData.tier || 'I',
+      charge: runData.charge || 0
     };
 
     console.log('💾 Inserindo run:', newRun);
 
     // Inserir no D1
     const insertResult = await env.DB.prepare(`
-      INSERT INTO feed_runs (id, user_email, map_name, luck, tokens, efficiency, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO feed_runs (id, user_email, map_name, luck, tokens, efficiency, created_at, level, tier, charge)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
       newRun.id,
       newRun.user_email,
@@ -139,7 +158,10 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       newRun.luck,
       newRun.tokens,
       newRun.efficiency,
-      newRun.created_at
+      newRun.created_at,
+      newRun.level,
+      newRun.tier,
+      newRun.charge
     ).run();
 
     console.log('📋 Resultado INSERT:', insertResult);
