@@ -98,11 +98,25 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     }
 
     // Validar dados
-    if (!runData.mapSize || !runData.tokensDropped || !runData.timestamp) {
+    if (!runData.mapSize || runData.tokensDropped === undefined || runData.tokensDropped === null || !runData.timestamp) {
       console.log('❌ Dados inválidos:', runData);
       return new Response(JSON.stringify({ 
         success: false,
-        error: 'Missing required fields' 
+        error: 'Missing required fields',
+        received: runData
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Só salvar se tokens > 0 (evitar spam de runs vazias)
+    if (runData.tokensDropped <= 0) {
+      console.log('⚠️ Tokens <= 0, não salvando:', runData.tokensDropped);
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Tokens must be greater than 0',
+        received: runData.tokensDropped
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
