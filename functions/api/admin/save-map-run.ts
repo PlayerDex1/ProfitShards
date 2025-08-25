@@ -133,8 +133,8 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
       map_name: runData.mapSize, // small, medium, large, xlarge
       map_size: runData.mapSize,
       drop_data: JSON.stringify({
-        luck: runData.luck,
-        loads: runData.loads,
+        luck: runData.luck || 0,
+        loads: runData.loads || 0,
         energyCost: getEnergyFromMapSize(runData.mapSize),
         timestamp: runData.timestamp
       }),
@@ -148,28 +148,41 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
       map: insertData.map_name,
       tokens: insertData.tokens_earned,
       efficiency: insertData.efficiency_rating,
-      fullData: insertData
+      user_id: insertData.user_id
     });
 
-    // Inserir no D1
-    const insertResult = await env.DB.prepare(`
-      INSERT INTO user_map_drops (
-        id, user_id, map_name, map_size, drop_data, tokens_earned, 
-        time_spent, efficiency_rating, created_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).bind(
-      insertData.id,
-      insertData.user_id,
-      insertData.map_name,
-      insertData.map_size,
-      insertData.drop_data,
-      insertData.tokens_earned,
-      insertData.time_spent,
-      insertData.efficiency_rating,
-      insertData.created_at
-    ).run();
+    // Inserir no D1 com tratamento de erro
+    let insertResult;
+    try {
+      insertResult = await env.DB.prepare(`
+        INSERT INTO user_map_drops (
+          id, user_id, map_name, map_size, drop_data, tokens_earned, 
+          time_spent, efficiency_rating, created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        insertData.id,
+        insertData.user_id,
+        insertData.map_name,
+        insertData.map_size,
+        insertData.drop_data,
+        insertData.tokens_earned,
+        insertData.time_spent,
+        insertData.efficiency_rating,
+        insertData.created_at
+      ).run();
 
-    console.log('📋 Resultado do INSERT:', insertResult);
+      console.log('📋 Resultado do INSERT:', insertResult);
+    } catch (dbError) {
+      console.error('❌ Erro na inserção D1:', dbError);
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Database insertion failed',
+        details: dbError instanceof Error ? dbError.message : 'Unknown database error'
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
 
     console.log(`✅ Map run saved: ${runData.mapSize} - ${runData.tokensDropped} tokens - ${efficiency.toFixed(1)} T/E`);
 
