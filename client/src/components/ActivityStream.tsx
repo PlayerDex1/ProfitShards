@@ -16,6 +16,7 @@ interface ActivityRun {
   level?: string;        // Level I-V
   tier?: string;         // Tier I-III
   charge?: number;       // Carga
+  playerName?: string;   // Nome do usuário
 }
 
 interface ActivityStreamResponse {
@@ -29,8 +30,8 @@ interface ActivityStreamResponse {
 
 // 🎯 Card Clean - Layout Horizontal Igual ao Planejador
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
-  // Extrair player do email (temporário até termos campo dedicado)
-  const playerName = run.id.includes('demo') ? 'demo_user' : 'mergano'; // Placeholder
+  // 🎯 FASE 2: Usar playerName da API ou fallback
+  const playerName = run.playerName || (run.id.includes('demo') ? 'demo_user' : 'Player');
 
   // Formatar data
   const formatDate = (timestamp: number) => {
