@@ -5,14 +5,13 @@ import { useI18n } from "@/i18n";
 import { useEffect, useState } from "react";
 import { getCurrentUsername, useAuth } from "@/hooks/use-auth";
 import { HistoryItem } from "@/types/calculator";
-import { useEquipment } from "@/hooks/useEquipment";
-import { EquipmentPanel } from "@/components/equipment/EquipmentPanel";
+// Removido: useEquipment e EquipmentPanel - simplificando interface
 import { MapPlanner } from "@/components/MapPlanner";
 import { Link } from "wouter";
 import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, Settings, TestTube } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, TestTube } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
 
@@ -20,7 +19,7 @@ export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 	const [history, setHistory] = useState<HistoryItem[]>([]);
-	const { session, totalLuck, updateEquipment } = useEquipment();
+	// Removido: useEquipment - simplificando interface
 	const { results, breakdown } = useCalculator();
 	const [activeTab, setActiveTab] = useState('history');
 	const [resultsVisible, setResultsVisible] = useState({
@@ -64,7 +63,7 @@ export default function Profile() {
 	const tabs = [
 		{ id: 'history', label: 'Histórico', icon: Calculator },
 		{ id: 'planner', label: 'Planejador', icon: Map },
-		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
+		// Removido: aba de equipamentos - simplificando interface
 		// Aba Test só aparece para admins
 		...(isAdmin ? [{ id: 'test', label: 'Test', icon: TestTube }] : []),
 	];
@@ -283,14 +282,7 @@ export default function Profile() {
 						</>
 					)}
 
-					{/* Equipamentos */}
-					{activeTab === 'equipment' && (
-						<EquipmentPanel 
-							session={session}
-							onUpdateEquipment={updateEquipment}
-							totalLuck={totalLuck}
-						/>
-					)}
+					{/* Removido: seção de equipamentos - simplificando interface */}
 
 					{/* Test - Métricas de Farming (Apenas Admin) */}
 					{activeTab === 'test' && isAdmin && (
