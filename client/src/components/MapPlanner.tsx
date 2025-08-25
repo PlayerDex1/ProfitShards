@@ -16,7 +16,7 @@ type SizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save } = usePreferences();
   const { t } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userProfile } = useAuth();
   const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
@@ -74,6 +74,30 @@ export function MapPlanner({}: MapPlannerProps) {
   const tokensPerEnergy = totalEnergy > 0 ? tokensDropped / totalEnergy : 0;
   const tokensPerCharge = charge > 0 ? tokensDropped / charge : 0;
 
+  // 🎯 Função para criar nome do player
+  const createPlayerName = (userProfile: any): string => {
+    // Se usuário editou nome customizado, usar ele
+    if (userProfile?.username && userProfile.username.trim()) {
+      return userProfile.username.trim();
+    }
+    
+    // Se não editou, criar abreviação do email
+    if (userProfile?.email) {
+      const email = userProfile.email;
+      const localPart = email.split('@')[0]; // ex: "player" de "player@email.com"
+      
+      // Criar abreviação com 2 primeiras letras em maiúsculo
+      if (localPart.length >= 2) {
+        return localPart.substring(0, 2).toUpperCase(); // ex: "PL"
+      } else if (localPart.length === 1) {
+        return localPart.toUpperCase() + "P"; // ex: "XP"
+      }
+    }
+    
+    // Fallback padrão
+    return "Player";
+  };
+
   const apply = async () => {
 
     const entry = {
@@ -107,6 +131,7 @@ export function MapPlanner({}: MapPlannerProps) {
         });
         
         const timestamp = Date.now();
+        const playerName = createPlayerName(userProfile);
         const runData = {
           mapSize: mapSize,
           luck: luck,
@@ -116,7 +141,8 @@ export function MapPlanner({}: MapPlannerProps) {
           // 🆕 Novos campos
           level: level,
           tier: tier,
-          charge: charge
+          charge: charge,
+          playerName: playerName
         };
 
         // CHAMADA 1: API original para manter dashboard global funcionando
