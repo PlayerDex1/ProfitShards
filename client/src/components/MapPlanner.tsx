@@ -16,7 +16,7 @@ type SizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save } = usePreferences();
   const { t } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userProfile } = useAuth();
   const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
@@ -116,8 +116,16 @@ export function MapPlanner({}: MapPlannerProps) {
           // 🆕 Novos campos
           level: level,
           tier: tier,
-          charge: charge
+          charge: charge,
+          // 📧 FASE 1: Email do usuário (seguro)
+          userEmail: userProfile?.email || 'anonymous@feed.com'
         };
+
+        console.log('🎯 FASE 1 - Dados enviados:', {
+          userEmail: runData.userEmail,
+          hasUserProfile: !!userProfile,
+          userProfileEmail: userProfile?.email
+        });
 
         // CHAMADA 1: API original para manter dashboard global funcionando
         try {
