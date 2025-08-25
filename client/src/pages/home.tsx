@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { TrendingUp, User } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { ActivityFeed } from "@/components/ActivityFeed";
+import { ActivityFeedAlt } from "@/components/ActivityFeedAlt";
 
 export default function Home() {
 	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
@@ -88,8 +89,8 @@ export default function Home() {
 					</div>
 				</div>
 
-				{/* Activity Feed */}
-				<ActivityFeed />
+				{/* Activity Feed - Versão Alternativa para Debug */}
+				<ActivityFeedAlt />
 			</div>
 			
 			{/* Footer */}
