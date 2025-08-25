@@ -150,7 +150,7 @@ export function ActivityStream() {
     setError(null);
     
     try {
-      const response = await fetch('/api/feed/activity-stream', {
+      const response = await fetch('/api/feed/feed-runs', {
         method: 'GET',
         credentials: 'include',
       });

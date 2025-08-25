@@ -131,7 +131,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
         // CHAMADA 2: Nova API para alimentar o feed
         try {
-          const feedResponse = await fetch('/api/admin/save-map-run', {
+          const feedResponse = await fetch('/api/feed/feed-runs', {
             method: 'POST',
             credentials: 'include',
             headers: {
