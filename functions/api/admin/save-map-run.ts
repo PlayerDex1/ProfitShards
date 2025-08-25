@@ -65,7 +65,7 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
       SELECT u.id, u.email 
       FROM sessions s 
       JOIN users u ON s.user_id = u.id 
-      WHERE s.id = ? AND s.expires_at > ?
+      WHERE s.session_id = ? AND s.expires_at > ?
     `).bind(sessionCookie, Date.now()).first();
 
     if (!session) {
