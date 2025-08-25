@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 Teste Manual - Feed Melhorado</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f8fafc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 8px;
+            font-weight: 500;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .test-result {
+            margin: 12px 0;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        .success { background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .error { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .warning { background: #fffbeb; color: #d97706; border: 1px solid #fed7aa; }
+        .info { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
+        .loading { background: #f3f4f6; color: #6b7280; border: 1px solid #d1d5db; }
+        .checklist {
+            list-style: none;
+            padding: 0;
+        }
+        .checklist li {
+            margin: 8px 0;
+            padding: 8px;
+            background: #f8fafc;
+            border-radius: 6px;
+            border-left: 4px solid #e5e7eb;
+        }
+        .checklist li.pass {
+            border-left-color: #10b981;
+            background: #ecfdf5;
+        }
+        .checklist li.fail {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Teste Manual - Feed Melhorado em Produção</h1>
+    <p>Este é um teste manual para verificar se as melhorias do feed estão funcionando corretamente em produção.</p>
+
+    <!-- Teste 1: Conectividade -->
+    <div class="test-section">
+        <h2>🔗 Teste 1: Conectividade e Resposta</h2>
+        <button class="test-button" onclick="testConnectivity()">Testar Conectividade</button>
+        <div id="connectivity-result"></div>
+    </div>
+
+    <!-- Teste 2: API do Feed -->
+    <div class="test-section">
+        <h2>📊 Teste 2: API do Feed</h2>
+        <button class="test-button" onclick="testFeedAPI()">Testar API Feed</button>
+        <div id="feed-api-result"></div>
+    </div>
+
+    <!-- Teste 3: Preview da Aplicação -->
+    <div class="test-section">
+        <h2>🖥️ Teste 3: Preview da Aplicação</h2>
+        <button class="test-button" onclick="loadPreview()">Carregar Preview</button>
+        <div id="preview-container"></div>
+    </div>
+
+    <!-- Teste 4: Checklist Manual -->
+    <div class="test-section">
+        <h2>✅ Teste 4: Checklist Visual Manual</h2>
+        <p>Abra <a href="https://profitshards.pages.dev" target="_blank">https://profitshards.pages.dev</a> e verifique:</p>
+        
+        <ul class="checklist">
+            <li onclick="toggleCheck(this)">🎨 Interface visual melhorada (cards com gradientes)</li>
+            <li onclick="toggleCheck(this)">⚡ Badge de eficiência visível nos cards</li>
+            <li onclick="toggleCheck(this)">🔄 Indicador de atividade (ponto pulsante)</li>
+            <li onclick="toggleCheck(this)">🎯 Cores diferentes por tipo de mapa</li>
+            <li onclick="toggleCheck(this)">📱 Layout responsivo funcionando</li>
+            <li onclick="toggleCheck(this)">🖱️ Efeitos de hover nos cards</li>
+            <li onclick="toggleCheck(this)">📊 Feed carregando dados (mesmo que demo)</li>
+            <li onclick="toggleCheck(this)">🔄 Botão de refresh funcionando</li>
+            <li onclick="toggleCheck(this)">⏱️ Timestamps corretos ("há X min")</li>
+            <li onclick="toggleCheck(this)">🎮 Site carregando rapidamente</li>
+        </ul>
+    </div>
+
+    <!-- Teste 5: Performance -->
+    <div class="test-section">
+        <h2>⚡ Teste 5: Performance</h2>
+        <button class="test-button" onclick="testPerformance()">Testar Performance</button>
+        <div id="performance-result"></div>
+    </div>
+
+    <script>
+        const PRODUCTION_URL = 'https://profitshards.pages.dev';
+        
+        function showResult(containerId, message, type = 'info') {
+            const container = document.getElementById(containerId);
+            container.innerHTML = `<div class="test-result ${type}">${message}</div>`;
+        }
+        
+        function showLoading(containerId, message) {
+            showResult(containerId, `⏳ ${message}`, 'loading');
+        }
+
+        async function testConnectivity() {
+            showLoading('connectivity-result', 'Testando conectividade...');
+            
+            try {
+                const start = Date.now();
+                const response = await fetch(PRODUCTION_URL);
+                const end = Date.now();
+                
+                const isOk = response.ok;
+                const time = end - start;
+                
+                let message = `Status: ${response.status} (${isOk ? 'SUCESSO' : 'ERRO'})\n`;
+                message += `Tempo de resposta: ${time}ms\n`;
+                message += `Content-Type: ${response.headers.get('content-type')}\n`;
+                message += `Server: ${response.headers.get('server')}`;
+                
+                showResult('connectivity-result', message, isOk ? 'success' : 'error');
+                
+            } catch (error) {
+                showResult('connectivity-result', `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        async function testFeedAPI() {
+            showLoading('feed-api-result', 'Testando API do feed...');
+            
+            try {
+                const start = Date.now();
+                const response = await fetch(`${PRODUCTION_URL}/api/feed/activity-stream`);
+                const end = Date.now();
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    let message = `✅ API funcionando!\n`;
+                    message += `Tempo de resposta: ${end - start}ms\n`;
+                    message += `Runs encontradas: ${data.runs ? data.runs.length : 0}\n`;
+                    message += `Cache ativo: ${data.cached ? 'Sim' : 'Não'}\n`;
+                    message += `Dados válidos: ${data.success ? 'Sim' : 'Não'}\n\n`;
+                    
+                    if (data.runs && data.runs.length > 0) {
+                        message += `Exemplo de run:\n${JSON.stringify(data.runs[0], null, 2)}`;
+                    }
+                    
+                    showResult('feed-api-result', message, 'success');
+                } else {
+                    showResult('feed-api-result', `❌ API retornou erro: ${response.status}`, 'error');
+                }
+                
+            } catch (error) {
+                showResult('feed-api-result', `❌ Erro na API: ${error.message}`, 'error');
+            }
+        }
+
+        function loadPreview() {
+            const container = document.getElementById('preview-container');
+            container.innerHTML = `
+                <iframe src="${PRODUCTION_URL}" frameborder="0">
+                    Seu browser não suporta iframes. 
+                    <a href="${PRODUCTION_URL}" target="_blank">Abrir em nova aba</a>
+                </iframe>
+            `;
+        }
+
+        async function testPerformance() {
+            showLoading('performance-result', 'Testando performance...');
+            
+            const tests = [];
+            const iterations = 5;
+            
+            try {
+                for (let i = 0; i < iterations; i++) {
+                    const start = performance.now();
+                    const response = await fetch(PRODUCTION_URL, { cache: 'no-cache' });
+                    const end = performance.now();
+                    
+                    tests.push({
+                        iteration: i + 1,
+                        time: Math.round(end - start),
+                        status: response.status,
+                        size: parseInt(response.headers.get('content-length') || '0')
+                    });
+                    
+                    // Pequena pausa entre testes
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                }
+                
+                const avgTime = Math.round(tests.reduce((sum, test) => sum + test.time, 0) / tests.length);
+                const allSuccessful = tests.every(test => test.status === 200);
+                
+                let message = `📊 Resultados do teste de performance:\n\n`;
+                message += `Tempo médio: ${avgTime}ms\n`;
+                message += `Todos bem-sucedidos: ${allSuccessful ? 'Sim' : 'Não'}\n`;
+                message += `Performance: ${avgTime < 1000 ? 'Excelente' : avgTime < 2000 ? 'Boa' : 'Pode melhorar'}\n\n`;
+                message += `Detalhes:\n`;
+                
+                tests.forEach(test => {
+                    message += `  Test ${test.iteration}: ${test.time}ms (${test.status})\n`;
+                });
+                
+                const resultType = allSuccessful && avgTime < 2000 ? 'success' : 'warning';
+                showResult('performance-result', message, resultType);
+                
+            } catch (error) {
+                showResult('performance-result', `❌ Erro no teste: ${error.message}`, 'error');
+            }
+        }
+
+        function toggleCheck(element) {
+            if (element.classList.contains('pass')) {
+                element.classList.remove('pass');
+                element.classList.add('fail');
+                element.textContent = '❌ ' + element.textContent.substring(2);
+            } else if (element.classList.contains('fail')) {
+                element.classList.remove('fail');
+                element.textContent = '⏸️ ' + element.textContent.substring(2);
+            } else {
+                element.classList.add('pass');
+                element.textContent = '✅ ' + element.textContent.substring(2);
+            }
+        }
+
+        // Auto-test de conectividade ao carregar
+        window.addEventListener('load', () => {
+            setTimeout(testConnectivity, 1000);
+        });
+    </script>
+</body>
+</html>
