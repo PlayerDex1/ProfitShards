@@ -57,32 +57,59 @@ export async function onRequestGet({ env }: { env: Env }) {
     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
-    // A. TOTAL DE CÁLCULOS (apenas dados reais dos usuários)
-    const totalRunsQuery = await env.DB.prepare(`
+    // A. TOTAL DE RUNS (dados reais do feed + cálculos)
+    const feedRunsQuery = await env.DB.prepare(`
+      SELECT COUNT(*) as count FROM feed_runs 
+      WHERE created_at > ?
+    `).bind(sevenDaysAgo).first();
+
+    const calculationsQuery = await env.DB.prepare(`
       SELECT COUNT(*) as count FROM user_calculations 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const totalRuns = totalRunsQuery?.count || 0;
+    const totalRuns = (feedRunsQuery?.count || 0) + (calculationsQuery?.count || 0);
 
-    // B. LUCRO TOTAL (baseado em cálculos reais dos usuários)
-    const profitData = await env.DB.prepare(`
-      SELECT SUM(final_profit) as total_profit FROM user_calculations 
+    // B. LUCRO TOTAL (baseado em feed_runs + cálculos)
+    const feedProfitData = await env.DB.prepare(`
+      SELECT SUM(tokens) as total_tokens FROM feed_runs 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const totalProfit = profitData?.total_profit || 0;
+    const calculationProfitData = await env.DB.prepare(`
+      SELECT SUM(final_profit) as total_profit FROM user_calculations 
+      WHERE created_at > ? AND final_profit IS NOT NULL
+    `).bind(sevenDaysAgo).first();
 
-    // C. PLAYERS ATIVOS (únicos nas últimas 24h)
-    const activePlayersQuery = await env.DB.prepare(`
+    // Converter tokens do feed para "lucro" estimado (1 token = $100)
+    const feedProfit = (feedProfitData?.total_tokens || 0) * 100;
+    const calculationProfit = calculationProfitData?.total_profit || 0;
+    
+    const totalProfit = feedProfit + calculationProfit;
+
+    // C. PLAYERS ATIVOS (únicos nas últimas 24h - feed + cálculos)
+    const feedActivePlayersQuery = await env.DB.prepare(`
+      SELECT COUNT(DISTINCT user_id) as count FROM feed_runs 
+      WHERE created_at > ?
+    `).bind(twentyFourHoursAgo).first();
+
+    const calculationActivePlayersQuery = await env.DB.prepare(`
       SELECT COUNT(DISTINCT user_id) as count FROM user_calculations 
       WHERE created_at > ?
     `).bind(twentyFourHoursAgo).first();
 
-    const activePlayers = activePlayersQuery?.count || 0;
+    const activePlayers = (feedActivePlayersQuery?.count || 0) + (calculationActivePlayersQuery?.count || 0);
 
-    // D. TAXA DE SUCESSO (baseada em ROI > 0)
-    const successQuery = await env.DB.prepare(`
+    // D. TAXA DE SUCESSO (baseada em feed_runs com tokens > 0)
+    const feedSuccessQuery = await env.DB.prepare(`
+      SELECT 
+        COUNT(*) as total,
+        COUNT(CASE WHEN tokens > 0 THEN 1 END) as successful
+      FROM feed_runs 
+      WHERE created_at > ?
+    `).bind(sevenDaysAgo).first();
+
+    const calculationSuccessQuery = await env.DB.prepare(`
       SELECT 
         COUNT(*) as total,
         COUNT(CASE WHEN final_profit > 0 THEN 1 END) as successful
@@ -90,45 +117,58 @@ export async function onRequestGet({ env }: { env: Env }) {
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const successRate = successQuery?.total > 0 
-      ? Math.round((successQuery.successful / successQuery.total) * 100)
-      : 0; // começar com 0 para dados reais
+    const totalSuccessCount = (feedSuccessQuery?.total || 0) + (calculationSuccessQuery?.total || 0);
+    const totalSuccessful = (feedSuccessQuery?.successful || 0) + (calculationSuccessQuery?.successful || 0);
 
-    // E. TOP ESTRATÉGIAS (baseado em ROI médio)
-    const topStrategiesQuery = await env.DB.prepare(`
+    const successRate = totalSuccessCount > 0 
+      ? Math.round((totalSuccessful / totalSuccessCount) * 100)
+      : 0;
+
+    // E. TOP MAPAS (baseado em feed_runs)
+    const topMapsQuery = await env.DB.prepare(`
       SELECT 
-        AVG(roi) as avg_roi,
+        map_name as map,
         COUNT(*) as count,
-        AVG(efficiency) as avg_efficiency
-      FROM user_calculations 
-      WHERE created_at > ? AND roi > 0
-      GROUP BY ROUND(investment / 1000) * 1000
-      ORDER BY avg_roi DESC 
+        AVG(tokens) as avg_tokens
+      FROM feed_runs 
+      WHERE created_at > ?
+      GROUP BY map_name 
+      ORDER BY count DESC 
       LIMIT 5
     `).bind(sevenDaysAgo).all();
 
-    const topMaps = (topStrategiesQuery.results || []).map((row, index) => ({
-      map: `Strategy ${index + 1}`,
+    const topMaps = (topMapsQuery.results || []).map(row => ({
+      map: row.map as string,
       count: row.count as number,
-      avgTokens: Math.round((row.avg_roi as number) || 0)
+      avgTokens: Math.round((row.avg_tokens as number) || 0)
     }));
 
-    // F. EFICIÊNCIA MÉDIA
-    const efficiencyQuery = await env.DB.prepare(`
-      SELECT AVG(efficiency) as avg_efficiency 
-      FROM user_calculations 
-      WHERE created_at > ?
+    // F. EFICIÊNCIA MÉDIA (baseada em tokens/carga do feed)
+    const feedEfficiencyQuery = await env.DB.prepare(`
+      SELECT AVG(CAST(tokens AS FLOAT) / CAST(charge AS FLOAT)) as avg_efficiency 
+      FROM feed_runs 
+      WHERE created_at > ? AND charge > 0
     `).bind(sevenDaysAgo).first();
 
-    const avgEfficiency = Math.round((efficiencyQuery?.avg_efficiency || 0) * 100);
+    const calculationEfficiencyQuery = await env.DB.prepare(`
+      SELECT AVG(efficiency) as avg_efficiency 
+      FROM user_calculations 
+      WHERE created_at > ? AND efficiency IS NOT NULL
+    `).bind(sevenDaysAgo).first();
 
-    // G. TOTAL DE CÁLCULOS
-    const calculationsQuery = await env.DB.prepare(`
+    const feedEfficiency = feedEfficiencyQuery?.avg_efficiency || 0;
+    const calculationEfficiency = calculationEfficiencyQuery?.avg_efficiency || 0;
+    
+    // Média ponderada ou usar a que tiver dados
+    const avgEfficiency = feedEfficiency > 0 ? Math.round(feedEfficiency * 10) : Math.round(calculationEfficiency);
+
+    // G. TOTAL DE CÁLCULOS (apenas calculations, não feed_runs)
+    const totalCalculationsQuery = await env.DB.prepare(`
       SELECT COUNT(*) as count FROM user_calculations 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const totalCalculations = calculationsQuery?.count || 0;
+    const totalCalculations = totalCalculationsQuery?.count || 0;
 
     // 3. MONTAR RESPOSTA
     const stats: CommunityStats = {
