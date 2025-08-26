@@ -43,23 +43,92 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     // Salvar no banco de dados
     const calculationId = `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    await env.DB.prepare(`
-      INSERT INTO user_calculations (
-        id, 
-        user_id, 
-        calculation_type, 
-        calculation_data, 
-        result_data, 
-        created_at
-      ) VALUES (?, ?, ?, ?, ?, ?)
-    `).bind(
-      calculationId,
-      userIdForStats,
-      type,
-      JSON.stringify(sanitizedData),
-      sanitizedResults ? JSON.stringify(sanitizedResults) : null,
-      Date.now()
-    ).run();
+    if (type === 'calculation') {
+      // Para cálculos: usar as colunas específicas que o community-metrics espera
+      await env.DB.prepare(`
+        INSERT INTO user_calculations (
+          id, 
+          user_id, 
+          calculation_type,
+          investment,
+          final_profit,
+          roi,
+          efficiency,
+          tokens_equipment,
+          tokens_farmed,
+          calculation_data, 
+          result_data, 
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        calculationId,
+        userIdForStats,
+        type,
+        sanitizedData.investment || 0,
+        sanitizedResults?.finalProfit || 0,
+        sanitizedResults?.roi || 0,
+        sanitizedResults?.efficiency || 0,
+        sanitizedData.tokensEquipment || 0,
+        sanitizedData.tokensFarmed || 0,
+        JSON.stringify(sanitizedData),
+        sanitizedResults ? JSON.stringify(sanitizedResults) : null,
+        Date.now()
+      ).run();
+    } else if (type === 'map_planning') {
+      // Para map planning: simular um "lucro" baseado nos tokens
+      const simulatedProfit = (data.tokens || 0) * 100; // 1 token = $100 estimado
+      const simulatedInvestment = simulatedProfit * 0.7; // simular 70% de eficiência
+      const simulatedROI = simulatedInvestment > 0 ? ((simulatedProfit - simulatedInvestment) / simulatedInvestment) * 100 : 0;
+      
+      await env.DB.prepare(`
+        INSERT INTO user_calculations (
+          id, 
+          user_id, 
+          calculation_type,
+          investment,
+          final_profit,
+          roi,
+          efficiency,
+          tokens_equipment,
+          tokens_farmed,
+          calculation_data, 
+          result_data, 
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `).bind(
+        calculationId,
+        userIdForStats,
+        type,
+        simulatedInvestment,
+        simulatedProfit,
+        simulatedROI,
+        data.efficiency || 0,
+        0, // map planning não usa tokens equipment
+        data.tokens || 0,
+        JSON.stringify(sanitizedData),
+        sanitizedResults ? JSON.stringify(sanitizedResults) : null,
+        Date.now()
+      ).run();
+    } else {
+      // Fallback para outros tipos
+      await env.DB.prepare(`
+        INSERT INTO user_calculations (
+          id, 
+          user_id, 
+          calculation_type, 
+          calculation_data, 
+          result_data, 
+          created_at
+        ) VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        calculationId,
+        userIdForStats,
+        type,
+        JSON.stringify(sanitizedData),
+        sanitizedResults ? JSON.stringify(sanitizedResults) : null,
+        Date.now()
+      ).run();
+    }
 
     // Também registrar na tabela de atividade para estatísticas de usuários ativos
     const activityId = `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
