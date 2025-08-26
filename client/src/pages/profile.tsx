@@ -62,12 +62,12 @@ export default function Profile() {
 	const isAdmin = user && adminUsers.includes(user);
 
 	const tabs = [
-		{ id: 'calculator', label: 'Calculadora', icon: Calculator },
-		{ id: 'history', label: 'Histórico', icon: Calculator },
-		{ id: 'planner', label: 'Planejador', icon: Map },
+		{ id: 'calculator', label: t('profile.tabs.calculator'), icon: Calculator },
+		{ id: 'history', label: t('profile.tabs.history'), icon: Calculator },
+		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
 		// Removido: aba de equipamentos - simplificando interface
 		// Aba Test só aparece para admins
-		...(isAdmin ? [{ id: 'test', label: 'Test', icon: TestTube }] : []),
+		...(isAdmin ? [{ id: 'test', label: t('profile.tabs.test'), icon: TestTube }] : []),
 	];
 
 	return (
@@ -163,7 +163,7 @@ export default function Profile() {
 											className="flex items-center space-x-1"
 										>
 											<Trash2 className="h-4 w-4" />
-											<span>Limpar Tudo</span>
+											<span>{t('profile.history.clear')}</span>
 										</Button>
 									)}
 								</CardHeader>
@@ -173,38 +173,38 @@ export default function Profile() {
 											<Calculator className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
 											<p className="text-muted-foreground">{t('results.no_history')}</p>
 											<p className="text-sm text-muted-foreground mt-1">
-												Faça alguns cálculos na página inicial para ver o histórico aqui
+												{t('profile.history.empty')}
 											</p>
 										</div>
 									) : (
 										<>
 											{/* Estatísticas Resumidas */}
 											<div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-												<h3 className="text-lg font-semibold text-foreground mb-3">📊 Resumo Estatístico</h3>
+												<h3 className="text-lg font-semibold text-foreground mb-3">📊 {t('profile.history.stats.title')}</h3>
 												<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
 													<div className="text-center">
 														<div className="text-2xl font-bold text-foreground">
 															{history.length}
 														</div>
-														<div className="text-sm text-muted-foreground">Cálculos</div>
+														<div className="text-sm text-muted-foreground">{t('profile.history.stats.calculations')}</div>
 													</div>
 													<div className="text-center">
 														<div className={`text-2xl font-bold ${history.filter(h => h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
 															${(history.reduce((sum, h) => sum + h.results.finalProfit, 0) / history.length).toFixed(2)}
 														</div>
-														<div className="text-sm text-muted-foreground">Lucro Médio</div>
+														<div className="text-sm text-muted-foreground">{t('profile.history.stats.avgProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-green-600 dark:text-green-400">
 															${Math.max(...history.map(h => h.results.finalProfit)).toFixed(2)}
 														</div>
-														<div className="text-sm text-muted-foreground">Melhor Lucro</div>
+														<div className="text-sm text-muted-foreground">{t('profile.history.stats.bestProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-foreground">
 															{((history.filter(h => h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
 														</div>
-														<div className="text-sm text-muted-foreground">Taxa Sucesso</div>
+														<div className="text-sm text-muted-foreground">{t('profile.history.stats.successRate')}</div>
 													</div>
 												</div>
 											</div>
@@ -248,16 +248,16 @@ export default function Profile() {
 																	{/* Detalhes do cálculo */}
 																	<div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
 																		<div>
-																			<span className="font-medium">Investimento:</span> ${item.formData.investment.toFixed(2)}
+																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData.investment.toFixed(2)}
 																		</div>
 																		<div>
-																			<span className="font-medium">Tokens:</span> {item.results.totalTokens.toLocaleString()}
+																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results.totalTokens.toLocaleString()}
 																		</div>
 																		<div>
-																			<span className="font-medium">Gemas:</span> {item.formData.gemsConsumed}
+																			<span className="font-medium">{t('profile.history.gems')}:</span> {item.formData.gemsConsumed}
 																		</div>
 																		<div>
-																			<span className="font-medium">Eficiência:</span> {item.results.efficiency.toFixed(1)}/load
+																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results.efficiency.toFixed(1)}/load
 																		</div>
 																	</div>
 																</div>
@@ -268,7 +268,7 @@ export default function Profile() {
 																	size="sm"
 																	onClick={() => removeHistoryItem(idx)}
 																	className="text-muted-foreground hover:text-destructive ml-4"
-																	title="Remover este cálculo"
+																	title={t('profile.history.removeTitle')}
 																>
 																	<Trash2 className="h-4 w-4" />
 																</Button>
