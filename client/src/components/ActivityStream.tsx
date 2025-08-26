@@ -203,7 +203,7 @@ export function ActivityStream() {
     setError(null);
     
     try {
-      const response = await fetch('/api/feed/recent-runs', {
+      const response = await fetch('/api/feed/activity-stream', {
         method: 'GET',
         credentials: 'include'
       });
