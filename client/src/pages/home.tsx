@@ -187,90 +187,97 @@ export default function Home() {
 							{t('home.community.subtitle')}
 						</p>
 						
-						{/* Community Stats - Dados Reais */}
-						<div className="max-w-4xl mx-auto mb-8">
-							{isAuthenticated && <CommunityStats />}
+											{/* Community Stats - Dados Reais */}
+					<div className="max-w-4xl mx-auto mb-8">
+						{isAuthenticated && <CommunityStats />}
+					</div>
+				</div>
+				
+				{/* Activity Stream + Support - Layout Lateral Expandido */}
+				<div className="max-w-[1400px] mx-auto px-4">
+					<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+						{/* Activity Stream - Coluna Principal (3/4) */}
+						<div className="lg:col-span-3">
+							<ActivityStream />
+						</div>
+
+						{/* Support Section - Sidebar (1/4) */}
+						<div className="lg:col-span-1">
+							<div className="sticky top-8">
+								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
+									<CardContent className="p-6">
+										<div className="text-center mb-6">
+											<h3 className="text-lg font-bold text-foreground mb-2 flex items-center justify-center gap-2">
+												<Sparkles className="h-4 w-4 text-green-500" />
+												💚 {t('support.title')}
+											</h3>
+											<p className="text-muted-foreground text-sm">
+												{t('support.donate')}
+											</p>
+										</div>
+										
+										<div className="space-y-4">
+											{/* OpenLoot Ambassador */}
+											<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-md transition-shadow">
+												<CardContent className="p-4">
+													<div className="text-center space-y-3">
+														<div className="flex items-center justify-center gap-2">
+															<Globe className="h-4 w-4 text-blue-500" />
+															<span className="font-semibold text-sm">{t('support.ambassador')}</span>
+														</div>
+														<p className="text-xs text-muted-foreground">
+															Use meu link de embaixador
+														</p>
+														<a 
+															href="https://openloot.com/ambassador/link?code=HOLDBOY" 
+															target="_blank" 
+															rel="noopener noreferrer" 
+															className="block"
+														>
+															<Button size="sm" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium text-xs">
+																<ArrowRight className="mr-1 h-3 w-3" />
+																Ambassador
+															</Button>
+														</a>
+													</div>
+												</CardContent>
+											</Card>
+
+											{/* Direct Donation */}
+											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-md transition-shadow">
+												<CardContent className="p-4">
+													<div className="text-center space-y-3">
+														<div className="flex items-center justify-center gap-2">
+															<Zap className="h-4 w-4 text-green-500" />
+															<span className="font-semibold text-sm">Doação Direta</span>
+														</div>
+														<p className="text-xs text-muted-foreground">
+															Carteira EVM
+														</p>
+														<div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md border">
+															<div className="text-xs font-mono break-all flex-1 select-all">
+																0x05b...eCD0B5
+															</div>
+															<Button
+																size="sm"
+																variant="outline"
+																onClick={() => {
+																	navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
+																}}
+																className="shrink-0 text-xs h-6 px-2"
+															>
+																{t('donate.copy')}
+															</Button>
+														</div>
+													</div>
+												</CardContent>
+											</Card>
+										</div>
+									</CardContent>
+								</Card>
+							</div>
 						</div>
 					</div>
-					
-									{/* Activity Stream */}
-				<div className="max-w-6xl mx-auto">
-					<ActivityStream />
-				</div>
-
-				{/* Support Section - Next to Community Activity */}
-				<div className="max-w-4xl mx-auto mt-12">
-					<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
-						<CardContent className="p-6">
-							<div className="text-center mb-6">
-								<h3 className="text-xl font-bold text-foreground mb-2 flex items-center justify-center gap-2">
-									<Sparkles className="h-5 w-5 text-green-500" />
-									💚 {t('support.title')}
-								</h3>
-								<p className="text-muted-foreground">
-									{t('support.donate')}
-								</p>
-							</div>
-							
-							<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-								{/* OpenLoot Ambassador */}
-								<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-md transition-shadow">
-									<CardContent className="p-4">
-										<div className="text-center space-y-3">
-											<div className="flex items-center justify-center gap-2">
-												<Globe className="h-4 w-4 text-blue-500" />
-												<span className="font-semibold text-sm">{t('support.ambassador')}</span>
-											</div>
-											<p className="text-xs text-muted-foreground">
-												Use meu link de embaixador OpenLoot
-											</p>
-											<a 
-												href="https://openloot.com/ambassador/link?code=HOLDBOY" 
-												target="_blank" 
-												rel="noopener noreferrer" 
-												className="block"
-											>
-												<Button size="sm" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium text-xs">
-													<ArrowRight className="mr-1 h-3 w-3" />
-													{t('support.ambassador.cta')}
-												</Button>
-											</a>
-										</div>
-									</CardContent>
-								</Card>
-
-								{/* Direct Donation */}
-								<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-md transition-shadow">
-									<CardContent className="p-4">
-										<div className="text-center space-y-3">
-											<div className="flex items-center justify-center gap-2">
-												<Zap className="h-4 w-4 text-green-500" />
-												<span className="font-semibold text-sm">Doação Direta</span>
-											</div>
-											<p className="text-xs text-muted-foreground">
-												Carteira EVM para contribuições
-											</p>
-											<div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md border">
-												<div className="text-xs font-mono break-all flex-1 select-all">
-													0x05b...eCD0B5
-												</div>
-												<Button
-													size="sm"
-													variant="outline"
-													onClick={() => {
-														navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
-													}}
-													className="shrink-0 text-xs h-6 px-2"
-												>
-													{t('donate.copy')}
-												</Button>
-											</div>
-										</div>
-									</CardContent>
-								</Card>
-							</div>
-						</CardContent>
-					</Card>
 				</div>
 			</div>
 

@@ -250,20 +250,22 @@ export function ActivityStream() {
   }, []);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
+    <Card className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
+      <CardHeader className="pb-6 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border-b border-border/50">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-2 bg-orange-500/10 rounded-lg">
-              <Activity className="h-5 w-5 text-orange-600" />
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl shadow-lg">
+              <Activity className="h-6 w-6 text-orange-600" />
             </div>
             <div>
-              <CardTitle className="text-xl">Runs Recentes</CardTitle>
-              <p className="text-sm text-muted-foreground">
-                Últimas atividades da comunidade • {runs.length} runs
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+                🔥 Feed da Comunidade
+              </CardTitle>
+              <p className="text-muted-foreground mt-1 text-base">
+                Últimas atividades em tempo real • {runs.length} runs ativas
                 {lastUpdate && (
-                  <span className="ml-2">
-                    • Atualizado: {lastUpdate}
+                  <span className="ml-2 text-xs">
+                    • {lastUpdate}
                     {isCached && <span className="text-orange-500"> (cache)</span>}
                   </span>
                 )}
@@ -288,8 +290,8 @@ export function ActivityStream() {
 
       <CardContent>
         {loading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <RunSkeleton key={i} />
             ))}
           </div>
@@ -321,7 +323,7 @@ export function ActivityStream() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {runs.map((run, index) => (
               <RunCard key={run.id} run={run} index={index} />
             ))}
