@@ -1,7 +1,10 @@
-export function calculateLuckEffectFromArray(luckHistory: number[], targetLuck: number): number {
-  if (!Array.isArray(luckHistory) || luckHistory.length === 0) return 1.0;
-  const avgLuck = luckHistory.reduce((sum, v) => sum + v, 0) / luckHistory.length;
-  if (avgLuck <= 0) return 1.0;
-  const ratio = targetLuck / avgLuck;
-  return Math.pow(ratio, 0.7);
+// Minimal version for use-calculator compatibility
+export function calculateLuckEffect(luck: number): number {
+  // Return 1 (no effect) since we're not using luck calculations
+  return 1;
+}
+
+export function calculateLuckEffectFromArray(luckArray: number[]): number {
+  // Return 1 (no effect) since we're not using luck calculations
+  return 1;
 }
