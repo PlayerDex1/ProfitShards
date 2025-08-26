@@ -304,6 +304,38 @@ export default function Profile() {
 						<MetricsDashboard />
 					)}
 
+					{/* Support Section - Discrete */}
+					<Card className="mt-8 bg-gradient-to-r from-green-500/5 to-blue-500/5 border border-green-500/20">
+						<CardContent className="p-4">
+							<div className="text-center">
+								<p className="text-sm text-muted-foreground mb-3">
+									💚 {t('support.donate')}
+								</p>
+								<div className="flex flex-col sm:flex-row gap-3 justify-center">
+									<a 
+										href="https://openloot.com/ambassador/link?code=HOLDBOY" 
+										target="_blank" 
+										rel="noopener noreferrer"
+									>
+										<Button size="sm" variant="outline" className="text-xs">
+											🌐 {t('support.ambassador.cta')}
+										</Button>
+									</a>
+									<Button 
+										size="sm" 
+										variant="outline" 
+										className="text-xs"
+										onClick={() => {
+											navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
+										}}
+									>
+										💝 {t('donate.copy')} Wallet
+									</Button>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
 				</div>
 			</main>
 		</div>

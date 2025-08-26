@@ -226,6 +226,85 @@ export default function Home() {
 				)}
 			</div>
 			
+			{/* Support Section */}
+			<Card className="mt-16 bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30">
+				<CardContent className="p-8">
+					<div className="text-center mb-8">
+						<h2 className="text-2xl font-bold text-foreground mb-3 flex items-center justify-center gap-2">
+							<Sparkles className="h-6 w-6 text-green-500" />
+							{t('support.title')}
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							{t('support.donate')}
+						</p>
+					</div>
+					
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+						{/* OpenLoot Ambassador */}
+						<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5">
+							<CardHeader className="pb-4">
+								<CardTitle className="text-lg flex items-center gap-2">
+									<Globe className="h-5 w-5 text-blue-500" />
+									{t('support.ambassador')}
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<p className="text-sm text-muted-foreground">
+									Use meu link de embaixador e me ajude indiretamente
+								</p>
+								<a 
+									href="https://openloot.com/ambassador/link?code=HOLDBOY" 
+									target="_blank" 
+									rel="noopener noreferrer" 
+									className="block"
+								>
+									<Button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold">
+										<ArrowRight className="mr-2 h-4 w-4" />
+										{t('support.ambassador.cta')}
+									</Button>
+								</a>
+							</CardContent>
+						</Card>
+
+						{/* Direct Donation */}
+						<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5">
+							<CardHeader className="pb-4">
+								<CardTitle className="text-lg flex items-center gap-2">
+									<Zap className="h-5 w-5 text-green-500" />
+									Doação Direta
+								</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<div>
+									<p className="text-sm text-muted-foreground mb-2">
+										{t('donate.wallet')}:
+									</p>
+									<div className="flex items-center gap-2 p-3 bg-muted/50 rounded-lg border">
+										<div className="text-xs font-mono break-all flex-1 select-all">
+											0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5
+										</div>
+										<Button
+											size="sm"
+											variant="outline"
+											onClick={() => {
+												navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
+												// TODO: Add toast notification
+											}}
+											className="shrink-0"
+										>
+											{t('donate.copy')}
+										</Button>
+									</div>
+								</div>
+								<p className="text-xs text-muted-foreground">
+									Aceito qualquer token EVM (ETH, USDT, USDC, etc.)
+								</p>
+							</CardContent>
+						</Card>
+					</div>
+				</CardContent>
+			</Card>
+
 			{/* Enhanced Footer */}
 			<footer className="mt-16 py-12 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
 				<div className="container mx-auto px-4">
