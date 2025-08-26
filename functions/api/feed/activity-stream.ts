@@ -58,7 +58,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           SELECT 
             id,
             map_name,
-            map_size,
             tokens_earned,
             drop_data,
             created_at
@@ -103,7 +102,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
             };
 
             const mapName = mapDisplayNames[run.map_name] || 
-                           mapDisplayNames[run.map_size] || 
                            run.map_name || 
                            'Unknown Map';
 
