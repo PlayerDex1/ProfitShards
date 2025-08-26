@@ -19,9 +19,8 @@ import { MetricsDashboard } from "@/components/MetricsDashboard";
 export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
-	const [history, setHistory] = useState<HistoryItem[]>([]);
 	// Removido: useEquipment - simplificando interface
-	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
+	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
 	const [activeTab, setActiveTab] = useState('calculator');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
@@ -31,19 +30,15 @@ export default function Profile() {
 		performance: true,
 	});
 
-	useEffect(() => {
-		const load = () => {
-			setHistory(getHistoryCached());
-		};
-		load();
-		const onUpd = () => load();
-		window.addEventListener('worldshards-history-updated', onUpd);
-		window.addEventListener('worldshards-auth-updated', onUpd);
-		return () => {
-			window.removeEventListener('worldshards-history-updated', onUpd);
-			window.removeEventListener('worldshards-auth-updated', onUpd);
-		};
-	}, []);
+	// História agora vem diretamente do useCalculator hook
+
+	const removeHistoryItem = (idx: number) => {
+		// idx é o índice original (não o reverso), então podemos usar diretamente
+		const item = history[idx];
+		if (item) {
+			deleteHistoryItem(item.timestamp);
+		}
+	};
 
 	const removeHistoryItem = (idx: number) => {
 		// idx é o índice original (não o reverso), então podemos usar diretamente
