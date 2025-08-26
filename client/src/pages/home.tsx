@@ -39,123 +39,34 @@ export default function Home() {
 			)}
 			
 			<div className="container mx-auto px-4 py-8">
-				{/* Hero Section - Boas-vindas */}
-				<div className="text-center mb-12">
-					<div className="relative">
-						<div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl"></div>
-						<div className="relative bg-background/80 backdrop-blur border border-border/50 rounded-2xl p-8 md:p-12">
-							<div className="flex justify-center mb-6">
-								<Badge className="px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium shadow-sm">
-									<Sparkles className="h-4 w-4 mr-2" />
-									{t('home.title')}
-								</Badge>
-							</div>
-							
-							<h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-								{t('home.hero.title')}
-							</h1>
-							
-							<p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-								{t('home.hero.subtitle')}
-							</p>
-							
-							{/* Quick Action Buttons - Thumb-Friendly */}
-							<div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-								<Link href="/perfil">
-									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-10 py-4 text-lg font-semibold min-h-[56px] min-w-[200px] shadow-lg hover:shadow-xl transition-all duration-200">
-										<Calculator className="mr-3 h-6 w-6" />
-										{t('home.hero.cta.start')}
-										<ArrowRight className="ml-3 h-6 w-6" />
-									</Button>
-								</Link>
-								
-								{!isAuthenticated && (
-									<Button variant="outline" size="lg" className="px-10 py-4 text-lg font-semibold border-primary/30 hover:bg-primary/10 min-h-[56px] min-w-[200px] hover:border-primary/50 transition-all duration-200">
-										<User className="mr-3 h-6 w-6" />
-										{t('home.hero.cta.register')}
-									</Button>
-								)}
-							</div>
-						</div>
-					</div>
-				</div>
-
-				{/* Features Preview */}
-				<div className="mb-16">
-					<div className="text-center mb-12">
-						<h2 className="text-3xl font-bold text-foreground mb-6">
-							🛠️ {t('home.features.title')}
-						</h2>
-						<p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-							{t('home.features.subtitle')}
-						</p>
+				{/* Hero Section Compacto - Foco no Feed */}
+				<div className="text-center mb-6">
+					<div className="flex justify-center mb-3">
+						<Badge className="px-3 py-1 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium">
+							<Sparkles className="h-4 w-4 mr-2" />
+							{t('home.title')}
+						</Badge>
 					</div>
 					
-					<div className="grid md:grid-cols-3 gap-8">
-						{/* Calculator Feature */}
-						<Card className="relative overflow-hidden border-green-500/20 bg-gradient-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
-							<CardHeader className="p-6">
-								<div className="flex items-center space-x-3 mb-2">
-									<div className="p-3 bg-green-500/10 rounded-lg">
-										<Calculator className="h-7 w-7 text-green-600" />
-									</div>
-									<CardTitle className="text-green-600 text-xl">{t('home.features.calculator.title')}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent className="p-6 pt-0">
-								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
-									{t('home.features.calculator.description')}
-								</p>
-								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.calculator.badge1')}</Badge>
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.calculator.badge2')}</Badge>
-								</div>
-							</CardContent>
-						</Card>
-
-						{/* Map Planner Feature */}
-						<Card className="relative overflow-hidden border-blue-500/20 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
-							<CardHeader className="p-6">
-								<div className="flex items-center space-x-3 mb-2">
-									<div className="p-3 bg-blue-500/10 rounded-lg">
-										<Map className="h-7 w-7 text-blue-600" />
-									</div>
-									<CardTitle className="text-blue-600 text-xl">{t('home.features.map.title')}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent className="p-6 pt-0">
-								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
-									{t('home.features.map.description')}
-								</p>
-								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.map.badge1')}</Badge>
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.map.badge2')}</Badge>
-								</div>
-							</CardContent>
-						</Card>
-
-						{/* Analytics Feature */}
-						<Card className="relative overflow-hidden border-purple-500/20 bg-gradient-to-br from-purple-50/50 to-violet-50/50 dark:from-purple-950/20 dark:to-violet-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
-							<CardHeader className="p-6">
-								<div className="flex items-center space-x-3 mb-2">
-									<div className="p-3 bg-purple-500/10 rounded-lg">
-										<BarChart3 className="h-7 w-7 text-purple-600" />
-									</div>
-									<CardTitle className="text-purple-600 text-xl">{t('home.features.analytics.title')}</CardTitle>
-								</div>
-							</CardHeader>
-							<CardContent className="p-6 pt-0">
-								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
-									{t('home.features.analytics.description')}
-								</p>
-								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.analytics.badge1')}</Badge>
-									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.analytics.badge2')}</Badge>
-								</div>
-							</CardContent>
-						</Card>
-					</div>
+					<h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+						{t('home.hero.title')}
+					</h1>
+					
+					<p className="text-muted-foreground mb-4 max-w-xl mx-auto text-sm">
+						{t('home.hero.subtitle')}
+					</p>
+					
+					{/* Call-to-Action MUITO VISÍVEL */}
+					<Link href="/perfil">
+						<Button size="lg" className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold animate-pulse">
+							<Zap className="mr-3 h-6 w-6" />
+							{isAuthenticated ? 'Ir ao Meu Perfil' : 'Começar a Calcular'}
+							<ArrowRight className="ml-3 h-6 w-6" />
+						</Button>
+					</Link>
 				</div>
+
+				
 
 
 
