@@ -24,6 +24,20 @@ export default function Home() {
 		<div className="min-h-screen bg-background">
 			<Header />
 			
+			{/* Botão discreto para voltar ao perfil */}
+			{isAuthenticated && (
+				<div className="container mx-auto px-4 pt-4">
+					<div className="flex justify-end">
+						<Link href="/perfil">
+							<Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
+								<User className="h-4 w-4 mr-2" />
+								{t('home.welcome.profile')}
+							</Button>
+						</Link>
+					</div>
+				</div>
+			)}
+			
 			<div className="container mx-auto px-4 py-8">
 				{/* Hero Section - Boas-vindas */}
 				<div className="text-center mb-12">
@@ -143,34 +157,7 @@ export default function Home() {
 					</div>
 				</div>
 
-				{/* Community Stats */}
-				{isAuthenticated && (
-					<Card className="mb-8 bg-gradient-to-br from-primary/5 to-blue-600/10 border border-primary/20">
-						<CardContent className="pt-6">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center space-x-3">
-									<div className="p-2 bg-primary/10 rounded-full">
-										<TrendingUp className="h-6 w-6 text-primary animate-pulse" />
-									</div>
-									<div>
-										<h2 className="text-lg font-semibold text-foreground">
-											{t('home.welcome.title').replace('{username}', userProfile?.username || user?.split('@')[0] || 'Player')}
-										</h2>
-										<p className="text-sm text-muted-foreground">
-											{t('home.welcome.subtitle')}
-										</p>
-									</div>
-								</div>
-								<Link href="/perfil">
-									<Button className="bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
-										<Target className="mr-2 h-4 w-4" />
-										{t('home.welcome.profile')}
-									</Button>
-								</Link>
-							</div>
-						</CardContent>
-					</Card>
-				)}
+
 
 				{/* Activity Feed - Ampliado */}
 				<div className="mb-8">
@@ -198,14 +185,7 @@ export default function Home() {
 
 						{/* Support Section - Sidebar (1/5) */}
 						<div className="lg:col-span-1">
-							<div className="sticky top-8 space-y-6">
-								{/* Community Stats na Sidebar */}
-								{isAuthenticated && (
-									<div className="scale-75 origin-top">
-										<CommunityStats />
-									</div>
-								)}
-								
+							<div className="sticky top-8">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
 									<CardContent className="p-6">
 										<div className="text-center mb-6">
