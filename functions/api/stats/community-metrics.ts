@@ -76,10 +76,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const calculationProfitData = await env.DB.prepare(`
-      SELECT SUM(final_profit) as total_profit FROM user_calculations 
-      WHERE created_at > ? AND final_profit IS NOT NULL
-    `).bind(sevenDaysAgo).first();
+    // Para cálculos, não temos profit direto, então vamos usar apenas feed_runs
+    const calculationProfitData = { total_profit: 0 };
 
     // Converter tokens do feed para "lucro" estimado (1 token = $100)
     const feedProfit = (feedProfitData?.total_tokens || 0) * 100;
