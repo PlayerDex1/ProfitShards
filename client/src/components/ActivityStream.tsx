@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter } from "lucide-react";
+import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ActivityRun {
@@ -28,7 +28,7 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// 🎯 Card Clean - Layout Horizontal Igual ao Planejador
+// 🎯 Card Melhorado - Mais Atrativo e Visual
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
   // 🎯 FASE 2: Usar playerName da API ou fallback
   const playerName = run.playerName || (run.id.includes('demo') ? 'demo_user' : 'Player');
@@ -36,7 +36,10 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
   // Formatar data
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
-    return date.toISOString().split('T')[0]; // YYYY-MM-DD
+    return date.toLocaleDateString('pt-BR', { 
+      day: '2-digit', 
+      month: '2-digit'
+    });
   };
 
   // Formatar horário
@@ -48,245 +51,279 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
     });
   };
 
+  // Determinar cor do mapa
+  const getMapColor = (map: string) => {
+    if (map.includes('Small')) return 'bg-green-500/20 text-green-600 border-green-500/30';
+    if (map.includes('Medium')) return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
+    if (map.includes('Large')) return 'bg-purple-500/20 text-purple-600 border-purple-500/30';
+    if (map.includes('XLarge')) return 'bg-red-500/20 text-red-600 border-red-500/30';
+    return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
+  };
+
+  // Calcular eficiência
+  const efficiency = run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0';
+
   return (
-    <div
+    <Card 
       className={cn(
-        "bg-slate-800 rounded-lg border border-slate-700",
-        "hover:bg-slate-750 hover:border-slate-600 transition-all duration-200",
-        "px-6 py-4"
+        "relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02]",
+        "bg-gradient-to-br from-background to-muted/30",
+        "border-border/50 hover:border-primary/30"
       )}
       style={{
-        animationDelay: `${index * 50}ms`,
-        animation: 'fadeInUp 0.4s ease-out forwards'
+        animationDelay: `${index * 100}ms`,
+        animation: 'fadeInUp 0.5s ease-out forwards'
       }}
     >
-      <div className="grid grid-cols-6 gap-4 items-center text-sm">
-        {/* PLAYER */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">PLAYER</div>
-          <div className="text-white font-medium">{playerName}</div>
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-primary/10 rounded-full">
+              <User className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-base font-semibold">{playerName}</CardTitle>
+              <p className="text-xs text-muted-foreground">Acabou de farmar</p>
+            </div>
+          </div>
+          <Badge variant="outline" className="text-xs">
+            <Clock className="h-3 w-3 mr-1" />
+            {run.timeAgo}
+          </Badge>
+        </div>
+      </CardHeader>
+
+      <CardContent className="space-y-4">
+        {/* Informações Principais */}
+        <div className="grid grid-cols-2 gap-4">
+          {/* Mapa */}
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <MapPin className="h-4 w-4 text-muted-foreground" />
+              <span className="text-sm font-medium">Mapa</span>
+            </div>
+            <Badge className={cn("px-3 py-1 border", getMapColor(run.map))}>
+              {run.map.replace(' Map', '')}
+            </Badge>
+          </div>
+
+          {/* Tokens */}
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Coins className="h-4 w-4 text-yellow-600" />
+              <span className="text-sm font-medium">Tokens</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl font-bold text-yellow-600">{run.tokens}</span>
+              <Badge variant="secondary" className="text-xs">
+                <Zap className="h-3 w-3 mr-1" />
+                {efficiency} eff
+              </Badge>
+            </div>
+          </div>
         </div>
 
-        {/* MAP */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">MAP</div>
-          <div className="bg-slate-600 text-white px-2 py-1 rounded text-center font-medium text-xs">
-            {run.map.replace(' Map', '')}
+        {/* Level/Tier e Luck */}
+        <div className="grid grid-cols-3 gap-3 p-3 bg-muted/50 rounded-lg">
+          <div className="text-center">
+            <div className="text-xs text-muted-foreground mb-1">Level</div>
+            <div className="font-semibold text-primary">{run.level || 'IV'}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xs text-muted-foreground mb-1">Tier</div>
+            <div className="font-semibold text-blue-600">{run.tier || 'I'}</div>
+          </div>
+          <div className="text-center">
+            <div className="text-xs text-muted-foreground mb-1">Luck</div>
+            <div className="font-semibold text-purple-600">{run.luck.toLocaleString()}</div>
           </div>
         </div>
 
-        {/* LEVEL/TIER */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">LEVEL/TIER</div>
-          <div className="text-white">
-            <div className="font-medium">Level {run.level || 'IV'}</div>
-            <div className="text-slate-300 text-xs">Tier {run.tier || 'I'}</div>
-          </div>
+        {/* Footer com data/hora */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+          <span>{formatDate(run.timestamp)}</span>
+          <span>{formatTime(run.timestamp)}</span>
+          <Badge variant="outline" className="text-xs">
+            Charge: {run.charge || 4}
+          </Badge>
         </div>
-
-        {/* TOKEN */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">TOKEN</div>
-          <div className="bg-yellow-600 text-white px-3 py-1 rounded text-center font-bold text-sm">
-            {run.tokens}
-          </div>
-        </div>
-
-        {/* DATE */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">DATE</div>
-          <div className="text-white font-mono text-sm">
-            {formatDate(run.timestamp)}
-          </div>
-        </div>
-
-        {/* CHARGE */}
-        <div>
-          <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">CHARGE</div>
-          <div className="text-white text-sm">
-            <span className="text-slate-400">CHARGE:</span> <span className="font-medium">{run.charge || 4}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Segunda linha com informações adicionais */}
-      <div className="mt-3 pt-3 border-t border-slate-700">
-        <div className="grid grid-cols-4 gap-4 text-xs">
-          <div>
-            <span className="text-slate-400">Luck:</span>
-            <span className="text-white ml-1 font-medium">{run.luck.toLocaleString()}</span>
-          </div>
-          <div>
-            <span className="text-slate-400">Efficiency:</span>
-            <span className="text-white ml-1 font-medium">
-              {run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0'}
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400">Time:</span>
-            <span className="text-white ml-1 font-medium">{formatTime(run.timestamp)}</span>
-          </div>
-          <div>
-            <span className="text-slate-400">Status:</span>
-            <span className="text-green-400 ml-1 font-medium">{run.timeAgo}</span>
-          </div>
-        </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
   );
 };
 
-// Skeleton loading
+// Skeleton loading melhorado
 const RunSkeleton = () => (
-  <div className="bg-slate-800 rounded-lg border border-slate-700 px-6 py-4 animate-pulse">
-    <div className="grid grid-cols-6 gap-4 items-center">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="space-y-2">
-          <div className="h-3 bg-slate-700 rounded w-16"></div>
-          <div className="h-4 bg-slate-600 rounded w-20"></div>
+  <Card className="animate-pulse">
+    <CardHeader className="pb-3">
+      <div className="flex items-center space-x-3">
+        <div className="h-8 w-8 bg-muted rounded-full"></div>
+        <div className="space-y-2">
+          <div className="h-4 bg-muted rounded w-24"></div>
+          <div className="h-3 bg-muted rounded w-16"></div>
         </div>
-      ))}
-    </div>
-    <div className="mt-3 pt-3 border-t border-slate-700">
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-3 bg-slate-700 rounded w-16"></div>
+      </div>
+    </CardHeader>
+    <CardContent className="space-y-4">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <div className="h-3 bg-muted rounded w-12"></div>
+          <div className="h-6 bg-muted rounded w-20"></div>
+        </div>
+        <div className="space-y-2">
+          <div className="h-3 bg-muted rounded w-12"></div>
+          <div className="h-6 bg-muted rounded w-16"></div>
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-3 p-3 bg-muted/50 rounded-lg">
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="text-center space-y-1">
+            <div className="h-3 bg-muted rounded w-8 mx-auto"></div>
+            <div className="h-4 bg-muted rounded w-6 mx-auto"></div>
+          </div>
         ))}
       </div>
-    </div>
-  </div>
+    </CardContent>
+  </Card>
 );
 
 export function ActivityStream() {
   const [runs, setRuns] = useState<ActivityRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lastUpdate, setLastUpdate] = useState<string>('');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const fetchRuns = async () => {
+  const loadFeed = async () => {
+    setLoading(true);
+    setError(null);
+    
     try {
-      setLoading(true);
-      setError(null);
-      
-      console.log('🔍 Buscando runs do feed...');
-      
-      const response = await fetch('/api/feed/feed-runs', {
+      const response = await fetch('/api/feed/activity-stream', {
         method: 'GET',
-        credentials: 'include',
-        headers: {
-          'Cache-Control': 'no-cache',
-        }
+        credentials: 'include'
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data: ActivityStreamResponse = await response.json();
-      console.log('📊 Dados recebidos:', data);
-
-      if (data.success && data.runs) {
-        setRuns(data.runs);
-        setLastUpdate(new Date().toLocaleTimeString());
-        setError(null);
+      
+      const result: ActivityStreamResponse = await response.json();
+      
+      if (result.success) {
+        setRuns(result.runs || []);
       } else {
-        throw new Error(data.error || 'Dados inválidos recebidos');
+        setError(result.error || 'Erro ao carregar feed');
       }
-    } catch (err) {
-      console.error('❌ Erro ao carregar feed:', err);
-      setError(err instanceof Error ? err.message : 'Erro desconhecido');
-      setRuns([]);
+    } catch (error) {
+      console.error('Erro ao carregar feed:', error);
+      setError('Erro de conexão');
     } finally {
       setLoading(false);
     }
   };
 
-  // Carregar dados iniciais e configurar auto-refresh
+  const refreshFeed = async () => {
+    setIsRefreshing(true);
+    try {
+      await loadFeed();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
-    fetchRuns();
-    
-    // Auto-refresh a cada 30 segundos
-    const interval = setInterval(fetchRuns, 30000);
+    loadFeed();
+    // Auto-refresh a cada 5 minutos
+    const interval = setInterval(loadFeed, 5 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <Card className="w-full">
-      <CardHeader className="pb-3">
+      <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-lg font-bold flex items-center gap-2">
-              <Activity className="w-5 h-5 text-primary" />
-              Feed de Atividade - Layout Clean
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Runs da comunidade com Level/Tier/Charge (última atualização: {lastUpdate || 'Carregando...'})
-            </p>
+          <div className="flex items-center space-x-3">
+            <div className="p-2 bg-orange-500/10 rounded-lg">
+              <Activity className="h-5 w-5 text-orange-600" />
+            </div>
+            <div>
+              <CardTitle className="text-xl">Runs Recentes</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Últimas atividades da comunidade • {runs.length} runs
+              </p>
+            </div>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={fetchRuns}
-            disabled={loading}
-            className="min-w-[100px]"
-          >
-            <RefreshCw className={cn("w-4 h-4 mr-2", loading && "animate-spin")} />
-            {loading ? 'Carregando...' : 'Atualizar'}
-          </Button>
+          
+          <div className="flex items-center space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={refreshFeed}
+              disabled={isRefreshing}
+              className="gap-2"
+            >
+              <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+              Atualizar
+            </Button>
+          </div>
         </div>
       </CardHeader>
 
       <CardContent>
-        {/* Estados de Loading/Error */}
-        {loading && runs.length === 0 && (
-          <div className="space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+        {loading ? (
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
               <RunSkeleton key={i} />
             ))}
           </div>
-        )}
-
-        {error && (
-          <div className="text-center py-8">
-            <div className="text-red-500 text-sm mb-2">❌ {error}</div>
-            <Button variant="outline" size="sm" onClick={fetchRuns}>
-              Tentar Novamente
-            </Button>
-          </div>
-        )}
-
-        {/* Lista de Runs */}
-        {!loading && !error && runs.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <Activity className="w-12 h-12 mx-auto mb-3 opacity-50" />
-            <p>Nenhuma atividade recente encontrada</p>
-            <p className="text-xs mt-1">As runs aparecerão aqui quando os usuários salvarem suas atividades</p>
-          </div>
-        )}
-
-        {runs.length > 0 && (
-          <div className="space-y-3">
+        ) : error ? (
+          <Card className="bg-red-50 dark:bg-red-950/20 border-red-200 dark:border-red-800">
+            <CardContent className="pt-6 text-center">
+              <div className="text-red-600 mb-2">⚠️ Erro ao carregar feed</div>
+              <p className="text-sm text-muted-foreground">{error}</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={loadFeed}
+                className="mt-3"
+              >
+                Tentar Novamente
+              </Button>
+            </CardContent>
+          </Card>
+        ) : runs.length === 0 ? (
+          <Card className="bg-muted/50">
+            <CardContent className="pt-6 text-center">
+              <Activity className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+              <div className="text-lg font-semibold text-muted-foreground mb-2">
+                Nenhuma atividade ainda
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Seja o primeiro a fazer uma run e aparecer aqui!
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
             {runs.map((run, index) => (
               <RunCard key={run.id} run={run} index={index} />
             ))}
           </div>
         )}
 
-        {/* Footer com informações */}
+        {/* Call-to-action para incentivar participação */}
         {runs.length > 0 && (
-          <div className="mt-6 pt-4 border-t border-border">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <div className="flex items-center space-x-4">
-                <span>📊 {runs.length} runs encontradas</span>
-                <span>🔄 Auto-refresh: 30s</span>
-                <span>🎯 Layout: Clean Horizontal</span>
+          <Card className="mt-6 bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/30">
+            <CardContent className="pt-6 text-center">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Target className="h-5 w-5 text-primary" />
+                <span className="font-semibold text-primary">Sua vez!</span>
               </div>
-              <div className="flex items-center space-x-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Ao vivo</span>
-              </div>
-            </div>
-          </div>
+              <p className="text-sm text-muted-foreground mb-4">
+                Faça sua run e apareça aqui para toda a comunidade ver
+              </p>
+              <Button className="bg-primary/20 hover:bg-primary/30 text-primary">
+                <Zap className="mr-2 h-4 w-4" />
+                Começar a Calcular
+              </Button>
+            </CardContent>
+          </Card>
         )}
       </CardContent>
     </Card>
