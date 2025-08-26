@@ -51,6 +51,8 @@ export default function Profile() {
 			item.results && 
 			typeof item.results.finalProfit === 'number' &&
 			item.formData &&
+			typeof item.formData.investment === 'number' &&
+			typeof item.formData.gemsConsumed === 'number' &&
 			typeof item.timestamp === 'number'
 		);
 		
@@ -267,7 +269,7 @@ export default function Profile() {
 																	{/* Detalhes do cálculo */}
 																	<div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
 																		<div>
-																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData.investment.toFixed(2)}
+																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData && typeof item.formData.investment === 'number' ? item.formData.investment.toFixed(2) : '0.00'}
 																		</div>
 																		<div>
 																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
