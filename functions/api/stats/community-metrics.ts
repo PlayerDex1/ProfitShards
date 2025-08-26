@@ -57,49 +57,33 @@ export async function onRequestGet({ env }: { env: Env }) {
     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
-    // A. TOTAL DE RUNS (dados reais do feed + cálculos)
-    const feedRunsQuery = await env.DB.prepare(`
+    // A. TOTAL DE RUNS (apenas dados reais do feed_runs)
+    const totalRunsQuery = await env.DB.prepare(`
       SELECT COUNT(*) as count FROM feed_runs 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const calculationsQuery = await env.DB.prepare(`
-      SELECT COUNT(*) as count FROM user_calculations 
-      WHERE created_at > ?
-    `).bind(sevenDaysAgo).first();
+    const totalRuns = totalRunsQuery?.count || 0;
 
-    const totalRuns = (feedRunsQuery?.count || 0) + (calculationsQuery?.count || 0);
-
-    // B. LUCRO TOTAL (baseado em feed_runs + cálculos)
-    const feedProfitData = await env.DB.prepare(`
+    // B. LUCRO TOTAL (baseado em tokens do feed_runs)
+    const profitData = await env.DB.prepare(`
       SELECT SUM(tokens) as total_tokens FROM feed_runs 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    // Para cálculos, não temos profit direto, então vamos usar apenas feed_runs
-    const calculationProfitData = { total_profit: 0 };
+    // Converter tokens para "lucro" estimado (1 token = $1000, como antes)
+    const totalProfit = (profitData?.total_tokens || 0) * 1000;
 
-    // Converter tokens do feed para "lucro" estimado (1 token = $100)
-    const feedProfit = (feedProfitData?.total_tokens || 0) * 100;
-    const calculationProfit = calculationProfitData?.total_profit || 0;
-    
-    const totalProfit = feedProfit + calculationProfit;
-
-    // C. PLAYERS ATIVOS (únicos nas últimas 24h - feed + cálculos)
-    const feedActivePlayersQuery = await env.DB.prepare(`
-      SELECT COUNT(DISTINCT user_id) as count FROM feed_runs 
+    // C. PLAYERS ATIVOS (únicos nas últimas 24h baseado em playerName)
+    const activePlayersQuery = await env.DB.prepare(`
+      SELECT COUNT(DISTINCT player_name) as count FROM feed_runs 
       WHERE created_at > ?
     `).bind(twentyFourHoursAgo).first();
 
-    const calculationActivePlayersQuery = await env.DB.prepare(`
-      SELECT COUNT(DISTINCT user_id) as count FROM user_calculations 
-      WHERE created_at > ?
-    `).bind(twentyFourHoursAgo).first();
-
-    const activePlayers = (feedActivePlayersQuery?.count || 0) + (calculationActivePlayersQuery?.count || 0);
+    const activePlayers = activePlayersQuery?.count || 0;
 
     // D. TAXA DE SUCESSO (baseada em feed_runs com tokens > 0)
-    const feedSuccessQuery = await env.DB.prepare(`
+    const successQuery = await env.DB.prepare(`
       SELECT 
         COUNT(*) as total,
         COUNT(CASE WHEN tokens > 0 THEN 1 END) as successful
@@ -107,18 +91,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    // Para cálculos, vamos assumir sucesso sempre (já que não temos dados de profit)
-    const calculationSuccessQuery = await env.DB.prepare(`
-      SELECT COUNT(*) as total, COUNT(*) as successful
-      FROM user_calculations 
-      WHERE created_at > ?
-    `).bind(sevenDaysAgo).first();
-
-    const totalSuccessCount = (feedSuccessQuery?.total || 0) + (calculationSuccessQuery?.total || 0);
-    const totalSuccessful = (feedSuccessQuery?.successful || 0) + (calculationSuccessQuery?.successful || 0);
-
-    const successRate = totalSuccessCount > 0 
-      ? Math.round((totalSuccessful / totalSuccessCount) * 100)
+    const successRate = successQuery?.total > 0 
+      ? Math.round((successQuery.successful / successQuery.total) * 100)
       : 0;
 
     // E. TOP MAPAS (baseado em feed_runs)
@@ -141,28 +115,16 @@ export async function onRequestGet({ env }: { env: Env }) {
     }));
 
     // F. EFICIÊNCIA MÉDIA (baseada em tokens/carga do feed)
-    const feedEfficiencyQuery = await env.DB.prepare(`
+    const efficiencyQuery = await env.DB.prepare(`
       SELECT AVG(CAST(tokens AS FLOAT) / CAST(charge AS FLOAT)) as avg_efficiency 
       FROM feed_runs 
       WHERE created_at > ? AND charge > 0
     `).bind(sevenDaysAgo).first();
 
-    // Para cálculos, não temos dados de efficiency na coluna, usar 0
-    const calculationEfficiencyQuery = { avg_efficiency: 0 };
+    const avgEfficiency = Math.round((efficiencyQuery?.avg_efficiency || 0) * 10);
 
-    const feedEfficiency = feedEfficiencyQuery?.avg_efficiency || 0;
-    const calculationEfficiency = calculationEfficiencyQuery?.avg_efficiency || 0;
-    
-    // Média ponderada ou usar a que tiver dados
-    const avgEfficiency = feedEfficiency > 0 ? Math.round(feedEfficiency * 10) : Math.round(calculationEfficiency);
-
-    // G. TOTAL DE CÁLCULOS (apenas calculations, não feed_runs)
-    const totalCalculationsQuery = await env.DB.prepare(`
-      SELECT COUNT(*) as count FROM user_calculations 
-      WHERE created_at > ?
-    `).bind(sevenDaysAgo).first();
-
-    const totalCalculations = totalCalculationsQuery?.count || 0;
+    // G. TOTAL DE CÁLCULOS (para agora, usar 0 até termos calculadora funcionando)
+    const totalCalculations = 0;
 
     // 3. MONTAR RESPOSTA
     const stats: CommunityStats = {
