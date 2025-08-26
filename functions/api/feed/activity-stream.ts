@@ -16,14 +16,22 @@ interface ActivityRun {
 }
 
 const CACHE_KEY = 'activity_feed_cache';
-const CACHE_TTL = 5 * 60; // 5 minutos
+const CACHE_TTL = 30; // 30 segundos
 
 export async function onRequestGet({ env, request }: { env: Env; request: Request }) {
   try {
     console.log('🔥 ACTIVITY FEED: Buscando stream de atividades...');
 
-    // 1. TENTAR CACHE PRIMEIRO (performance)
-    if (env.KV) {
+    // Verificar se é force refresh
+    const url = new URL(request.url);
+    const forceRefresh = url.searchParams.has('force');
+    
+    if (forceRefresh) {
+      console.log('⚡ Force refresh solicitado - ignorando cache');
+    }
+
+    // 1. TENTAR CACHE PRIMEIRO (performance) - exceto se force refresh
+    if (env.KV && !forceRefresh) {
       try {
         const cached = await env.KV.get(CACHE_KEY, 'json');
         if (cached) {
@@ -37,7 +45,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
             status: 200,
             headers: { 
               'Content-Type': 'application/json',
-              'Cache-Control': 'public, max-age=300' // 5 min browser cache
+              'Cache-Control': 'public, max-age=30' // 30 seg browser cache
             }
           });
         }
@@ -154,7 +162,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       status: 200,
       headers: { 
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=30',
         'Access-Control-Allow-Origin': '*'
       }
     });

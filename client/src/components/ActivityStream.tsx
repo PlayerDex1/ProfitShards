@@ -30,6 +30,7 @@ interface ActivityStreamResponse {
   total?: number;
   error?: string;
   fallback?: boolean;
+  timestamp?: string;
 }
 
 // 🎯 Card Melhorado - Mais Atrativo e Visual
@@ -197,21 +198,30 @@ export function ActivityStream() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isCached, setIsCached] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<string>('');
 
-  const loadFeed = async () => {
+  const loadFeed = async (forceRefresh = false) => {
     setLoading(true);
     setError(null);
     
     try {
-      const response = await fetch('/api/feed/activity-stream', {
+      const url = forceRefresh 
+        ? '/api/feed/activity-stream?force=true&_=' + Date.now()
+        : '/api/feed/activity-stream';
+        
+      const response = await fetch(url, {
         method: 'GET',
-        credentials: 'include'
+        credentials: 'include',
+        headers: forceRefresh ? { 'Cache-Control': 'no-cache' } : {}
       });
       
       const result: ActivityStreamResponse = await response.json();
       
       if (result.success) {
         setRuns(result.runs || []);
+        setIsCached(result.cached || false);
+        setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
       } else {
         setError(result.error || 'Erro ao carregar feed');
       }
@@ -226,7 +236,7 @@ export function ActivityStream() {
   const refreshFeed = async () => {
     setIsRefreshing(true);
     try {
-      await loadFeed();
+      await loadFeed(true); // Força refresh ignorando cache
     } finally {
       setIsRefreshing(false);
     }
@@ -234,8 +244,8 @@ export function ActivityStream() {
 
   useEffect(() => {
     loadFeed();
-    // Auto-refresh a cada 5 minutos
-    const interval = setInterval(loadFeed, 5 * 60 * 1000);
+    // Auto-refresh a cada 1 minuto para dados mais atuais
+    const interval = setInterval(loadFeed, 1 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -251,6 +261,12 @@ export function ActivityStream() {
               <CardTitle className="text-xl">Runs Recentes</CardTitle>
               <p className="text-sm text-muted-foreground">
                 Últimas atividades da comunidade • {runs.length} runs
+                {lastUpdate && (
+                  <span className="ml-2">
+                    • Atualizado: {lastUpdate}
+                    {isCached && <span className="text-orange-500"> (cache)</span>}
+                  </span>
+                )}
               </p>
             </div>
           </div>
