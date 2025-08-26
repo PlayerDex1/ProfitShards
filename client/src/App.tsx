@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
+import { forceCleanCorruptedHistory } from "@/lib/historyApi";
 
 // Pages
 import HomePage from "@/pages/home";
@@ -23,6 +24,9 @@ function ThemeInitializer() {
   
   useEffect(() => {
     console.log('🎨 [APP] Theme system initialized:', theme);
+    
+    // Limpar dados corrompidos do histórico ao inicializar o app
+    forceCleanCorruptedHistory();
   }, [theme]);
   
   return null;

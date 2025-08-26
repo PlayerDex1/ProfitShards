@@ -3,13 +3,64 @@ import type { HistoryItem } from '@/types/calculator';
 const STORAGE_KEY = 'worldshards-history';
 const MAX_HISTORY_ITEMS = 100;
 
+export function forceCleanCorruptedHistory(): void {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+    
+    const items: any[] = JSON.parse(raw);
+    const validItems = items.filter(item => {
+      // Verificação mais rigorosa de integridade dos dados
+      if (!item || typeof item !== 'object') return false;
+      if (typeof item.timestamp !== 'number') return false;
+      if (!item.results || typeof item.results !== 'object') return false;
+      if (typeof item.results.finalProfit !== 'number') return false;
+      if (!item.formData || typeof item.formData !== 'object') return false;
+      if (typeof item.formData.investment !== 'number') return false;
+      if (typeof item.formData.gemsConsumed !== 'number') return false;
+      
+      return true;
+    });
+    
+    if (validItems.length !== items.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(validItems));
+      console.log(`🧹 forceCleanCorruptedHistory: ${items.length - validItems.length} itens corrompidos removidos`);
+      
+      // Disparar evento de atualização
+      window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+    }
+  } catch (error) {
+    console.error('Erro ao limpar histórico corrompido:', error);
+    // Em caso de erro grave, limpar tudo
+    localStorage.removeItem(STORAGE_KEY);
+    window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+  }
+}
+
 export function getHistoryCached(): HistoryItem[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     
     const items: HistoryItem[] = JSON.parse(raw);
-    return items.sort((a, b) => b.timestamp - a.timestamp);
+    
+    // Filtrar apenas itens válidos com estrutura correta
+    const validItems = items.filter(item => 
+      item && 
+      typeof item.timestamp === 'number' &&
+      item.results && 
+      typeof item.results.finalProfit === 'number' &&
+      item.formData &&
+      typeof item.formData.investment === 'number'
+    );
+    
+    // Se removemos itens inválidos, salvar a versão limpa
+    if (validItems.length !== items.length) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(validItems));
+      console.log(`🧹 getHistoryCached: ${items.length - validItems.length} itens corrompidos removidos automaticamente`);
+    }
+    
+    return validItems.sort((a, b) => b.timestamp - a.timestamp);
   } catch {
     return [];
   }
