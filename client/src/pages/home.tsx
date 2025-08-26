@@ -107,6 +107,22 @@ export default function Home() {
 											<p className="text-muted-foreground text-sm">
 												{t('support.donate')}
 											</p>
+											
+											{/* Créditos do Criador */}
+											<div className="mt-4 pt-4 border-t border-green-500/20">
+												<p className="text-xs text-muted-foreground mb-2">Criado por</p>
+												<a 
+													href="https://x.com/playerhold" 
+													target="_blank" 
+													rel="noopener noreferrer"
+													className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200"
+												>
+													<svg className="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+														<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+													</svg>
+													<span className="text-sm font-semibold text-blue-600">@playerhold</span>
+												</a>
+											</div>
 										</div>
 										
 										<div className="space-y-4">
