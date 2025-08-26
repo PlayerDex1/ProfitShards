@@ -188,20 +188,20 @@ export default function Home() {
 						</p>
 						
 											{/* Community Stats - Dados Reais */}
-					<div className="max-w-4xl mx-auto mb-8">
+					<div className="max-w-6xl mx-auto mb-10">
 						{isAuthenticated && <CommunityStats />}
 					</div>
 				</div>
 				
 				{/* Activity Stream + Support - Layout Lateral Expandido */}
-				<div className="max-w-[1400px] mx-auto px-4">
-					<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-						{/* Activity Stream - Coluna Principal (3/4) */}
-						<div className="lg:col-span-3">
+				<div className="max-w-[1600px] mx-auto px-6">
+					<div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
+						{/* Activity Stream - Coluna Principal (4/5) */}
+						<div className="lg:col-span-4">
 							<ActivityStream />
 						</div>
 
-						{/* Support Section - Sidebar (1/4) */}
+						{/* Support Section - Sidebar (1/5) */}
 						<div className="lg:col-span-1">
 							<div className="sticky top-8">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
