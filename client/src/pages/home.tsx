@@ -58,7 +58,7 @@ export default function Home() {
 					
 					{/* Call-to-Action MUITO VISÍVEL */}
 					<Link href="/perfil">
-						<Button size="lg" className="bg-gradient-to-r from-orange-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold animate-pulse">
+						<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold hover:scale-105">
 							<Zap className="mr-3 h-6 w-6" />
 							{isAuthenticated ? 'Ir ao Meu Perfil' : 'Começar a Calcular'}
 							<ArrowRight className="ml-3 h-6 w-6" />
