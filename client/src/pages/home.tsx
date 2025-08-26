@@ -186,11 +186,6 @@ export default function Home() {
 						<p className="text-muted-foreground text-lg mb-6">
 							{t('home.community.subtitle')}
 						</p>
-						
-											{/* Community Stats - Dados Reais */}
-					<div className="max-w-6xl mx-auto mb-10">
-						{isAuthenticated && <CommunityStats />}
-					</div>
 				</div>
 				
 				{/* Activity Stream + Support - Layout Lateral Expandido */}
@@ -203,7 +198,14 @@ export default function Home() {
 
 						{/* Support Section - Sidebar (1/5) */}
 						<div className="lg:col-span-1">
-							<div className="sticky top-8">
+							<div className="sticky top-8 space-y-6">
+								{/* Community Stats na Sidebar */}
+								{isAuthenticated && (
+									<div className="scale-75 origin-top">
+										<CommunityStats />
+									</div>
+								)}
+								
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
 									<CardContent className="p-6">
 										<div className="text-center mb-6">
