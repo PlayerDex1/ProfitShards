@@ -6,40 +6,28 @@ const MAX_HISTORY_ITEMS = 100;
 export function forceCleanCorruptedHistory(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) {
-      console.log('🧹 forceCleanCorruptedHistory: Nenhum histórico encontrado no localStorage');
-      return;
-    }
+    if (!raw) return;
     
     const items: any[] = JSON.parse(raw);
-    console.log(`🔍 forceCleanCorruptedHistory: Encontrados ${items.length} itens para validar`);
-    
-    const validItems = items.filter((item, index) => {
-      // Log detalhado do item sendo validado
-      const checks = {
-        isObject: item && typeof item === 'object',
-        hasTimestamp: typeof item?.timestamp === 'number',
-        hasResults: item?.results && typeof item.results === 'object',
-        hasFinalProfit: typeof item?.results?.finalProfit === 'number',
-        hasFormData: item?.formData && typeof item.formData === 'object',
-        hasInvestment: typeof item?.formData?.investment === 'number',
-        hasGemsConsumed: typeof item?.formData?.gemsConsumed === 'number'
-      };
-      
-      const isValid = Object.values(checks).every(Boolean);
-      
-      if (!isValid) {
-        console.log(`❌ Item ${index} inválido:`, { item, checks });
-      }
-      
-      return isValid;
+    const validItems = items.filter(item => {
+      // Verificação de integridade dos dados
+      return (
+        item && 
+        typeof item === 'object' &&
+        typeof item?.timestamp === 'number' &&
+        item?.results && 
+        typeof item.results === 'object' &&
+        typeof item?.results?.finalProfit === 'number' &&
+        item?.formData && 
+        typeof item.formData === 'object' &&
+        typeof item?.formData?.investment === 'number' &&
+        typeof item?.formData?.gemsConsumed === 'number'
+      );
     });
-    
-    console.log(`✅ forceCleanCorruptedHistory: ${validItems.length} itens válidos de ${items.length} totais`);
     
     if (validItems.length !== items.length) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(validItems));
-      console.log(`🧹 forceCleanCorruptedHistory: ${items.length - validItems.length} itens corrompidos removidos`);
+      console.log(`🧹 Histórico: ${items.length - validItems.length} itens corrompidos removidos`);
       
       // Disparar evento de atualização
       window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
@@ -127,44 +115,5 @@ export async function refreshHistory(): Promise<void> {
   // No-op for localStorage implementation
 }
 
-export function createTestHistoryItem(): void {
-  const testItem = {
-    timestamp: Date.now(),
-    formData: {
-      investment: 1000,
-      gemsPurchased: 100,
-      gemsRemaining: 50,
-      gemsConsumed: 50,
-      tokensEquipment: 1000,
-      tokensFarmed: 2000,
-      loadsUsed: 10,
-      tokenPrice: 1.5,
-      gemPrice: 10
-    },
-    results: {
-      totalTokens: 3000,
-      tokensEquipment: 1000,
-      tokensFarmed: 2000,
-      totalTokenValue: 4500,
-      gemsCost: 500,
-      grossProfit: 4500,
-      rebuyCost: 0,
-      finalProfit: 4000,
-      netProfit: 4000,
-      roi: 400,
-      efficiency: 200
-    }
-  };
-  
-  console.log('🧪 Criando item de teste:', testItem);
-  appendHistoryItem(testItem);
-  console.log('🧪 Histórico após item de teste:', getHistoryCached());
-}
-
-// Adicionar ao window para debug no console
-if (typeof window !== 'undefined') {
-  (window as any).createTestHistoryItem = createTestHistoryItem;
-  (window as any).getHistoryCached = getHistoryCached;
-  (window as any).forceCleanCorruptedHistory = forceCleanCorruptedHistory;
-}
+// Funções de debug removidas - sistema está funcionando corretamente
 

@@ -185,10 +185,6 @@ export default function Profile() {
 									)}
 								</CardHeader>
 								<CardContent>
-									{/* DEBUG: mostrar estado do histórico */}
-									<div className="mb-4 p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded text-xs">
-										Debug: history.length = {history.length}, isAuthenticated = {isAuthenticated.toString()}
-									</div>
 									{history.length === 0 ? (
 										<div className="text-center py-8">
 											<Calculator className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
