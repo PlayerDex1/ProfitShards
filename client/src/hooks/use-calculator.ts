@@ -79,10 +79,14 @@ export function useCalculator() {
 
 	// Load history on mount and when updated
 	useEffect(() => {
-		setHistory(getHistoryCached());
+		const loadedHistory = getHistoryCached();
+		console.log('🔍 DEBUG: Carregando histórico inicial:', loadedHistory);
+		setHistory(loadedHistory);
 		
 		const handleHistoryUpdate = () => {
-			setHistory(getHistoryCached());
+			const updatedHistory = getHistoryCached();
+			console.log('🔍 DEBUG: Histórico atualizado:', updatedHistory);
+			setHistory(updatedHistory);
 		};
 		
 		window.addEventListener('worldshards-history-updated', handleHistoryUpdate);
@@ -167,7 +171,9 @@ export function useCalculator() {
 			results,
 		};
 
+		console.log('🔍 DEBUG: Salvando no histórico:', historyItem);
 		appendHistoryItem(historyItem);
+		console.log('🔍 DEBUG: Histórico após salvar:', getHistoryCached());
 		
 		// Salvar métricas anônimas se usuário autenticado
 		if (isAuthenticated && results.finalProfit !== undefined) {
