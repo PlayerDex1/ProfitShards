@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target } from "lucide-react";
+import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ActivityRun {
@@ -200,6 +200,10 @@ export function ActivityStream() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isCached, setIsCached] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('');
+  
+  // Estados de paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 8; // Reduzido para dar mais espaço
 
   const loadFeed = async (forceRefresh = false) => {
     setLoading(true);
@@ -249,8 +253,23 @@ export function ActivityStream() {
     return () => clearInterval(interval);
   }, []);
 
+  // Calcular dados da paginação
+  const totalPages = Math.ceil(runs.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const currentRuns = runs.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page);
+    // Scroll suave para o topo do feed
+    document.getElementById('activity-stream')?.scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+  };
+
   return (
-    <Card className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
+    <Card id="activity-stream" className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
       <CardHeader className="pb-6 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border-b border-border/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
@@ -323,10 +342,60 @@ export function ActivityStream() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
-            {runs.map((run, index) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            {currentRuns.map((run, index) => (
               <RunCard key={run.id} run={run} index={index} />
             ))}
+          </div>
+        )}
+
+        {/* Controles de Paginação */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="flex items-center space-x-1"
+              >
+                <ChevronLeft className="h-4 w-4" />
+                <span>Anterior</span>
+              </Button>
+              
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <Button
+                    key={page}
+                    variant={currentPage === page ? "default" : "ghost"}
+                    size="sm"
+                    onClick={() => goToPage(page)}
+                    className={cn(
+                      "w-8 h-8 p-0",
+                      currentPage === page && "bg-primary text-primary-foreground"
+                    )}
+                  >
+                    {page}
+                  </Button>
+                ))}
+              </div>
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="flex items-center space-x-1"
+              >
+                <span>Próxima</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+            
+            <div className="text-sm text-muted-foreground">
+              Página {currentPage} de {totalPages} • {runs.length} runs
+            </div>
           </div>
         )}
 
