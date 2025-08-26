@@ -40,14 +40,6 @@ export default function Profile() {
 		}
 	};
 
-	const removeHistoryItem = (idx: number) => {
-		// idx é o índice original (não o reverso), então podemos usar diretamente
-		const item = history[idx];
-		if (item) {
-			deleteHistoryItem(item.timestamp);
-		}
-	};
-
 	const clearAllHistory = () => {
 		clearHistoryRemote();
 	};
