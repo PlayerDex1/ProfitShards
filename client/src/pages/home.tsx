@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
-import { Calculator } from "@/components/Calculator";
-import { Results } from "@/components/Results";
-import { useCalculator } from "@/hooks/use-calculator";
-import { useEquipment } from "@/hooks/useEquipment";
+import { ActivityStream } from "@/components/ActivityStream";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
-import { TrendingUp, User } from "lucide-react";
+import { TrendingUp, User, Calculator } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 
 export default function Home() {
-	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
-	const { totalLuck } = useEquipment();
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 
@@ -22,19 +17,20 @@ export default function Home() {
 		importBuildsFromUrl();
 	}, []);
 
-	const handleSaveToHistory = () => {
-		if (results) {
-			saveToHistory(formData, results);
-		}
-	};
-
 	return (
 		<div className="min-h-screen bg-background">
 			<Header />
 			
 			<div className="container mx-auto px-4 py-6">
-				{/* Profile Link */}
-				<div className="flex justify-end items-center mb-6">
+				{/* Header Links */}
+				<div className="flex justify-between items-center mb-6">
+					<Link href="/perfil" className="group flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-lg hover:from-green-500/20 hover:to-emerald-600/20 hover:shadow-md transition-all duration-300">
+						<Calculator className="h-5 w-5 text-green-600 group-hover:scale-110 transition-transform" />
+						<span className="font-medium text-green-600">
+							Calculadora
+						</span>
+					</Link>
+					
 					<Link href="/perfil" className="group flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-blue-600/10 border border-primary/20 rounded-lg hover:from-primary/20 hover:to-blue-600/20 hover:shadow-md transition-all duration-300">
 						<User className="h-5 w-5 text-primary group-hover:scale-110 transition-transform" />
 						<span className="font-medium text-primary">
@@ -67,25 +63,18 @@ export default function Home() {
 					</Card>
 				)}
 
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-					{/* Main Content - Calculator */}
-					<div className="lg:col-span-2">
-						<Calculator
-							formData={formData}
-							onUpdateFormData={updateFormData}
-							onSaveToHistory={handleSaveToHistory}
-						/>
+				{/* Main Content - Activity Feed */}
+				<div className="max-w-4xl mx-auto">
+					<div className="text-center mb-8">
+						<h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-4">
+							🔥 Feed de Atividades da Comunidade
+						</h1>
+						<p className="text-muted-foreground">
+							Acompanhe em tempo real o que a comunidade está fazendo no WorldShards
+						</p>
 					</div>
-
-					{/* Results */}
-					<div className="lg:col-span-1">
-						<Results 
-							results={results}
-							breakdown={breakdown}
-							formData={formData}
-							totalLuck={totalLuck}
-						/>
-					</div>
+					
+					<ActivityStream />
 				</div>
 
 

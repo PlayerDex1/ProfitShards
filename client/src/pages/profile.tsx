@@ -21,8 +21,8 @@ export default function Profile() {
 	const { user, userProfile, isAuthenticated } = useAuth();
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 	const { session, totalLuck, updateEquipment } = useEquipment();
-	const { results, breakdown } = useCalculator();
-	const [activeTab, setActiveTab] = useState('history');
+	const { formData, results, breakdown, updateFormData, saveToHistory } = useCalculator();
+	const [activeTab, setActiveTab] = useState('calculator');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
 		distribution: true,
@@ -62,9 +62,9 @@ export default function Profile() {
 	const isAdmin = user && adminUsers.includes(user);
 
 	const tabs = [
+		{ id: 'calculator', label: 'Calculadora', icon: Calculator },
 		{ id: 'history', label: 'Histórico', icon: Calculator },
 		{ id: 'planner', label: 'Planejador', icon: Map },
-		{ id: 'equipment', label: 'Equipamentos', icon: Settings },
 		// Aba Test só aparece para admins
 		...(isAdmin ? [{ id: 'test', label: 'Test', icon: TestTube }] : []),
 	];
@@ -124,6 +124,15 @@ export default function Profile() {
 
 				{/* Tab Content */}
 				<div className="space-y-6">
+					{/* Calculadora */}
+					{activeTab === 'calculator' && (
+						<CalculatorComponent
+							formData={formData}
+							onUpdateFormData={updateFormData}
+							onSaveToHistory={saveToHistory}
+						/>
+					)}
+
 					{/* Histórico de Cálculos */}
 					{activeTab === 'history' && (
 						<>
