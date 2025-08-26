@@ -2,81 +2,87 @@ interface Env {
   DB: D1Database;
 }
 
-export async function onRequestGet(context: { env: Env; request: Request }) {
+export async function onRequestGet({ env }: { env: Env }) {
   try {
-    const { env } = context;
-    
-    console.log('🔍 DEBUG: Verificando dados para feed...');
-    
+    console.log('🔍 DEBUG: Verificando dados do feed...');
+
     if (!env.DB) {
-      return new Response(JSON.stringify({ 
-        success: false,
-        error: 'Database not available' 
+      return new Response(JSON.stringify({
+        error: 'Database not available'
       }), {
         status: 500,
         headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // Verificar se tabela existe
-    const tableCheck = await env.DB.prepare(`
-      SELECT name FROM sqlite_master 
-      WHERE type='table' AND name='user_map_drops'
-    `).first();
+    // 1. Contar total de registros
+    const countResult = await env.DB.prepare('SELECT COUNT(*) as total FROM user_map_drops').first();
+    console.log('📊 Total de registros:', countResult);
 
-    console.log('📋 Tabela user_map_drops existe?', !!tableCheck);
-
-    // Contar total de registros
-    const countResult = await env.DB.prepare(`
-      SELECT COUNT(*) as total FROM user_map_drops
-    `).first();
-
-    const totalRecords = countResult?.total || 0;
-    console.log(`📊 Total de registros: ${totalRecords}`);
-
-    // Buscar últimos 5 registros
-    const recentRecords = await env.DB.prepare(`
-      SELECT * FROM user_map_drops 
+    // 2. Buscar registros mais recentes
+    const recentResult = await env.DB.prepare(`
+      SELECT id, user_id, map_name, tokens_earned, created_at 
+      FROM user_map_drops 
       ORDER BY created_at DESC 
-      LIMIT 5
+      LIMIT 10
     `).all();
+    console.log('📋 Registros recentes:', recentResult.results?.length || 0);
 
-    console.log(`🔍 Últimos registros:`, recentRecords.results);
-
-    // Buscar registros das últimas 24 horas
+    // 3. Buscar registros das últimas 24h
     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
-    const recentData = await env.DB.prepare(`
-      SELECT * FROM user_map_drops 
-      WHERE created_at > ? 
-      ORDER BY created_at DESC
+    const recent24hResult = await env.DB.prepare(`
+      SELECT id, user_id, map_name, tokens_earned, created_at 
+      FROM user_map_drops 
+      WHERE created_at > ?
+      ORDER BY created_at DESC 
+      LIMIT 10
     `).bind(twentyFourHoursAgo).all();
+    console.log('⏰ Registros últimas 24h:', recent24hResult.results?.length || 0);
 
-    console.log(`⏰ Registros das últimas 24h: ${recentData.results?.length || 0}`);
+    // 4. Verificar estrutura da tabela
+    const tableInfoResult = await env.DB.prepare('PRAGMA table_info(user_map_drops)').all();
+    console.log('🏗️ Estrutura da tabela:', tableInfoResult.results);
 
-    return new Response(JSON.stringify({ 
-      success: true,
-      debug: {
-        tableExists: !!tableCheck,
-        totalRecords: totalRecords,
-        recentRecords: recentRecords.results || [],
-        last24Hours: recentData.results || [],
-        last24HoursCount: recentData.results?.length || 0,
-        timestampNow: Date.now(),
-        timestampLimit: twentyFourHoursAgo,
-        timestampLimitDate: new Date(twentyFourHoursAgo).toISOString()
+    const debugInfo = {
+      total_records: countResult?.total || 0,
+      recent_records: recentResult.results?.map(r => ({
+        id: r.id,
+        user_id: r.user_id,
+        map_name: r.map_name,
+        tokens_earned: r.tokens_earned,
+        created_at: r.created_at,
+        created_at_iso: new Date(r.created_at).toISOString()
+      })) || [],
+      recent_24h_records: recent24hResult.results?.map(r => ({
+        id: r.id,
+        user_id: r.user_id,
+        map_name: r.map_name,
+        tokens_earned: r.tokens_earned,
+        created_at: r.created_at,
+        created_at_iso: new Date(r.created_at).toISOString()
+      })) || [],
+      table_structure: tableInfoResult.results || [],
+      timestamp_filter: {
+        twenty_four_hours_ago: twentyFourHoursAgo,
+        twenty_four_hours_ago_iso: new Date(twentyFourHoursAgo).toISOString(),
+        now: Date.now(),
+        now_iso: new Date().toISOString()
       }
-    }), {
+    };
+
+    return new Response(JSON.stringify(debugInfo, null, 2), {
       status: 200,
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
 
   } catch (error) {
-    console.error('❌ Erro verificando dados:', error);
-    
-    return new Response(JSON.stringify({ 
-      success: false,
-      error: 'Internal server error',
-      details: error instanceof Error ? error.message : 'Unknown error'
+    console.error('❌ Erro no debug:', error);
+    return new Response(JSON.stringify({
+      error: error.message,
+      stack: error.stack
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
