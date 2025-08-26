@@ -134,10 +134,10 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       }
     }
 
-    // 3. FALLBACK: DADOS REALISTAS SE NÃO HOUVER ATIVIDADE REAL
+    // 3. FALLBACK: DADOS MÍNIMOS SE NÃO HOUVER ATIVIDADE REAL
     if (activityRuns.length === 0) {
-      console.log('📝 Gerando dados realistas para feed vazio');
-      activityRuns = generateRealisticRuns();
+      console.log('📝 Nenhuma atividade real encontrada - aguardando dados do MapPlanner');
+      // Não gerar dados fake - deixar vazio para incentivar uso real
     }
 
     // 4. SALVAR NO CACHE PARA PRÓXIMAS REQUESTS
@@ -171,8 +171,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
   } catch (error) {
     console.error('❌ ERRO GERAL no activity feed:', error);
     
-    // FALLBACK DE EMERGÊNCIA
-    const emergencyRuns = generateRealisticRuns().slice(0, 5);
+    // FALLBACK DE EMERGÊNCIA - apenas em caso de erro crítico
+    const emergencyRuns: ActivityRun[] = [];
     
     return new Response(JSON.stringify({
       success: true,
