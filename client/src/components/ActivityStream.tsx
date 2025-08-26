@@ -7,7 +7,8 @@ import { cn } from "@/lib/utils";
 
 interface ActivityRun {
   id: string;
-  map: string;           // Small/Medium/Large/XLarge Map
+  map?: string;           // Small/Medium/Large/XLarge Map
+  mapName?: string;       // Formato alternativo da API recent-runs
   luck: number;          // Luck usado
   tokens: number;        // Tokens dropados
   timeAgo: string;       // "há 5 min"
@@ -16,7 +17,10 @@ interface ActivityRun {
   level?: string;        // Level I-V
   tier?: string;         // Tier I-III
   charge?: number;       // Carga
+  energy?: number;       // Energia (formato recent-runs)
+  efficiency?: number;   // Eficiência já calculada
   playerName?: string;   // Nome do usuário
+  user?: string;         // Formato alternativo da API recent-runs
 }
 
 interface ActivityStreamResponse {
@@ -30,8 +34,8 @@ interface ActivityStreamResponse {
 
 // 🎯 Card Melhorado - Mais Atrativo e Visual
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
-  // 🎯 FASE 2: Usar playerName da API ou fallback
-  const playerName = run.playerName || (run.id.includes('demo') ? 'demo_user' : 'Player');
+  // 🎯 Usar playerName de qualquer formato de API ou fallback
+  const playerName = run.playerName || run.user || (run.id.includes('demo') ? 'demo_user' : 'Player');
 
   // Formatar data
   const formatDate = (timestamp: number) => {
@@ -52,6 +56,7 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
   };
 
   // Determinar cor do mapa
+  const mapName = run.map || run.mapName || 'Unknown Map';
   const getMapColor = (map: string) => {
     if (map.includes('Small')) return 'bg-green-500/20 text-green-600 border-green-500/30';
     if (map.includes('Medium')) return 'bg-blue-500/20 text-blue-600 border-blue-500/30';
@@ -60,8 +65,8 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
     return 'bg-gray-500/20 text-gray-600 border-gray-500/30';
   };
 
-  // Calcular eficiência
-  const efficiency = run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0';
+  // Calcular ou usar eficiência existente
+  const efficiency = run.efficiency?.toFixed(1) || (run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0');
 
   return (
     <Card 
@@ -102,8 +107,8 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <span className="text-sm font-medium">Mapa</span>
             </div>
-            <Badge className={cn("px-3 py-1 border", getMapColor(run.map))}>
-              {run.map.replace(' Map', '')}
+            <Badge className={cn("px-3 py-1 border", getMapColor(mapName))}>
+              {mapName.replace(' Map', '')}
             </Badge>
           </div>
 
@@ -143,9 +148,9 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
         <div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
           <span>{formatDate(run.timestamp)}</span>
           <span>{formatTime(run.timestamp)}</span>
-          <Badge variant="outline" className="text-xs">
-            Charge: {run.charge || 4}
-          </Badge>
+                     <Badge variant="outline" className="text-xs">
+             Charge: {run.charge || run.energy || 4}
+           </Badge>
         </div>
       </CardContent>
     </Card>
@@ -198,7 +203,7 @@ export function ActivityStream() {
     setError(null);
     
     try {
-      const response = await fetch('/api/feed/activity-stream', {
+      const response = await fetch('/api/feed/recent-runs', {
         method: 'GET',
         credentials: 'include'
       });
