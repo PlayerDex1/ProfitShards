@@ -459,17 +459,235 @@ export function AdminDashboardV2() {
           {/* USUÁRIOS & COMPORTAMENTO */}
           {activeSection === 'users' && (
             <div className="space-y-8">
+              {/* Estatísticas Principais de Usuários */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-950 dark:to-blue-900">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Total de Usuários</p>
+                        <p className="text-3xl font-bold text-blue-700 dark:text-blue-300">{mapAnalytics.userBehaviorPatterns.totalUniqueUsers}</p>
+                        <p className="text-sm text-blue-600 dark:text-blue-400">últimas 4 semanas</p>
+                      </div>
+                      <Users className="h-12 w-12 text-blue-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-950 dark:to-purple-900">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-purple-600 dark:text-purple-400">Engajamento Médio</p>
+                        <p className="text-3xl font-bold text-purple-700 dark:text-purple-300">{mapAnalytics.userBehaviorPatterns.avgRunsPerUser}</p>
+                        <p className="text-sm text-purple-600 dark:text-purple-400">runs por usuário</p>
+                      </div>
+                      <Target className="h-12 w-12 text-purple-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-green-200 bg-gradient-to-br from-green-50 to-green-100 dark:from-green-950 dark:to-green-900">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-green-600 dark:text-green-400">Usuários Ativos</p>
+                        <p className="text-3xl font-bold text-green-700 dark:text-green-300">{mapAnalytics.userBehaviorPatterns.regularUsers + mapAnalytics.userBehaviorPatterns.powerUsers}</p>
+                        <p className="text-sm text-green-600 dark:text-green-400">&ge; 5 runs</p>
+                      </div>
+                      <UserCheck className="h-12 w-12 text-green-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="border-orange-200 bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-950 dark:to-orange-900">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-medium text-orange-600 dark:text-orange-400">Power Users</p>
+                        <p className="text-3xl font-bold text-orange-700 dark:text-orange-300">{mapAnalytics.userBehaviorPatterns.powerUsers}</p>
+                        <p className="text-sm text-orange-600 dark:text-orange-400">&gt; 20 runs</p>
+                      </div>
+                      <Crown className="h-12 w-12 text-orange-500" />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Segmentação de Usuários */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <PieChart className="h-5 w-5" />
+                      <span>📊 Segmentação por Atividade</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-6">
+                    {/* Casual Users */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">👋 Usuários Casuais (&lt; 5 runs)</span>
+                        <Badge variant="outline" className="bg-gray-50">
+                          {mapAnalytics.userBehaviorPatterns.casualUsers} usuários
+                        </Badge>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-gray-500 h-2.5 rounded-full" 
+                          style={{
+                            width: `${Math.round((mapAnalytics.userBehaviorPatterns.casualUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}%`
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {Math.round((mapAnalytics.userBehaviorPatterns.casualUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}% do total • Experimentando a plataforma
+                      </p>
+                    </div>
+
+                    {/* Regular Users */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">⚡ Usuários Regulares (5-20 runs)</span>
+                        <Badge variant="secondary" className="bg-blue-50 text-blue-700">
+                          {mapAnalytics.userBehaviorPatterns.regularUsers} usuários
+                        </Badge>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-blue-500 h-2.5 rounded-full" 
+                          style={{
+                            width: `${Math.round((mapAnalytics.userBehaviorPatterns.regularUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}%`
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {Math.round((mapAnalytics.userBehaviorPatterns.regularUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}% do total • Engajados com a ferramenta
+                      </p>
+                    </div>
+
+                    {/* Power Users */}
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-sm font-medium">🏆 Power Users (&gt; 20 runs)</span>
+                        <Badge variant="default" className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
+                          {mapAnalytics.userBehaviorPatterns.powerUsers} usuários
+                        </Badge>
+                      </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                        <div 
+                          className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2.5 rounded-full" 
+                          style={{
+                            width: `${Math.round((mapAnalytics.userBehaviorPatterns.powerUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}%`
+                          }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        {Math.round((mapAnalytics.userBehaviorPatterns.powerUsers / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}% do total • Super usuários fiéis
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Insights e Recomendações */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center space-x-2">
+                      <Eye className="h-5 w-5" />
+                      <span>💡 Insights & Recomendações</span>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950/30 border border-blue-200">
+                      <div className="flex items-start space-x-3">
+                        <TrendingUp className="h-5 w-5 text-blue-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-blue-900 dark:text-blue-100">Taxa de Retenção</h4>
+                          <p className="text-sm text-blue-700 dark:text-blue-300">
+                            {Math.round(((mapAnalytics.userBehaviorPatterns.regularUsers + mapAnalytics.userBehaviorPatterns.powerUsers) / mapAnalytics.userBehaviorPatterns.totalUniqueUsers) * 100)}% 
+                            dos usuários fazem 5+ runs
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-green-50 dark:bg-green-950/30 border border-green-200">
+                      <div className="flex items-start space-x-3">
+                        <Gauge className="h-5 w-5 text-green-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-green-900 dark:text-green-100">Engajamento</h4>
+                          <p className="text-sm text-green-700 dark:text-green-300">
+                            Média de {mapAnalytics.userBehaviorPatterns.avgRunsPerUser} runs por usuário indica bom engagement
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 rounded-lg bg-orange-50 dark:bg-orange-950/30 border border-orange-200">
+                      <div className="flex items-start space-x-3">
+                        <AlertCircle className="h-5 w-5 text-orange-600 mt-0.5" />
+                        <div>
+                          <h4 className="font-medium text-orange-900 dark:text-orange-100">Oportunidade</h4>
+                          <p className="text-sm text-orange-700 dark:text-orange-300">
+                            {mapAnalytics.userBehaviorPatterns.casualUsers} usuários casuais podem ser convertidos com melhor onboarding
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {mapAnalytics.userBehaviorPatterns.powerUsers > 0 && (
+                      <div className="p-4 rounded-lg bg-purple-50 dark:bg-purple-950/30 border border-purple-200">
+                        <div className="flex items-start space-x-3">
+                          <Crown className="h-5 w-5 text-purple-600 mt-0.5" />
+                          <div>
+                            <h4 className="font-medium text-purple-900 dark:text-purple-100">Power Users</h4>
+                            <p className="text-sm text-purple-700 dark:text-purple-300">
+                              {mapAnalytics.userBehaviorPatterns.powerUsers} super usuários podem se beneficiar de features avançadas
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Distribuição de Atividade ao Longo do Tempo */}
               <Card>
                 <CardHeader>
-                  <CardTitle>👥 Análise de Comportamento dos Usuários</CardTitle>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Clock className="h-5 w-5" />
+                    <span>⏰ Atividade por Horário</span>
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-8">
-                    <Users className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                    <h3 className="text-xl font-bold mb-2">Seção em Desenvolvimento</h3>
-                    <p className="text-muted-foreground">
-                      Analytics detalhados de usuários serão implementados na próxima versão.
-                    </p>
+                  <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-3">
+                    {mapAnalytics.hourlyActivity.map((hour) => (
+                      <Card key={hour.hour} className={`border-2 ${hour.runs > 20 ? 'border-green-300 bg-green-50' : hour.runs > 10 ? 'border-blue-300 bg-blue-50' : 'border-gray-200'}`}>
+                        <CardContent className="p-3 text-center">
+                          <div className="text-lg font-bold">{hour.hour.toString().padStart(2, '0')}h</div>
+                          <div className="text-sm font-medium">{hour.runs} runs</div>
+                          <div className="text-xs text-muted-foreground">{hour.avgTokens} tokens</div>
+                          <Badge variant="outline" className="text-xs mt-1">
+                            L{hour.popularLevel}
+                          </Badge>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  <div className="mt-4 flex items-center justify-center space-x-6 text-sm">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-green-300 rounded"></div>
+                      <span>Alta atividade (20+ runs)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-blue-300 rounded"></div>
+                      <span>Média atividade (10-20 runs)</span>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <div className="w-3 h-3 bg-gray-300 rounded"></div>
+                                              <span>Baixa atividade (&lt; 10 runs)</span>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
