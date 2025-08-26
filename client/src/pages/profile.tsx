@@ -44,6 +44,30 @@ export default function Profile() {
 		clearHistoryRemote();
 	};
 
+	const cleanCorruptedHistory = () => {
+		// Limpar dados corrompidos do localStorage
+		const validHistory = history.filter(item => 
+			item && 
+			item.results && 
+			typeof item.results.finalProfit === 'number' &&
+			item.formData &&
+			typeof item.timestamp === 'number'
+		);
+		
+		if (validHistory.length !== history.length) {
+			// Salvar apenas os dados válidos
+			localStorage.setItem('worldshards-history', JSON.stringify(validHistory));
+			// Disparar evento para atualizar UI
+			window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+			console.log(`🧹 Limpeza: ${history.length - validHistory.length} itens corrompidos removidos`);
+		}
+	};
+
+	// Executar limpeza ao montar o componente
+	useEffect(() => {
+		cleanCorruptedHistory();
+	}, []);
+
 	// Lista de usuários que podem ver funcionalidades experimentais
 	const adminUsers = ['profitshards@gmail.com', 'admin@profitshards.com', 'holdboy01@gmail.com']; // Emails de administradores
 	const isAdmin = user && adminUsers.includes(user);
@@ -184,20 +208,20 @@ export default function Profile() {
 														<div className="text-sm text-muted-foreground">{t('profile.history.stats.calculations')}</div>
 													</div>
 													<div className="text-center">
-														<div className={`text-2xl font-bold ${history.filter(h => h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-															${(history.reduce((sum, h) => sum + h.results.finalProfit, 0) / history.length).toFixed(2)}
+														<div className={`text-2xl font-bold ${history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+															${(history.reduce((sum, h) => sum + (h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0), 0) / history.length).toFixed(2)}
 														</div>
 														<div className="text-sm text-muted-foreground">{t('profile.history.stats.avgProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-green-600 dark:text-green-400">
-															${Math.max(...history.map(h => h.results.finalProfit)).toFixed(2)}
+															${Math.max(...history.map(h => h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0)).toFixed(2)}
 														</div>
 														<div className="text-sm text-muted-foreground">{t('profile.history.stats.bestProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-foreground">
-															{((history.filter(h => h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
+															{((history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
 														</div>
 														<div className="text-sm text-muted-foreground">{t('profile.history.stats.successRate')}</div>
 													</div>
@@ -208,7 +232,7 @@ export default function Profile() {
 											<div className="space-y-3 max-h-96 overflow-auto">
 											{history.slice().reverse().map((item, revIndex) => {
 												const idx = history.length - 1 - revIndex;
-												const isProfit = item.results.finalProfit > 0;
+												const isProfit = item.results && typeof item.results.finalProfit === 'number' && item.results.finalProfit > 0;
 												const date = new Date(item.timestamp);
 												const dateStr = date.toLocaleDateString('pt-BR');
 												const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -221,10 +245,10 @@ export default function Profile() {
 																	{/* Profit destacado */}
 																	<div className="flex items-center justify-between">
 																		<div className={`text-2xl font-bold font-mono ${isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-																			{isProfit ? '+' : ''}${item.results.finalProfit.toFixed(2)}
+																			{isProfit ? '+' : ''}${item.results && typeof item.results.finalProfit === 'number' ? item.results.finalProfit.toFixed(2) : '0.00'}
 																		</div>
 																		<div className={`text-sm px-2 py-1 rounded-full font-medium ${isProfit ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
-																			ROI: {item.results.roi.toFixed(1)}%
+																			ROI: {item.results && typeof item.results.roi === 'number' ? item.results.roi.toFixed(1) : '0.0'}%
 																		</div>
 																	</div>
 																	
@@ -246,13 +270,13 @@ export default function Profile() {
 																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData.investment.toFixed(2)}
 																		</div>
 																		<div>
-																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results.totalTokens.toLocaleString()}
+																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
 																		</div>
 																		<div>
-																			<span className="font-medium">{t('profile.history.gems')}:</span> {item.formData.gemsConsumed}
+																			<span className="font-medium">{t('profile.history.gems')}:</span> {item.formData && typeof item.formData.gemsConsumed === 'number' ? item.formData.gemsConsumed : 0}
 																		</div>
 																		<div>
-																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results.efficiency.toFixed(1)}/load
+																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results && typeof item.results.efficiency === 'number' ? item.results.efficiency.toFixed(1) : '0.0'}/load
 																		</div>
 																	</div>
 																</div>
