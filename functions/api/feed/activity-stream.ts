@@ -51,8 +51,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     if (env.DB) {
       try {
-        // Buscar últimas 20 runs das últimas 6 horas
-        const sixHoursAgo = Date.now() - (6 * 60 * 60 * 1000);
+        // Buscar últimas 20 runs das últimas 24 horas (mesma janela que recent-runs)
+        const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
         
         const dbResult = await env.DB.prepare(`
           SELECT 
@@ -65,9 +65,16 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           WHERE created_at > ? 
           ORDER BY created_at DESC 
           LIMIT 20
-        `).bind(sixHoursAgo).all();
+        `).bind(twentyFourHoursAgo).all();
 
         console.log(`📊 Encontradas ${dbResult.results?.length || 0} runs recentes`);
+        console.log('🔍 SAMPLE: Primeiras runs do banco:', dbResult.results?.slice(0, 3).map(r => ({
+          id: r.id,
+          map_name: r.map_name,
+          tokens_earned: r.tokens_earned,
+          created_at: r.created_at,
+          created_at_date: new Date(r.created_at).toISOString()
+        })));
 
         // Processar dados do banco
         if (dbResult.results && dbResult.results.length > 0) {
@@ -113,7 +120,13 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
               timeAgo,
               timestamp: run.created_at || Date.now()
             };
-          }).filter(run => run.tokens > 0); // Apenas runs válidas
+          });
+          
+          console.log('🔄 Runs processadas antes do filtro:', activityRuns.length);
+          console.log('🔍 SAMPLE processadas:', activityRuns.slice(0, 3));
+          
+          activityRuns = activityRuns.filter(run => run.tokens > 0); // Apenas runs válidas
+          console.log('✅ Runs válidas após filtro:', activityRuns.length);
         }
 
       } catch (dbError) {
