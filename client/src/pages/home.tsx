@@ -31,19 +31,18 @@ export default function Home() {
 						<div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 rounded-3xl blur-3xl"></div>
 						<div className="relative bg-background/80 backdrop-blur border border-border/50 rounded-2xl p-8 md:p-12">
 							<div className="flex justify-center mb-6">
-								<Badge className="px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 text-primary border-primary/30">
+								<Badge className="px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium shadow-sm">
 									<Sparkles className="h-4 w-4 mr-2" />
-									WorldShards Calculator
+									{t('home.title')}
 								</Badge>
 							</div>
 							
 							<h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6">
-								Maximize Seus Lucros
+								{t('home.hero.title')}
 							</h1>
 							
 							<p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-3xl mx-auto">
-								Ferramenta completa para calcular, planejar e acompanhar suas runs no WorldShards. 
-								<span className="text-primary font-semibold"> Junte-se à comunidade!</span>
+								{t('home.hero.subtitle')}
 							</p>
 							
 							{/* Quick Action Buttons */}
@@ -51,7 +50,7 @@ export default function Home() {
 								<Link href="/perfil">
 									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8 py-6 text-lg">
 										<Calculator className="mr-2 h-5 w-5" />
-										Começar a Calcular
+										{t('home.hero.cta.start')}
 										<ArrowRight className="ml-2 h-5 w-5" />
 									</Button>
 								</Link>
@@ -59,7 +58,7 @@ export default function Home() {
 								{!isAuthenticated && (
 									<Button variant="outline" size="lg" className="px-8 py-6 text-lg border-primary/30 hover:bg-primary/10">
 										<User className="mr-2 h-5 w-5" />
-										Criar Conta Grátis
+										{t('home.hero.cta.register')}
 									</Button>
 								)}
 							</div>
@@ -71,10 +70,10 @@ export default function Home() {
 				<div className="mb-12">
 					<div className="text-center mb-8">
 						<h2 className="text-3xl font-bold text-foreground mb-4">
-							🛠️ Suas Ferramentas de Sucesso
+							🛠️ {t('home.features.title')}
 						</h2>
 						<p className="text-muted-foreground text-lg">
-							Tudo que você precisa para dominar o WorldShards em um só lugar
+							{t('home.features.subtitle')}
 						</p>
 					</div>
 					
@@ -86,16 +85,16 @@ export default function Home() {
 									<div className="p-2 bg-green-500/10 rounded-lg">
 										<Calculator className="h-6 w-6 text-green-600" />
 									</div>
-									<CardTitle className="text-green-600">Calculadora Avançada</CardTitle>
+									<CardTitle className="text-green-600">{t('home.features.calculator.title')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground mb-4">
-									Calcule seus lucros com precisão, considerando todos os fatores: investimento, gems, luck e eficiência.
+									{t('home.features.calculator.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">ROI em tempo real</Badge>
-									<Badge variant="secondary" className="text-xs">Simulação avançada</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.calculator.badge1')}</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.calculator.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
@@ -107,16 +106,16 @@ export default function Home() {
 									<div className="p-2 bg-blue-500/10 rounded-lg">
 										<Map className="h-6 w-6 text-blue-600" />
 									</div>
-									<CardTitle className="text-blue-600">Planejador de Mapas</CardTitle>
+									<CardTitle className="text-blue-600">{t('home.features.map.title')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground mb-4">
-									Registre suas runs, acompanhe estatísticas e otimize suas estratégias com dados reais.
+									{t('home.features.map.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">Histórico completo</Badge>
-									<Badge variant="secondary" className="text-xs">Métricas detalhadas</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.map.badge1')}</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.map.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
@@ -128,16 +127,16 @@ export default function Home() {
 									<div className="p-2 bg-purple-500/10 rounded-lg">
 										<BarChart3 className="h-6 w-6 text-purple-600" />
 									</div>
-									<CardTitle className="text-purple-600">Analytics & Insights</CardTitle>
+									<CardTitle className="text-purple-600">{t('home.features.analytics.title')}</CardTitle>
 								</div>
 							</CardHeader>
 							<CardContent>
 								<p className="text-muted-foreground mb-4">
-									Visualize tendências, compare performance e descubra as melhores oportunidades de lucro.
+									{t('home.features.analytics.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">Gráficos dinâmicos</Badge>
-									<Badge variant="secondary" className="text-xs">Comparações</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.analytics.badge1')}</Badge>
+									<Badge variant="secondary" className="text-xs">{t('home.features.analytics.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
@@ -155,17 +154,17 @@ export default function Home() {
 									</div>
 									<div>
 										<h2 className="text-lg font-semibold text-foreground">
-											Bem-vindo de volta, {userProfile?.username || user?.split('@')[0]}! 👋
+											{t('home.welcome.title').replace('{username}', userProfile?.username || user?.split('@')[0] || 'Player')}
 										</h2>
 										<p className="text-sm text-muted-foreground">
-											Pronto para mais uma sessão de farming lucrativo?
+											{t('home.welcome.subtitle')}
 										</p>
 									</div>
 								</div>
 								<Link href="/perfil">
 									<Button className="bg-primary/20 hover:bg-primary/30 text-primary border-primary/30">
 										<Target className="mr-2 h-4 w-4" />
-										Ir ao Perfil
+										{t('home.welcome.profile')}
 									</Button>
 								</Link>
 							</div>
@@ -181,11 +180,11 @@ export default function Home() {
 								<Globe className="h-6 w-6 text-orange-600" />
 							</div>
 							<h2 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-								🔥 Atividade da Comunidade
+								🔥 {t('home.community.title')}
 							</h2>
 						</div>
 						<p className="text-muted-foreground text-lg mb-6">
-							Veja em tempo real o que outros players estão fazendo. Inspire-se e compita!
+							{t('home.community.subtitle')}
 						</p>
 						
 						{/* Community Stats - Dados Reais */}
@@ -205,21 +204,21 @@ export default function Home() {
 					<Card className="bg-gradient-to-br from-primary/10 via-blue-500/10 to-purple-500/10 border border-primary/30">
 						<CardContent className="p-8 text-center">
 							<h3 className="text-2xl font-bold text-foreground mb-4">
-								Pronto para Começar Sua Jornada? 🚀
+								{t('home.cta.title')}
 							</h3>
 							<p className="text-muted-foreground mb-6 text-lg">
-								Junte-se a centenas de players que já estão maximizando seus lucros no WorldShards
+								{t('home.cta.subtitle')}
 							</p>
 							<div className="flex flex-col sm:flex-row gap-4 justify-center">
 								<Link href="/perfil">
 									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8">
 										<Zap className="mr-2 h-5 w-5" />
-										Experimentar Agora (Grátis)
+										{t('home.cta.try')}
 									</Button>
 								</Link>
 								<Button variant="outline" size="lg" className="px-8 border-primary/30 hover:bg-primary/10">
 									<Users className="mr-2 h-5 w-5" />
-									Ver Mais Features
+									{t('home.cta.features')}
 								</Button>
 							</div>
 						</CardContent>
@@ -232,16 +231,16 @@ export default function Home() {
 				<div className="container mx-auto px-4">
 					<div className="text-center">
 						<h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-3">
-							WorldShards Calculator
+							{t('home.title')}
 						</h2>
 						<p className="text-muted-foreground mb-6">
-							A ferramenta definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.
+							{t('home.footer.description')}
 						</p>
 						<div className="flex justify-center space-x-6 text-sm text-muted-foreground">
-							<span>✨ Cálculos Precisos</span>
-							<span>📊 Analytics Avançados</span>
-							<span>🌍 Comunidade Ativa</span>
-							<span>🆓 Totalmente Gratuito</span>
+							<span>✨ {t('home.footer.feature1')}</span>
+							<span>📊 {t('home.footer.feature2')}</span>
+							<span>🌍 {t('home.footer.feature3')}</span>
+							<span>🆓 {t('home.footer.feature4')}</span>
 						</div>
 					</div>
 				</div>
