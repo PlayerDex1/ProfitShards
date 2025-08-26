@@ -185,7 +185,7 @@ export const Results = memo(function Results({
 
   const performanceData = history.slice(-6).map((item, index) => ({
     name: new Date(item.timestamp).toLocaleDateString('pt-BR', { month: 'short' }),
-    profit: item.results.finalProfit
+    profit: item.results && typeof item.results.finalProfit === 'number' ? item.results.finalProfit : 0
   }));
 
   return (
