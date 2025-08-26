@@ -6,21 +6,36 @@ const MAX_HISTORY_ITEMS = 100;
 export function forceCleanCorruptedHistory(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return;
+    if (!raw) {
+      console.log('🧹 forceCleanCorruptedHistory: Nenhum histórico encontrado no localStorage');
+      return;
+    }
     
     const items: any[] = JSON.parse(raw);
-    const validItems = items.filter(item => {
-      // Verificação mais rigorosa de integridade dos dados
-      if (!item || typeof item !== 'object') return false;
-      if (typeof item.timestamp !== 'number') return false;
-      if (!item.results || typeof item.results !== 'object') return false;
-      if (typeof item.results.finalProfit !== 'number') return false;
-      if (!item.formData || typeof item.formData !== 'object') return false;
-      if (typeof item.formData.investment !== 'number') return false;
-      if (typeof item.formData.gemsConsumed !== 'number') return false;
+    console.log(`🔍 forceCleanCorruptedHistory: Encontrados ${items.length} itens para validar`);
+    
+    const validItems = items.filter((item, index) => {
+      // Log detalhado do item sendo validado
+      const checks = {
+        isObject: item && typeof item === 'object',
+        hasTimestamp: typeof item?.timestamp === 'number',
+        hasResults: item?.results && typeof item.results === 'object',
+        hasFinalProfit: typeof item?.results?.finalProfit === 'number',
+        hasFormData: item?.formData && typeof item.formData === 'object',
+        hasInvestment: typeof item?.formData?.investment === 'number',
+        hasGemsConsumed: typeof item?.formData?.gemsConsumed === 'number'
+      };
       
-      return true;
+      const isValid = Object.values(checks).every(Boolean);
+      
+      if (!isValid) {
+        console.log(`❌ Item ${index} inválido:`, { item, checks });
+      }
+      
+      return isValid;
     });
+    
+    console.log(`✅ forceCleanCorruptedHistory: ${validItems.length} itens válidos de ${items.length} totais`);
     
     if (validItems.length !== items.length) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(validItems));
@@ -110,5 +125,46 @@ export function clearHistoryRemote(): void {
 // For compatibility - no-op since we're using localStorage
 export async function refreshHistory(): Promise<void> {
   // No-op for localStorage implementation
+}
+
+export function createTestHistoryItem(): void {
+  const testItem = {
+    timestamp: Date.now(),
+    formData: {
+      investment: 1000,
+      gemsPurchased: 100,
+      gemsRemaining: 50,
+      gemsConsumed: 50,
+      tokensEquipment: 1000,
+      tokensFarmed: 2000,
+      loadsUsed: 10,
+      tokenPrice: 1.5,
+      gemPrice: 10
+    },
+    results: {
+      totalTokens: 3000,
+      tokensEquipment: 1000,
+      tokensFarmed: 2000,
+      totalTokenValue: 4500,
+      gemsCost: 500,
+      grossProfit: 4500,
+      rebuyCost: 0,
+      finalProfit: 4000,
+      netProfit: 4000,
+      roi: 400,
+      efficiency: 200
+    }
+  };
+  
+  console.log('🧪 Criando item de teste:', testItem);
+  appendHistoryItem(testItem);
+  console.log('🧪 Histórico após item de teste:', getHistoryCached());
+}
+
+// Adicionar ao window para debug no console
+if (typeof window !== 'undefined') {
+  (window as any).createTestHistoryItem = createTestHistoryItem;
+  (window as any).getHistoryCached = getHistoryCached;
+  (window as any).forceCleanCorruptedHistory = forceCleanCorruptedHistory;
 }
 
