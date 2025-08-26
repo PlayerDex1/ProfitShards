@@ -57,110 +57,70 @@ export async function onRequestGet({ env }: { env: Env }) {
     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
     const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
 
-    // A. TOTAL DE RUNS (feed_runs + user_map_drops)
-    const feedRunsCount = await env.DB.prepare(`
-      SELECT COUNT(*) as count FROM feed_runs 
+    // A. TOTAL DE CÁLCULOS (apenas dados reais dos usuários)
+    const totalRunsQuery = await env.DB.prepare(`
+      SELECT COUNT(*) as count FROM user_calculations 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const mapDropsCount = await env.DB.prepare(`
-      SELECT COUNT(*) as count FROM user_map_drops 
-      WHERE created_at > ?
-    `).bind(sevenDaysAgo).first();
+    const totalRuns = totalRunsQuery?.count || 0;
 
-    const totalRuns = (feedRunsCount?.count || 0) + (mapDropsCount?.count || 0);
-
-    // B. LUCRO TOTAL (baseado em tokens dos últimos 7 dias)
+    // B. LUCRO TOTAL (baseado em cálculos reais dos usuários)
     const profitData = await env.DB.prepare(`
-      SELECT SUM(tokens) as total_tokens FROM feed_runs 
+      SELECT SUM(final_profit) as total_profit FROM user_calculations 
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const mapProfitData = await env.DB.prepare(`
-      SELECT SUM(tokens_earned) as total_tokens FROM user_map_drops 
-      WHERE created_at > ?
-    `).bind(sevenDaysAgo).first();
-
-    const totalTokens = (profitData?.total_tokens || 0) + (mapProfitData?.total_tokens || 0);
-    // Assumindo 1 token = $1000 em valor estimado
-    const totalProfit = totalTokens * 1000;
+    const totalProfit = profitData?.total_profit || 0;
 
     // C. PLAYERS ATIVOS (únicos nas últimas 24h)
     const activePlayersQuery = await env.DB.prepare(`
-      SELECT COUNT(DISTINCT user_id) as count FROM user_activity 
+      SELECT COUNT(DISTINCT user_id) as count FROM user_calculations 
       WHERE created_at > ?
     `).bind(twentyFourHoursAgo).first();
 
     const activePlayers = activePlayersQuery?.count || 0;
 
-    // D. TAXA DE SUCESSO (baseada em efficiency > 0.7)
+    // D. TAXA DE SUCESSO (baseada em ROI > 0)
     const successQuery = await env.DB.prepare(`
       SELECT 
         COUNT(*) as total,
-        COUNT(CASE WHEN efficiency_rating > 0.7 THEN 1 END) as successful
-      FROM user_map_drops 
-      WHERE created_at > ? AND efficiency_rating IS NOT NULL
+        COUNT(CASE WHEN final_profit > 0 THEN 1 END) as successful
+      FROM user_calculations 
+      WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
     const successRate = successQuery?.total > 0 
       ? Math.round((successQuery.successful / successQuery.total) * 100)
-      : 98; // fallback padrão
+      : 0; // começar com 0 para dados reais
 
-    // E. TOP MAPAS (mais populares)
-    const topMapsQuery = await env.DB.prepare(`
+    // E. TOP ESTRATÉGIAS (baseado em ROI médio)
+    const topStrategiesQuery = await env.DB.prepare(`
       SELECT 
-        map_name as map,
+        AVG(roi) as avg_roi,
         COUNT(*) as count,
-        AVG(tokens_earned) as avg_tokens
-      FROM user_map_drops 
-      WHERE created_at > ?
-      GROUP BY map_name 
-      ORDER BY count DESC 
+        AVG(efficiency) as avg_efficiency
+      FROM user_calculations 
+      WHERE created_at > ? AND roi > 0
+      GROUP BY ROUND(investment / 1000) * 1000
+      ORDER BY avg_roi DESC 
       LIMIT 5
     `).bind(sevenDaysAgo).all();
 
-    const feedMapsQuery = await env.DB.prepare(`
-      SELECT 
-        map_name as map,
-        COUNT(*) as count,
-        AVG(tokens) as avg_tokens
-      FROM feed_runs 
-      WHERE created_at > ?
-      GROUP BY map_name 
-      ORDER BY count DESC 
-      LIMIT 5
-    `).bind(sevenDaysAgo).all();
-
-    // Combinar e agregar dados de mapas
-    const mapCombined: Record<string, { count: number; totalTokens: number; entries: number }> = {};
-    
-    [...(topMapsQuery.results || []), ...(feedMapsQuery.results || [])].forEach(row => {
-      const map = row.map as string;
-      if (!mapCombined[map]) {
-        mapCombined[map] = { count: 0, totalTokens: 0, entries: 0 };
-      }
-      mapCombined[map].count += (row.count as number);
-      mapCombined[map].totalTokens += (row.avg_tokens as number) * (row.count as number);
-      mapCombined[map].entries += (row.count as number);
-    });
-
-    const topMaps = Object.entries(mapCombined)
-      .map(([map, data]) => ({
-        map,
-        count: data.count,
-        avgTokens: Math.round(data.totalTokens / data.entries) || 0
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 5);
+    const topMaps = (topStrategiesQuery.results || []).map((row, index) => ({
+      map: `Strategy ${index + 1}`,
+      count: row.count as number,
+      avgTokens: Math.round((row.avg_roi as number) || 0)
+    }));
 
     // F. EFICIÊNCIA MÉDIA
     const efficiencyQuery = await env.DB.prepare(`
-      SELECT AVG(efficiency_rating) as avg_efficiency 
-      FROM user_map_drops 
-      WHERE created_at > ? AND efficiency_rating IS NOT NULL
+      SELECT AVG(efficiency) as avg_efficiency 
+      FROM user_calculations 
+      WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    const avgEfficiency = Math.round((efficiencyQuery?.avg_efficiency || 0.85) * 100);
+    const avgEfficiency = Math.round((efficiencyQuery?.avg_efficiency || 0) * 100);
 
     // G. TOTAL DE CÁLCULOS
     const calculationsQuery = await env.DB.prepare(`
@@ -216,26 +176,21 @@ export async function onRequestGet({ env }: { env: Env }) {
   } catch (error) {
     console.error('❌ Erro ao coletar community stats:', error);
     
-    // FALLBACK: Retorna stats realistas baseadas em estimativas
-    const fallbackStats: CommunityStats = {
-      totalRuns: 1200 + Math.floor(Math.random() * 300),
-      totalProfit: 45000000 + Math.floor(Math.random() * 10000000),
-      activePlayers: 350 + Math.floor(Math.random() * 100),
-      successRate: 96 + Math.floor(Math.random() * 4),
-      topMaps: [
-        { map: 'Medium Map', count: 450, avgTokens: 185 },
-        { map: 'Large Map', count: 380, avgTokens: 320 },
-        { map: 'Small Map', count: 220, avgTokens: 95 },
-        { map: 'XLarge Map', count: 150, avgTokens: 650 }
-      ],
-      avgEfficiency: 87 + Math.floor(Math.random() * 10),
-      totalCalculations: 2500 + Math.floor(Math.random() * 500),
+    // FALLBACK: Retorna stats zeradas para começar do zero
+    const emptyStats: CommunityStats = {
+      totalRuns: 0,
+      totalProfit: 0,
+      activePlayers: 0,
+      successRate: 0,
+      topMaps: [],
+      avgEfficiency: 0,
+      totalCalculations: 0,
       lastUpdated: new Date().toISOString()
     };
 
     return new Response(JSON.stringify({
       success: true,
-      stats: fallbackStats,
+      stats: emptyStats,
       fallback: true,
       error: error instanceof Error ? error.message : 'Unknown error',
       timestamp: new Date().toISOString()
@@ -243,7 +198,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       status: 200,
       headers: { 
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=60',
         'Access-Control-Allow-Origin': '*'
       }
     });

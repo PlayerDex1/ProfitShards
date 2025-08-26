@@ -3,6 +3,54 @@ import type { HistoryItem } from '@/types/calculator';
 const STORAGE_KEY = 'worldshards-history';
 const MAX_HISTORY_ITEMS = 100;
 
+// Sync statistics with backend
+async function syncStatistics(action: 'add' | 'delete' | 'clear', item?: HistoryItem): Promise<void> {
+  try {
+    if (action === 'clear') {
+      // Clear all user statistics
+      await fetch('/api/admin/clear-user-stats', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: getUserId() })
+      });
+      return;
+    }
+
+    if (!item) return;
+
+    await fetch('/api/admin/sync-history-stats', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action,
+        userId: getUserId(),
+        timestamp: item.timestamp,
+        data: {
+          investment: item.formData.investment,
+          finalProfit: item.results.finalProfit,
+          roi: item.results.roi,
+          efficiency: item.results.efficiency,
+          tokensEquipment: item.formData.tokensEquipment,
+          tokensFarmed: item.formData.tokensFarmed
+        }
+      })
+    });
+  } catch (error) {
+    console.log('⚠️ Failed to sync statistics:', error);
+    // Don't throw - statistics sync is not critical
+  }
+}
+
+// Get consistent user ID for statistics
+function getUserId(): string {
+  let userId = localStorage.getItem('user-stats-id');
+  if (!userId) {
+    userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('user-stats-id', userId);
+  }
+  return userId;
+}
+
 export function forceCleanCorruptedHistory(): void {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
@@ -79,6 +127,9 @@ export function appendHistoryItem(item: HistoryItem): void {
     
     localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
     
+    // Sync with statistics (send to backend)
+    syncStatistics('add', item);
+    
     // Dispatch event to update UI
     window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
   } catch (error) {
@@ -89,8 +140,15 @@ export function appendHistoryItem(item: HistoryItem): void {
 export function deleteHistoryItem(timestamp: number): void {
   try {
     const history = getHistoryCached();
+    const itemToDelete = history.find(item => item.timestamp === timestamp);
     const filtered = history.filter(item => item.timestamp !== timestamp);
+    
     localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+    
+    // Sync with statistics (remove from backend)
+    if (itemToDelete) {
+      syncStatistics('delete', itemToDelete);
+    }
     
     // Dispatch event to update UI
     window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
@@ -101,6 +159,9 @@ export function deleteHistoryItem(timestamp: number): void {
 
 export function clearHistoryRemote(): void {
   try {
+    // Sync with statistics (clear all)
+    syncStatistics('clear');
+    
     localStorage.removeItem(STORAGE_KEY);
     
     // Dispatch event to update UI
