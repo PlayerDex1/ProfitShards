@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { CompactStats } from "@/components/CompactStats";
 
 interface ActivityRun {
   id: string;
@@ -280,15 +281,18 @@ export function ActivityStream() {
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
                 🔥 Feed da Comunidade
               </CardTitle>
-              <p className="text-muted-foreground mt-1 text-base">
-                Últimas atividades em tempo real • {runs.length} runs ativas
-                {lastUpdate && (
-                  <span className="ml-2 text-xs">
-                    • {lastUpdate}
-                    {isCached && <span className="text-orange-500"> (cache)</span>}
-                  </span>
-                )}
-              </p>
+              <div className="flex items-center space-x-4 mt-2">
+                <p className="text-muted-foreground text-sm">
+                  Últimas atividades em tempo real • {runs.length} runs ativas
+                  {lastUpdate && (
+                    <span className="ml-2 text-xs">
+                      • {lastUpdate}
+                      {isCached && <span className="text-orange-500"> (cache)</span>}
+                    </span>
+                  )}
+                </p>
+                <CompactStats />
+              </div>
             </div>
           </div>
           
