@@ -112,8 +112,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       // Active users (últimas 24h)
       env.DB.prepare('SELECT COUNT(DISTINCT user_id) as count FROM user_activity WHERE created_at > ?').bind(twentyFourHoursAgo).first(),
       
-      // Success rate (efficiency > 0.7)
-      env.DB.prepare('SELECT COUNT(*) as total, SUM(CASE WHEN efficiency > 0.7 THEN 1 ELSE 0 END) as success FROM user_map_drops WHERE created_at > ?').bind(sevenDaysAgo).first()
+      // Success rate (efficiency_rating > 0.7)
+      env.DB.prepare('SELECT COUNT(*) as total, SUM(CASE WHEN efficiency_rating > 0.7 THEN 1 ELSE 0 END) as success FROM user_map_drops WHERE created_at > ?').bind(sevenDaysAgo).first()
     ]);
 
     const totalRuns = (communityStatsQueries[0]?.count || 0) + (communityStatsQueries[1]?.count || 0);
