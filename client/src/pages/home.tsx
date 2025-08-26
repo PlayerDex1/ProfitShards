@@ -24,7 +24,7 @@ export default function Home() {
 		<div className="min-h-screen bg-background">
 			<Header />
 			
-			<div className="container mx-auto px-4 py-6">
+			<div className="container mx-auto px-4 py-8">
 				{/* Hero Section - Boas-vindas */}
 				<div className="text-center mb-12">
 					<div className="relative">
@@ -45,19 +45,19 @@ export default function Home() {
 								{t('home.hero.subtitle')}
 							</p>
 							
-							{/* Quick Action Buttons */}
-							<div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+							{/* Quick Action Buttons - Thumb-Friendly */}
+							<div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
 								<Link href="/perfil">
-									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8 py-6 text-lg">
-										<Calculator className="mr-2 h-5 w-5" />
+									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-10 py-4 text-lg font-semibold min-h-[56px] min-w-[200px] shadow-lg hover:shadow-xl transition-all duration-200">
+										<Calculator className="mr-3 h-6 w-6" />
 										{t('home.hero.cta.start')}
-										<ArrowRight className="ml-2 h-5 w-5" />
+										<ArrowRight className="ml-3 h-6 w-6" />
 									</Button>
 								</Link>
 								
 								{!isAuthenticated && (
-									<Button variant="outline" size="lg" className="px-8 py-6 text-lg border-primary/30 hover:bg-primary/10">
-										<User className="mr-2 h-5 w-5" />
+									<Button variant="outline" size="lg" className="px-10 py-4 text-lg font-semibold border-primary/30 hover:bg-primary/10 min-h-[56px] min-w-[200px] hover:border-primary/50 transition-all duration-200">
+										<User className="mr-3 h-6 w-6" />
 										{t('home.hero.cta.register')}
 									</Button>
 								)}
@@ -67,76 +67,76 @@ export default function Home() {
 				</div>
 
 				{/* Features Preview */}
-				<div className="mb-12">
-					<div className="text-center mb-8">
-						<h2 className="text-3xl font-bold text-foreground mb-4">
+				<div className="mb-16">
+					<div className="text-center mb-12">
+						<h2 className="text-3xl font-bold text-foreground mb-6">
 							🛠️ {t('home.features.title')}
 						</h2>
-						<p className="text-muted-foreground text-lg">
+						<p className="text-muted-foreground text-lg max-w-2xl mx-auto">
 							{t('home.features.subtitle')}
 						</p>
 					</div>
 					
-					<div className="grid md:grid-cols-3 gap-6">
+					<div className="grid md:grid-cols-3 gap-8">
 						{/* Calculator Feature */}
-						<Card className="relative overflow-hidden border-green-500/20 bg-gradient-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-							<CardHeader>
-								<div className="flex items-center space-x-3">
-									<div className="p-2 bg-green-500/10 rounded-lg">
-										<Calculator className="h-6 w-6 text-green-600" />
+						<Card className="relative overflow-hidden border-green-500/20 bg-gradient-to-br from-green-50/50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
+							<CardHeader className="p-6">
+								<div className="flex items-center space-x-3 mb-2">
+									<div className="p-3 bg-green-500/10 rounded-lg">
+										<Calculator className="h-7 w-7 text-green-600" />
 									</div>
-									<CardTitle className="text-green-600">{t('home.features.calculator.title')}</CardTitle>
+									<CardTitle className="text-green-600 text-xl">{t('home.features.calculator.title')}</CardTitle>
 								</div>
 							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground mb-4">
+							<CardContent className="p-6 pt-0">
+								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
 									{t('home.features.calculator.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">{t('home.features.calculator.badge1')}</Badge>
-									<Badge variant="secondary" className="text-xs">{t('home.features.calculator.badge2')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.calculator.badge1')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.calculator.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
 
 						{/* Map Planner Feature */}
-						<Card className="relative overflow-hidden border-blue-500/20 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-							<CardHeader>
-								<div className="flex items-center space-x-3">
-									<div className="p-2 bg-blue-500/10 rounded-lg">
-										<Map className="h-6 w-6 text-blue-600" />
+						<Card className="relative overflow-hidden border-blue-500/20 bg-gradient-to-br from-blue-50/50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
+							<CardHeader className="p-6">
+								<div className="flex items-center space-x-3 mb-2">
+									<div className="p-3 bg-blue-500/10 rounded-lg">
+										<Map className="h-7 w-7 text-blue-600" />
 									</div>
-									<CardTitle className="text-blue-600">{t('home.features.map.title')}</CardTitle>
+									<CardTitle className="text-blue-600 text-xl">{t('home.features.map.title')}</CardTitle>
 								</div>
 							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground mb-4">
+							<CardContent className="p-6 pt-0">
+								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
 									{t('home.features.map.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">{t('home.features.map.badge1')}</Badge>
-									<Badge variant="secondary" className="text-xs">{t('home.features.map.badge2')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.map.badge1')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.map.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
 
 						{/* Analytics Feature */}
-						<Card className="relative overflow-hidden border-purple-500/20 bg-gradient-to-br from-purple-50/50 to-violet-50/50 dark:from-purple-950/20 dark:to-violet-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-							<CardHeader>
-								<div className="flex items-center space-x-3">
-									<div className="p-2 bg-purple-500/10 rounded-lg">
-										<BarChart3 className="h-6 w-6 text-purple-600" />
+						<Card className="relative overflow-hidden border-purple-500/20 bg-gradient-to-br from-purple-50/50 to-violet-50/50 dark:from-purple-950/20 dark:to-violet-950/20 hover:shadow-lg hover:scale-[1.02] transition-all duration-300 min-h-[280px]">
+							<CardHeader className="p-6">
+								<div className="flex items-center space-x-3 mb-2">
+									<div className="p-3 bg-purple-500/10 rounded-lg">
+										<BarChart3 className="h-7 w-7 text-purple-600" />
 									</div>
-									<CardTitle className="text-purple-600">{t('home.features.analytics.title')}</CardTitle>
+									<CardTitle className="text-purple-600 text-xl">{t('home.features.analytics.title')}</CardTitle>
 								</div>
 							</CardHeader>
-							<CardContent>
-								<p className="text-muted-foreground mb-4">
+							<CardContent className="p-6 pt-0">
+								<p className="text-muted-foreground mb-6 text-base leading-relaxed">
 									{t('home.features.analytics.description')}
 								</p>
 								<div className="flex flex-wrap gap-2">
-									<Badge variant="secondary" className="text-xs">{t('home.features.analytics.badge1')}</Badge>
-									<Badge variant="secondary" className="text-xs">{t('home.features.analytics.badge2')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.analytics.badge1')}</Badge>
+									<Badge variant="secondary" className="text-sm px-3 py-1">{t('home.features.analytics.badge2')}</Badge>
 								</div>
 							</CardContent>
 						</Card>
@@ -209,15 +209,15 @@ export default function Home() {
 							<p className="text-muted-foreground mb-6 text-lg">
 								{t('home.cta.subtitle')}
 							</p>
-							<div className="flex flex-col sm:flex-row gap-4 justify-center">
+							<div className="flex flex-col sm:flex-row gap-6 justify-center">
 								<Link href="/perfil">
-									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-8">
-										<Zap className="mr-2 h-5 w-5" />
+									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-10 py-4 text-lg font-semibold min-h-[52px] min-w-[180px] shadow-lg hover:shadow-xl transition-all duration-200">
+										<Zap className="mr-3 h-5 w-5" />
 										{t('home.cta.try')}
 									</Button>
 								</Link>
-								<Button variant="outline" size="lg" className="px-8 border-primary/30 hover:bg-primary/10">
-									<Users className="mr-2 h-5 w-5" />
+								<Button variant="outline" size="lg" className="px-10 py-4 text-lg font-semibold border-primary/30 hover:bg-primary/10 min-h-[52px] min-w-[180px] hover:border-primary/50 transition-all duration-200">
+									<Users className="mr-3 h-5 w-5" />
 									{t('home.cta.features')}
 								</Button>
 							</div>

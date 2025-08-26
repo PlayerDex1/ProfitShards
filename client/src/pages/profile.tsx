@@ -74,9 +74,9 @@ export default function Profile() {
 		<div className="min-h-screen bg-background">
 			<Header />
 			
-			<main className="container mx-auto px-4 py-6">
+			<main className="container mx-auto px-4 py-8">
 				{/* Profile Header */}
-				<div className="mb-6">
+				<div className="mb-8">
 					<div className="flex items-center justify-between">
 						<div className="flex items-center space-x-4">
 							<div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
@@ -100,21 +100,25 @@ export default function Profile() {
 					</div>
 				</div>
 
-				{/* Tabs Navigation */}
-				<Card className="mb-6">
-					<CardContent className="p-4">
-						<div className="flex flex-wrap gap-2">
+				{/* Tabs Navigation - Melhoradas para Mobile */}
+				<Card className="mb-8">
+					<CardContent className="p-6">
+						<div className="flex flex-wrap gap-3">
 							{tabs.map(tab => {
 								const Icon = tab.icon;
 								return (
 									<Button
 										key={tab.id}
 										variant={activeTab === tab.id ? "default" : "ghost"}
-										size="sm"
+										size="lg"
 										onClick={() => setActiveTab(tab.id)}
-										className="flex items-center space-x-2"
+										className={`flex items-center space-x-3 min-h-[48px] px-6 py-3 text-base font-medium transition-all duration-200 ${
+											activeTab === tab.id 
+												? 'shadow-md scale-[1.02]' 
+												: 'hover:scale-[1.01] hover:shadow-sm'
+										}`}
 									>
-										<Icon className="h-4 w-4" />
+										<Icon className="h-5 w-5" />
 										<span>{tab.label}</span>
 									</Button>
 								);

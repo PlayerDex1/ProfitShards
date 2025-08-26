@@ -274,10 +274,10 @@ export function ActivityStream() {
           <div className="flex items-center space-x-2">
             <Button
               variant="outline"
-              size="sm"
+              size="lg"
               onClick={refreshFeed}
               disabled={isRefreshing}
-              className="gap-2"
+              className="gap-2 min-h-[44px] px-4 hover:shadow-sm transition-all duration-200"
             >
               <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
               Atualizar
