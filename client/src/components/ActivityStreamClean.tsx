@@ -16,7 +16,6 @@ interface ActivityRun {
   level?: string;        // Level I-V
   tier?: string;         // Tier I-III
   charge?: number;       // Carga
-  playerName?: string;   // Nome do usuário
 }
 
 interface ActivityStreamResponse {
@@ -28,24 +27,15 @@ interface ActivityStreamResponse {
   fallback?: boolean;
 }
 
-// 🎯 Card Clean - Layout Horizontal Igual ao Planejador
+// 🎯 Card Clean - Layout Horizontal Limpo
 const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
-  // 🎯 FASE 2: Usar playerName da API ou fallback
-  const playerName = run.playerName || (run.id.includes('demo') ? 'demo_user' : 'Player');
+  // Extrair player do email (temporário até termos campo dedicado)
+  const playerName = 'mergano'; // Placeholder - será dinâmico
 
   // Formatar data
   const formatDate = (timestamp: number) => {
     const date = new Date(timestamp);
     return date.toISOString().split('T')[0]; // YYYY-MM-DD
-  };
-
-  // Formatar horário
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString('pt-BR', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
-    });
   };
 
   return (
@@ -71,7 +61,7 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
         <div>
           <div className="text-slate-400 text-xs uppercase tracking-wide mb-1 font-medium">MAP</div>
           <div className="bg-slate-600 text-white px-2 py-1 rounded text-center font-medium text-xs">
-            {run.map.replace(' Map', '')}
+            {run.map}
           </div>
         </div>
 
@@ -108,30 +98,6 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
           </div>
         </div>
       </div>
-
-      {/* Segunda linha com informações adicionais */}
-      <div className="mt-3 pt-3 border-t border-slate-700">
-        <div className="grid grid-cols-4 gap-4 text-xs">
-          <div>
-            <span className="text-slate-400">Luck:</span>
-            <span className="text-white ml-1 font-medium">{run.luck.toLocaleString()}</span>
-          </div>
-          <div>
-            <span className="text-slate-400">Efficiency:</span>
-            <span className="text-white ml-1 font-medium">
-              {run.luck > 0 ? (run.tokens / run.luck * 1000).toFixed(1) : '0.0'}
-            </span>
-          </div>
-          <div>
-            <span className="text-slate-400">Time:</span>
-            <span className="text-white ml-1 font-medium">{formatTime(run.timestamp)}</span>
-          </div>
-          <div>
-            <span className="text-slate-400">Status:</span>
-            <span className="text-green-400 ml-1 font-medium">{run.timeAgo}</span>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
@@ -147,17 +113,10 @@ const RunSkeleton = () => (
         </div>
       ))}
     </div>
-    <div className="mt-3 pt-3 border-t border-slate-700">
-      <div className="grid grid-cols-4 gap-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-3 bg-slate-700 rounded w-16"></div>
-        ))}
-      </div>
-    </div>
   </div>
 );
 
-export function ActivityStream() {
+export function ActivityStreamClean() {
   const [runs, setRuns] = useState<ActivityRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -217,10 +176,10 @@ export function ActivityStream() {
           <div>
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <Activity className="w-5 h-5 text-primary" />
-              Feed de Atividade - Layout Clean
+              Feed de Atividade
             </CardTitle>
             <p className="text-sm text-muted-foreground mt-1">
-              Runs da comunidade com Level/Tier/Charge (última atualização: {lastUpdate || 'Carregando...'})
+              Runs recentes da comunidade (última atualização: {lastUpdate || 'Carregando...'})
             </p>
           </div>
           <Button 
@@ -279,7 +238,6 @@ export function ActivityStream() {
               <div className="flex items-center space-x-4">
                 <span>📊 {runs.length} runs encontradas</span>
                 <span>🔄 Auto-refresh: 30s</span>
-                <span>🎯 Layout: Clean Horizontal</span>
               </div>
               <div className="flex items-center space-x-1">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>

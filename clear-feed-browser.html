@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🗑️ Limpeza do Feed - Admin</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 600px; 
+            margin: 50px auto; 
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            background: #2a2a2a;
+            padding: 30px;
+            border-radius: 10px;
+            border: 2px solid #4a4a4a;
+        }
+        button {
+            background: #dc2626;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px 0;
+            width: 100%;
+        }
+        button:hover {
+            background: #b91c1c;
+        }
+        .warning {
+            background: #7c2d12;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 2px solid #ea580c;
+        }
+        .result {
+            background: #1e3a8a;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            border: 2px solid #3b82f6;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗑️ Limpeza Completa do Feed</h1>
+        
+        <div class="warning">
+            <h3>⚠️ ATENÇÃO!</h3>
+            <p>Esta ação vai <strong>deletar TODOS os dados</strong> do feed permanentemente.</p>
+            <p>✅ <strong>Só execute se você for admin</strong> (profitshards@gmail.com)</p>
+        </div>
+
+        <h3>📊 Status Atual:</h3>
+        <button onclick="checkFeedStatus()">🔍 Verificar Registros Atuais</button>
+        
+        <div id="currentStatus" class="result hidden"></div>
+
+        <h3>🗑️ Limpeza:</h3>
+        <button onclick="clearFeed()">🗑️ LIMPAR TODOS OS DADOS</button>
+        
+        <div id="clearResult" class="result hidden"></div>
+
+        <h3>✅ Verificação Final:</h3>
+        <button onclick="verifyClean()">🔍 Verificar se foi Limpo</button>
+        
+        <div id="verifyResult" class="result hidden"></div>
+    </div>
+
+    <script>
+        async function checkFeedStatus() {
+            const statusDiv = document.getElementById('currentStatus');
+            statusDiv.className = 'result';
+            statusDiv.textContent = '🔍 Verificando registros atuais...';
+            
+            try {
+                const response = await fetch('/api/feed/feed-runs', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    statusDiv.textContent = `📊 REGISTROS ATUAIS: ${data.runs.length}\n\n` + 
+                                          JSON.stringify(data, null, 2);
+                } else {
+                    statusDiv.textContent = '❌ Erro ao verificar: ' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                statusDiv.textContent = '❌ Erro de rede: ' + error.message;
+            }
+        }
+
+        async function clearFeed() {
+            if (!confirm('⚠️ TEM CERTEZA? Esta ação vai deletar TODOS os dados do feed!')) {
+                return;
+            }
+            
+            if (!confirm('🔥 ÚLTIMA CHANCE! Confirma limpeza TOTAL do feed?')) {
+                return;
+            }
+
+            const resultDiv = document.getElementById('clearResult');
+            resultDiv.className = 'result';
+            resultDiv.textContent = '🗑️ Executando limpeza...';
+            
+            try {
+                const response = await fetch('/api/admin/clear-feed', {
+                    method: 'POST',
+                    credentials: 'include',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.textContent = `✅ FEED LIMPO COM SUCESSO!\n\n` +
+                                          `📊 Registros deletados: ${data.stats.recordsDeleted}\n` +
+                                          `🕐 Timestamp: ${data.timestamp}\n\n` +
+                                          JSON.stringify(data, null, 2);
+                } else {
+                    resultDiv.textContent = '❌ Erro na limpeza: ' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                resultDiv.textContent = '❌ Erro de rede: ' + error.message;
+            }
+        }
+
+        async function verifyClean() {
+            const verifyDiv = document.getElementById('verifyResult');
+            verifyDiv.className = 'result';
+            verifyDiv.textContent = '🔍 Verificando limpeza...';
+            
+            try {
+                const response = await fetch('/api/feed/feed-runs', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.runs.length === 0) {
+                        verifyDiv.textContent = `✅ FEED TOTALMENTE LIMPO!\n\n` +
+                                              `📊 Registros restantes: ${data.runs.length}\n` +
+                                              `🎯 Status: Feed pronto para novos usuários!`;
+                    } else {
+                        verifyDiv.textContent = `⚠️ AINDA HÁ ${data.runs.length} REGISTROS\n\n` + 
+                                              JSON.stringify(data, null, 2);
+                    }
+                } else {
+                    verifyDiv.textContent = '❌ Erro na verificação: ' + JSON.stringify(data, null, 2);
+                }
+            } catch (error) {
+                verifyDiv.textContent = '❌ Erro de rede: ' + error.message;
+            }
+        }
+
+        // Auto-verificar status ao carregar
+        window.onload = () => {
+            checkFeedStatus();
+        };
+    </script>
+</body>
+</html>

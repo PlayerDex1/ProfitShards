@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/hooks/usePreferences";
 import { useI18n } from "@/i18n";
-import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory } from "@/lib/mapDropsHistory";
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "@/lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
 import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
@@ -16,20 +16,29 @@ type SizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save } = usePreferences();
   const { t } = useI18n();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, userProfile } = useAuth();
   const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
   const [history, setHistory] = useState(getMapDropsHistory());
+  const [groupedHistory, setGroupedHistory] = useState(getMapDropsHistoryGroupedByDay());
   const { totalLuck } = useEquipment();
   const [luck, setLuck] = useState<number>(prefs.savedLuck || totalLuck || 0);
   const [status, setStatus] = useState<'excellent' | 'positive' | 'negative' | 'neutral'>('neutral');
   const [saveMessage, setSaveMessage] = useState<string>('');
   const [isEditingLuck, setIsEditingLuck] = useState<boolean>(false);
   const [tempLuck, setTempLuck] = useState<number>(luck);
+  
+  // 🆕 Novos campos para Level/Tier/Charge
+  const [level, setLevel] = useState<string>('I');
+  const [tier, setTier] = useState<string>('I');
+  const [charge, setCharge] = useState<number>(0);
 
   useEffect(() => {
-    const onUpd = () => setHistory(getMapDropsHistory());
+    const onUpd = () => {
+      setHistory(getMapDropsHistory());
+      setGroupedHistory(getMapDropsHistoryGroupedByDay());
+    };
     window.addEventListener('worldshards-mapdrops-updated', onUpd);
     return () => window.removeEventListener('worldshards-mapdrops-updated', onUpd);
   }, []);
@@ -42,17 +51,8 @@ export function MapPlanner({}: MapPlannerProps) {
     }
   }, [totalLuck, prefs.savedLuck]);
 
-  // Auto-calculate loads based on map size
-  useEffect(() => {
-    const loadsPerMap = {
-      small: 4,    // 1 carga × 4 equipamentos
-      medium: 8,   // 2 cargas × 4 equipamentos  
-      large: 16,   // 4 cargas × 4 equipamentos
-      xlarge: 24   // 6 cargas × 4 equipamentos
-    };
-    
-    setLoads(loadsPerMap[mapSize] || loadsPerMap.medium);
-  }, [mapSize]);
+  // Remover auto-cálculo de cargas - agora é manual via charge
+  // useEffect removido - loads será igual ao charge
 
   const costs = prefs.energyCosts;
   const costBySize: Record<SizeKey, number> = {
@@ -69,20 +69,31 @@ export function MapPlanner({}: MapPlannerProps) {
     { key: 'xlarge', label: t('planner.xlarge') },
   ];
 
-  // Calculate efficiency metrics
-  const totalEnergy = loads * costBySize[mapSize];
+  // Calculate efficiency metrics usando charge em vez de loads
+  const totalEnergy = charge * costBySize[mapSize];
   const tokensPerEnergy = totalEnergy > 0 ? tokensDropped / totalEnergy : 0;
-  const tokensPerLoad = loads > 0 ? tokensDropped / loads : 0;
+  const tokensPerCharge = charge > 0 ? tokensDropped / charge : 0;
 
   const apply = async () => {
+    // 🛠️ DEBUG GERAL - Sempre executa
+    console.log('🎯 APPLY FUNCTION - Estado geral:', {
+      isAuthenticated,
+      tokensDropped,
+      userProfileExists: !!userProfile,
+      userEmail: userProfile?.email
+    });
 
     const entry = {
       timestamp: Date.now(),
       mapSize,
       tokensDropped,
-      loads,
+      loads: charge, // usar charge como loads
       totalLuck: luck,
-      status
+      status,
+      // 🆕 Novos campos Level/Tier/Charge
+      level: level,
+      tier: tier,
+      charge: charge
     };
 
     try {
@@ -106,10 +117,22 @@ export function MapPlanner({}: MapPlannerProps) {
         const runData = {
           mapSize: mapSize,
           luck: luck,
-          loads: loads,
+          loads: charge, // usar charge como loads
           tokensDropped: tokensDropped,
-          timestamp: timestamp
+          timestamp: timestamp,
+          // 🆕 Novos campos
+          level: level,
+          tier: tier,
+          charge: charge,
+          // 📧 FASE 1: Email do usuário (seguro)
+          userEmail: userProfile?.email || 'anonymous@feed.com'
         };
+
+        console.log('🎯 FASE 1 - Dados enviados:', {
+          userEmail: runData.userEmail,
+          hasUserProfile: !!userProfile,
+          userProfileEmail: userProfile?.email
+        });
 
         // CHAMADA 1: API original para manter dashboard global funcionando
         try {
@@ -131,7 +154,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
         // CHAMADA 2: Nova API para alimentar o feed
         try {
-          const feedResponse = await fetch('/api/admin/save-map-run', {
+          const feedResponse = await fetch('/api/feed/feed-runs', {
             method: 'POST',
             credentials: 'include',
             headers: {
@@ -198,43 +221,60 @@ export function MapPlanner({}: MapPlannerProps) {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div>
-            <div className="text-sm font-medium text-foreground mb-2">{t('planner.mapSize')}</div>
-            <div className="grid grid-cols-2 gap-2">
-              {sizeCards.map((s) => {
-                const selected = mapSize === s.key;
-                return (
-                  <button
-                    key={s.key}
-                    type="button"
-                    onClick={() => setMapSize(s.key)}
-                    className={`text-left rounded-lg px-3 py-2 border transition-colors ${
-                      selected 
-                        ? 'bg-primary text-primary-foreground border-primary' 
-                        : 'bg-background text-foreground border-border hover:bg-muted'
-                    }`}
-                  >
-                    <div className="text-sm font-semibold">{s.label}</div>
-                    <div className="text-xs opacity-70">{t('planner.energyCost')}: {costBySize[s.key]}</div>
-                  </button>
-                );
-              })}
+          {/* 🎯 PRIORIDADE PRINCIPAL - Level/Tier/Charge */}
+          <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg space-y-4">
+            <div className="text-sm font-bold text-primary mb-3 flex items-center">
+              ⭐ Configuração Principal do Mapa
+            </div>
+            
+            {/* Level e Tier em destaque */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="text-sm font-bold text-foreground mb-2 block">🎖️ Level</label>
+                <select
+                  value={level}
+                  onChange={(e) => setLevel(e.target.value)}
+                  className="h-10 w-full rounded-lg border-2 border-primary/30 bg-background text-foreground px-3 font-medium focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="I">Level I</option>
+                  <option value="II">Level II</option>
+                  <option value="III">Level III</option>
+                  <option value="IV">Level IV</option>
+                  <option value="V">Level V</option>
+                </select>
+              </div>
+              <div>
+                <label className="text-sm font-bold text-foreground mb-2 block">🏆 Tier</label>
+                <select
+                  value={tier}
+                  onChange={(e) => setTier(e.target.value)}
+                  className="h-10 w-full rounded-lg border-2 border-primary/30 bg-background text-foreground px-3 font-medium focus:border-primary focus:ring-2 focus:ring-primary/20"
+                >
+                  <option value="I">Tier I</option>
+                  <option value="II">Tier II</option>
+                  <option value="III">Tier III</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Charge */}
+            <div>
+              <label className="text-sm font-bold text-foreground mb-2 block">⚡ Cargas (Manual)</label>
+              <Input 
+                type="number" 
+                value={charge} 
+                onChange={(e) => setCharge(parseInt(e.target.value || '0'))} 
+                className="h-10 border-2 border-primary/30 focus:border-primary focus:ring-2 focus:ring-primary/20 font-medium"
+                min="0"
+                max="99"
+                placeholder="Quantas cargas vai usar?"
+              />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">
-                {t('planner.loads')} <span className="text-xs text-muted-foreground">(automático)</span>
-              </label>
-              <Input 
-                type="number" 
-                value={loads} 
-                readOnly
-                className="h-9 bg-muted/50 cursor-not-allowed"
-                title={`Cargas calculadas automaticamente: ${mapSize} = ${loads} cargas`}
-              />
-            </div>
+          {/* 📋 Campos Secundários */}
+          <div className="space-y-4">
+            {/* Tokens Dropados */}
             <div>
               <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.tokensDropped')}</label>
               <Input 
@@ -242,51 +282,62 @@ export function MapPlanner({}: MapPlannerProps) {
                 value={tokensDropped} 
                 onChange={(e) => setTokensDropped(parseInt(e.target.value || '0'))} 
                 className="h-9" 
-                placeholder="0"
+                placeholder="Quantos tokens droparam?"
                 min="0"
               />
             </div>
-          </div>
 
-          {/* Info sobre cargas automáticas */}
-          <div className="text-xs text-muted-foreground p-2 bg-muted/30 rounded border">
-            💡 <strong>Cargas automáticas:</strong> Small=4, Medium=8, Large=16, XLarge=24 cargas
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.luck')}</label>
-              <Input 
-                type="number" 
-                value={luck} 
-                onChange={(e) => setLuck(parseInt(e.target.value || '0'))} 
-                className="h-9"
-                min="0"
-              />
+            {/* Luck e Status */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.luck')}</label>
+                <Input 
+                  type="number" 
+                  value={luck} 
+                  onChange={(e) => setLuck(parseInt(e.target.value || '0'))} 
+                  className="h-9"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.status')}</label>
+                <select
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value as any)}
+                  className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
+                >
+                  <option value="neutral">{t('status.neutral')}</option>
+                  <option value="positive">{t('status.positive')}</option>
+                  <option value="negative">{t('status.negative')}</option>
+                  <option value="excellent">{t('status.excellent')}</option>
+                </select>
+              </div>
             </div>
+
+            {/* Map (opcional, menor destaque) */}
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.status')}</label>
+              <label className="text-sm font-medium text-muted-foreground mb-1 block">📍 Mapa (Opcional)</label>
               <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value as any)}
-                className="h-9 w-full rounded border border-border bg-background text-foreground px-2"
+                value={mapSize}
+                onChange={(e) => setMapSize(e.target.value as SizeKey)}
+                className="h-9 w-full rounded border border-border bg-background text-foreground px-2 text-sm"
               >
-                <option value="neutral">{t('status.neutral')}</option>
-                <option value="positive">{t('status.positive')}</option>
-                <option value="negative">{t('status.negative')}</option>
-                <option value="excellent">{t('status.excellent')}</option>
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large">Large</option>
+                <option value="xlarge">XLarge</option>
               </select>
             </div>
           </div>
 
           {/* Efficiency Metrics */}
-          {tokensDropped > 0 && loads > 0 && (
+          {tokensDropped > 0 && charge > 0 && (
             <div className="p-3 bg-muted/50 rounded-lg border">
               <div className="text-sm font-medium text-foreground mb-2">Métricas de Eficiência</div>
               <div className="grid grid-cols-3 gap-3 text-xs">
                 <div>
-                  <div className="text-muted-foreground">Tokens/Load</div>
-                  <div className="font-mono font-medium">{tokensPerLoad.toFixed(1)}</div>
+                  <div className="text-muted-foreground">Tokens/Charge</div>
+                  <div className="font-mono font-medium">{tokensPerCharge.toFixed(1)}</div>
                 </div>
                 <div>
                   <div className="text-muted-foreground">Tokens/Energia</div>
@@ -330,59 +381,131 @@ export function MapPlanner({}: MapPlannerProps) {
 
       <Card>
         <CardHeader className="py-3">
-          <CardTitle className="text-base">{t('planner.history')}</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-base">📊 Histórico de Runs</CardTitle>
+            {history.length > 0 && (
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => clearMapDropsHistory()}
+                className="h-7 px-2 text-xs hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500"
+              >
+                <Trash2 className="w-3 h-3 mr-1" />
+                Limpar
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {history.length === 0 ? (
-            <p className="text-muted-foreground text-sm">{t('planner.noHistory')}</p>
+            <div className="text-center py-8 text-muted-foreground">
+              <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p className="text-sm">Nenhum histórico encontrado</p>
+              <p className="text-xs mt-1">Suas runs aparecerão aqui após serem salvas</p>
+            </div>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-auto">
-              {history.slice(0, 10).map((h, i) => (
-                <div key={i} className="border rounded-lg p-3 bg-muted/30">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center space-x-2">
-                      <span className="px-2 py-1 rounded text-xs bg-primary/10 text-primary border border-primary/20">
-                        {t(`planner.${h.mapSize}`)}
-                      </span>
-                      <div className={`flex items-center space-x-1 px-2 py-1 rounded text-xs border ${getStatusColor(h.status || 'neutral')}`}>
-                        {getStatusIcon(h.status || 'neutral')}
-                        <span>{h.status ? t(`status.${h.status}`) : '-'}</span>
+            <div className="space-y-4 max-h-96 overflow-auto">
+              {/* 🗓️ Agrupar por dias */}
+              {Object.entries(groupedHistory)
+                .sort(([a], [b]) => b.localeCompare(a)) // Mais recente primeiro
+                .slice(0, 7) // Últimos 7 dias
+                .map(([day, dayEntries]) => {
+                  const stats = getDayStats(day);
+                  const isToday = day === new Date().toISOString().split('T')[0];
+                  
+                  return (
+                    <div key={day} className="border rounded-lg bg-muted/20">
+                      {/* Header do Dia */}
+                      <div className="px-4 py-3 border-b bg-muted/30">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <div className="text-sm font-bold text-foreground">
+                              📅 {isToday ? 'Hoje' : new Date(day + 'T12:00:00Z').toLocaleDateString('pt-BR', { 
+                                weekday: 'short', 
+                                day: '2-digit', 
+                                month: '2-digit' 
+                              })}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              {day}
+                            </div>
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {stats.totalRuns} runs • {stats.totalTokens.toLocaleString()} tokens
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Runs do Dia - Layout Clean Horizontal */}
+                      <div className="p-3 space-y-2">
+                        {dayEntries.map((h, i) => (
+                          <div 
+                            key={h.timestamp} 
+                            className="bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-750 transition-colors duration-200 px-4 py-3"
+                          >
+                            <div className="grid grid-cols-6 gap-3 items-center text-xs">
+                              {/* LEVEL/TIER */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">LEVEL/TIER</div>
+                                <div className="text-white">
+                                  <div className="font-medium">Level {h.level || 'IV'}</div>
+                                  <div className="text-slate-300">Tier {h.tier || 'I'}</div>
+                                </div>
+                              </div>
+
+                              {/* MAP */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">MAP</div>
+                                <div className="bg-slate-600 text-white px-2 py-1 rounded text-center font-medium">
+                                  {h.mapSize}
+                                </div>
+                              </div>
+
+                              {/* TOKENS */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">TOKENS</div>
+                                <div className="bg-yellow-600 text-white px-2 py-1 rounded text-center font-bold">
+                                  {h.tokensDropped}
+                                </div>
+                              </div>
+
+                              {/* CHARGE */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">CHARGE</div>
+                                <div className="text-white font-medium">
+                                  {h.charge || h.loads}
+                                </div>
+                              </div>
+
+                              {/* TIME */}
+                              <div>
+                                <div className="text-slate-400 uppercase tracking-wide mb-1">TIME</div>
+                                <div className="text-white font-mono text-xs">
+                                  {new Date(h.timestamp).toLocaleTimeString('pt-BR', { 
+                                    hour: '2-digit', 
+                                    minute: '2-digit' 
+                                  })}
+                                </div>
+                              </div>
+
+                              {/* ACTIONS */}
+                              <div className="text-right">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  onClick={() => deleteMapDropEntry(h.timestamp)}
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+                                >
+                                  ✕
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      onClick={() => deleteMapDropEntry(h.timestamp)}
-                      className="h-6 px-2 text-xs"
-                    >
-                      ✕
-                    </Button>
-                  </div>
-                  
-                  <div className="grid grid-cols-4 gap-2 text-xs">
-                    <div>
-                      <div className="text-muted-foreground">Tokens</div>
-                      <div className="font-mono font-medium">{h.tokensDropped.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Loads</div>
-                      <div className="font-mono font-medium">{h.loads}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">Luck</div>
-                      <div className="font-mono font-medium">{h.totalLuck ?? '-'}</div>
-                    </div>
-                    <div>
-                      <div className="text-muted-foreground">T/Load</div>
-                      <div className="font-mono font-medium">{h.loads > 0 ? (h.tokensDropped / h.loads).toFixed(1) : '-'}</div>
-                    </div>
-                  </div>
-                  
-                  <div className="text-xs text-muted-foreground mt-2">
-                    {new Date(h.timestamp).toLocaleString()}
-                  </div>
-                </div>
-              ))}
+                  );
+                })}
             </div>
           )}
         </CardContent>
