@@ -58,10 +58,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           SELECT 
             id,
             map_name,
-            tokens_earned,
-            drop_data,
-            created_at
-          FROM user_map_drops 
+            luck,
+            tokens,
+            efficiency,
+            created_at,
+            level,
+            tier,
+            charge,
+            player_name
+          FROM feed_runs 
           WHERE created_at > ? 
           ORDER BY created_at DESC 
           LIMIT 20
@@ -79,13 +84,6 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         // Processar dados do banco
         if (dbResult.results && dbResult.results.length > 0) {
           activityRuns = dbResult.results.map((run: any) => {
-            let dropData = {};
-            try {
-              dropData = JSON.parse(run.drop_data || '{}');
-            } catch (e) {
-              dropData = {};
-            }
-
             // Calcular tempo atrás
             const timeDiff = Date.now() - (run.created_at || Date.now());
             const minutes = Math.floor(timeDiff / (1000 * 60));
@@ -100,25 +98,18 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
               timeAgo = 'agora mesmo';
             }
 
-            // Mapear nomes dos mapas
-            const mapDisplayNames: Record<string, string> = {
-              'small': 'Small Map',
-              'medium': 'Medium Map',
-              'large': 'Large Map',
-              'xlarge': 'XLarge Map'
-            };
-
-            const mapName = mapDisplayNames[run.map_name] || 
-                           run.map_name || 
-                           'Unknown Map';
-
             return {
               id: run.id,
-              map: mapName,
-              luck: (dropData as any).luck || 0,
-              tokens: run.tokens_earned || 0,
+              map: run.map_name, // Já vem formatado da tabela feed_runs
+              luck: run.luck || 0,
+              tokens: run.tokens || 0,
               timeAgo,
-              timestamp: run.created_at || Date.now()
+              timestamp: run.created_at || Date.now(),
+              playerName: run.player_name || 'Player',
+              level: run.level || 'IV',
+              tier: run.tier || 'I',
+              charge: run.charge || 4,
+              efficiency: run.efficiency || 0
             };
           });
           
