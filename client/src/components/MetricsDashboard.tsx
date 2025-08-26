@@ -4,13 +4,14 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
+import { AdminDashboardV2 } from './AdminDashboardV2';
 import { ActivityStream } from './ActivityStream';
 
 
 export function MetricsDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'test' | 'hybrid' | 'feed'>('hybrid');
+  const [activeTab, setActiveTab] = useState<'main' | 'legacy' | 'feed'>('main');
   const [adminLoading, setAdminLoading] = useState(false);
 
   // Verificar se é admin
@@ -68,24 +69,24 @@ export function MetricsDashboard() {
       {/* Tabs */}
       <div className="flex space-x-1 bg-muted p-1 rounded-lg">
         <button
-          onClick={() => setActiveTab('hybrid')}
+          onClick={() => setActiveTab('main')}
           className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === 'hybrid'
+            activeTab === 'main'
               ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          🔥 Dashboard Principal
+          📊 Dashboard Administrativo V2
         </button>
         <button
-          onClick={() => setActiveTab('test')}
+          onClick={() => setActiveTab('legacy')}
           className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
-            activeTab === 'test'
+            activeTab === 'legacy'
               ? 'bg-background text-foreground shadow-sm'
               : 'text-muted-foreground hover:text-foreground'
           }`}
         >
-          🧪 Ferramentas de Teste
+          🔥 Dashboard Legacy
         </button>
         <button
           onClick={() => setActiveTab('feed')}
@@ -99,8 +100,15 @@ export function MetricsDashboard() {
         </button>
       </div>
 
-      {/* Test Dashboard Tab */}
-      {activeTab === 'test' && (
+      {/* Main Dashboard Tab - NOVO V2 */}
+      {activeTab === 'main' && (
+        <div className="space-y-4">
+          <AdminDashboardV2 />
+        </div>
+      )}
+
+      {/* Legacy Dashboard Tab */}
+      {activeTab === 'legacy' && (
         <div className="space-y-4">
           <Card>
             <CardHeader>
@@ -208,8 +216,8 @@ Digite "RESET" para confirmar:`;
         </div>
       )}
 
-      {/* Hybrid Dashboard Tab */}
-      {activeTab === 'hybrid' && (
+      {/* Legacy Hybrid Dashboard Tab */}
+      {activeTab === 'legacy' && (
         <div className="space-y-4">
           <HybridDashboard />
         </div>
