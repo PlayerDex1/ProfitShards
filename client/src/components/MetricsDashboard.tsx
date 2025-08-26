@@ -6,12 +6,13 @@ import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
 import { AdminDashboardV2 } from './AdminDashboardV2';
 import { ActivityStream } from './ActivityStream';
+import { DataAnalysis } from './DataAnalysis';
 
 
 export function MetricsDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'main' | 'legacy' | 'feed'>('main');
+  const [activeTab, setActiveTab] = useState<'main' | 'legacy' | 'analysis' | 'feed'>('main');
   const [adminLoading, setAdminLoading] = useState(false);
 
   // Verificar se é admin
@@ -79,6 +80,16 @@ export function MetricsDashboard() {
           📊 Dashboard Administrativo V2
         </button>
         <button
+          onClick={() => setActiveTab('analysis')}
+          className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+            activeTab === 'analysis'
+              ? 'bg-background text-foreground shadow-sm'
+              : 'text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          🔍 Análise de Dados
+        </button>
+        <button
           onClick={() => setActiveTab('legacy')}
           className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
             activeTab === 'legacy'
@@ -104,6 +115,13 @@ export function MetricsDashboard() {
       {activeTab === 'main' && (
         <div className="space-y-4">
           <AdminDashboardV2 />
+        </div>
+      )}
+
+      {/* Data Analysis Tab */}
+      {activeTab === 'analysis' && (
+        <div className="space-y-4">
+          <DataAnalysis />
         </div>
       )}
 
