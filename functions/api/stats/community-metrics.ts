@@ -71,8 +71,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       WHERE created_at > ?
     `).bind(sevenDaysAgo).first();
 
-    // Converter tokens para "lucro" estimado (1 token = $1000, como antes)
-    const totalProfit = (profitData?.total_tokens || 0) * 1000;
+    // Converter tokens para "lucro" estimado (1 token = $1 conservador)
+    const totalProfit = (profitData?.total_tokens || 0) * 1;
 
     // C. PLAYERS ATIVOS (únicos nas últimas 24h baseado em playerName)
     const activePlayersQuery = await env.DB.prepare(`
