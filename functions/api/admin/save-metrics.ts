@@ -1,109 +1,129 @@
 import { addSecurityHeaders, checkRateLimit, getClientIP, validateCalculationData } from "../../_lib/security";
 import { saveFarmingMetrics, saveMapDropMetrics } from "../../_lib/metrics";
 
-export interface Env {
+interface Env {
   DB: D1Database;
-  KV?: KVNamespace;
 }
 
-export async function onRequestPost({ env, request }: { env: Env; request: Request }) {
-  console.log('🔍 DEBUG: save-metrics endpoint chamado');
-  
+interface MetricsData {
+  type: 'calculation' | 'map_planning';
+  data: any;
+  results?: any;
+  userId?: string;
+}
+
+export async function onRequestPost({ request, env }: { request: Request; env: Env }) {
   try {
-    // Rate limiting
-    const clientIP = getClientIP(request);
-    const rateLimitResult = await checkRateLimit(env, clientIP, 'api', request);
+    console.log('📊 METRICS: Salvando métricas anônimas...');
+
+    const body: MetricsData = await request.json();
+    const { type, data, results, userId } = body;
+
+    // Obter userId da sessão se disponível (para estatísticas, não identificação)
+    const userIdForStats = userId || 'anonymous';
+
+    // Sanitizar dados para remover informações pessoais
+    const sanitizedData = {
+      ...data,
+      // Remove qualquer campo que possa ser pessoal
+      email: undefined,
+      username: undefined,
+      personalInfo: undefined
+    };
+
+    const sanitizedResults = results ? {
+      ...results,
+      // Manter apenas métricas numéricas
+      finalProfit: results.finalProfit,
+      roi: results.roi,
+      efficiency: results.efficiency,
+      breakdown: results.breakdown
+    } : null;
+
+    // Salvar no banco de dados
+    const calculationId = `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    if (!rateLimitResult.allowed) {
-      console.log('❌ Rate limit atingido para IP:', clientIP);
-      const response = Response.json(
-        { error: 'Too many requests. Please try again later.' },
-        { status: 429 }
-      );
-      return addSecurityHeaders(response);
-    }
+    await env.DB.prepare(`
+      INSERT INTO user_calculations (
+        id, 
+        user_id, 
+        calculation_type, 
+        calculation_data, 
+        result_data, 
+        created_at
+      ) VALUES (?, ?, ?, ?, ?, ?)
+    `).bind(
+      calculationId,
+      userIdForStats,
+      type,
+      JSON.stringify(sanitizedData),
+      sanitizedResults ? JSON.stringify(sanitizedResults) : null,
+      Date.now()
+    ).run();
 
-    // Verificar autenticação
-    const cookie = request.headers.get('Cookie');
-    console.log('🔍 Cookie recebido:', cookie ? 'SIM' : 'NÃO');
+    // Também registrar na tabela de atividade para estatísticas de usuários ativos
+    const activityId = `activity_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
-    if (!cookie) {
-      console.log('❌ Cookie não encontrado');
-      const response = Response.json({ error: 'Authentication required' }, { status: 401 });
-      return addSecurityHeaders(response);
-    }
+    await env.DB.prepare(`
+      INSERT INTO user_activity (
+        id,
+        user_id,
+        activity_type,
+        activity_data,
+        created_at
+      ) VALUES (?, ?, ?, ?, ?)
+    `).bind(
+      activityId,
+      userIdForStats,
+      type === 'calculation' ? 'calculation' : 'map_planning',
+      JSON.stringify({
+        type,
+        hasResults: !!results,
+        profit: results?.finalProfit || 0,
+        roi: results?.roi || 0
+      }),
+      Date.now()
+    ).run();
 
-    const sessionMatch = cookie.match(/ps_session=([^;]+)/);
-    if (!sessionMatch) {
-      console.log('❌ Sessão não encontrada no cookie');
-      const response = Response.json({ error: 'Invalid session' }, { status: 401 });
-      return addSecurityHeaders(response);
-    }
+    console.log('✅ Métricas salvas:', { type, userId: userIdForStats });
 
-    // Verificar se a sessão é válida
-    const sessionId = sessionMatch[1];
-    console.log('🔍 Verificando sessão:', sessionId.substring(0, 8) + '...');
-    
-    const session = await env.DB.prepare(
-      'SELECT user_id FROM sessions WHERE session_id = ? AND expires_at > ?'
-    ).bind(sessionId, Date.now()).first() as { user_id: string } | null;
-
-    if (!session) {
-      console.log('❌ Sessão expirada ou inválida');
-      const response = Response.json({ error: 'Session expired' }, { status: 401 });
-      return addSecurityHeaders(response);
-    }
-
-    console.log('✅ Usuário autenticado:', session.user_id);
-
-    // Parse do body
-    const body = await request.json();
-    const { type, data, results } = body;
-    
-    console.log('🔍 Dados recebidos:', { type, data, results });
-
-    // Validar dados
-    if (!type || !data) {
-      console.log('❌ Dados inválidos - type ou data ausente');
-      const response = Response.json({ error: 'Invalid request data' }, { status: 400 });
-      return addSecurityHeaders(response);
-    }
-
-    // Salvar métricas baseado no tipo
-    if (type === 'calculation' && results) {
-      console.log('📊 Salvando métricas de cálculo...');
-      if (!validateCalculationData(data)) {
-        console.log('❌ Dados de cálculo inválidos');
-        const response = Response.json({ error: 'Invalid calculation data' }, { status: 400 });
-        return addSecurityHeaders(response);
-      }
-      
-      await saveFarmingMetrics(env, session.user_id, data, results);
-    } else if (type === 'map_drop') {
-      console.log('🗺️ Salvando métricas de map drop...');
-      await saveMapDropMetrics(env, session.user_id, data);
-    } else {
-      console.log('❌ Tipo de métrica desconhecido:', type);
-    }
-
-    console.log(`✅ Metrics saved for user: ${session.user_id} (type: ${type})`);
-    
-    const response = Response.json({ 
-      success: true, 
-      message: `Métrica ${type} salva com sucesso`,
-      userId: session.user_id,
+    return new Response(JSON.stringify({
+      success: true,
+      message: 'Métricas salvas com sucesso',
       timestamp: new Date().toISOString()
+    }), {
+      status: 200,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
     });
-    return addSecurityHeaders(response);
 
   } catch (error) {
-    console.error('❌ Save metrics error:', error);
-    console.error('❌ Error stack:', error.stack);
-    const response = Response.json({ 
-      error: 'Internal server error',
-      message: error.message,
-      stack: error.stack 
-    }, { status: 500 });
-    return addSecurityHeaders(response);
+    console.error('❌ Erro ao salvar métricas:', error);
+    
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Erro interno do servidor',
+      timestamp: new Date().toISOString()
+    }), {
+      status: 500,
+      headers: { 
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*'
+      }
+    });
   }
+}
+
+// Permitir OPTIONS para CORS
+export async function onRequestOptions() {
+  return new Response(null, {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

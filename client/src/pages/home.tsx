@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { ActivityStream } from "@/components/ActivityStream";
+import { CommunityStats } from "@/components/CommunityStats";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link } from "wouter";
@@ -187,24 +188,9 @@ export default function Home() {
 							Veja em tempo real o que outros players estão fazendo. Inspire-se e compita!
 						</p>
 						
-						{/* Community Stats */}
-						<div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-2xl mx-auto mb-6">
-							<div className="text-center">
-								<div className="text-2xl font-bold text-primary">1.2k+</div>
-								<div className="text-sm text-muted-foreground">Runs Hoje</div>
-							</div>
-							<div className="text-center">
-								<div className="text-2xl font-bold text-green-600">$45M</div>
-								<div className="text-sm text-muted-foreground">Lucro Total</div>
-							</div>
-							<div className="text-center">
-								<div className="text-2xl font-bold text-blue-600">350+</div>
-								<div className="text-sm text-muted-foreground">Players Ativos</div>
-							</div>
-							<div className="text-center">
-								<div className="text-2xl font-bold text-purple-600">98%</div>
-								<div className="text-sm text-muted-foreground">Taxa Sucesso</div>
-							</div>
+						{/* Community Stats - Dados Reais */}
+						<div className="max-w-4xl mx-auto mb-8">
+							{isAuthenticated && <CommunityStats />}
 						</div>
 					</div>
 					

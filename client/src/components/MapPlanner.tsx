@@ -173,6 +173,44 @@ export function MapPlanner({}: MapPlannerProps) {
         } catch (error) {
           console.log('%c❌ ERROR: Erro ao salvar para feed', 'color: #EF4444; font-weight: bold;', error);
         }
+
+        // CHAMADA 3: Salvar métricas anônimas para estatísticas da comunidade
+        try {
+          const metricsData = {
+            type: 'map_planning',
+            data: {
+              mapSize,
+              luck,
+              charge,
+              level,
+              tier,
+              tokens: tokensDropped,
+              efficiency: tokensPerCharge,
+              status
+            },
+            results: {
+              tokensPerCharge,
+              tokensPerEnergy,
+              totalEnergy,
+              efficiency: tokensPerCharge
+            }
+          };
+
+          const metricsResponse = await fetch('/api/admin/save-metrics', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(metricsData)
+          });
+          
+          const metricsResult = await metricsResponse.json();
+          console.log('%c📊 METRICS: Métricas anônimas salvas', 'color: #8B5CF6; font-weight: bold;', metricsResult);
+          
+        } catch (error) {
+          console.log('%c❌ ERROR: Falha ao salvar métricas anônimas (não crítico)', 'color: #F59E0B;', error);
+        }
       } else {
         console.log('%c⚠️ Métricas não enviadas', 'color: #F59E0B; font-weight: bold; font-size: 14px;', {
           isAuthenticated,
