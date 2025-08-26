@@ -146,6 +146,7 @@ export default function Profile() {
 					{activeTab === 'calculator' && (
 						<CalculatorComponent
 							formData={formData}
+							results={results}
 							onUpdateFormData={updateFormData}
 							onSaveToHistory={saveToHistory}
 						/>

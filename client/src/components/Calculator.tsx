@@ -4,16 +4,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CalculatorFormData } from "@/types/calculator";
+import { CalculatorFormData, CalculationResults } from "@/types/calculator";
 import { useI18n } from "@/i18n";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
+	results: CalculationResults;
 	onUpdateFormData: (field: keyof CalculatorFormData, value: any) => void;
-	onSaveToHistory: () => void;
+	onSaveToHistory: (formData: CalculatorFormData, results: CalculationResults) => void;
 }
 
-export const Calculator = memo(function Calculator({ formData, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
+export const Calculator = memo(function Calculator({ formData, results, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
 	const { t } = useI18n();
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
@@ -66,7 +67,7 @@ export const Calculator = memo(function Calculator({ formData, onUpdateFormData,
 		// Manual save with feedback
 		setSaveMessage('✅ Cálculo salvo no histórico!');
 		setTimeout(() => setSaveMessage(''), 3000);
-		onSaveToHistory();
+		onSaveToHistory(formData, results);
 	};
 
 	if (error) {
