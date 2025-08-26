@@ -81,11 +81,11 @@ export function MapMetrics() {
   return (
     <Card className="bg-black/50 border-white/10">
       <CardHeader className="py-3">
-        <CardTitle className="text-base">Métricas (hoje desde 05:00)</CardTitle>
+        <CardTitle className="text-base">{t('metrics.todayTitle')}</CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div>
-          <div className="text-white/80 text-xs mb-1">Média de tokens por carga (hoje)</div>
+          <div className="text-white/80 text-xs mb-1">{t('metrics.avgPerRunToday')}</div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             {avgPerMapToday.map((m) => (
               <div key={m.size} className="flex items-center justify-between bg-white/5 rounded px-2 py-1">
@@ -96,20 +96,20 @@ export function MapMetrics() {
           </div>
         </div>
         <div>
-          <div className="text-white/80 text-xs mb-1">Totais</div>
+          <div className="text-white/80 text-xs mb-1">{t('metrics.totals')}</div>
           <div className="space-y-1 text-sm">
             <div className="flex items-center justify-between bg-white/5 rounded px-2 py-1">
-              <span className="text-white/80">Hoje (desde 05:00)</span>
+              <span className="text-white/80">{t('metrics.todayFromTime')}</span>
               <span className="text-white font-mono">{totalToday.tokens} tokens / {totalToday.loads} {t('metrics.runShort')}</span>
             </div>
             <div className="flex items-center justify-between bg-white/5 rounded px-2 py-1">
-              <span className="text-white/80">Ontem (05:00 → 05:00)</span>
+              <span className="text-white/80">{t('metrics.yesterdayRange')}</span>
               <span className="text-white font-mono">{totalPrev.tokens} tokens / {totalPrev.loads} {t('metrics.runShort')}</span>
             </div>
           </div>
         </div>
         <div>
-          <div className="text-white/80 text-xs mb-1">Melhor horário (hoje)</div>
+          <div className="text-white/80 text-xs mb-1">{t('metrics.bestHourToday')}</div>
           {bestHourToday ? (
             <div className="text-sm text-white">
               <span className="font-mono">{String(bestHourToday.hour).padStart(2, '0')}:00</span>
