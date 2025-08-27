@@ -215,6 +215,9 @@ export function MapPlanner({}: MapPlannerProps) {
         }
 
         // CHAMADA 3: Salvar métricas anônimas para estatísticas da comunidade
+        // 🚫 TEMPORARIAMENTE DESABILITADO - Tabela user_calculations sem colunas corretas
+        console.log('%c⏸️ METRICS: Salvamento de métricas temporariamente desabilitado', 'color: #F59E0B; font-weight: bold;');
+        /*
         try {
           const metricsData = {
             type: 'map_planning',
