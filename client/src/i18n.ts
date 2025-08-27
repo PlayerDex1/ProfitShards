@@ -210,6 +210,22 @@ const dicts: Record<Lang, Dict> = {
     'resources.faq.desc': 'Perguntas frequentes e guias de uso',
     'resources.faq.cta': 'Ver FAQ',
 
+    // FAQ Section
+    'faq.title': 'Perguntas Frequentes',
+    'faq.subtitle': 'Tire suas dúvidas sobre o WorldShards Calculator',
+    'faq.calculator.question': 'Como funciona a calculadora de lucros?',
+    'faq.calculator.answer': 'A calculadora analisa seu investimento, equipamentos, sorte e eficiência para determinar o lucro potencial nas dungeons. Insira os dados do seu setup e receba uma análise detalhada com ROI, distribuição de tokens e recomendações.',
+    'faq.planner.question': 'O que é o planejador de mapas?',
+    'faq.planner.answer': 'O planejador permite registrar suas runs, analisar eficiência por mapa (Small, Medium, Large, XLarge) e contribuir para as estatísticas da comunidade. Acompanhe seu progresso e compare com outros jogadores.',
+    'faq.stats.question': 'Como funcionam as estatísticas da comunidade?',
+    'faq.stats.answer': 'As estatísticas são atualizadas em tempo real com dados anônimos dos usuários. Você pode ver runs recentes, lucros totais, players ativos e mapas mais populares. Todos os dados são agregados e não identificam usuários individuais.',
+    'faq.tokens.question': 'Os preços dos tokens são atualizados automaticamente?',
+    'faq.tokens.answer': 'Atualmente usamos preços fixos para cálculos. Em breve implementaremos integração com APIs de preços em tempo real para refletir as cotações atuais do mercado. Você pode acompanhar preços atuais no CoinGecko.',
+    'faq.export.question': 'Posso exportar meus dados e histórico?',
+    'faq.export.answer': 'Sim! No perfil você pode baixar todo seu histórico de cálculos e runs em formato JSON. Também é possível limpar dados individualmente ou fazer backup completo de suas informações.',
+    'faq.offline.question': 'O site funciona offline?',
+    'faq.offline.answer': 'Parcialmente sim! A calculadora e histórico funcionam offline após o primeiro carregamento. Apenas recursos que dependem de dados da comunidade (feed, estatísticas) precisam de conexão com internet.',
+
     // Status labels
     'status.excellent': 'Excelente',
     'status.positive': 'Positivo',
@@ -515,6 +531,22 @@ const dicts: Record<Lang, Dict> = {
     'resources.faq.title': 'FAQ & Help',
     'resources.faq.desc': 'Frequently asked questions and usage guides',
     'resources.faq.cta': 'View FAQ',
+
+    // FAQ Section
+    'faq.title': 'Frequently Asked Questions',
+    'faq.subtitle': 'Get answers about WorldShards Calculator',
+    'faq.calculator.question': 'How does the profit calculator work?',
+    'faq.calculator.answer': 'The calculator analyzes your investment, equipment, luck and efficiency to determine potential profit in dungeons. Enter your setup data and receive detailed analysis with ROI, token distribution and recommendations.',
+    'faq.planner.question': 'What is the map planner?',
+    'faq.planner.answer': 'The planner allows you to record your runs, analyze efficiency by map (Small, Medium, Large, XLarge) and contribute to community statistics. Track your progress and compare with other players.',
+    'faq.stats.question': 'How do community statistics work?',
+    'faq.stats.answer': 'Statistics are updated in real-time with anonymous user data. You can see recent runs, total profits, active players and most popular maps. All data is aggregated and does not identify individual users.',
+    'faq.tokens.question': 'Are token prices updated automatically?',
+    'faq.tokens.answer': 'Currently we use fixed prices for calculations. Soon we will implement integration with real-time price APIs to reflect current market prices. You can track current prices on CoinGecko.',
+    'faq.export.question': 'Can I export my data and history?',
+    'faq.export.answer': 'Yes! In your profile you can download your entire calculation and run history in JSON format. You can also clear data individually or make complete backups of your information.',
+    'faq.offline.question': 'Does the site work offline?',
+    'faq.offline.answer': 'Partially yes! The calculator and history work offline after first load. Only features that depend on community data (feed, statistics) need internet connection.',
 
     // Status labels
     'status.excellent': 'Excellent',

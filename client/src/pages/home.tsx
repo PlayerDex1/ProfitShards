@@ -335,10 +335,10 @@ export default function Home() {
 				<div className="text-center mb-12">
 					<h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
 						<HelpCircle className="h-8 w-8 text-primary" />
-						❓ Perguntas Frequentes
+						❓ {t('faq.title')}
 					</h2>
 					<p className="text-muted-foreground text-lg">
-						Tire suas dúvidas sobre o WorldShards Calculator
+						{t('faq.subtitle')}
 					</p>
 				</div>
 
@@ -348,13 +348,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<Calculator className="h-5 w-5 text-blue-500" />
-								Como funciona a calculadora de lucros?
+								{t('faq.calculator.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								A calculadora analisa seu investimento, equipamentos, sorte e eficiência para determinar o lucro potencial nas dungeons. 
-								Insira os dados do seu setup e receba uma análise detalhada com ROI, distribuição de tokens e recomendações.
+								{t('faq.calculator.answer')}
 							</p>
 						</CardContent>
 					</Card>
@@ -363,13 +362,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<Map className="h-5 w-5 text-green-500" />
-								O que é o planejador de mapas?
+								{t('faq.planner.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								O planejador permite registrar suas runs, analisar eficiência por mapa (Small, Medium, Large, XLarge) e contribuir para as 
-								estatísticas da comunidade. Acompanhe seu progresso e compare com outros jogadores.
+								{t('faq.planner.answer')}
 							</p>
 						</CardContent>
 					</Card>
@@ -378,13 +376,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<Users className="h-5 w-5 text-purple-500" />
-								Como funcionam as estatísticas da comunidade?
+								{t('faq.stats.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								As estatísticas são atualizadas em tempo real com dados anônimos dos usuários. Você pode ver runs recentes, 
-								lucros totais, players ativos e mapas mais populares. Todos os dados são agregados e não identificam usuários individuais.
+								{t('faq.stats.answer')}
 							</p>
 						</CardContent>
 					</Card>
@@ -393,13 +390,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<Coins className="h-5 w-5 text-yellow-500" />
-								Os preços dos tokens são atualizados automaticamente?
+								{t('faq.tokens.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								Atualmente usamos preços fixos para cálculos. Em breve implementaremos integração com APIs de preços em tempo real 
-								para refletir as cotações atuais do mercado. Você pode acompanhar preços atuais no CoinGecko.
+								{t('faq.tokens.answer')}
 							</p>
 						</CardContent>
 					</Card>
@@ -408,13 +404,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<BarChart3 className="h-5 w-5 text-orange-500" />
-								Posso exportar meus dados e histórico?
+								{t('faq.export.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								Sim! No perfil você pode baixar todo seu histórico de cálculos e runs em formato JSON. 
-								Também é possível limpar dados individualmente ou fazer backup completo de suas informações.
+								{t('faq.export.answer')}
 							</p>
 						</CardContent>
 					</Card>
@@ -423,13 +418,12 @@ export default function Home() {
 						<CardHeader>
 							<CardTitle className="text-left text-lg flex items-center gap-2">
 								<Globe className="h-5 w-5 text-indigo-500" />
-								O site funciona offline?
+								{t('faq.offline.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
 							<p className="text-muted-foreground">
-								Parcialmente sim! A calculadora e histórico funcionam offline após o primeiro carregamento. 
-								Apenas recursos que dependem de dados da comunidade (feed, estatísticas) precisam de conexão com internet.
+								{t('faq.offline.answer')}
 							</p>
 						</CardContent>
 					</Card>
