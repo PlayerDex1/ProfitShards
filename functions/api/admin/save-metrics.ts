@@ -44,12 +44,9 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     const calculationId = `calc_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     if (type === 'calculation') {
-      // Para cálculos: usar as colunas específicas que o community-metrics espera
-      console.log('📊 INSERINDO CALCULATION:', {
-        calculationId, userIdForStats, type,
-        investment: sanitizedData.investment || 0,
-        finalProfit: sanitizedResults?.finalProfit || 0,
-        roi: sanitizedResults?.roi || 0
+      // Para cálculos: usar apenas colunas básicas que existem
+      console.log('📊 INSERINDO CALCULATION (básico):', {
+        calculationId, userIdForStats, type
       });
       
       await env.DB.prepare(`
@@ -57,40 +54,23 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
           id, 
           user_id, 
           calculation_type,
-          investment,
-          final_profit,
-          roi,
-          efficiency,
-          tokens_equipment,
-          tokens_farmed,
           calculation_data, 
           result_data, 
           created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `).bind(
         calculationId,
         userIdForStats,
         type,
-        sanitizedData.investment || 0,
-        sanitizedResults?.finalProfit || 0,
-        sanitizedResults?.roi || 0,
-        sanitizedResults?.efficiency || 0,
-        sanitizedData.tokensEquipment || 0,
-        sanitizedData.tokensFarmed || 0,
         JSON.stringify(sanitizedData),
         sanitizedResults ? JSON.stringify(sanitizedResults) : null,
         Date.now()
       ).run();
     } else if (type === 'map_planning') {
-      // Para map planning: simular um "lucro" baseado nos tokens
-      const simulatedProfit = (data.tokens || 0) * 100; // 1 token = $100 estimado
-      const simulatedInvestment = simulatedProfit * 0.7; // simular 70% de eficiência
-      const simulatedROI = simulatedInvestment > 0 ? ((simulatedProfit - simulatedInvestment) / simulatedInvestment) * 100 : 0;
-      
-      console.log('🗺️ INSERINDO MAP_PLANNING:', {
+      // Para map planning: usar apenas colunas básicas que existem
+      console.log('🗺️ INSERINDO MAP_PLANNING (básico):', {
         calculationId, userIdForStats, type,
-        tokens: data.tokens || 0,
-        simulatedProfit, simulatedInvestment, simulatedROI
+        tokens: data.tokens || 0
       });
       
       await env.DB.prepare(`
@@ -98,26 +78,14 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
           id, 
           user_id, 
           calculation_type,
-          investment,
-          final_profit,
-          roi,
-          efficiency,
-          tokens_equipment,
-          tokens_farmed,
           calculation_data, 
           result_data, 
           created_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?)
       `).bind(
         calculationId,
         userIdForStats,
         type,
-        simulatedInvestment,
-        simulatedProfit,
-        simulatedROI,
-        data.efficiency || 0,
-        0, // map planning não usa tokens equipment
-        data.tokens || 0,
         JSON.stringify(sanitizedData),
         sanitizedResults ? JSON.stringify(sanitizedResults) : null,
         Date.now()
