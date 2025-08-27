@@ -14,16 +14,44 @@ interface MapPlannerProps {}
 type SizeKey = 'small' | 'medium' | 'large' | 'xlarge';
 
 export function MapPlanner({}: MapPlannerProps) {
-  const { prefs, save } = usePreferences();
+  const { prefs, save, isLoading } = usePreferences();
   const { t } = useI18n();
   const { isAuthenticated, userProfile } = useAuth();
-  const [mapSize, setMapSize] = useState<SizeKey>((prefs.mapSize as SizeKey) || 'medium');
+  const [mapSize, setMapSize] = useState<SizeKey>(() => {
+    try {
+      return (prefs?.mapSize as SizeKey) || 'medium';
+    } catch (error) {
+      console.error('Error loading mapSize preference:', error);
+      return 'medium';
+    }
+  });
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
-  const [history, setHistory] = useState(getMapDropsHistory());
-  const [groupedHistory, setGroupedHistory] = useState(getMapDropsHistoryGroupedByDay());
+  const [history, setHistory] = useState(() => {
+    try {
+      return getMapDropsHistory() || [];
+    } catch (error) {
+      console.error('Error loading map drops history:', error);
+      return [];
+    }
+  });
+  const [groupedHistory, setGroupedHistory] = useState(() => {
+    try {
+      return getMapDropsHistoryGroupedByDay() || [];
+    } catch (error) {
+      console.error('Error loading grouped map drops history:', error);
+      return [];
+    }
+  });
   const { totalLuck } = useEquipment();
-  const [luck, setLuck] = useState<number>(prefs.savedLuck || totalLuck || 0);
+  const [luck, setLuck] = useState<number>(() => {
+    try {
+      return prefs?.savedLuck || totalLuck || 0;
+    } catch (error) {
+      console.error('Error loading luck preference:', error);
+      return 0;
+    }
+  });
   const [status, setStatus] = useState<'excellent' | 'positive' | 'negative' | 'neutral'>('neutral');
   const [saveMessage, setSaveMessage] = useState<string>('');
   const [isEditingLuck, setIsEditingLuck] = useState<boolean>(false);
@@ -36,8 +64,14 @@ export function MapPlanner({}: MapPlannerProps) {
 
   useEffect(() => {
     const onUpd = () => {
-      setHistory(getMapDropsHistory());
-      setGroupedHistory(getMapDropsHistoryGroupedByDay());
+      try {
+        setHistory(getMapDropsHistory() || []);
+        setGroupedHistory(getMapDropsHistoryGroupedByDay() || []);
+      } catch (error) {
+        console.error('Error updating map drops history:', error);
+        setHistory([]);
+        setGroupedHistory([]);
+      }
     };
     window.addEventListener('worldshards-mapdrops-updated', onUpd);
     return () => window.removeEventListener('worldshards-mapdrops-updated', onUpd);
@@ -248,6 +282,42 @@ export function MapPlanner({}: MapPlannerProps) {
       default: return 'text-muted-foreground bg-muted/50 border-border';
     }
   };
+
+  // Show loading state while preferences are loading
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base flex items-center space-x-2">
+              <Calculator className="h-5 w-5" />
+              <span>Carregando...</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="animate-pulse space-y-4">
+              <div className="h-4 bg-muted rounded w-3/4"></div>
+              <div className="h-10 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded w-1/2"></div>
+              <div className="h-10 bg-muted rounded"></div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="py-3">
+            <CardTitle className="text-base">Histórico</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="animate-pulse space-y-2">
+              <div className="h-4 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded"></div>
+              <div className="h-4 bg-muted rounded"></div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
