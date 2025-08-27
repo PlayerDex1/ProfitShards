@@ -115,7 +115,7 @@ export default function Home() {
 										Acesse o jogo WorldShards e comece sua aventura
 									</p>
 									<a 
-										href="https://worldshards.com" 
+										href="https://www.worldshards.online/en" 
 										target="_blank" 
 										rel="noopener noreferrer"
 										className="block"
