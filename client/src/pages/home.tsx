@@ -8,7 +8,10 @@ import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, User, Calculator, Map, BarChart3, Zap, Target, Users, ArrowRight, Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle } from "lucide-react";
+import { 
+  TrendingUp, User, Calculator, Map, BarChart3, Zap, Target, Users, ArrowRight, 
+  Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle 
+} from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 
@@ -198,8 +201,16 @@ export default function Home() {
 									<Button 
 										className="w-full bg-purple-600 hover:bg-purple-700 text-white"
 										onClick={() => {
-											const element = document.getElementById('faq-section');
-											element?.scrollIntoView({ behavior: 'smooth' });
+											try {
+												if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+													const element = document.getElementById('faq-section');
+													if (element) {
+														element.scrollIntoView({ behavior: 'smooth' });
+													}
+												}
+											} catch (error) {
+												console.error('Error scrolling to FAQ:', error);
+											}
 										}}
 									>
 										<MessageCircle className="mr-2 h-4 w-4" />
