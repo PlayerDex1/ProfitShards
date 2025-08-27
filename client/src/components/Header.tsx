@@ -1,7 +1,7 @@
 import { Moon, Sun, Calculator, LogIn, LogOut, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@/hooks/useTheme";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
