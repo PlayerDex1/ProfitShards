@@ -88,12 +88,17 @@ export function MapPlanner({}: MapPlannerProps) {
   // Remover auto-cálculo de cargas - agora é manual via charge
   // useEffect removido - loads será igual ao charge
 
-  const costs = prefs.energyCosts;
+  const costs = prefs?.energyCosts || {
+    small: 1,
+    medium: 2, 
+    large: 4,
+    xlarge: 8
+  };
   const costBySize: Record<SizeKey, number> = {
-    small: costs.small,
-    medium: costs.medium,
-    large: costs.large,
-    xlarge: costs.xlarge,
+    small: costs.small || 1,
+    medium: costs.medium || 2,
+    large: costs.large || 4,
+    xlarge: costs.xlarge || 8,
   };
 
   const sizeCards: Array<{ key: SizeKey; label: string }> = [
