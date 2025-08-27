@@ -588,19 +588,52 @@ export function MapPlanner({}: MapPlannerProps) {
           </div>
         </CardHeader>
         <CardContent>
-          {history.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <p className="text-sm">Nenhum histórico encontrado</p>
-              <p className="text-xs mt-1">Suas runs aparecerão aqui após serem salvas</p>
-            </div>
-          ) : (
+          {(() => {
+            // 🔧 SOLUÇÃO DIRETA: Ler localStorage na renderização
+            console.log('🔍 RENDER: Executando verificação...');
+            
+            let localHistory = [];
+            try {
+              const raw = localStorage.getItem('worldshards-map-drops');
+              localHistory = raw ? JSON.parse(raw) : [];
+              console.log('🔍 RENDER: LocalStorage lido:', localHistory.length, 'runs');
+            } catch (e) {
+              console.log('❌ RENDER: Erro ao ler localStorage:', e);
+            }
+            
+            if (localHistory.length === 0) {
+              console.log('📭 RENDER: Mostrando estado vazio');
+              return (
+                <div className="text-center py-8 text-muted-foreground">
+                  <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm">Nenhum histórico encontrado</p>
+                  <p className="text-xs mt-1">Suas runs aparecerão aqui após serem salvas</p>
+                </div>
+              );
+            }
+            
+            console.log('📊 RENDER: Processando', localHistory.length, 'runs para exibição');
+            
+            // Agrupar por dia inline
+            const grouped = new Map();
+            localHistory.forEach(drop => {
+              if (!drop.timestamp) return;
+              const date = new Date(drop.timestamp);
+              const dayKey = date.toISOString().split('T')[0];
+              
+              if (!grouped.has(dayKey)) {
+                grouped.set(dayKey, []);
+              }
+              grouped.get(dayKey).push(drop);
+            });
+            
+            const groupedArray = Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
+            console.log('🗓️ RENDER: Agrupamento criado:', groupedArray);
+            
+            return (
             <div className="space-y-4 max-h-96 overflow-auto">
-              {console.log('🔍 RENDER: groupedHistory:', groupedHistory)}
-              {console.log('🔍 RENDER: Object.entries(groupedHistory):', Object.entries(groupedHistory))}
               {/* 🗓️ Agrupar por dias */}
-              {Object.entries(groupedHistory)
-                .sort(([a], [b]) => b.localeCompare(a)) // Mais recente primeiro
+              {groupedArray
                 .slice(0, 7) // Últimos 7 dias
                 .map(([day, dayEntries]) => {
                   const stats = getDayStats(day);
@@ -728,7 +761,8 @@ export function MapPlanner({}: MapPlannerProps) {
                   );
                 })}
             </div>
-          )}
+            );
+          })()}
         </CardContent>
       </Card>
     </div>
