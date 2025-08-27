@@ -189,8 +189,7 @@ export function MapPlanner({}: MapPlannerProps) {
       charge: charge
     };
     
-    console.log('🔍 DEBUG - Entry sendo criado:', entry);
-    console.log('🔍 DEBUG - Estados atuais:', { level, tier, charge, mapSize, tokensDropped });
+    
 
     try {
       // Save preferences
@@ -208,7 +207,7 @@ export function MapPlanner({}: MapPlannerProps) {
         }
         
         localStorage.setItem('worldshards-map-drops', JSON.stringify(currentHistory));
-        console.log('✅ Map drop saved (inline):', newEntry);
+
         
         // Disparar evento para atualizar UI
         window.dispatchEvent(new Event('worldshards-history-updated'));
@@ -589,20 +588,16 @@ export function MapPlanner({}: MapPlannerProps) {
         </CardHeader>
         <CardContent>
           {(() => {
-            // 🔧 SOLUÇÃO DIRETA: Ler localStorage na renderização
-            console.log('🔍 RENDER: Executando verificação...');
-            
+            // 🔧 Ler localStorage diretamente na renderização
             let localHistory = [];
             try {
               const raw = localStorage.getItem('worldshards-map-drops');
               localHistory = raw ? JSON.parse(raw) : [];
-              console.log('🔍 RENDER: LocalStorage lido:', localHistory.length, 'runs');
             } catch (e) {
-              console.log('❌ RENDER: Erro ao ler localStorage:', e);
+              console.error('Error reading localStorage:', e);
             }
             
             if (localHistory.length === 0) {
-              console.log('📭 RENDER: Mostrando estado vazio');
               return (
                 <div className="text-center py-8 text-muted-foreground">
                   <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
@@ -612,9 +607,7 @@ export function MapPlanner({}: MapPlannerProps) {
               );
             }
             
-            console.log('📊 RENDER: Processando', localHistory.length, 'runs para exibição');
-            
-            // Agrupar por dia inline
+            // Agrupar por dia
             const grouped = new Map();
             localHistory.forEach(drop => {
               if (!drop.timestamp) return;
@@ -628,7 +621,6 @@ export function MapPlanner({}: MapPlannerProps) {
             });
             
             const groupedArray = Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
-            console.log('🗓️ RENDER: Agrupamento criado:', groupedArray);
             
             return (
             <div className="space-y-4 max-h-96 overflow-auto">
@@ -739,7 +731,7 @@ export function MapPlanner({}: MapPlannerProps) {
                                       const currentHistory = JSON.parse(localStorage.getItem('worldshards-map-drops') || '[]');
                                       const filteredHistory = currentHistory.filter(item => item.timestamp !== h.timestamp);
                                       localStorage.setItem('worldshards-map-drops', JSON.stringify(filteredHistory));
-                                      console.log('✅ Map drop deleted (inline):', h.timestamp);
+
                                       
                                       // Disparar evento para atualizar UI
                                       window.dispatchEvent(new Event('worldshards-history-updated'));
