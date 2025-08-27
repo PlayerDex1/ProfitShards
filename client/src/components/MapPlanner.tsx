@@ -533,18 +533,24 @@ export function MapPlanner({}: MapPlannerProps) {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             <div className="text-sm font-bold text-foreground">
-                              📅 {isToday ? 'Hoje' : new Date(day + 'T12:00:00Z').toLocaleDateString('pt-BR', { 
-                                weekday: 'short', 
-                                day: '2-digit', 
-                                month: '2-digit' 
-                              })}
+                              📅 {isToday ? 'Hoje' : (() => {
+                                try {
+                                  return day ? new Date(day + 'T12:00:00Z').toLocaleDateString('pt-BR', { 
+                                    weekday: 'short', 
+                                    day: '2-digit', 
+                                    month: '2-digit' 
+                                  }) : 'Data inválida';
+                                } catch (e) {
+                                  return day || 'Data inválida';
+                                }
+                              })()}
                             </div>
                             <div className="text-xs text-muted-foreground">
                               {day}
                             </div>
                           </div>
                           <div className="text-xs text-muted-foreground">
-                            {stats.totalRuns} runs • {stats.totalTokens.toLocaleString()} tokens
+                            {stats.totalRuns} runs • {(stats.totalTokens || 0).toLocaleString()} tokens
                           </div>
                         </div>
                       </div>
@@ -594,10 +600,16 @@ export function MapPlanner({}: MapPlannerProps) {
                               <div>
                                 <div className="text-slate-400 uppercase tracking-wide mb-1">TIME</div>
                                 <div className="text-white font-mono text-xs">
-                                  {new Date(h.timestamp).toLocaleTimeString('pt-BR', { 
-                                    hour: '2-digit', 
-                                    minute: '2-digit' 
-                                  })}
+                                  {(() => {
+                                    try {
+                                      return h.timestamp ? new Date(h.timestamp).toLocaleTimeString('pt-BR', { 
+                                        hour: '2-digit', 
+                                        minute: '2-digit' 
+                                      }) : '--:--';
+                                    } catch (e) {
+                                      return '--:--';
+                                    }
+                                  })()}
                                 </div>
                               </div>
 
