@@ -140,7 +140,6 @@ export function MapPlanner({}: MapPlannerProps) {
       save({ mapSize });
       
       // Save to history
-      console.log('🔍 DEBUG - Entry sendo salvo:', entry);
       appendMapDropEntry(entry);
       
       // Salvar métricas anônimas se usuário autenticado
