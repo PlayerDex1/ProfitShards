@@ -254,6 +254,7 @@ export function MapPlanner({}: MapPlannerProps) {
         } catch (error) {
           console.log('%c❌ ERROR: Falha ao salvar métricas anônimas (não crítico)', 'color: #F59E0B;', error);
         }
+        */
       } else {
         console.log('%c⚠️ Métricas não enviadas', 'color: #F59E0B; font-weight: bold; font-size: 14px;', {
           isAuthenticated,

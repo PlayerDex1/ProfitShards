@@ -141,7 +141,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     
     const newRun = {
       id: `feed_${now}_${Math.random().toString(36).substr(2, 6)}`,
-      user_email: runData.userEmail || 'anonymous@feed.com',
+      user_email: null, // 🔧 FIX: Não usar email para evitar FOREIGN KEY constraint
       map_name: formatMapName(runData.mapSize),
       luck: runData.luck || 0,
       tokens: runData.tokensDropped,
