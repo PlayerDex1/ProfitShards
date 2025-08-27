@@ -1,0 +1,43 @@
+<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+  <!-- Outer Crystal -->
+  <polygon 
+    points="30,5 45,20 45,40 30,55 15,40 15,20"
+    fill="url(#crystalGradient)"
+    filter="url(#glow)"
+  />
+  
+  <!-- Inner Glow -->
+  <polygon 
+    points="30,12 38,22 38,38 30,48 22,38 22,22"
+    fill="rgba(255,255,255,0.25)"
+  />
+  
+  <!-- Central Core -->
+  <polygon 
+    points="30,18 34,25 34,35 30,42 26,35 26,25"
+    fill="rgba(255,255,255,0.4)"
+  />
+  
+  <!-- Light Reflection -->
+  <line x1="26" y1="15" x2="26" y2="28" 
+        stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+  <line x1="34" y1="18" x2="34" y2="25" 
+        stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+  
+  <defs>
+    <linearGradient id="crystalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4A90E2" />
+      <stop offset="30%" stop-color="#5B9BD5" />
+      <stop offset="70%" stop-color="#7B68EE" />
+      <stop offset="100%" stop-color="#FFD700" />
+    </linearGradient>
+    
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+</svg>
