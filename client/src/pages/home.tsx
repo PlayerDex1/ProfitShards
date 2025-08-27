@@ -41,67 +41,70 @@ export default function Home() {
 				</div>
 			)}
 			
-			<div className="container mx-auto px-4 py-8">
-				{/* Hero Section Compacto - Foco no Feed */}
-				<div className="text-center mb-6">
-					<div className="flex justify-center mb-3">
-						<Badge className="px-3 py-1 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium">
-							<Sparkles className="h-4 w-4 mr-2" />
+			{/* Conteúdo Centralizado */}
+			<div className="max-w-6xl mx-auto px-4 py-12">
+				{/* Hero Section Centralizado */}
+				<div className="text-center mb-16">
+					<div className="flex justify-center mb-4">
+						<Badge className="px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium text-base">
+							<Sparkles className="h-5 w-5 mr-2" />
 							{t('home.title')}
 						</Badge>
 					</div>
 					
-					<h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+					<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 leading-tight">
 						{t('home.hero.title')}
 					</h1>
 					
-					<p className="text-muted-foreground mb-4 max-w-xl mx-auto text-sm">
+					<p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
 						{t('home.hero.subtitle')}
 					</p>
 					
-					{/* Call-to-Action MUITO VISÍVEL */}
-					<Link href="/perfil">
-						<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold hover:scale-105">
-							<Zap className="mr-3 h-6 w-6" />
-							{isAuthenticated ? 'Ir ao Meu Perfil' : 'Começar a Calcular'}
-							<ArrowRight className="ml-3 h-6 w-6" />
-						</Button>
-					</Link>
+					{/* Call-to-Action Centralizado */}
+					<div className="flex justify-center">
+						<Link href="/perfil">
+							<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl">
+								<Zap className="mr-3 h-7 w-7" />
+								{isAuthenticated ? 'Ir ao Meu Perfil' : 'Começar a Calcular'}
+								<ArrowRight className="ml-3 h-7 w-7" />
+							</Button>
+						</Link>
+					</div>
 				</div>
 
 				
 
 
 
-				{/* Activity Feed - Ampliado */}
-				<div className="mb-8">
-					<div className="text-center mb-8">
-						<div className="flex items-center justify-center space-x-3 mb-4">
-							<div className="p-2 bg-orange-500/10 rounded-lg">
-								<Globe className="h-6 w-6 text-orange-600" />
+				{/* Community Activity Section - Centralizado */}
+				<div className="mb-16">
+					<div className="text-center mb-12">
+						<div className="flex items-center justify-center space-x-3 mb-6">
+							<div className="p-3 bg-orange-500/10 rounded-xl">
+								<Globe className="h-8 w-8 text-orange-600" />
 							</div>
-							<h2 className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+							<h2 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
 								🔥 {t('home.community.title')}
 							</h2>
 						</div>
-						<p className="text-muted-foreground text-lg mb-6">
+						<p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-8">
 							{t('home.community.subtitle')}
 						</p>
-				</div>
+					</div>
 
-			{/* WorldShards Resources Section */}
-			<div className="mb-12">
-				<div className="text-center mb-8">
-					<h2 className="text-2xl font-bold text-foreground mb-2 flex items-center justify-center gap-2">
-						<Gamepad2 className="h-6 w-6 text-primary" />
-						🎮 WorldShards Resources
-					</h2>
-					<p className="text-muted-foreground">
-						Acesse o jogo, marketplace e tire suas dúvidas
-					</p>
-				</div>
+				{/* WorldShards Resources Section - Centralizado */}
+				<div className="mb-16">
+					<div className="text-center mb-12">
+						<h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+							<Gamepad2 className="h-8 w-8 text-primary" />
+							🎮 WorldShards Resources
+						</h2>
+						<p className="text-muted-foreground text-lg max-w-xl mx-auto">
+							Acesse o jogo, marketplace e tire suas dúvidas
+						</p>
+					</div>
 
-				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
 					{/* Play Game */}
 					<Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 hover:shadow-lg transition-all duration-200 group">
 						<CardContent className="p-6">
@@ -197,16 +200,15 @@ export default function Home() {
 				</div>
 			</div>
 				
-			{/* Activity Stream + Support - Layout Lateral Expandido */}
-			<div className="max-w-[1600px] mx-auto px-6">
-					<div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
-						{/* Activity Stream - Coluna Principal (4/5) */}
-						<div className="lg:col-span-4">
-							<ActivityStream />
-						</div>
+				{/* Activity Stream + Support - Layout Centralizado */}
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-12 max-w-7xl mx-auto">
+					{/* Activity Stream - Coluna Principal (3/4) */}
+					<div className="lg:col-span-3">
+						<ActivityStream />
+					</div>
 
-						{/* Support Section - Sidebar (1/5) */}
-						<div className="lg:col-span-1">
+					{/* Support Section - Sidebar (1/4) */}
+					<div className="lg:col-span-1">
 							<div className="sticky top-8">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
 									<CardContent className="p-6">
@@ -300,49 +302,22 @@ export default function Home() {
 					</div>
 				</div>
 			</div>
-
-				{/* Call to Action for Non-Authenticated Users */}
-				{!isAuthenticated && (
-					<Card className="bg-gradient-to-br from-primary/10 via-blue-500/10 to-purple-500/10 border border-primary/30">
-						<CardContent className="p-8 text-center">
-							<h3 className="text-2xl font-bold text-foreground mb-4">
-								{t('home.cta.title')}
-							</h3>
-							<p className="text-muted-foreground mb-6 text-lg">
-								{t('home.cta.subtitle')}
-							</p>
-							<div className="flex flex-col sm:flex-row gap-6 justify-center">
-								<Link href="/perfil">
-									<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 px-10 py-4 text-lg font-semibold min-h-[52px] min-w-[180px] shadow-lg hover:shadow-xl transition-all duration-200">
-										<Zap className="mr-3 h-5 w-5" />
-										{t('home.cta.try')}
-									</Button>
-								</Link>
-								<Button variant="outline" size="lg" className="px-10 py-4 text-lg font-semibold border-primary/30 hover:bg-primary/10 min-h-[52px] min-w-[180px] hover:border-primary/50 transition-all duration-200">
-									<Users className="mr-3 h-5 w-5" />
-									{t('home.cta.features')}
-								</Button>
-							</div>
-						</CardContent>
-					</Card>
-				)}
-			</div>
 			
 
 
-			{/* FAQ Section */}
-			<div id="faq-section" className="mb-16">
-				<div className="text-center mb-12">
-					<h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
+			{/* FAQ Section - Centralizado */}
+			<div id="faq-section" className="max-w-6xl mx-auto px-4 py-16">
+				<div className="text-center mb-16">
+					<h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6 flex items-center justify-center gap-3">
 						<HelpCircle className="h-8 w-8 text-primary" />
 						❓ {t('faq.title')}
 					</h2>
-					<p className="text-muted-foreground text-lg">
+					<p className="text-muted-foreground text-lg max-w-2xl mx-auto">
 						{t('faq.subtitle')}
 					</p>
 				</div>
 
-				<div className="max-w-4xl mx-auto space-y-6">
+				<div className="max-w-5xl mx-auto space-y-8">
 					{/* FAQ Items */}
 					<Card className="border-blue-200/50">
 						<CardHeader>
@@ -430,21 +405,21 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* Enhanced Footer */}
-			<footer className="mt-16 py-12 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
-				<div className="container mx-auto px-4">
+			{/* Enhanced Footer - Centralizado */}
+			<footer className="mt-20 py-16 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
+				<div className="max-w-4xl mx-auto px-4">
 					<div className="text-center">
-						<h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-3">
+						<h2 className="text-4xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-4">
 							{t('home.title')}
 						</h2>
-						<p className="text-muted-foreground mb-6">
+						<p className="text-muted-foreground mb-8 text-lg max-w-2xl mx-auto">
 							{t('home.footer.description')}
 						</p>
-						<div className="flex justify-center space-x-6 text-sm text-muted-foreground">
-							<span>✨ {t('home.footer.feature1')}</span>
-							<span>📊 {t('home.footer.feature2')}</span>
-							<span>🌍 {t('home.footer.feature3')}</span>
-							<span>🆓 {t('home.footer.feature4')}</span>
+						<div className="flex flex-wrap justify-center gap-6 text-base text-muted-foreground">
+							<span className="flex items-center gap-2">✨ {t('home.footer.feature1')}</span>
+							<span className="flex items-center gap-2">📊 {t('home.footer.feature2')}</span>
+							<span className="flex items-center gap-2">🌍 {t('home.footer.feature3')}</span>
+							<span className="flex items-center gap-2">🆓 {t('home.footer.feature4')}</span>
 						</div>
 					</div>
 				</div>
