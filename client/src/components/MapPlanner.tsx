@@ -140,6 +140,7 @@ export function MapPlanner({}: MapPlannerProps) {
       save({ mapSize });
       
       // Save to history
+      console.log('🔍 DEBUG - Entry sendo salvo:', entry);
       appendMapDropEntry(entry);
       
       // Salvar métricas anônimas se usuário autenticado
@@ -557,7 +558,9 @@ export function MapPlanner({}: MapPlannerProps) {
 
                       {/* Runs do Dia - Layout Clean Horizontal */}
                       <div className="p-3 space-y-2">
-                        {dayEntries.map((h, i) => (
+                        {dayEntries.map((h, i) => {
+                          console.log('🔍 DEBUG - Renderizando run:', h);
+                          return (
                           <div 
                             key={h.timestamp} 
                             className="bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-750 transition-colors duration-200 px-4 py-3"
@@ -626,7 +629,8 @@ export function MapPlanner({}: MapPlannerProps) {
                               </div>
                             </div>
                           </div>
-                        ))}
+                        ); 
+                        })}
                       </div>
                     </div>
                   );
