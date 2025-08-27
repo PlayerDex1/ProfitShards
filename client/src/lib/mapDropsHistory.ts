@@ -119,23 +119,33 @@ export function getMapDropsHistoryGroupedByDay(): any[] {
 }
 
 // Get day statistics
-export function getDayStats(): any {
+export function getDayStats(day?: string): any {
   try {
-    const today = new Date();
-    const startOfDay = new Date(today.setHours(0, 0, 0, 0)).getTime();
-    const endOfDay = new Date(today.setHours(23, 59, 59, 999)).getTime();
+    let startOfDay: number, endOfDay: number;
+    
+    if (day) {
+      // Use the provided day
+      const targetDate = new Date(day + 'T00:00:00.000Z');
+      startOfDay = targetDate.getTime();
+      endOfDay = new Date(day + 'T23:59:59.999Z').getTime();
+    } else {
+      // Use today
+      const today = new Date();
+      startOfDay = new Date(today.setHours(0, 0, 0, 0)).getTime();
+      endOfDay = new Date(today.setHours(23, 59, 59, 999)).getTime();
+    }
     
     const history = getMapDropsHistory();
-    const todayDrops = history.filter(drop => 
+    const dayDrops = history.filter(drop => 
       drop.timestamp >= startOfDay && drop.timestamp <= endOfDay
     );
     
-    const totalTokens = todayDrops.reduce((sum, drop) => sum + (drop.tokensDropped || 0), 0);
-    const totalLoads = todayDrops.reduce((sum, drop) => sum + (drop.loads || 0), 0);
+    const totalTokens = dayDrops.reduce((sum, drop) => sum + (drop.tokensDropped || 0), 0);
+    const totalLoads = dayDrops.reduce((sum, drop) => sum + (drop.loads || 0), 0);
     const avgTokensPerLoad = totalLoads > 0 ? totalTokens / totalLoads : 0;
     
     // Group by map size
-    const bySize = todayDrops.reduce((acc, drop) => {
+    const bySize = dayDrops.reduce((acc, drop) => {
       if (!acc[drop.mapSize]) {
         acc[drop.mapSize] = { tokens: 0, loads: 0, count: 0 };
       }
@@ -150,17 +160,22 @@ export function getDayStats(): any {
         totalTokens,
         totalLoads,
         avgTokensPerLoad,
-        runsCount: todayDrops.length
+        runsCount: dayDrops.length,
+        totalRuns: dayDrops.length
       },
       bySize,
-      recentRuns: todayDrops.slice(0, 10)
+      recentRuns: dayDrops.slice(0, 10),
+      totalRuns: dayDrops.length,
+      totalTokens: totalTokens
     };
   } catch (error) {
     console.error('Error calculating day stats:', error);
     return {
-      today: { totalTokens: 0, totalLoads: 0, avgTokensPerLoad: 0, runsCount: 0 },
+      today: { totalTokens: 0, totalLoads: 0, avgTokensPerLoad: 0, runsCount: 0, totalRuns: 0 },
       bySize: {},
-      recentRuns: []
+      recentRuns: [],
+      totalRuns: 0,
+      totalTokens: 0
     };
   }
 }
