@@ -43,6 +43,60 @@ export function MapPlanner({}: MapPlannerProps) {
       return [];
     }
   });
+
+  // 🔧 FIX: Implementar funções inline já que imports não funcionam
+  useEffect(() => {
+    const updateGroupedHistory = () => {
+      try {
+        console.log('🔄 Atualizando groupedHistory...');
+        
+        // Função inline para substituir getMapDropsHistory
+        const getHistoryInline = () => {
+          try {
+            const raw = localStorage.getItem('worldshards-map-drops');
+            return raw ? JSON.parse(raw) : [];
+          } catch {
+            return [];
+          }
+        };
+        
+        // Função inline para substituir getMapDropsHistoryGroupedByDay
+        const getGroupedInline = () => {
+          const history = getHistoryInline();
+          const grouped = new Map();
+          
+          history.forEach(drop => {
+            if (!drop.timestamp) return;
+            const date = new Date(drop.timestamp);
+            const dayKey = date.toISOString().split('T')[0];
+            
+            if (!grouped.has(dayKey)) {
+              grouped.set(dayKey, []);
+            }
+            grouped.get(dayKey).push(drop);
+          });
+          
+          return Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
+        };
+        
+        const newGroupedHistory = getGroupedInline();
+        setGroupedHistory(newGroupedHistory);
+        console.log('✅ GroupedHistory atualizado:', newGroupedHistory);
+      } catch (error) {
+        console.error('❌ Erro ao atualizar groupedHistory:', error);
+      }
+    };
+
+    // Escutar evento de atualização
+    window.addEventListener('worldshards-history-updated', updateGroupedHistory);
+    
+    // Atualizar imediatamente
+    updateGroupedHistory();
+
+    return () => {
+      window.removeEventListener('worldshards-history-updated', updateGroupedHistory);
+    };
+  }, []);
   const { totalLuck } = useEquipment();
   const [luck, setLuck] = useState<number>(() => {
     try {
@@ -142,8 +196,25 @@ export function MapPlanner({}: MapPlannerProps) {
       // Save preferences
       save({ mapSize });
       
-      // Save to history
-      appendMapDropEntry(entry);
+      // Save to history (inline implementation)
+      try {
+        const currentHistory = JSON.parse(localStorage.getItem('worldshards-map-drops') || '[]');
+        const newEntry = { ...entry, timestamp: entry.timestamp || Date.now() };
+        currentHistory.unshift(newEntry);
+        
+        // Keep only last 1000 entries
+        if (currentHistory.length > 1000) {
+          currentHistory.splice(1000);
+        }
+        
+        localStorage.setItem('worldshards-map-drops', JSON.stringify(currentHistory));
+        console.log('✅ Map drop saved (inline):', newEntry);
+        
+        // Disparar evento para atualizar UI
+        window.dispatchEvent(new Event('worldshards-history-updated'));
+      } catch (error) {
+        console.error('❌ Error saving map drop (inline):', error);
+      }
       
       // Salvar métricas anônimas se usuário autenticado
       if (isAuthenticated && tokensDropped > 0) {
@@ -627,7 +698,20 @@ export function MapPlanner({}: MapPlannerProps) {
                                 <Button 
                                   variant="ghost" 
                                   size="sm" 
-                                  onClick={() => deleteMapDropEntry(h.timestamp)}
+                                  onClick={() => {
+                                    // Delete function inline
+                                    try {
+                                      const currentHistory = JSON.parse(localStorage.getItem('worldshards-map-drops') || '[]');
+                                      const filteredHistory = currentHistory.filter(item => item.timestamp !== h.timestamp);
+                                      localStorage.setItem('worldshards-map-drops', JSON.stringify(filteredHistory));
+                                      console.log('✅ Map drop deleted (inline):', h.timestamp);
+                                      
+                                      // Disparar evento para atualizar UI
+                                      window.dispatchEvent(new Event('worldshards-history-updated'));
+                                    } catch (error) {
+                                      console.error('❌ Error deleting map drop (inline):', error);
+                                    }
+                                  }}
                                   className="h-6 w-6 p-0 text-slate-400 hover:text-red-400 hover:bg-red-500/10"
                                 >
                                   ✕
