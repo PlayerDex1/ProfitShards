@@ -45,6 +45,13 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
     
     if (type === 'calculation') {
       // Para cálculos: usar as colunas específicas que o community-metrics espera
+      console.log('📊 INSERINDO CALCULATION:', {
+        calculationId, userIdForStats, type,
+        investment: sanitizedData.investment || 0,
+        finalProfit: sanitizedResults?.finalProfit || 0,
+        roi: sanitizedResults?.roi || 0
+      });
+      
       await env.DB.prepare(`
         INSERT INTO user_calculations (
           id, 
@@ -79,6 +86,12 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
       const simulatedProfit = (data.tokens || 0) * 100; // 1 token = $100 estimado
       const simulatedInvestment = simulatedProfit * 0.7; // simular 70% de eficiência
       const simulatedROI = simulatedInvestment > 0 ? ((simulatedProfit - simulatedInvestment) / simulatedInvestment) * 100 : 0;
+      
+      console.log('🗺️ INSERINDO MAP_PLANNING:', {
+        calculationId, userIdForStats, type,
+        tokens: data.tokens || 0,
+        simulatedProfit, simulatedInvestment, simulatedROI
+      });
       
       await env.DB.prepare(`
         INSERT INTO user_calculations (
@@ -170,10 +183,16 @@ export async function onRequestPost({ request, env }: { request: Request; env: E
 
   } catch (error) {
     console.error('❌ Erro ao salvar métricas:', error);
+    console.error('❌ Error details:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
     
     return new Response(JSON.stringify({
       success: false,
-      error: 'Erro interno do servidor',
+      error: error.message || 'Erro interno do servidor',
+      details: error.stack,
       timestamp: new Date().toISOString()
     }), {
       status: 500,
