@@ -164,7 +164,9 @@ const dicts: Record<Lang, Dict> = {
     'support.title': 'Apoie o Projeto',
     'support.ambassador': 'OpenLoot (Embaixador)',
     'support.ambassador.cta': 'Ambassador OpenLoot',
+    'support.ambassador.desc': 'Use meu link de embaixador',
     'support.donate': 'Doe para manter o site online',
+    'support.creator': 'Criado por',
     'planner.title': 'Planejador de Mapa',
     'planner.mapSize': 'Tamanho do mapa',
     'planner.small': 'Pequeno',
@@ -196,6 +198,17 @@ const dicts: Record<Lang, Dict> = {
     'metrics.runShort': 'carga',
     'planner.clear': 'Limpar histórico',
     'planner.delete': 'Excluir',
+
+    // WorldShards Resources
+    'resources.game.title': 'Jogar Agora',
+    'resources.game.desc': 'Acesse o jogo WorldShards e comece sua aventura',
+    'resources.game.cta': 'Jogar',
+    'resources.marketplace.title': 'Marketplace',
+    'resources.marketplace.desc': 'Compre e venda items, equipamentos e tokens',
+    'resources.marketplace.cta': 'OpenLoot',
+    'resources.faq.title': 'FAQ & Ajuda',
+    'resources.faq.desc': 'Perguntas frequentes e guias de uso',
+    'resources.faq.cta': 'Ver FAQ',
 
     // Status labels
     'status.excellent': 'Excelente',
@@ -457,7 +470,9 @@ const dicts: Record<Lang, Dict> = {
     'support.title': 'Support the Project',
     'support.ambassador': 'OpenLoot (Ambassador)',
     'support.ambassador.cta': 'Ambassador OpenLoot',
+    'support.ambassador.desc': 'Use my ambassador link',
     'support.donate': 'Donate to keep the site online',
+    'support.creator': 'Created by',
     'planner.title': 'Map Planner',
     'planner.mapSize': 'Map size',
     'planner.small': 'Small',
@@ -489,6 +504,17 @@ const dicts: Record<Lang, Dict> = {
     'metrics.runShort': 'load',
     'planner.clear': 'Clear history',
     'planner.delete': 'Delete',
+
+    // WorldShards Resources
+    'resources.game.title': 'Play Now',
+    'resources.game.desc': 'Access WorldShards game and start your adventure',
+    'resources.game.cta': 'Play',
+    'resources.marketplace.title': 'Marketplace',
+    'resources.marketplace.desc': 'Buy and sell items, equipment and tokens',
+    'resources.marketplace.cta': 'OpenLoot',
+    'resources.faq.title': 'FAQ & Help',
+    'resources.faq.desc': 'Frequently asked questions and usage guides',
+    'resources.faq.cta': 'View FAQ',
 
     // Status labels
     'status.excellent': 'Excellent',

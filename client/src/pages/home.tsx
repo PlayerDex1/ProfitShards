@@ -110,9 +110,9 @@ export default function Home() {
 									<Gamepad2 className="h-8 w-8 text-green-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-green-900 dark:text-green-100 mb-2">Jogar Agora</h3>
+									<h3 className="font-bold text-green-900 dark:text-green-100 mb-2">{t('resources.game.title')}</h3>
 									<p className="text-sm text-green-700 dark:text-green-300 mb-4">
-										Acesse o jogo WorldShards e comece sua aventura
+										{t('resources.game.desc')}
 									</p>
 									<a 
 										href="https://www.worldshards.online/en" 
@@ -122,7 +122,7 @@ export default function Home() {
 									>
 										<Button className="w-full bg-green-600 hover:bg-green-700 text-white">
 											<ExternalLink className="mr-2 h-4 w-4" />
-											Jogar
+											{t('resources.game.cta')}
 										</Button>
 									</a>
 								</div>
@@ -138,9 +138,9 @@ export default function Home() {
 									<ShoppingCart className="h-8 w-8 text-blue-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Marketplace</h3>
+									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2">{t('resources.marketplace.title')}</h3>
 									<p className="text-sm text-blue-700 dark:text-blue-300 mb-4">
-										Compre e venda items, equipamentos e tokens
+										{t('resources.marketplace.desc')}
 									</p>
 									<a 
 										href="https://openloot.com/games/worldshards" 
@@ -150,7 +150,7 @@ export default function Home() {
 									>
 										<Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
 											<ExternalLink className="mr-2 h-4 w-4" />
-											OpenLoot
+											{t('resources.marketplace.cta')}
 										</Button>
 									</a>
 								</div>
@@ -158,33 +158,7 @@ export default function Home() {
 						</CardContent>
 					</Card>
 
-					{/* Token Price */}
-					<Card className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-950 dark:to-orange-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-6">
-							<div className="text-center space-y-4">
-								<div className="p-3 bg-yellow-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<Coins className="h-8 w-8 text-yellow-600" />
-								</div>
-								<div>
-									<h3 className="font-bold text-yellow-900 dark:text-yellow-100 mb-2">Token Price</h3>
-									<p className="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
-										Acompanhe o preço dos tokens em tempo real
-									</p>
-									<a 
-										href="https://www.coingecko.com/en/coins/worldshards" 
-										target="_blank" 
-										rel="noopener noreferrer"
-										className="block"
-									>
-										<Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white">
-											<ExternalLink className="mr-2 h-4 w-4" />
-											CoinGecko
-										</Button>
-									</a>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+
 
 					{/* FAQ */}
 					<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200 group">
@@ -194,9 +168,9 @@ export default function Home() {
 									<HelpCircle className="h-8 w-8 text-purple-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-2">FAQ & Ajuda</h3>
+									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-2">{t('resources.faq.title')}</h3>
 									<p className="text-sm text-purple-700 dark:text-purple-300 mb-4">
-										Perguntas frequentes e guias de uso
+										{t('resources.faq.desc')}
 									</p>
 									<Button 
 										className="w-full bg-purple-600 hover:bg-purple-700 text-white"
@@ -214,7 +188,7 @@ export default function Home() {
 										}}
 									>
 										<MessageCircle className="mr-2 h-4 w-4" />
-										Ver FAQ
+										{t('resources.faq.cta')}
 									</Button>
 								</div>
 							</div>
@@ -247,7 +221,7 @@ export default function Home() {
 											
 											{/* Créditos do Criador */}
 											<div className="mt-4 pt-4 border-t border-green-500/20">
-												<p className="text-xs text-muted-foreground mb-2">Criado por</p>
+												<p className="text-xs text-muted-foreground mb-2">{t('support.creator')}</p>
 												<a 
 													href="https://x.com/playerhold" 
 													target="_blank" 
@@ -272,7 +246,7 @@ export default function Home() {
 															<span className="font-semibold text-sm">{t('support.ambassador')}</span>
 														</div>
 														<p className="text-xs text-muted-foreground">
-															Use meu link de embaixador
+															{t('support.ambassador.desc')}
 														</p>
 														<a 
 															href="https://openloot.com/ambassador/link?code=HOLDBOY" 
