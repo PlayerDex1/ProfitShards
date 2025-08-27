@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "../hooks/usePreferences";
 import { useI18n } from "@/i18n";
-// Note: mapDropsHistory functions replaced with inline implementations
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "../lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
 import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
@@ -27,9 +27,76 @@ export function MapPlanner({}: MapPlannerProps) {
   });
   const [loads, setLoads] = useState<number>(0);
   const [tokensDropped, setTokensDropped] = useState<number>(0);
-  // Note: history state not needed since we read localStorage directly in render
+  const [history, setHistory] = useState(() => {
+    try {
+      return getMapDropsHistory() || [];
+    } catch (error) {
+      console.error('Error loading map drops history:', error);
+      return [];
+    }
+  });
+  const [groupedHistory, setGroupedHistory] = useState(() => {
+    try {
+      return getMapDropsHistoryGroupedByDay() || [];
+    } catch (error) {
+      console.error('Error loading grouped map drops history:', error);
+      return [];
+    }
+  });
 
-  // Note: useEffect removed since we read localStorage directly in render
+  // 🔧 FIX: Implementar funções inline já que imports não funcionam
+  useEffect(() => {
+    const updateGroupedHistory = () => {
+      try {
+        console.log('🔄 Atualizando groupedHistory...');
+        
+        // Função inline para substituir getMapDropsHistory
+        const getHistoryInline = () => {
+          try {
+            const raw = localStorage.getItem('worldshards-map-drops');
+            return raw ? JSON.parse(raw) : [];
+          } catch {
+            return [];
+          }
+        };
+        
+        // Função inline para substituir getMapDropsHistoryGroupedByDay
+        const getGroupedInline = () => {
+          const history = getHistoryInline();
+          const grouped = new Map();
+          
+          history.forEach(drop => {
+            if (!drop.timestamp) return;
+            const date = new Date(drop.timestamp);
+            const dayKey = date.toISOString().split('T')[0];
+            
+            if (!grouped.has(dayKey)) {
+              grouped.set(dayKey, []);
+            }
+            grouped.get(dayKey).push(drop);
+          });
+          
+          return Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
+        };
+        
+        const newGroupedHistory = getGroupedInline();
+        setGroupedHistory(newGroupedHistory);
+        console.log('✅ GroupedHistory atualizado:', newGroupedHistory);
+      } catch (error) {
+        console.error('❌ Erro ao atualizar groupedHistory:', error);
+      }
+    };
+
+    // Escutar evento de atualização
+    window.addEventListener('worldshards-history-updated', updateGroupedHistory);
+    
+    // Atualizar imediatamente
+    updateGroupedHistory();
+
+    return () => {
+      window.removeEventListener('worldshards-history-updated', updateGroupedHistory);
+    };
+  }, []);
   const { totalLuck } = useEquipment();
   const [luck, setLuck] = useState<number>(() => {
     try {
@@ -52,9 +119,12 @@ export function MapPlanner({}: MapPlannerProps) {
   useEffect(() => {
     const onUpd = () => {
       try {
-        // Note: Force re-render by dispatching event (handled by inline localStorage read)
+        setHistory(getMapDropsHistory() || []);
+        setGroupedHistory(getMapDropsHistoryGroupedByDay() || []);
       } catch (error) {
         console.error('Error updating map drops history:', error);
+        setHistory([]);
+        setGroupedHistory([]);
       }
     };
     window.addEventListener('worldshards-mapdrops-updated', onUpd);
