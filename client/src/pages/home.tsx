@@ -8,7 +8,7 @@ import { Link } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, User, Calculator, Map, BarChart3, Zap, Target, Users, ArrowRight, Sparkles, Globe } from "lucide-react";
+import { TrendingUp, User, Calculator, Map, BarChart3, Zap, Target, Users, ArrowRight, Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 
 
@@ -85,9 +85,135 @@ export default function Home() {
 							{t('home.community.subtitle')}
 						</p>
 				</div>
+
+			{/* WorldShards Resources Section */}
+			<div className="mb-12">
+				<div className="text-center mb-8">
+					<h2 className="text-2xl font-bold text-foreground mb-2 flex items-center justify-center gap-2">
+						<Gamepad2 className="h-6 w-6 text-primary" />
+						🎮 WorldShards Resources
+					</h2>
+					<p className="text-muted-foreground">
+						Acesse o jogo, marketplace e tire suas dúvidas
+					</p>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+					{/* Play Game */}
+					<Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 hover:shadow-lg transition-all duration-200 group">
+						<CardContent className="p-6">
+							<div className="text-center space-y-4">
+								<div className="p-3 bg-green-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<Gamepad2 className="h-8 w-8 text-green-600" />
+								</div>
+								<div>
+									<h3 className="font-bold text-green-900 dark:text-green-100 mb-2">Jogar Agora</h3>
+									<p className="text-sm text-green-700 dark:text-green-300 mb-4">
+										Acesse o jogo WorldShards e comece sua aventura
+									</p>
+									<a 
+										href="https://worldshards.com" 
+										target="_blank" 
+										rel="noopener noreferrer"
+										className="block"
+									>
+										<Button className="w-full bg-green-600 hover:bg-green-700 text-white">
+											<ExternalLink className="mr-2 h-4 w-4" />
+											Jogar
+										</Button>
+									</a>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Marketplace */}
+					<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-950 dark:to-cyan-900 hover:shadow-lg transition-all duration-200 group">
+						<CardContent className="p-6">
+							<div className="text-center space-y-4">
+								<div className="p-3 bg-blue-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<ShoppingCart className="h-8 w-8 text-blue-600" />
+								</div>
+								<div>
+									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Marketplace</h3>
+									<p className="text-sm text-blue-700 dark:text-blue-300 mb-4">
+										Compre e venda items, equipamentos e tokens
+									</p>
+									<a 
+										href="https://openloot.com/games/worldshards" 
+										target="_blank" 
+										rel="noopener noreferrer"
+										className="block"
+									>
+										<Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+											<ExternalLink className="mr-2 h-4 w-4" />
+											OpenLoot
+										</Button>
+									</a>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* Token Price */}
+					<Card className="border-yellow-200 bg-gradient-to-br from-yellow-50 to-orange-100 dark:from-yellow-950 dark:to-orange-900 hover:shadow-lg transition-all duration-200 group">
+						<CardContent className="p-6">
+							<div className="text-center space-y-4">
+								<div className="p-3 bg-yellow-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<Coins className="h-8 w-8 text-yellow-600" />
+								</div>
+								<div>
+									<h3 className="font-bold text-yellow-900 dark:text-yellow-100 mb-2">Token Price</h3>
+									<p className="text-sm text-yellow-700 dark:text-yellow-300 mb-4">
+										Acompanhe o preço dos tokens em tempo real
+									</p>
+									<a 
+										href="https://www.coingecko.com/en/coins/worldshards" 
+										target="_blank" 
+										rel="noopener noreferrer"
+										className="block"
+									>
+										<Button className="w-full bg-yellow-600 hover:bg-yellow-700 text-white">
+											<ExternalLink className="mr-2 h-4 w-4" />
+											CoinGecko
+										</Button>
+									</a>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+
+					{/* FAQ */}
+					<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200 group">
+						<CardContent className="p-6">
+							<div className="text-center space-y-4">
+								<div className="p-3 bg-purple-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<HelpCircle className="h-8 w-8 text-purple-600" />
+								</div>
+								<div>
+									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-2">FAQ & Ajuda</h3>
+									<p className="text-sm text-purple-700 dark:text-purple-300 mb-4">
+										Perguntas frequentes e guias de uso
+									</p>
+									<Button 
+										className="w-full bg-purple-600 hover:bg-purple-700 text-white"
+										onClick={() => {
+											const element = document.getElementById('faq-section');
+											element?.scrollIntoView({ behavior: 'smooth' });
+										}}
+									>
+										<MessageCircle className="mr-2 h-4 w-4" />
+										Ver FAQ
+									</Button>
+								</div>
+							</div>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
 				
-				{/* Activity Stream + Support - Layout Lateral Expandido */}
-				<div className="max-w-[1600px] mx-auto px-6">
+			{/* Activity Stream + Support - Layout Lateral Expandido */}
+			<div className="max-w-[1600px] mx-auto px-6">
 					<div className="grid grid-cols-1 lg:grid-cols-5 gap-12">
 						{/* Activity Stream - Coluna Principal (4/5) */}
 						<div className="lg:col-span-4">
@@ -218,6 +344,112 @@ export default function Home() {
 			</div>
 			
 
+
+			{/* FAQ Section */}
+			<div id="faq-section" className="mb-16">
+				<div className="text-center mb-12">
+					<h2 className="text-3xl font-bold text-foreground mb-4 flex items-center justify-center gap-2">
+						<HelpCircle className="h-8 w-8 text-primary" />
+						❓ Perguntas Frequentes
+					</h2>
+					<p className="text-muted-foreground text-lg">
+						Tire suas dúvidas sobre o WorldShards Calculator
+					</p>
+				</div>
+
+				<div className="max-w-4xl mx-auto space-y-6">
+					{/* FAQ Items */}
+					<Card className="border-blue-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<Calculator className="h-5 w-5 text-blue-500" />
+								Como funciona a calculadora de lucros?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								A calculadora analisa seu investimento, equipamentos, sorte e eficiência para determinar o lucro potencial nas dungeons. 
+								Insira os dados do seu setup e receba uma análise detalhada com ROI, distribuição de tokens e recomendações.
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card className="border-green-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<Map className="h-5 w-5 text-green-500" />
+								O que é o planejador de mapas?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								O planejador permite registrar suas runs, analisar eficiência por mapa (Small, Medium, Large, XLarge) e contribuir para as 
+								estatísticas da comunidade. Acompanhe seu progresso e compare com outros jogadores.
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card className="border-purple-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<Users className="h-5 w-5 text-purple-500" />
+								Como funcionam as estatísticas da comunidade?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								As estatísticas são atualizadas em tempo real com dados anônimos dos usuários. Você pode ver runs recentes, 
+								lucros totais, players ativos e mapas mais populares. Todos os dados são agregados e não identificam usuários individuais.
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card className="border-yellow-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<Coins className="h-5 w-5 text-yellow-500" />
+								Os preços dos tokens são atualizados automaticamente?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								Atualmente usamos preços fixos para cálculos. Em breve implementaremos integração com APIs de preços em tempo real 
+								para refletir as cotações atuais do mercado. Você pode acompanhar preços atuais no CoinGecko.
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card className="border-orange-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<BarChart3 className="h-5 w-5 text-orange-500" />
+								Posso exportar meus dados e histórico?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								Sim! No perfil você pode baixar todo seu histórico de cálculos e runs em formato JSON. 
+								Também é possível limpar dados individualmente ou fazer backup completo de suas informações.
+							</p>
+						</CardContent>
+					</Card>
+
+					<Card className="border-indigo-200/50">
+						<CardHeader>
+							<CardTitle className="text-left text-lg flex items-center gap-2">
+								<Globe className="h-5 w-5 text-indigo-500" />
+								O site funciona offline?
+							</CardTitle>
+						</CardHeader>
+						<CardContent>
+							<p className="text-muted-foreground">
+								Parcialmente sim! A calculadora e histórico funcionam offline após o primeiro carregamento. 
+								Apenas recursos que dependem de dados da comunidade (feed, estatísticas) precisam de conexão com internet.
+							</p>
+						</CardContent>
+					</Card>
+				</div>
+			</div>
 
 			{/* Enhanced Footer */}
 			<footer className="mt-16 py-12 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
