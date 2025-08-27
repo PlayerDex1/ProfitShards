@@ -1,4 +1,4 @@
-// Map Drops History Management
+// WorldShards Map Drops History Management
 export type MapSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 export interface MapDrop {
@@ -23,7 +23,18 @@ export function getMapDropsHistory(): MapDrop[] {
     if (!stored) return [];
     
     const data = JSON.parse(stored);
-    return Array.isArray(data) ? data : [];
+    
+    // Validate data structure
+    if (!Array.isArray(data)) return [];
+    
+    // Filter and validate each entry
+    return data.filter(item => 
+      item && 
+      typeof item === 'object' && 
+      typeof item.timestamp === 'number' &&
+      typeof item.tokensDropped === 'number' &&
+      item.mapSize
+    );
   } catch (error) {
     console.error('Error loading map drops history:', error);
     return [];
@@ -45,10 +56,13 @@ function saveMapDropsHistory(drops: MapDrop[]): void {
 export function appendMapDropEntry(drop: MapDrop): void {
   try {
     const history = getMapDropsHistory();
-    history.unshift({
+    
+    const newEntry = {
       ...drop,
       timestamp: drop.timestamp || Date.now()
-    });
+    };
+    
+    history.unshift(newEntry);
     
     // Keep only last 1000 entries to prevent storage overflow
     if (history.length > 1000) {
@@ -56,6 +70,7 @@ export function appendMapDropEntry(drop: MapDrop): void {
     }
     
     saveMapDropsHistory(history);
+    console.log('✅ Map drop saved:', newEntry);
   } catch (error) {
     console.error('Error appending map drop:', error);
   }
@@ -67,6 +82,7 @@ export function deleteMapDropEntry(timestamp: number): void {
     const history = getMapDropsHistory();
     const filtered = history.filter(drop => drop.timestamp !== timestamp);
     saveMapDropsHistory(filtered);
+    console.log('🗑️ Map drop deleted:', timestamp);
   } catch (error) {
     console.error('Error deleting map drop:', error);
   }
@@ -77,41 +93,33 @@ export function clearMapDropsHistory(): void {
   try {
     localStorage.removeItem(STORAGE_KEY);
     window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+    console.log('🧹 Map drops history cleared');
   } catch (error) {
     console.error('Error clearing map drops history:', error);
   }
 }
 
 // Group history by day for analytics
-export function getMapDropsHistoryGroupedByDay(): any[] {
+export function getMapDropsHistoryGroupedByDay(): Array<[string, MapDrop[]]> {
   try {
     const history = getMapDropsHistory();
-    const grouped = new Map();
+    const grouped = new Map<string, MapDrop[]>();
     
     history.forEach(drop => {
+      if (!drop.timestamp) return;
+      
       const date = new Date(drop.timestamp);
       const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
       
       if (!grouped.has(dayKey)) {
-        grouped.set(dayKey, {
-          date: dayKey,
-          entries: [],
-          totalTokens: 0,
-          totalLoads: 0,
-          avgTokensPerLoad: 0
-        });
+        grouped.set(dayKey, []);
       }
       
-      const dayData = grouped.get(dayKey);
-      dayData.entries.push(drop);
-      dayData.totalTokens += drop.tokensDropped || 0;
-      dayData.totalLoads += drop.loads || 0;
-      dayData.avgTokensPerLoad = dayData.totalLoads > 0 ? dayData.totalTokens / dayData.totalLoads : 0;
+      grouped.get(dayKey)!.push(drop);
     });
     
-    return Array.from(grouped.values()).sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    // Convert to array and sort by date (newest first)
+    return Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
   } catch (error) {
     console.error('Error grouping map drops by day:', error);
     return [];
@@ -121,37 +129,43 @@ export function getMapDropsHistoryGroupedByDay(): any[] {
 // Get day statistics
 export function getDayStats(day?: string): any {
   try {
-    let startOfDay: number, endOfDay: number;
+    let targetDrops: MapDrop[];
     
     if (day) {
-      // Use the provided day
-      const targetDate = new Date(day + 'T00:00:00.000Z');
-      startOfDay = targetDate.getTime();
-      endOfDay = new Date(day + 'T23:59:59.999Z').getTime();
+      // Use specific day
+      const dayStart = new Date(day + 'T00:00:00.000Z').getTime();
+      const dayEnd = new Date(day + 'T23:59:59.999Z').getTime();
+      
+      const history = getMapDropsHistory();
+      targetDrops = history.filter(drop => 
+        drop.timestamp >= dayStart && drop.timestamp <= dayEnd
+      );
     } else {
       // Use today
       const today = new Date();
-      startOfDay = new Date(today.setHours(0, 0, 0, 0)).getTime();
-      endOfDay = new Date(today.setHours(23, 59, 59, 999)).getTime();
+      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+      const endOfDay = startOfDay + (24 * 60 * 60 * 1000) - 1;
+      
+      const history = getMapDropsHistory();
+      targetDrops = history.filter(drop => 
+        drop.timestamp >= startOfDay && drop.timestamp <= endOfDay
+      );
     }
     
-    const history = getMapDropsHistory();
-    const dayDrops = history.filter(drop => 
-      drop.timestamp >= startOfDay && drop.timestamp <= endOfDay
-    );
-    
-    const totalTokens = dayDrops.reduce((sum, drop) => sum + (drop.tokensDropped || 0), 0);
-    const totalLoads = dayDrops.reduce((sum, drop) => sum + (drop.loads || 0), 0);
+    const totalTokens = targetDrops.reduce((sum, drop) => sum + (drop.tokensDropped || 0), 0);
+    const totalLoads = targetDrops.reduce((sum, drop) => sum + (drop.loads || drop.charges || 0), 0);
+    const totalRuns = targetDrops.length;
     const avgTokensPerLoad = totalLoads > 0 ? totalTokens / totalLoads : 0;
     
     // Group by map size
-    const bySize = dayDrops.reduce((acc, drop) => {
-      if (!acc[drop.mapSize]) {
-        acc[drop.mapSize] = { tokens: 0, loads: 0, count: 0 };
+    const bySize = targetDrops.reduce((acc, drop) => {
+      const size = drop.mapSize || 'unknown';
+      if (!acc[size]) {
+        acc[size] = { tokens: 0, loads: 0, count: 0 };
       }
-      acc[drop.mapSize].tokens += drop.tokensDropped || 0;
-      acc[drop.mapSize].loads += drop.loads || 0;
-      acc[drop.mapSize].count += 1;
+      acc[size].tokens += drop.tokensDropped || 0;
+      acc[size].loads += drop.loads || drop.charges || 0;
+      acc[size].count += 1;
       return acc;
     }, {} as Record<string, any>);
     
@@ -160,13 +174,15 @@ export function getDayStats(day?: string): any {
         totalTokens,
         totalLoads,
         avgTokensPerLoad,
-        runsCount: dayDrops.length,
-        totalRuns: dayDrops.length
+        runsCount: totalRuns,
+        totalRuns
       },
       bySize,
-      recentRuns: dayDrops.slice(0, 10),
-      totalRuns: dayDrops.length,
-      totalTokens: totalTokens
+      recentRuns: targetDrops.slice(0, 10),
+      totalRuns,
+      totalTokens,
+      totalLoads,
+      avgTokensPerLoad
     };
   } catch (error) {
     console.error('Error calculating day stats:', error);
@@ -175,7 +191,30 @@ export function getDayStats(day?: string): any {
       bySize: {},
       recentRuns: [],
       totalRuns: 0,
-      totalTokens: 0
+      totalTokens: 0,
+      totalLoads: 0,
+      avgTokensPerLoad: 0
     };
+  }
+}
+
+// Helper function to format dates
+export function formatDate(timestamp: number): string {
+  try {
+    return new Date(timestamp).toLocaleDateString('pt-BR');
+  } catch (error) {
+    return 'Data inválida';
+  }
+}
+
+// Helper function to format time
+export function formatTime(timestamp: number): string {
+  try {
+    return new Date(timestamp).toLocaleTimeString('pt-BR', { 
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
+  } catch (error) {
+    return '--:--';
   }
 }
