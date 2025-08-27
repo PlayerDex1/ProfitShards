@@ -596,6 +596,8 @@ export function MapPlanner({}: MapPlannerProps) {
             </div>
           ) : (
             <div className="space-y-4 max-h-96 overflow-auto">
+              {console.log('🔍 RENDER: groupedHistory:', groupedHistory)}
+              {console.log('🔍 RENDER: Object.entries(groupedHistory):', Object.entries(groupedHistory))}
               {/* 🗓️ Agrupar por dias */}
               {Object.entries(groupedHistory)
                 .sort(([a], [b]) => b.localeCompare(a)) // Mais recente primeiro
