@@ -134,6 +134,9 @@ export function MapPlanner({}: MapPlannerProps) {
       tier: tier,
       charge: charge
     };
+    
+    console.log('🔍 DEBUG - Entry sendo criado:', entry);
+    console.log('🔍 DEBUG - Estados atuais:', { level, tier, charge, mapSize, tokensDropped });
 
     try {
       // Save preferences
