@@ -1,0 +1,16 @@
+{
+  "name": "WorldShards Calculator",
+  "short_name": "ProfitShards",
+  "description": "Calculadora avançada e planejador de mapas para WorldShards",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ],
+  "theme_color": "#000000",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
