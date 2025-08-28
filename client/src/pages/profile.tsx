@@ -15,6 +15,7 @@ import { Calculator as CalculatorComponent } from "@/components/Calculator";
 import { Trash2, Download, Upload, User, Calculator, Map, TestTube } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
+import { BuildSimulator } from "@/components/BuildSimulator";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -313,9 +314,25 @@ export default function Profile() {
 
 					{/* Removido: seção de equipamentos - simplificando interface */}
 
-					{/* Test - Métricas de Farming (Apenas Admin) */}
+					{/* Test - Ferramentas Experimentais (Apenas Admin) */}
 					{activeTab === 'test' && isAdmin && (
-						<MetricsDashboard />
+						<div className="space-y-6">
+							{/* Build Simulator */}
+							<BuildSimulator />
+							
+							{/* Dashboard de Métricas */}
+							<Card>
+								<CardHeader>
+									<CardTitle>📊 Dashboard Administrativo</CardTitle>
+									<p className="text-muted-foreground">
+										Acesso aos dados e métricas completas do sistema
+									</p>
+								</CardHeader>
+								<CardContent>
+									<MetricsDashboard />
+								</CardContent>
+							</Card>
+						</div>
 					)}
 
 					{/* Support Section - Discrete */}
