@@ -91,38 +91,42 @@ function getDynamicGiveaways(): Giveaway[] {
   return ACTIVE_GIVEAWAYS;
 }
 
-// Função para obter o giveaway ativo principal
-export function getMainActiveGiveaway(): Giveaway | null {
-  const now = new Date();
-  const allGiveaways = getDynamicGiveaways();
-  
-  console.log('🎯 GIVEAWAY DEBUG:', {
-    totalGiveaways: allGiveaways.length,
-    currentTime: now.toISOString(),
-    giveaways: allGiveaways.map(g => ({
-      id: g.id,
-      title: g.title,
-      status: g.status,
-      startDate: g.startDate,
-      endDate: g.endDate,
-      isActive: g.status === 'active',
-      hasStarted: now >= new Date(g.startDate),
-      hasEnded: now <= new Date(g.endDate)
-    }))
-  });
-  
-  const activeGiveaway = allGiveaways.find(giveaway => {
-    const startDate = new Date(giveaway.startDate);
-    const endDate = new Date(giveaway.endDate);
+// Função para obter o giveaway ativo principal (agora via API)
+export async function getMainActiveGiveaway(): Promise<Giveaway | null> {
+  try {
+    console.log('🎯 BUSCANDO GIVEAWAY DA API...');
     
-    return giveaway.status === 'active' && 
-           now >= startDate && 
-           now <= endDate;
-  });
-  
-  console.log('🎁 GIVEAWAY RESULT:', activeGiveaway ? activeGiveaway.title : 'Nenhum ativo');
-  
-  return activeGiveaway || null;
+    const response = await fetch('/api/giveaways/active');
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    const giveaway = data.giveaway;
+    
+    console.log('🎁 GIVEAWAY DA API:', giveaway ? giveaway.title : 'Nenhum ativo');
+    
+    return giveaway;
+  } catch (error) {
+    console.error('❌ ERRO NA API, usando fallback:', error);
+    
+    // Fallback para dados locais
+    const now = new Date();
+    const allGiveaways = getDynamicGiveaways();
+    
+    const activeGiveaway = allGiveaways.find(giveaway => {
+      const startDate = new Date(giveaway.startDate);
+      const endDate = new Date(giveaway.endDate);
+      
+      return giveaway.status === 'active' && 
+             now >= startDate && 
+             now <= endDate;
+    });
+    
+    console.log('🔄 GIVEAWAY FALLBACK:', activeGiveaway ? activeGiveaway.title : 'Nenhum ativo');
+    
+    return activeGiveaway || null;
+  }
 }
 
 // Função para verificar se um giveaway específico está ativo

@@ -13,15 +13,39 @@ import {
 } from "lucide-react";
 import { Giveaway } from "@/types/giveaway";
 import { RequirementsEditor } from "@/components/RequirementsEditor";
-import { ACTIVE_GIVEAWAYS } from "@/data/giveaways";
-
 export function MainGiveawaysEditor() {
-  const [giveaways, setGiveaways] = useState<Giveaway[]>([...ACTIVE_GIVEAWAYS]);
+  const [giveaways, setGiveaways] = useState<Giveaway[]>([]);
   const [selectedGiveaway, setSelectedGiveaway] = useState<Giveaway | null>(null);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'success' | 'error'>('idle');
+
+  // Carregar giveaways do banco
+  const loadGiveaways = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/giveaways/list', {
+        credentials: 'include'
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setGiveaways(data.giveaways || []);
+      } else {
+        console.error('Erro ao carregar giveaways:', response.status);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar giveaways:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Carregar na inicialização
+  useEffect(() => {
+    loadGiveaways();
+  }, []);
 
   // Form states
   const [formData, setFormData] = useState({
@@ -75,12 +99,11 @@ export function MainGiveawaysEditor() {
         updatedAt: new Date().toISOString()
       };
 
-      const updatedGiveaways = [...giveaways, newGiveaway];
-      setGiveaways(updatedGiveaways);
-      saveToFile(updatedGiveaways);
-      
-      setIsCreateDialogOpen(false);
-      resetForm();
+      const success = await saveToAPI(newGiveaway);
+      if (success) {
+        setIsCreateDialogOpen(false);
+        resetForm();
+      }
     } catch (error) {
       console.error('Erro ao criar giveaway:', error);
       setSaveStatus('error');
@@ -110,15 +133,12 @@ export function MainGiveawaysEditor() {
         updatedAt: new Date().toISOString()
       };
 
-      const updatedGiveaways = giveaways.map(g => 
-        g.id === selectedGiveaway.id ? updatedGiveaway : g
-      );
-      setGiveaways(updatedGiveaways);
-      saveToFile(updatedGiveaways);
-      
-      setIsEditDialogOpen(false);
-      setSelectedGiveaway(null);
-      resetForm();
+      const success = await saveToAPI(updatedGiveaway);
+      if (success) {
+        setIsEditDialogOpen(false);
+        setSelectedGiveaway(null);
+        resetForm();
+      }
     } catch (error) {
       console.error('Erro ao editar giveaway:', error);
       setSaveStatus('error');
@@ -127,17 +147,32 @@ export function MainGiveawaysEditor() {
     }
   };
 
-  const handleDeleteGiveaway = (giveawayId: string) => {
+  const handleDeleteGiveaway = async (giveawayId: string) => {
     if (!confirm('Tem certeza que deseja deletar este giveaway?')) return;
     
     setLoading(true);
     try {
-      const updatedGiveaways = giveaways.filter(g => g.id !== giveawayId);
-      setGiveaways(updatedGiveaways);
-      saveToFile(updatedGiveaways);
+      const response = await fetch(`/api/giveaways/delete?id=${giveawayId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        // Recarregar lista
+        await loadGiveaways();
+        
+        // Disparar evento para atualizar home
+        window.dispatchEvent(new CustomEvent('main-giveaways-updated'));
+        
+        setSaveStatus('success');
+        setTimeout(() => setSaveStatus('idle'), 3000);
+      } else {
+        throw new Error(`API Error: ${response.status}`);
+      }
     } catch (error) {
       console.error('Erro ao deletar giveaway:', error);
       setSaveStatus('error');
+      setTimeout(() => setSaveStatus('idle'), 3000);
     } finally {
       setLoading(false);
     }
@@ -161,25 +196,38 @@ export function MainGiveawaysEditor() {
     setIsEditDialogOpen(true);
   };
 
-  const saveToFile = (giveaways: Giveaway[]) => {
+  const saveToAPI = async (giveaway: Giveaway) => {
     setSaveStatus('saving');
     try {
-      // Salvar no localStorage temporariamente (simulando API)
-      localStorage.setItem('main_giveaways_config', JSON.stringify(giveaways));
-      
-      // Disparar evento para atualizar em tempo real
-      window.dispatchEvent(new CustomEvent('main-giveaways-updated', { 
-        detail: { giveaways } 
-      }));
-      
-      setSaveStatus('success');
-      
-      // Reset status após 3 segundos
-      setTimeout(() => setSaveStatus('idle'), 3000);
+      const response = await fetch('/api/giveaways/save', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(giveaway)
+      });
+
+      if (response.ok) {
+        setSaveStatus('success');
+        
+        // Recarregar lista de giveaways
+        await loadGiveaways();
+        
+        // Disparar evento para atualizar em tempo real na home
+        window.dispatchEvent(new CustomEvent('main-giveaways-updated'));
+        
+        // Reset status após 3 segundos
+        setTimeout(() => setSaveStatus('idle'), 3000);
+        return true;
+      } else {
+        throw new Error(`API Error: ${response.status}`);
+      }
     } catch (error) {
-      console.error('Erro ao salvar:', error);
+      console.error('Erro ao salvar na API:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
+      return false;
     }
   };
 

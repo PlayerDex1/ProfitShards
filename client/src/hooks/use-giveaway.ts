@@ -33,8 +33,8 @@ export function useGiveaway() {
     try {
       setLoading(true);
       
-      // APENAS buscar giveaways principais - giveaways de teste não aparecem na Home
-      const mainGiveaway = getMainActiveGiveaway();
+      // Buscar giveaway principal da API/banco
+      const mainGiveaway = await getMainActiveGiveaway();
       setActiveGiveaway(mainGiveaway);
       setError(null);
     } catch (err) {
