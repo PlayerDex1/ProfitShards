@@ -150,24 +150,24 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span>Participantes:</span>
-                  <span className="font-bold">
+                  <span className="text-foreground">Participantes:</span>
+                  <span className="font-bold text-foreground">
                     {giveaway.currentParticipants}
                     {giveaway.maxParticipants && ` / ${giveaway.maxParticipants}`}
                   </span>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span>Término:</span>
-                  <span className="font-bold">
+                  <span className="text-foreground">Término:</span>
+                  <span className="font-bold text-foreground">
                     {new Date(giveaway.endDate).toLocaleDateString('pt-BR')}
                   </span>
                 </div>
 
                 {giveaway.winnerAnnouncement && (
                   <div className="flex items-center justify-between">
-                    <span>Resultado:</span>
-                    <span className="font-bold">
+                    <span className="text-foreground">Resultado:</span>
+                    <span className="font-bold text-foreground">
                       {new Date(giveaway.winnerAnnouncement).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
@@ -184,8 +184,8 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                 <ul className="space-y-2">
                   {giveaway.rules.map((rule, index) => (
                     <li key={index} className="flex items-start space-x-2">
-                      <span className="text-blue-500 font-bold">{index + 1}.</span>
-                      <span className="text-sm">{rule}</span>
+                      <span className="text-emerald-500 font-bold">{index + 1}.</span>
+                      <span className="text-sm text-foreground">{rule}</span>
                     </li>
                   ))}
                 </ul>
@@ -196,31 +196,31 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
           {/* Participação */}
           <div className="space-y-6">
             {!isAuthenticated ? (
-              <Card className="border-blue-200 bg-blue-50">
+              <Card className="border-blue-500/30 bg-blue-500/10">
                 <CardContent className="p-6 text-center">
                   <div className="mb-4">
                     <Zap className="h-12 w-12 text-blue-500 mx-auto mb-3" />
-                    <h3 className="text-xl font-bold text-blue-700 mb-2">
+                    <h3 className="text-xl font-bold text-foreground mb-2">
                       Faça login para participar!
                     </h3>
-                    <p className="text-blue-600">
+                    <p className="text-muted-foreground">
                       Entre com sua conta para começar a ganhar pontos
                     </p>
                   </div>
-                  <Button size="lg" className="bg-blue-500 hover:bg-blue-600">
+                  <Button size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
                     Fazer Login
                   </Button>
                 </CardContent>
               </Card>
             ) : !participant ? (
-              <Card className="border-green-200 bg-green-50">
+              <Card className="border-emerald-500/30 bg-emerald-500/10">
                 <CardContent className="p-6 text-center">
                   <div className="mb-4">
-                    <Target className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                    <h3 className="text-xl font-bold text-green-700 mb-2">
+                    <Target className="h-12 w-12 text-emerald-500 mx-auto mb-3" />
+                    <h3 className="text-xl font-bold text-foreground mb-2">
                       Participe agora!
                     </h3>
-                    <p className="text-green-600">
+                    <p className="text-muted-foreground">
                       Clique para se inscrever e começar a ganhar pontos
                     </p>
                   </div>
@@ -249,18 +249,18 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                       <div className="text-3xl font-bold text-purple-600 mb-1">
                         {participant.totalPoints}
                       </div>
-                      <div className="text-sm text-purple-500">pontos acumulados</div>
+                      <div className="text-sm text-emerald-500">pontos acumulados</div>
                     </div>
                     
                     <div>
-                      <div className="flex justify-between text-sm mb-2">
+                      <div className="flex justify-between text-sm mb-2 text-foreground">
                         <span>Progresso</span>
                         <span>{Math.round(progressPercentage)}%</span>
                       </div>
                       <Progress value={progressPercentage} className="h-3" />
                     </div>
 
-                    <div className="text-center text-sm text-gray-600">
+                    <div className="text-center text-sm text-muted-foreground">
                       <p>Quanto mais pontos, maior sua chance de ganhar!</p>
                     </div>
                   </CardContent>
@@ -281,8 +281,8 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                           key={requirement.id}
                           className={`p-4 rounded-lg border transition-all ${
                             completed 
-                              ? 'bg-green-50 border-green-200' 
-                              : 'bg-gray-50 border-gray-200 hover:border-blue-300 cursor-pointer'
+                              ? 'bg-emerald-500/10 border-emerald-500/30' 
+                              : 'bg-card border-border hover:border-emerald-500/50 cursor-pointer'
                           }`}
                           onClick={() => !completed && handleCompleteRequirement(requirement)}
                         >
@@ -290,13 +290,13 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                             <div className="flex items-center space-x-3">
                               <Icon 
                                 className={`h-5 w-5 ${
-                                  completed ? 'text-green-500' : 'text-gray-400'
+                                  completed ? 'text-emerald-500' : 'text-muted-foreground'
                                 }`} 
                               />
                               <div>
-                                <div className="font-medium">{requirement.description}</div>
+                                <div className="font-medium text-foreground">{requirement.description}</div>
                                 {requirement.required && (
-                                  <div className="text-xs text-red-500">Obrigatório</div>
+                                  <div className="text-xs text-orange-500">Obrigatório</div>
                                 )}
                               </div>
                             </div>
@@ -304,7 +304,7 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                             <div className="flex items-center space-x-2">
                               <Badge 
                                 variant={completed ? "default" : "secondary"}
-                                className={completed ? "bg-green-500" : ""}
+                                className={completed ? "bg-emerald-500 text-white" : ""}
                               >
                                 +{requirement.points} pts
                               </Badge>
@@ -312,7 +312,7 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                                 <ExternalLink className="h-4 w-4 text-blue-500" />
                               )}
                               {completed && (
-                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <CheckCircle className="h-5 w-5 text-emerald-500" />
                               )}
                             </div>
                           </div>

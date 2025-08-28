@@ -35,7 +35,6 @@ export function useGiveaway() {
           'Apenas uma participação por pessoa',
           'Conta deve estar ativa no site',
           'Ganhador será selecionado aleatoriamente com base nos pontos',
-          'Mais pontos = maior chance de ganhar',
           'Prêmio será enviado via correios (Brasil apenas)',
           'Resultados serão anunciados após o término',
         ],
