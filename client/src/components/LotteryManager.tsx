@@ -9,7 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { 
   Dice1, Users, Trophy, Gift, Crown, Sparkles, 
   AlertCircle, CheckCircle, User, Calendar, Award,
-  RefreshCw, Download, Eye
+  RefreshCw, Download, Eye, Square, StopCircle
 } from "lucide-react";
 
 interface Participant {
@@ -148,6 +148,53 @@ export function LotteryManager() {
     URL.revokeObjectURL(url);
   };
 
+  // Função para finalizar giveaway manualmente
+  const finishGiveaway = async () => {
+    if (!activeGiveaway) return;
+
+    const confirmed = confirm(
+      `🔴 FINALIZAR GIVEAWAY\n\n` +
+      `Você tem certeza que deseja finalizar o giveaway "${activeGiveaway.title}"?\n\n` +
+      `⚠️ ATENÇÃO:\n` +
+      `• O giveaway será marcado como "finished"\n` +
+      `• Não será mais possível participar\n` +
+      `• Não será mais possível fazer sorteios\n` +
+      `• Esta ação é IRREVERSÍVEL\n\n` +
+      `Participantes atuais: ${participants.length}\n` +
+      `Ganhadores sorteados: ${winners.length}\n\n` +
+      `Deseja continuar?`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      setLoading(true);
+
+      const response = await fetch('/api/giveaways/finish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          giveawayId: activeGiveaway.id
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        alert(`✅ Giveaway "${activeGiveaway.title}" finalizado com sucesso!`);
+        // Recarregar a página para buscar novo giveaway ativo
+        window.location.reload();
+      } else {
+        alert(`❌ Erro ao finalizar: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('Erro ao finalizar giveaway:', error);
+      alert('❌ Erro ao finalizar giveaway. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   if (!activeGiveaway) {
     return (
       <Card>
@@ -178,15 +225,26 @@ export function LotteryManager() {
               Giveaway ativo: <strong>{activeGiveaway.title}</strong>
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            onClick={loadParticipants}
-            disabled={loading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              onClick={loadParticipants}
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            
+            <Button 
+              onClick={finishGiveaway}
+              disabled={loading}
+              className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2"
+            >
+              <StopCircle className="h-4 w-4" />
+              Finalizar Giveaway
+            </Button>
+          </div>
         </div>
 
         {/* Estatísticas */}
