@@ -9,8 +9,8 @@ export const ACTIVE_GIVEAWAYS: Giveaway[] = [
     title: "🎁 Primeiro Giveaway Oficial",
     description: "Participe do nosso primeiro giveaway oficial e concorra a prêmios incríveis!",
     prize: "1x Game Box + Bonus Items",
-    startDate: "2024-01-15T00:00:00Z",
-    endDate: "2024-02-15T23:59:59Z",
+    startDate: "2025-01-01T00:00:00Z",
+    endDate: "2025-03-31T23:59:59Z",
     status: "active",
     maxParticipants: 1000,
     currentParticipants: 0,
@@ -96,6 +96,21 @@ export function getMainActiveGiveaway(): Giveaway | null {
   const now = new Date();
   const allGiveaways = getDynamicGiveaways();
   
+  console.log('🎯 GIVEAWAY DEBUG:', {
+    totalGiveaways: allGiveaways.length,
+    currentTime: now.toISOString(),
+    giveaways: allGiveaways.map(g => ({
+      id: g.id,
+      title: g.title,
+      status: g.status,
+      startDate: g.startDate,
+      endDate: g.endDate,
+      isActive: g.status === 'active',
+      hasStarted: now >= new Date(g.startDate),
+      hasEnded: now <= new Date(g.endDate)
+    }))
+  });
+  
   const activeGiveaway = allGiveaways.find(giveaway => {
     const startDate = new Date(giveaway.startDate);
     const endDate = new Date(giveaway.endDate);
@@ -104,6 +119,8 @@ export function getMainActiveGiveaway(): Giveaway | null {
            now >= startDate && 
            now <= endDate;
   });
+  
+  console.log('🎁 GIVEAWAY RESULT:', activeGiveaway ? activeGiveaway.title : 'Nenhum ativo');
   
   return activeGiveaway || null;
 }
