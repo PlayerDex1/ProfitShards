@@ -30,6 +30,8 @@ export async function onRequestPost(context: any) {
     }
 
     const data = await request.json();
+    console.log('🔄 DADOS RECEBIDOS PARA SALVAR:', JSON.stringify(data, null, 2));
+    
     const {
       id,
       title,
@@ -46,8 +48,15 @@ export async function onRequestPost(context: any) {
       imageUrl
     } = data;
 
+    console.log('📋 CAMPOS EXTRAÍDOS:', {
+      id, title, description, prize, startDate, endDate, status,
+      maxParticipants, currentParticipants, rulesCount: rules.length,
+      requirementsCount: requirements.length
+    });
+
     // Validações básicas
     if (!title || !description || !prize || !startDate || !endDate) {
+      console.error('❌ CAMPOS OBRIGATÓRIOS FALTANDO:', { title: !!title, description: !!description, prize: !!prize, startDate: !!startDate, endDate: !!endDate });
       return createErrorResponse('Missing required fields', 400);
     }
 
@@ -106,29 +115,46 @@ export async function onRequestPost(context: any) {
       // Criar novo giveaway
       const newId = `giveaway_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       
-      await env.DB.prepare(`
-        INSERT INTO giveaways (
-          id, title, description, prize, start_date, end_date, status,
-          max_participants, current_participants, rules, requirements,
-          winner_announcement, image_url, created_at, updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        newId,
-        title,
-        description,
-        prize,
-        startDate,
-        endDate,
-        status,
-        maxParticipants,
-        currentParticipants,
-        JSON.stringify(rules),
-        JSON.stringify(requirements),
-        winnerAnnouncement,
-        imageUrl,
-        now,
-        now
-      ).run();
+      console.log('➕ CRIANDO NOVO GIVEAWAY:', {
+        newId, title, description, prize, startDate, endDate, status,
+        maxParticipants, currentParticipants
+      });
+      
+      try {
+        const result = await env.DB.prepare(`
+          INSERT INTO giveaways (
+            id, title, description, prize, start_date, end_date, status,
+            max_participants, current_participants, rules, requirements,
+            winner_announcement, image_url, created_at, updated_at
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          newId,
+          title,
+          description,
+          prize,
+          startDate,
+          endDate,
+          status,
+          maxParticipants,
+          currentParticipants,
+          JSON.stringify(rules),
+          JSON.stringify(requirements),
+          winnerAnnouncement,
+          imageUrl,
+          now,
+          now
+        ).run();
+        
+        console.log('✅ INSERT RESULTADO:', {
+          success: result.success,
+          changes: result.changes,
+          lastRowId: result.meta?.last_row_id,
+          error: result.error
+        });
+      } catch (insertError) {
+        console.error('💥 ERRO NO INSERT:', insertError);
+        throw insertError;
+      }
 
       // Se este giveaway foi definido como ativo, desativar outros
       if (status === 'active') {
