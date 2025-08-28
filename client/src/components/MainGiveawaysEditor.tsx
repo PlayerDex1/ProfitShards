@@ -78,7 +78,7 @@ export function MainGiveawaysEditor() {
     });
   };
 
-  const handleCreateGiveaway = () => {
+  const handleCreateGiveaway = async () => {
     setLoading(true);
     try {
       const newGiveaway: Giveaway = {
@@ -112,7 +112,7 @@ export function MainGiveawaysEditor() {
     }
   };
 
-  const handleEditGiveaway = () => {
+  const handleEditGiveaway = async () => {
     if (!selectedGiveaway) return;
     
     setLoading(true);
