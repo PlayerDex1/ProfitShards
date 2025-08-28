@@ -9,22 +9,26 @@ import {
   TrendingUp, BarChart3, RefreshCw, Sparkles, Calculator
 } from "lucide-react";
 
-// Tipos para o simulador
+// Tipos para o simulador baseados no WorldShards real
 interface Equipment {
   id: string;
   name: string;
-  type: 'helmet' | 'armor' | 'weapon' | 'accessory';
-  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  type: 'helmet' | 'armor' | 'weapon' | 'tool';
+  weaponType?: 'club' | 'sword_shield' | 'claws' | 'giant_hammer' | 'greatsword' | 'dual_axes';
+  tier: 1 | 2 | 3;
+  level: 1 | 2 | 3 | 4 | 5;
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
   luck: number;
   price: number;
   description: string;
+  craftingMaterials?: string[];
 }
 
 interface Build {
   helmet?: Equipment;
   armor?: Equipment;
   weapon?: Equipment;
-  accessory?: Equipment;
+  tool?: Equipment;
 }
 
 interface SimulationResult {
@@ -36,31 +40,63 @@ interface SimulationResult {
   breakEven: number;
 }
 
-// Base de dados de equipamentos (exemplo)
+// Base de dados de equipamentos baseados no WorldShards real
 const EQUIPMENT_DATABASE: Equipment[] = [
-  // Helmets
-  { id: 'h1', name: 'Capacete de Ferro', type: 'helmet', rarity: 'common', luck: 50, price: 500, description: 'Proteção básica' },
-  { id: 'h2', name: 'Elmo Encantado', type: 'helmet', rarity: 'rare', luck: 120, price: 1500, description: 'Bônus de sorte moderado' },
-  { id: 'h3', name: 'Coroa Dourada', type: 'helmet', rarity: 'epic', luck: 250, price: 4000, description: 'Sorte excepcional' },
-  { id: 'h4', name: 'Diadema Celestial', type: 'helmet', rarity: 'legendary', luck: 400, price: 8000, description: 'Poder divino' },
+  // === WEAPONS (Based on real WorldShards weapon types) ===
   
-  // Armors
-  { id: 'a1', name: 'Armadura de Couro', type: 'armor', rarity: 'common', luck: 30, price: 300, description: 'Proteção leve' },
-  { id: 'a2', name: 'Cota de Malha', type: 'armor', rarity: 'rare', luck: 80, price: 1200, description: 'Resistência aprimorada' },
-  { id: 'a3', name: 'Armadura Élfica', type: 'armor', rarity: 'epic', luck: 180, price: 3500, description: 'Elegância e poder' },
-  { id: 'a4', name: 'Armadura Dragão', type: 'armor', rarity: 'legendary', luck: 350, price: 7500, description: 'Escamas de dragão' },
+  // Clubs (Clavas)
+  { id: 'w_club_1', name: 'Clava de Madeira', type: 'weapon', weaponType: 'club', tier: 1, level: 1, rarity: 'common', luck: 25, price: 150, description: 'Arma básica de madeira', craftingMaterials: ['Wood'] },
+  { id: 'w_club_2', name: 'Clava de Ferro', type: 'weapon', weaponType: 'club', tier: 2, level: 2, rarity: 'uncommon', luck: 45, price: 400, description: 'Clava resistente de ferro', craftingMaterials: ['Iron', 'Wood'] },
+  { id: 'w_club_3', name: 'Clava Arcana', type: 'weapon', weaponType: 'club', tier: 3, level: 3, rarity: 'rare', luck: 85, price: 1200, description: 'Clava imbuída com magia', craftingMaterials: ['Mithril', 'Crystals'] },
   
-  // Weapons
-  { id: 'w1', name: 'Espada de Ferro', type: 'weapon', rarity: 'common', luck: 40, price: 400, description: 'Lâmina confiável' },
-  { id: 'w2', name: 'Lâmina Rúnica', type: 'weapon', rarity: 'rare', luck: 100, price: 1300, description: 'Runas antigas' },
-  { id: 'w3', name: 'Espada Flamejante', type: 'weapon', rarity: 'epic', luck: 220, price: 3800, description: 'Fogo eterno' },
-  { id: 'w4', name: 'Excalibur', type: 'weapon', rarity: 'legendary', luck: 380, price: 7800, description: 'A espada lendária' },
+  // Sword & Shield (Espada e Escudo)
+  { id: 'w_sword_1', name: 'Espada e Escudo de Ferro', type: 'weapon', weaponType: 'sword_shield', tier: 1, level: 2, rarity: 'common', luck: 35, price: 300, description: 'Combo equilibrado de ataque e defesa', craftingMaterials: ['Iron', 'Leather'] },
+  { id: 'w_sword_2', name: 'Lâmina Real', type: 'weapon', weaponType: 'sword_shield', tier: 2, level: 3, rarity: 'rare', luck: 75, price: 1000, description: 'Armamento de alta qualidade', craftingMaterials: ['Steel', 'Gems'] },
+  { id: 'w_sword_3', name: 'Conjunto Celestial', type: 'weapon', weaponType: 'sword_shield', tier: 3, level: 4, rarity: 'epic', luck: 145, price: 3500, description: 'Forjado com metal celestial', craftingMaterials: ['Celestial Metal', 'Divine Essence'] },
   
-  // Accessories
-  { id: 'ac1', name: 'Anel de Ferro', type: 'accessory', rarity: 'common', luck: 20, price: 200, description: 'Simples mas útil' },
-  { id: 'ac2', name: 'Anel Mágico', type: 'accessory', rarity: 'rare', luck: 60, price: 800, description: 'Energia mística' },
-  { id: 'ac3', name: 'Anel da Fortuna', type: 'accessory', rarity: 'epic', luck: 150, price: 2500, description: 'Sorte suprema' },
-  { id: 'ac4', name: 'Anel dos Deuses', type: 'accessory', rarity: 'legendary', luck: 300, price: 6000, description: 'Poder divino' },
+  // Claws (Garras)
+  { id: 'w_claws_1', name: 'Garras de Ferro', type: 'weapon', weaponType: 'claws', tier: 1, level: 1, rarity: 'uncommon', luck: 30, price: 250, description: 'Garras afiadas para ataques rápidos', craftingMaterials: ['Iron', 'Monster Parts'] },
+  { id: 'w_claws_2', name: 'Garras Sombrias', type: 'weapon', weaponType: 'claws', tier: 2, level: 3, rarity: 'rare', luck: 70, price: 900, description: 'Garras forjadas na escuridão', craftingMaterials: ['Dark Steel', 'Shadow Essence'] },
+  { id: 'w_claws_3', name: 'Garras do Dragão', type: 'weapon', weaponType: 'claws', tier: 3, level: 5, rarity: 'legendary', luck: 165, price: 5000, description: 'Garras de dragão ancestral', craftingMaterials: ['Dragon Scale', 'Ancient Bone'] },
+  
+  // Giant Hammer (Martelo Gigante)
+  { id: 'w_hammer_1', name: 'Martelo de Guerra', type: 'weapon', weaponType: 'giant_hammer', tier: 1, level: 2, rarity: 'common', luck: 40, price: 350, description: 'Martelo pesado devastador', craftingMaterials: ['Iron', 'Stone', 'Wood'] },
+  { id: 'w_hammer_2', name: 'Martelo dos Titãs', type: 'weapon', weaponType: 'giant_hammer', tier: 2, level: 4, rarity: 'epic', luck: 110, price: 2800, description: 'Martelo dos antigos titãs', craftingMaterials: ['Titan Steel', 'Elemental Core'] },
+  { id: 'w_hammer_3', name: 'Mjolnir Sombrio', type: 'weapon', weaponType: 'giant_hammer', tier: 3, level: 5, rarity: 'legendary', luck: 180, price: 6500, description: 'Martelo lendário dos deuses', craftingMaterials: ['Divine Ore', 'Lightning Essence'] },
+  
+  // Greatsword (Espada Grande)
+  { id: 'w_great_1', name: 'Espadão de Aço', type: 'weapon', weaponType: 'greatsword', tier: 1, level: 2, rarity: 'uncommon', luck: 50, price: 450, description: 'Grande espada de duas mãos', craftingMaterials: ['Steel', 'Refined Metal'] },
+  { id: 'w_great_2', name: 'Lâmina do Destino', type: 'weapon', weaponType: 'greatsword', tier: 2, level: 4, rarity: 'rare', luck: 95, price: 2200, description: 'Espada que corta o próprio destino', craftingMaterials: ['Mystic Steel', 'Fate Crystal'] },
+  { id: 'w_great_3', name: 'Excalibur das Trevas', type: 'weapon', weaponType: 'greatsword', tier: 3, level: 5, rarity: 'legendary', luck: 190, price: 7000, description: 'A lendária espada corrompida', craftingMaterials: ['Corrupted Mithril', 'Dark Soul'] },
+  
+  // Dual Axes (Machados Duplos)
+  { id: 'w_axes_1', name: 'Machados Gêmeos', type: 'weapon', weaponType: 'dual_axes', tier: 1, level: 1, rarity: 'common', luck: 28, price: 200, description: 'Par de machados balanceados', craftingMaterials: ['Iron', 'Hardwood'] },
+  { id: 'w_axes_2', name: 'Machados Flamejantes', type: 'weapon', weaponType: 'dual_axes', tier: 2, level: 3, rarity: 'rare', luck: 88, price: 1800, description: 'Machados envolvidos em chamas', craftingMaterials: ['Fire Steel', 'Flame Core'] },
+  { id: 'w_axes_3', name: 'Machados do Apocalipse', type: 'weapon', weaponType: 'dual_axes', tier: 3, level: 4, rarity: 'epic', luck: 155, price: 4200, description: 'Machados que prenunciam o fim', craftingMaterials: ['Void Metal', 'Chaos Essence'] },
+  
+  // === ARMOR (Baseado no sistema de defesa do WorldShards) ===
+  { id: 'a_leather_1', name: 'Armadura de Couro', type: 'armor', tier: 1, level: 1, rarity: 'common', luck: 15, price: 120, description: 'Proteção básica de couro', craftingMaterials: ['Leather', 'Thread'] },
+  { id: 'a_chain_1', name: 'Cota de Malha', type: 'armor', tier: 1, level: 2, rarity: 'uncommon', luck: 32, price: 280, description: 'Armadura de anéis metálicos', craftingMaterials: ['Iron', 'Chain Links'] },
+  { id: 'a_plate_1', name: 'Armadura de Placas', type: 'armor', tier: 2, level: 2, rarity: 'uncommon', luck: 48, price: 520, description: 'Proteção pesada de placas', craftingMaterials: ['Steel', 'Reinforcement'] },
+  { id: 'a_mithril_1', name: 'Armadura de Mithril', type: 'armor', tier: 2, level: 3, rarity: 'rare', luck: 78, price: 1400, description: 'Armadura leve mas resistente', craftingMaterials: ['Mithril', 'Enchanted Thread'] },
+  { id: 'a_dragon_1', name: 'Armadura Draconiana', type: 'armor', tier: 3, level: 4, rarity: 'epic', luck: 125, price: 3200, description: 'Feita com escamas de dragão', craftingMaterials: ['Dragon Scale', 'Fire Resistance'] },
+  { id: 'a_celestial_1', name: 'Armadura Celestial', type: 'armor', tier: 3, level: 5, rarity: 'legendary', luck: 175, price: 5800, description: 'Proteção dos próprios céus', craftingMaterials: ['Celestial Plate', 'Divine Blessing'] },
+  
+  // === HELMETS (Proteção de cabeça) ===
+  { id: 'h_iron_1', name: 'Capacete de Ferro', type: 'helmet', tier: 1, level: 1, rarity: 'common', luck: 18, price: 100, description: 'Proteção básica para a cabeça', craftingMaterials: ['Iron', 'Padding'] },
+  { id: 'h_steel_1', name: 'Elmo de Aço', type: 'helmet', tier: 1, level: 2, rarity: 'uncommon', luck: 35, price: 240, description: 'Elmo resistente de aço', craftingMaterials: ['Steel', 'Leather Padding'] },
+  { id: 'h_knight_1', name: 'Elmo de Cavaleiro', type: 'helmet', tier: 2, level: 2, rarity: 'uncommon', luck: 52, price: 450, description: 'Elmo nobre com plumas', craftingMaterials: ['Fine Steel', 'Noble Crest'] },
+  { id: 'h_crown_1', name: 'Coroa de Batalha', type: 'helmet', tier: 2, level: 3, rarity: 'rare', luck: 82, price: 1100, description: 'Coroa que confere autoridade', craftingMaterials: ['Gold', 'Battle Gems'] },
+  { id: 'h_dragon_1', name: 'Elmo Draconiano', type: 'helmet', tier: 3, level: 4, rarity: 'epic', luck: 118, price: 2900, description: 'Elmo moldado em forma de dragão', craftingMaterials: ['Dragon Horn', 'Mystic Alloy'] },
+  { id: 'h_divine_1', name: 'Diadema Divino', type: 'helmet', tier: 3, level: 5, rarity: 'legendary', luck: 165, price: 5200, description: 'Diadema abençoado pelos deuses', craftingMaterials: ['Divine Crystal', 'Heavenly Gold'] },
+  
+  // === TOOLS (Ferramentas de coleta baseadas no WorldShards) ===
+  { id: 't_axe_1', name: 'Machado de Madeira', type: 'tool', tier: 1, level: 1, rarity: 'common', luck: 20, price: 80, description: 'Ferramenta básica para cortar árvores', craftingMaterials: ['Wood', 'Stone'] },
+  { id: 't_axe_2', name: 'Machado de Ferro', type: 'tool', tier: 1, level: 2, rarity: 'uncommon', luck: 38, price: 180, description: 'Machado mais eficiente', craftingMaterials: ['Iron', 'Hardwood'] },
+  { id: 't_pickaxe_1', name: 'Picareta de Ferro', type: 'tool', tier: 1, level: 2, rarity: 'uncommon', luck: 35, price: 160, description: 'Para mineração básica', craftingMaterials: ['Iron', 'Wood Handle'] },
+  { id: 't_pickaxe_2', name: 'Picareta de Mithril', type: 'tool', tier: 2, level: 3, rarity: 'rare', luck: 72, price: 850, description: 'Minera materiais raros', craftingMaterials: ['Mithril', 'Reinforced Handle'] },
+  { id: 't_multi_1', name: 'Ferramenta Universal', type: 'tool', tier: 2, level: 4, rarity: 'epic', luck: 105, price: 2400, description: 'Corta e minera com eficiência', craftingMaterials: ['Multi-Alloy', 'Versatile Core'] },
+  { id: 't_legendary_1', name: 'Ferramenta do Artesão', type: 'tool', tier: 3, level: 5, rarity: 'legendary', luck: 155, price: 4800, description: 'Ferramenta mágica suprema', craftingMaterials: ['Master Alloy', 'Artisan Soul'] },
 ];
 
 export function BuildSimulator() {
@@ -78,16 +114,36 @@ export function BuildSimulator() {
     return matchesSearch && matchesType;
   });
 
-  // Calcular estatísticas do build
+  // Calcular estatísticas do build (baseado no sistema WorldShards real)
   const calculateBuildStats = (currentBuild: Build): SimulationResult => {
     const items = Object.values(currentBuild).filter(Boolean) as Equipment[];
     const totalLuck = items.reduce((sum, item) => sum + item.luck, 0);
     const totalCost = items.reduce((sum, item) => sum + item.price, 0);
     
-    // Fórmulas de simulação (baseadas em mecânicas do jogo)
-    const expectedTokens = Math.round(totalLuck * 0.18 + Math.random() * 50); // Base + variação
-    const efficiency = totalLuck > 0 ? (expectedTokens / totalLuck * 1000) : 0;
-    const roi = totalCost > 0 ? ((expectedTokens * 100 - totalCost) / totalCost * 100) : 0;
+    // Fórmulas de simulação baseadas no WorldShards
+    // - Luck afeta diretamente a chance de drop de tokens
+    // - Base tokens por Large Map: ~200-300 com 0 luck
+    // - Cada ponto de luck aumenta em ~0.15-0.25 tokens esperados
+    // - Tier e Level dos itens também influenciam
+    
+    const baseLargeMapTokens = 240; // Base para Large Map sem luck
+    const luckMultiplier = 0.2; // Cada ponto de luck = +0.2 tokens esperados
+    const tierBonus = items.reduce((sum, item) => sum + (item.tier * 5), 0); // Tier bonus
+    const levelBonus = items.reduce((sum, item) => sum + (item.level * 3), 0); // Level bonus
+    
+    const expectedTokens = Math.round(
+      baseLargeMapTokens + 
+      (totalLuck * luckMultiplier) + 
+      tierBonus + 
+      levelBonus +
+      (Math.random() * 40 - 20) // Variação ±20 tokens
+    );
+    
+    const efficiency = totalLuck > 0 ? (expectedTokens / totalLuck * 100) : 0;
+    const tokenValue = 1.0; // Proxy tokens value (ajustável)
+    const grossProfit = expectedTokens * tokenValue;
+    const netProfit = grossProfit - totalCost;
+    const roi = totalCost > 0 ? (netProfit / totalCost * 100) : 0;
     const breakEven = totalCost > 0 && expectedTokens > 0 ? Math.ceil(totalCost / expectedTokens) : 0;
 
     return {
@@ -146,24 +202,25 @@ export function BuildSimulator() {
     setBuild({});
   };
 
-  // Cor da raridade
+  // Cor da raridade (atualizada com 'uncommon')
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
-      case 'common': return 'bg-gray-100 text-gray-700 border-gray-300';
-      case 'rare': return 'bg-blue-100 text-blue-700 border-blue-300';
-      case 'epic': return 'bg-purple-100 text-purple-700 border-purple-300';
-      case 'legendary': return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+      case 'common': return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300';
+      case 'uncommon': return 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300';
+      case 'rare': return 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-300';
+      case 'epic': return 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900 dark:text-purple-300';
+      case 'legendary': return 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300';
+      default: return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
-  // Ícone do tipo
+  // Ícone do tipo (atualizado para WorldShards)
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'helmet': return Crown;
       case 'armor': return Shield;
       case 'weapon': return Sword;
-      case 'accessory': return Sparkles;
+      case 'tool': return Zap; // Ferramentas de coleta
       default: return Target;
     }
   };
@@ -175,11 +232,19 @@ export function BuildSimulator() {
         <CardHeader>
           <CardTitle className="flex items-center space-x-2">
             <Target className="h-6 w-6 text-primary" />
-            <span>🛠️ Build Simulator</span>
+            <span>🛠️ Build Simulator - WorldShards</span>
           </CardTitle>
           <p className="text-muted-foreground">
-            Teste diferentes combinações de equipamentos e veja qual build oferece melhor ROI
+            Teste combinações de equipamentos baseados no sistema real do WorldShards. 
+            Simule builds com armas (6 tipos), armaduras, capacetes e ferramentas. 
+            Veja como Tier, Level e Luck afetam seus tokens em Large Maps.
           </p>
+          <div className="flex flex-wrap gap-2 mt-3 text-xs">
+            <Badge variant="outline">🎯 6 Tipos de Armas</Badge>
+            <Badge variant="outline">⚡ Sistema Tier/Level</Badge>
+            <Badge variant="outline">🍀 Luck Baseado no Jogo</Badge>
+            <Badge variant="outline">💰 ROI Realista</Badge>
+          </div>
         </CardHeader>
       </Card>
 
@@ -202,7 +267,7 @@ export function BuildSimulator() {
               
               {/* Filter */}
               <div className="flex flex-wrap gap-2">
-                {['all', 'helmet', 'armor', 'weapon', 'accessory'].map(type => (
+                {['all', 'helmet', 'armor', 'weapon', 'tool'].map(type => (
                   <Button
                     key={type}
                     variant={selectedType === type ? "default" : "outline"}
@@ -210,7 +275,11 @@ export function BuildSimulator() {
                     onClick={() => setSelectedType(type)}
                     className="text-xs"
                   >
-                    {type === 'all' ? 'Todos' : type}
+                    {type === 'all' ? 'Todos' : 
+                     type === 'helmet' ? 'Capacetes' :
+                     type === 'armor' ? 'Armaduras' :
+                     type === 'weapon' ? 'Armas' :
+                     type === 'tool' ? 'Ferramentas' : type}
                   </Button>
                 ))}
               </div>
@@ -246,10 +315,23 @@ export function BuildSimulator() {
                           <div>
                             <div className="font-medium text-sm">{equipment.name}</div>
                             <div className="text-xs text-muted-foreground">{equipment.description}</div>
+                            <div className="flex items-center space-x-2 mt-1">
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                T{equipment.tier}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                L{equipment.level}
+                              </Badge>
+                              {equipment.weaponType && (
+                                <Badge variant="secondary" className="text-xs px-1 py-0">
+                                  {equipment.weaponType.replace('_', ' ')}
+                                </Badge>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="text-right">
-                          <Badge className={`${getRarityColor(equipment.rarity)} text-xs`}>
+                          <Badge className={`${getRarityColor(equipment.rarity)} text-xs mb-1`}>
                             {equipment.rarity}
                           </Badge>
                           <div className="flex items-center space-x-1 mt-1">
@@ -289,7 +371,7 @@ export function BuildSimulator() {
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Slots de Equipamentos */}
-            {(['helmet', 'armor', 'weapon', 'accessory'] as const).map(type => {
+            {(['helmet', 'armor', 'weapon', 'tool'] as const).map(type => {
               const Icon = getTypeIcon(type);
               const item = build[type];
               
@@ -300,10 +382,22 @@ export function BuildSimulator() {
                       <div className="flex items-center space-x-3">
                         <Icon className="h-5 w-5 text-muted-foreground" />
                         <div>
-                          <div className="font-medium capitalize">{type}</div>
+                          <div className="font-medium capitalize">
+                            {type === 'helmet' ? 'Capacete' :
+                             type === 'armor' ? 'Armadura' :
+                             type === 'weapon' ? 'Arma' :
+                             type === 'tool' ? 'Ferramenta' : type}
+                          </div>
                           {item ? (
                             <div>
                               <div className="text-sm font-medium">{item.name}</div>
+                              <div className="flex items-center space-x-2 text-xs text-muted-foreground mb-1">
+                                <Badge variant="outline" className="text-xs px-1 py-0">T{item.tier}</Badge>
+                                <Badge variant="outline" className="text-xs px-1 py-0">L{item.level}</Badge>
+                                <Badge className={`${getRarityColor(item.rarity)} text-xs px-1 py-0`}>
+                                  {item.rarity}
+                                </Badge>
+                              </div>
                               <div className="flex items-center space-x-2 text-xs text-muted-foreground">
                                 <span>🍀 {item.luck}</span>
                                 <span>💰 {item.price.toLocaleString()}</span>
