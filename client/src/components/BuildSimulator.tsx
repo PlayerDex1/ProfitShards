@@ -6,25 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n";
 import { 
   Search, Target, Zap, Coins, Shield, Sword, Crown, 
-  TrendingUp, BarChart3, RefreshCw, Sparkles, Calculator
+  TrendingUp, BarChart3, RefreshCw, Sparkles, Calculator, Hand, Footprints
 } from "lucide-react";
+import { WORLDSHARDS_EQUIPMENT, WorldShardsEquipment } from "@/data/worldshardsEquipment";
 
-// Tipos para o simulador baseados na Wiki oficial do WorldShards
-interface Equipment {
-  id: string;
-  name: string;
-  type: 'chestplate' | 'helmet' | 'gloves' | 'boots' | 'weapon' | 'tool';
-  weaponType?: 'club' | 'sword_shield' | 'claws' | 'giant_hammer' | 'greatsword' | 'dual_axes';
-  toolType?: 'axe' | 'pickaxe' | 'scythe';
-  tier: 1 | 2 | 3 | 4 | 5;
-  level: 1 | 2 | 3 | 4 | 5;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic';
-  luck: number;
-  price: number;
-  description: string;
-  craftingMaterials?: string[];
-  isCollectible?: boolean;
-}
+// Usando tipos da base de dados oficial da Wiki
+type Equipment = WorldShardsEquipment;
 
 interface Build {
   chestplate?: Equipment;
@@ -111,8 +98,8 @@ export function BuildSimulator() {
   const [budget, setBudget] = useState(5000);
   const [simulation, setSimulation] = useState<SimulationResult | null>(null);
 
-  // Filtrar equipamentos
-  const filteredEquipments = EQUIPMENT_DATABASE.filter(item => {
+  // Filtrar equipamentos da Wiki do WorldShards
+  const filteredEquipments = WORLDSHARDS_EQUIPMENT.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = selectedType === "all" || item.type === selectedType;
     return matchesSearch && matchesType;
@@ -185,18 +172,22 @@ export function BuildSimulator() {
   // Otimizar build automaticamente
   const optimizeBuild = () => {
     // Algoritmo simples: selecionar melhor custo-benefício dentro do orçamento
-    const availableItems = EQUIPMENT_DATABASE.filter(item => item.price <= budget / 4);
+    const availableItems = WORLDSHARDS_EQUIPMENT.filter(item => item.price <= budget / 6);
     
     const bestHelmet = availableItems.filter(i => i.type === 'helmet').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
-    const bestArmor = availableItems.filter(i => i.type === 'armor').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
+    const bestChestplate = availableItems.filter(i => i.type === 'chestplate').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
+    const bestGloves = availableItems.filter(i => i.type === 'gloves').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
+    const bestBoots = availableItems.filter(i => i.type === 'boots').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
     const bestWeapon = availableItems.filter(i => i.type === 'weapon').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
-    const bestAccessory = availableItems.filter(i => i.type === 'accessory').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
+    const bestTool = availableItems.filter(i => i.type === 'tool').sort((a, b) => (b.luck / b.price) - (a.luck / a.price))[0];
 
     const optimizedBuild: Build = {};
     if (bestHelmet) optimizedBuild.helmet = bestHelmet;
-    if (bestArmor) optimizedBuild.armor = bestArmor;
+    if (bestChestplate) optimizedBuild.chestplate = bestChestplate;
+    if (bestGloves) optimizedBuild.gloves = bestGloves;
+    if (bestBoots) optimizedBuild.boots = bestBoots;
     if (bestWeapon) optimizedBuild.weapon = bestWeapon;
-    if (bestAccessory) optimizedBuild.accessory = bestAccessory;
+    if (bestTool) optimizedBuild.tool = bestTool;
 
     setBuild(optimizedBuild);
   };
@@ -206,23 +197,24 @@ export function BuildSimulator() {
     setBuild({});
   };
 
-  // Cor da raridade (atualizada com 'uncommon')
+  // Cor da raridade (Wiki WorldShards: Common, Uncommon, Rare, Epic)
   const getRarityColor = (rarity: string) => {
     switch (rarity) {
       case 'common': return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300';
       case 'uncommon': return 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900 dark:text-green-300';
       case 'rare': return 'bg-blue-100 text-blue-700 border-blue-300 dark:bg-blue-900 dark:text-blue-300';
       case 'epic': return 'bg-purple-100 text-purple-700 border-purple-300 dark:bg-purple-900 dark:text-purple-300';
-      case 'legendary': return 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900 dark:text-yellow-300';
       default: return 'bg-gray-100 text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-300';
     }
   };
 
-  // Ícone do tipo (atualizado para WorldShards)
+  // Ícone do tipo (atualizado para WorldShards Wiki)
   const getTypeIcon = (type: string) => {
     switch (type) {
       case 'helmet': return Crown;
-      case 'armor': return Shield;
+      case 'chestplate': return Shield;
+      case 'gloves': return Hand;
+      case 'boots': return Footprints;
       case 'weapon': return Sword;
       case 'tool': return Zap; // Ferramentas de coleta
       default: return Target;
