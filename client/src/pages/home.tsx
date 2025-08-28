@@ -13,11 +13,16 @@ import {
   Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle 
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useGiveaway } from "@/hooks/use-giveaway";
+import { GiveawayBanner } from "@/components/GiveawayBanner";
+import { GiveawayModal } from "@/components/GiveawayModal";
 
 
 export default function Home() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
+	const { activeGiveaway } = useGiveaway();
+	const [showGiveaway, setShowGiveaway] = useState(false);
 
 	useEffect(() => {
 		importBuildsFromUrl();
@@ -72,9 +77,16 @@ export default function Home() {
 					</div>
 				</div>
 
-				
-
-
+				{/* Giveaway Banner - Destaque na Home */}
+				{activeGiveaway && (
+					<div className="mb-16">
+						<GiveawayBanner 
+							giveaway={activeGiveaway} 
+							onJoin={() => setShowGiveaway(true)}
+							compact={false}
+						/>
+					</div>
+				)}
 
 				{/* Community Activity Section - Centralizado */}
 				<div className="mb-16">
@@ -424,6 +436,13 @@ export default function Home() {
 					</div>
 				</div>
 			</footer>
+			
+			{/* Giveaway Modal */}
+			<GiveawayModal 
+				open={showGiveaway}
+				onOpenChange={setShowGiveaway}
+				giveaway={activeGiveaway || undefined}
+			/>
 		</div>
 	);
 }

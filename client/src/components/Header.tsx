@@ -5,15 +5,29 @@ import { useTheme } from "@/hooks/useTheme";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
+import { useGiveaway } from "@/hooks/use-giveaway";
+import { GiveawayBanner } from "@/components/GiveawayBanner";
+import { GiveawayModal } from "@/components/GiveawayModal";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
+  const [showGiveaway, setShowGiveaway] = useState(false);
   const { t, lang, setLang } = useI18n();
+  const { activeGiveaway } = useGiveaway();
 
   return (
     <>
+      {/* Giveaway Banner - Acima do header */}
+      {activeGiveaway && (
+        <GiveawayBanner 
+          giveaway={activeGiveaway} 
+          onJoin={() => setShowGiveaway(true)}
+          compact={true}
+        />
+      )}
+      
       <header className="sticky top-0 z-40 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container mx-auto px-4 flex h-16 items-center">
           <div className="mr-6 flex items-center group cursor-pointer">
@@ -136,6 +150,13 @@ export function Header() {
       </header>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      
+      {/* Giveaway Modal */}
+      <GiveawayModal 
+        open={showGiveaway}
+        onOpenChange={setShowGiveaway}
+        giveaway={activeGiveaway || undefined}
+      />
     </>
   );
 }
