@@ -204,6 +204,7 @@ export default function Home() {
 			</div>
 				
 				{/* Activity Stream + Support - Layout Equilibrado */}
+				<div className="mb-16">
 				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
 					{/* Activity Stream - Coluna Principal (3/4) */}
 					<div className="lg:col-span-3">
@@ -314,6 +315,7 @@ export default function Home() {
 								</Card>
 						</div>
 					</div>
+				</div>
 				</div>
 			</div>
 			
