@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Giveaway } from "@/types/giveaway";
 import { WinnerManager } from "@/components/WinnerManager";
+import { RequirementsEditor } from "@/components/RequirementsEditor";
 import { 
   getAllGiveaways, 
   upsertGiveaway, 
@@ -23,6 +24,7 @@ import {
   setActiveGiveaway as setActiveGiveawayInStorage,
   initializeGiveawayData
 } from "@/lib/giveawayStorage";
+import { DEFAULT_REQUIREMENTS } from "@/types/giveaway";
 
 interface GiveawayAdminProps {
   className?: string;
@@ -47,6 +49,10 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
     status: 'draft' as 'draft' | 'active' | 'ended',
     rules: [''],
     winnerAnnouncement: '',
+    requirements: DEFAULT_REQUIREMENTS.map((req, index) => ({
+      ...req,
+      id: `req_${index}`,
+    })),
   });
 
   // Carregar dados do storage
@@ -87,7 +93,7 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
         maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
         currentParticipants: 0,
         rules: formData.rules.filter(rule => rule.trim() !== ''),
-        requirements: [], // Será configurado separadamente
+        requirements: formData.requirements,
         winnerAnnouncement: formData.winnerAnnouncement ? new Date(formData.winnerAnnouncement).toISOString() : undefined,
         createdAt: new Date().toISOString(),
       };
@@ -118,6 +124,7 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
         status: formData.status,
         maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
         rules: formData.rules.filter(rule => rule.trim() !== ''),
+        requirements: formData.requirements,
         winnerAnnouncement: formData.winnerAnnouncement ? new Date(formData.winnerAnnouncement).toISOString() : undefined,
       };
       
@@ -192,6 +199,10 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
       status: 'draft',
       rules: [''],
       winnerAnnouncement: '',
+      requirements: DEFAULT_REQUIREMENTS.map((req, index) => ({
+        ...req,
+        id: `req_${index}`,
+      })),
     });
   };
 
@@ -206,6 +217,10 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
       maxParticipants: giveaway.maxParticipants?.toString() || '',
       status: giveaway.status,
       rules: giveaway.rules,
+      requirements: giveaway.requirements || DEFAULT_REQUIREMENTS.map((req, index) => ({
+        ...req,
+        id: `req_${index}`,
+      })),
       winnerAnnouncement: giveaway.winnerAnnouncement?.split('T')[0] || '',
     });
     setIsEditDialogOpen(true);
@@ -622,6 +637,11 @@ function GiveawayForm({ formData, setFormData, onSubmit, loading, isEdit }: Give
           </Button>
         </div>
       </div>
+
+      <RequirementsEditor
+        requirements={formData.requirements}
+        onChange={(requirements) => setFormData(prev => ({ ...prev, requirements }))}
+      />
 
       <Separator />
       
