@@ -24,6 +24,7 @@ import {
   setActiveGiveaway as setActiveGiveawayInStorage,
   initializeGiveawayData
 } from "@/lib/giveawayStorage";
+import { ACTIVE_GIVEAWAYS } from "@/data/giveaways";
 import { DEFAULT_REQUIREMENTS } from "@/types/giveaway";
 
 interface GiveawayAdminProps {
@@ -259,11 +260,15 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="giveaways" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs defaultValue="main-giveaways" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="main-giveaways" className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Principais
+            </TabsTrigger>
             <TabsTrigger value="giveaways" className="flex items-center gap-2">
               <Gift className="h-4 w-4" />
-              Giveaways
+              Teste
             </TabsTrigger>
             <TabsTrigger value="winners" className="flex items-center gap-2">
               <Crown className="h-4 w-4" />
