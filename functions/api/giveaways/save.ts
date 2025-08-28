@@ -1,38 +1,37 @@
 import { createResponse, createErrorResponse } from '../../_lib/response';
 
 export async function onRequestPost(context: any) {
+  const { request, env } = context;
+
   try {
-    const { request, env } = context;
+    // Auto-setup da tabela
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS giveaways (
+        id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        prize TEXT NOT NULL,
+        start_date TEXT NOT NULL,
+        end_date TEXT NOT NULL,
+        status TEXT NOT NULL DEFAULT 'draft',
+        max_participants INTEGER DEFAULT 100,
+        current_participants INTEGER DEFAULT 0,
+        rules TEXT DEFAULT '[]',
+        requirements TEXT DEFAULT '[]',
+        winner_announcement TEXT DEFAULT '',
+        image_url TEXT DEFAULT '',
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run();
+  } catch (setupError) {
+    console.log('Tabela já existe ou erro menor:', setupError);
+  }
 
-    // Criar tabela se não existir (auto-setup)
-    try {
-      await env.DB.prepare(`
-        CREATE TABLE IF NOT EXISTS giveaways (
-          id TEXT PRIMARY KEY,
-          title TEXT NOT NULL,
-          description TEXT NOT NULL,
-          prize TEXT NOT NULL,
-          start_date TEXT NOT NULL,
-          end_date TEXT NOT NULL,
-          status TEXT NOT NULL DEFAULT 'active',
-          max_participants INTEGER,
-          current_participants INTEGER DEFAULT 0,
-          rules TEXT,
-          requirements TEXT,
-          winner_announcement TEXT,
-          image_url TEXT,
-          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-          updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
-        )
-      `).run();
-    } catch (setupError) {
-      console.log('Tabela já existe ou erro menor:', setupError);
-    }
-
+  try {
     const data = await request.json();
-    console.log('🔄 DADOS RECEBIDOS PARA SALVAR:', JSON.stringify(data, null, 2));
+    console.log('📋 DADOS RECEBIDOS:', JSON.stringify(data, null, 2));
     
-    try {
     const {
       id,
       title,
@@ -49,35 +48,19 @@ export async function onRequestPost(context: any) {
       imageUrl
     } = data;
 
-    console.log('📋 CAMPOS EXTRAÍDOS:', {
-      id, title, description, prize, startDate, endDate, status,
-      maxParticipants, currentParticipants, rulesCount: rules.length,
-      requirementsCount: requirements.length
-    });
-
     // Validações básicas
     if (!title || !description || !prize || !startDate || !endDate) {
-      console.error('❌ CAMPOS OBRIGATÓRIOS FALTANDO:', { title: !!title, description: !!description, prize: !!prize, startDate: !!startDate, endDate: !!endDate });
       return createErrorResponse('Missing required fields', 400);
     }
 
     const now = new Date().toISOString();
-    const isUpdate = !!id;
-
-    console.log('🔍 DETECTANDO OPERAÇÃO:', {
-      id: id,
-      isUpdate: isUpdate,
-      operation: isUpdate ? 'UPDATE' : 'INSERT'
-    });
-
-    // Sempre criar novo giveaway (simplificado para corrigir bug)
     const newId = id || `giveaway_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     
     console.log('➕ CRIANDO GIVEAWAY:', {
-      newId, title, description, prize, startDate, endDate, status,
-      maxParticipants, currentParticipants
+      newId, title, description, prize, startDate, endDate, status
     });
     
+    // INSERT no banco
     const result = await env.DB.prepare(`
       INSERT INTO giveaways (
         id, title, description, prize, start_date, end_date, status,
@@ -91,26 +74,25 @@ export async function onRequestPost(context: any) {
       prize,
       startDate,
       endDate,
-      status,
-      maxParticipants,
+      status || 'active',
+      maxParticipants || 100,
       currentParticipants,
       JSON.stringify(rules),
       JSON.stringify(requirements),
-      winnerAnnouncement,
-      imageUrl,
+      winnerAnnouncement || '',
+      imageUrl || '',
       now,
       now
     ).run();
     
-    console.log('✅ INSERT RESULTADO:', {
+    console.log('✅ RESULTADO INSERT:', {
       success: result.success,
       changes: result.changes,
-      lastRowId: result.meta?.last_row_id,
-      error: result.error
+      lastRowId: result.meta?.last_row_id
     });
 
-    // Se este giveaway foi definido como ativo, desativar outros
-    if (status === 'active') {
+    // Se ativo, desativar outros
+    if ((status || 'active') === 'active') {
       await env.DB.prepare(`
         UPDATE giveaways SET status = 'ended', updated_at = ?
         WHERE id != ? AND status = 'active'
@@ -122,8 +104,9 @@ export async function onRequestPost(context: any) {
       message: 'Giveaway created successfully',
       id: newId 
     });
+
   } catch (error) {
-    console.error('Error saving giveaway:', error);
-    return createErrorResponse('Failed to save giveaway', 500);
+    console.error('❌ ERRO:', error);
+    return createErrorResponse('Failed to save giveaway: ' + error.message, 500);
   }
 }
