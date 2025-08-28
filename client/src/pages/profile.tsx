@@ -12,9 +12,10 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, TestTube } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
+import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -79,8 +80,11 @@ export default function Profile() {
 		{ id: 'history', label: t('profile.tabs.history'), icon: Calculator },
 		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
 		// Removido: aba de equipamentos - simplificando interface
-		// Aba Test só aparece para admins
-		...(isAdmin ? [{ id: 'test', label: t('profile.tabs.test'), icon: TestTube }] : []),
+		// Abas Test só aparecem para admins
+		...(isAdmin ? [
+			{ id: 'test', label: t('profile.tabs.test'), icon: TestTube },
+			{ id: 'giveaways', label: 'Giveaways Admin', icon: Gift }
+		] : []),
 	];
 
 	return (
@@ -316,6 +320,11 @@ export default function Profile() {
 					{/* Test - Métricas de Farming (Apenas Admin) */}
 					{activeTab === 'test' && isAdmin && (
 						<MetricsDashboard />
+					)}
+
+					{/* Giveaways Admin - (Apenas Admin) */}
+					{activeTab === 'giveaways' && isAdmin && (
+						<GiveawayAdmin />
 					)}
 
 					{/* Support Section - Discrete */}
