@@ -200,14 +200,14 @@ export default function Home() {
 				</div>
 			</div>
 				
-				{/* Activity Stream + Support - Layout MÁXIMO */}
-				<div className="grid grid-cols-1 lg:grid-cols-6 gap-20 max-w-[2200px] mx-auto px-8">
-					{/* Activity Stream - Coluna Principal (5/6) */}
-					<div className="lg:col-span-5">
+				{/* Activity Stream + Support - Layout Equilibrado */}
+				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+					{/* Activity Stream - Coluna Principal (3/4) */}
+					<div className="lg:col-span-3">
 						<ActivityStream />
 					</div>
 
-					{/* Support Section - Sidebar Compacta (1/6) */}
+					{/* Support Section - Sidebar (1/4) */}
 					<div className="lg:col-span-1">
 							<div className="sticky top-8">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
