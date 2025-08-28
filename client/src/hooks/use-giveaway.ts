@@ -33,28 +33,9 @@ export function useGiveaway() {
     try {
       setLoading(true);
       
-      // Buscar primeiro do arquivo de configuração (principal)
+      // APENAS buscar giveaways principais - giveaways de teste não aparecem na Home
       const mainGiveaway = getMainActiveGiveaway();
-      if (mainGiveaway) {
-        setActiveGiveaway(mainGiveaway);
-        setError(null);
-        setLoading(false);
-        return;
-      }
-      
-      // Se não houver giveaway principal, tentar localStorage (admin)
-      initializeGiveawayData();
-      const localGiveaway = getActiveGiveaway();
-      
-      // Se há giveaway ativo, adicionar requirements se não existir
-      if (localGiveaway && (!localGiveaway.requirements || localGiveaway.requirements.length === 0)) {
-        localGiveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
-          ...req,
-          id: `req_${index}`,
-        }));
-      }
-
-      setActiveGiveaway(localGiveaway);
+      setActiveGiveaway(mainGiveaway);
       setError(null);
     } catch (err) {
       console.error('Error fetching active giveaway:', err);

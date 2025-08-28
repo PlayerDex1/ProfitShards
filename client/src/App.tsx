@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { forceCleanCorruptedHistory } from "@/lib/historyApi";
+import "@/lib/cleanTestGiveaways"; // Limpar giveaways de teste
 
 // Pages
 import HomePage from "@/pages/home";
