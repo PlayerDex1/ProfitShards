@@ -86,6 +86,9 @@ export async function onRequestPost(context: any) {
 
     console.log('✅ SORTEIO CONCLUÍDO:', winnersData.results?.length || 0, 'ganhadores');
 
+    // Salvar no histórico de sorteios
+    await saveLotteryHistory(env, giveawayId, winnerCount, winnersData.results || [], eligibleParticipants.length, now);
+
     return createResponse({
       success: true,
       message: `${winnerCount} winner(s) drawn successfully`,
@@ -97,5 +100,61 @@ export async function onRequestPost(context: any) {
   } catch (error) {
     console.error('❌ ERRO NO SORTEIO:', error);
     return createErrorResponse('Failed to draw winners: ' + error.message, 500);
+  }
+}
+
+// Função para salvar sorteio no histórico
+async function saveLotteryHistory(
+  env: any, 
+  giveawayId: string, 
+  winnerCount: number, 
+  winners: any[], 
+  totalParticipants: number, 
+  drawnAt: string
+) {
+  try {
+    // Auto-setup da tabela de histórico
+    await env.DB.prepare(`
+      CREATE TABLE IF NOT EXISTS lottery_history (
+        id TEXT PRIMARY KEY,
+        giveaway_id TEXT NOT NULL,
+        giveaway_title TEXT NOT NULL,
+        total_participants INTEGER NOT NULL,
+        winners_count INTEGER NOT NULL,
+        winners_data TEXT NOT NULL,
+        drawn_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        drawn_by TEXT,
+        notes TEXT,
+        created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+      )
+    `).run();
+
+    // Buscar título do giveaway
+    const giveaway = await env.DB.prepare(`
+      SELECT title FROM giveaways WHERE id = ?
+    `).bind(giveawayId).first();
+
+    const historyId = `lottery_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    // Inserir no histórico
+    await env.DB.prepare(`
+      INSERT INTO lottery_history (
+        id, giveaway_id, giveaway_title, total_participants, 
+        winners_count, winners_data, drawn_at, created_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      historyId,
+      giveawayId,
+      giveaway?.title || 'Giveaway Desconhecido',
+      totalParticipants,
+      winnerCount,
+      JSON.stringify(winners),
+      drawnAt,
+      drawnAt
+    ).run();
+
+    console.log('📜 HISTÓRICO SALVO:', historyId);
+  } catch (error) {
+    console.error('❌ ERRO AO SALVAR HISTÓRICO:', error);
   }
 }
