@@ -71,6 +71,13 @@ export function appendMapDropEntry(drop: MapDrop): void {
     
     saveMapDropsHistory(history);
     console.log('✅ Map drop saved:', newEntry);
+    
+    // Disparar evento para tracking de missões do planejador
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('planner-used', {
+        detail: { mapDrop: newEntry }
+      }));
+    }
   } catch (error) {
     console.error('Error appending map drop:', error);
   }

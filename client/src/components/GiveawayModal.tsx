@@ -12,6 +12,8 @@ import {
   Sparkles, Target, Zap
 } from "lucide-react";
 import { Giveaway, GiveawayParticipant, GiveawayRequirement, GIVEAWAY_POINTS } from "@/types/giveaway";
+import { MissionVerification } from "@/components/MissionVerification";
+import { getUserMissionProgress } from "@/lib/missionVerification";
 
 interface GiveawayModalProps {
   open: boolean;
@@ -25,22 +27,37 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
   const [participant, setParticipant] = useState<GiveawayParticipant | null>(null);
   const [loading, setLoading] = useState(false);
 
-  // Simular dados do participante (substituir por API real)
+  // Carregar dados do participante baseado no progresso das missões
   useEffect(() => {
-    if (isAuthenticated && giveaway) {
-      // TODO: Buscar dados reais do participante
+    if (isAuthenticated && giveaway && user) {
+      const progress = getUserMissionProgress(user, giveaway.id);
       setParticipant({
-        id: 'temp',
+        id: `participant_${user}_${giveaway.id}`,
         giveawayId: giveaway.id,
-        userId: user || '',
-        userEmail: user || '',
-        participatedAt: new Date().toISOString(),
-        totalPoints: 15, // Exemplo
-        completedRequirements: ['login', 'twitter_follow'],
-        dailyLogins: 3,
+        userId: user,
+        userEmail: user,
+        participatedAt: progress.lastUpdated,
+        totalPoints: progress.totalPoints,
+        completedRequirements: progress.completedRequirements,
+        dailyLogins: progress.activityLog.filter(log => 
+          log.requirementId.includes('login') && 
+          new Date(log.completedAt).toDateString() === new Date().toDateString()
+        ).length,
       });
     }
   }, [isAuthenticated, giveaway, user]);
+
+  // Atualizar participant quando progresso mudar
+  const handleProgressUpdate = () => {
+    if (isAuthenticated && giveaway && user) {
+      const progress = getUserMissionProgress(user, giveaway.id);
+      setParticipant(prev => prev ? {
+        ...prev,
+        totalPoints: progress.totalPoints,
+        completedRequirements: progress.completedRequirements,
+      } : null);
+    }
+  };
 
   if (!giveaway) return null;
 
@@ -266,61 +283,13 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                   </CardContent>
                 </Card>
 
-                {/* Missões/Requirements */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>🎯 Missões para Ganhar Pontos</CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {giveaway.requirements.map((requirement, index) => {
-                      const Icon = getRequirementIcon(requirement.type);
-                      const completed = isRequirementCompleted(requirement.id);
-                      
-                      return (
-                        <div
-                          key={requirement.id}
-                          className={`p-4 rounded-lg border transition-all ${
-                            completed 
-                              ? 'bg-emerald-500/10 border-emerald-500/30' 
-                              : 'bg-card border-border hover:border-emerald-500/50 cursor-pointer'
-                          }`}
-                          onClick={() => !completed && handleCompleteRequirement(requirement)}
-                        >
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center space-x-3">
-                              <Icon 
-                                className={`h-5 w-5 ${
-                                  completed ? 'text-emerald-500' : 'text-muted-foreground'
-                                }`} 
-                              />
-                              <div>
-                                <div className="font-medium text-foreground">{requirement.description}</div>
-                                {requirement.required && (
-                                  <div className="text-xs text-orange-500">Obrigatório</div>
-                                )}
-                              </div>
-                            </div>
-                            
-                            <div className="flex items-center space-x-2">
-                              <Badge 
-                                variant={completed ? "default" : "secondary"}
-                                className={completed ? "bg-emerald-500 text-white" : ""}
-                              >
-                                +{requirement.points} pts
-                              </Badge>
-                              {requirement.url && !completed && (
-                                <ExternalLink className="h-4 w-4 text-blue-500" />
-                              )}
-                              {completed && (
-                                <CheckCircle className="h-5 w-5 text-emerald-500" />
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </CardContent>
-                </Card>
+                {/* Missões com Verificação */}
+                <MissionVerification
+                  requirements={giveaway.requirements}
+                  userId={user || ''}
+                  giveawayId={giveaway.id}
+                  onProgressUpdate={handleProgressUpdate}
+                />
               </>
             )}
           </div>

@@ -175,6 +175,13 @@ export function useCalculator() {
 		appendHistoryItem(historyItem);
 		console.log('🔍 DEBUG: Histórico após salvar:', getHistoryCached());
 		
+		// Disparar evento para tracking de missões
+		if (typeof window !== 'undefined') {
+			window.dispatchEvent(new CustomEvent('calculation-completed', {
+				detail: { historyItem }
+			}));
+		}
+		
 		// Salvar métricas anônimas se usuário autenticado
 		if (isAuthenticated && results.finalProfit !== undefined) {
 			try {
