@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Giveaway, GiveawayParticipant, DEFAULT_REQUIREMENTS } from "@/types/giveaway";
 import { getActiveGiveaway, initializeGiveawayData } from "@/lib/giveawayStorage";
+import { getMainActiveGiveaway } from "@/data/giveaways";
 
 // Hook para gerenciar giveaways
 export function useGiveaway() {
@@ -30,39 +31,29 @@ export function useGiveaway() {
     try {
       setLoading(true);
       
-      // Tentar buscar da API primeiro
-      try {
-        const giveaway = await getActiveGiveaway();
-        
-        // Se há giveaway ativo, adicionar requirements se não existir
-        if (giveaway && (!giveaway.requirements || giveaway.requirements.length === 0)) {
-          giveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
-            ...req,
-            id: `req_${index}`,
-          }));
-        }
-
-        setActiveGiveaway(giveaway);
+      // Buscar primeiro do arquivo de configuração (principal)
+      const mainGiveaway = getMainActiveGiveaway();
+      if (mainGiveaway) {
+        setActiveGiveaway(mainGiveaway);
         setError(null);
+        setLoading(false);
         return;
-      } catch (apiError) {
-        console.log('Erro na API, tentando localStorage:', apiError);
       }
       
-      // Fallback para localStorage
+      // Se não houver giveaway principal, tentar localStorage (admin)
       initializeGiveawayData();
       const { getActiveGiveawaySync } = await import("@/lib/giveawayStorage");
-      const giveaway = getActiveGiveawaySync();
+      const localGiveaway = getActiveGiveawaySync();
       
       // Se há giveaway ativo, adicionar requirements se não existir
-      if (giveaway && (!giveaway.requirements || giveaway.requirements.length === 0)) {
-        giveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
+      if (localGiveaway && (!localGiveaway.requirements || localGiveaway.requirements.length === 0)) {
+        localGiveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
           ...req,
           id: `req_${index}`,
         }));
       }
 
-      setActiveGiveaway(giveaway);
+      setActiveGiveaway(localGiveaway);
       setError(null);
     } catch (err) {
       console.error('Error fetching active giveaway:', err);
