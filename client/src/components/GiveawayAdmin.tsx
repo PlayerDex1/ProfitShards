@@ -16,6 +16,13 @@ import {
 } from "lucide-react";
 import { Giveaway } from "@/types/giveaway";
 import { WinnerManager } from "@/components/WinnerManager";
+import { 
+  getAllGiveaways, 
+  upsertGiveaway, 
+  deleteGiveaway as deleteGiveawayFromStorage,
+  setActiveGiveaway as setActiveGiveawayInStorage,
+  initializeGiveawayData
+} from "@/lib/giveawayStorage";
 
 interface GiveawayAdminProps {
   className?: string;
@@ -42,51 +49,55 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
     winnerAnnouncement: '',
   });
 
-  // Mock data - substituir por API real
+  // Carregar dados do storage
   useEffect(() => {
-    // TODO: Buscar giveaways da API
-    const mockGiveaways: Giveaway[] = [
-      {
-        id: 'giveaway_1',
-        title: 'WorldShards Starter Pack',
-        description: 'Kit completo para iniciantes no WorldShards',
-        prize: 'Starter Pack + 1000 tokens',
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        status: 'active',
-        maxParticipants: 1000,
-        currentParticipants: 247,
-        rules: [
-          'Apenas uma participação por pessoa',
-          'Conta deve estar ativa no site',
-          'Ganhador será selecionado aleatoriamente com base nos pontos',
-          'Prêmio será enviado via correios (Brasil apenas)',
-          'Resultados serão anunciados após o término',
-        ],
-        requirements: [],
-        winnerAnnouncement: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString(),
-      }
-    ];
-    setGiveaways(mockGiveaways);
+    initializeGiveawayData();
+    loadGiveaways();
+    
+    // Escutar mudanças no storage
+    const handleStorageChange = () => {
+      loadGiveaways();
+    };
+    
+    window.addEventListener('giveaway-data-updated', handleStorageChange);
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('giveaway-data-updated', handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+
+  const loadGiveaways = () => {
+    const stored = getAllGiveaways();
+    setGiveaways(stored);
+  };
 
   const handleCreateGiveaway = async () => {
     setLoading(true);
     try {
-      // TODO: API call para criar giveaway
-      console.log('Creating giveaway:', formData);
-      // Simular criação
       const newGiveaway: Giveaway = {
         id: `giveaway_${Date.now()}`,
-        ...formData,
+        title: formData.title,
+        description: formData.description,
+        prize: formData.prize,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+        status: formData.status,
+        maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
         currentParticipants: 0,
+        rules: formData.rules.filter(rule => rule.trim() !== ''),
         requirements: [], // Será configurado separadamente
+        winnerAnnouncement: formData.winnerAnnouncement ? new Date(formData.winnerAnnouncement).toISOString() : undefined,
+        createdAt: new Date().toISOString(),
       };
-      setGiveaways(prev => [...prev, newGiveaway]);
+      
+      upsertGiveaway(newGiveaway);
       setIsCreateDialogOpen(false);
       resetForm();
     } catch (error) {
       console.error('Error creating giveaway:', error);
+      alert('Erro ao criar giveaway');
     } finally {
       setLoading(false);
     }
@@ -97,20 +108,26 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
     
     setLoading(true);
     try {
-      // TODO: API call para editar giveaway
-      console.log('Editing giveaway:', selectedGiveaway.id, formData);
-      setGiveaways(prev => 
-        prev.map(g => 
-          g.id === selectedGiveaway.id 
-            ? { ...g, ...formData }
-            : g
-        )
-      );
+      const updatedGiveaway: Giveaway = {
+        ...selectedGiveaway,
+        title: formData.title,
+        description: formData.description,
+        prize: formData.prize,
+        startDate: new Date(formData.startDate).toISOString(),
+        endDate: new Date(formData.endDate).toISOString(),
+        status: formData.status,
+        maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined,
+        rules: formData.rules.filter(rule => rule.trim() !== ''),
+        winnerAnnouncement: formData.winnerAnnouncement ? new Date(formData.winnerAnnouncement).toISOString() : undefined,
+      };
+      
+      upsertGiveaway(updatedGiveaway);
       setIsEditDialogOpen(false);
       setSelectedGiveaway(null);
       resetForm();
     } catch (error) {
       console.error('Error editing giveaway:', error);
+      alert('Erro ao editar giveaway');
     } finally {
       setLoading(false);
     }
@@ -120,11 +137,10 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
     if (!confirm('Tem certeza que deseja deletar este giveaway?')) return;
     
     try {
-      // TODO: API call para deletar giveaway
-      console.log('Deleting giveaway:', id);
-      setGiveaways(prev => prev.filter(g => g.id !== id));
+      deleteGiveawayFromStorage(id);
     } catch (error) {
       console.error('Error deleting giveaway:', error);
+      alert('Erro ao deletar giveaway');
     }
   };
 
@@ -138,6 +154,30 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
       alert('Ganhador selecionado com sucesso! Notificação enviada.');
     } catch (error) {
       console.error('Error selecting winner:', error);
+    }
+  };
+
+  const handleSetAsActive = (giveawayId: string) => {
+    if (!confirm('Definir este giveaway como ativo? Isso irá desativar outros giveaways ativos.')) return;
+    
+    try {
+      // Atualizar status de todos os giveaways
+      const updatedGiveaways = giveaways.map(g => ({
+        ...g,
+        status: g.id === giveawayId ? 'active' as const : 
+               g.status === 'active' ? 'ended' as const : g.status
+      }));
+      
+      // Salvar todos os giveaways atualizados
+      updatedGiveaways.forEach(g => upsertGiveaway(g));
+      
+      // Definir como ativo no storage
+      setActiveGiveawayInStorage(giveawayId);
+      
+      alert('Giveaway definido como ativo! Agora ele aparecerá na Home.');
+    } catch (error) {
+      console.error('Error setting giveaway as active:', error);
+      alert('Erro ao definir giveaway como ativo');
     }
   };
 
@@ -346,7 +386,7 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2 ml-4">
+                        <div className="flex items-center gap-2 ml-4 flex-wrap">
                           {giveaway.status === 'active' && (
                             <Button
                               size="sm"
@@ -356,6 +396,18 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
                             >
                               <Crown className="h-4 w-4 mr-1" />
                               Selecionar Ganhador
+                            </Button>
+                          )}
+
+                          {giveaway.status !== 'active' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleSetAsActive(giveaway.id)}
+                              className="text-green-600 border-green-600 hover:bg-green-50"
+                            >
+                              <Play className="h-4 w-4 mr-1" />
+                              Ativar na Home
                             </Button>
                           )}
                           

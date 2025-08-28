@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Giveaway, GiveawayParticipant, DEFAULT_REQUIREMENTS } from "@/types/giveaway";
+import { getActiveGiveaway, initializeGiveawayData } from "@/lib/giveawayStorage";
 
 // Hook para gerenciar giveaways
 export function useGiveaway() {
@@ -10,44 +11,40 @@ export function useGiveaway() {
   // Buscar giveaway ativo
   useEffect(() => {
     fetchActiveGiveaway();
+    
+    // Escutar mudanças no localStorage
+    const handleStorageChange = () => {
+      fetchActiveGiveaway();
+    };
+    
+    window.addEventListener('giveaway-data-updated', handleStorageChange);
+    window.addEventListener('storage', handleStorageChange);
+    
+    return () => {
+      window.removeEventListener('giveaway-data-updated', handleStorageChange);
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   const fetchActiveGiveaway = async () => {
     try {
       setLoading(true);
       
-      // TODO: Substituir por API real
-      // const response = await fetch('/api/giveaway/active');
-      // const data = await response.json();
+      // Inicializar dados se necessário
+      initializeGiveawayData();
       
-      // Simulando um giveaway ativo para desenvolvimento
-      const mockGiveaway: Giveaway = {
-        id: 'giveaway_worldshards_box_001',
-        title: 'Box WorldShards Grátis!',
-        description: 'Ganhe uma box oficial do WorldShards com cartas exclusivas e itens raros!',
-        prize: '1x Box WorldShards Oficial',
-        startDate: new Date().toISOString(),
-        endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 dias
-        status: 'active',
-        maxParticipants: 1000,
-        currentParticipants: 247,
-        rules: [
-          'Apenas uma participação por pessoa',
-          'Conta deve estar ativa no site',
-          'Ganhador será selecionado aleatoriamente com base nos pontos',
-          'Prêmio será enviado via correios (Brasil apenas)',
-          'Resultados serão anunciados após o término',
-        ],
-        requirements: DEFAULT_REQUIREMENTS.map((req, index) => ({
+      // Buscar giveaway ativo do storage
+      const giveaway = getActiveGiveaway();
+      
+      // Se há giveaway ativo, adicionar requirements se não existir
+      if (giveaway && (!giveaway.requirements || giveaway.requirements.length === 0)) {
+        giveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
           ...req,
           id: `req_${index}`,
-        })),
-        winnerAnnouncement: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString(),
-        imageUrl: '/images/worldshards-box.jpg',
-        createdAt: new Date().toISOString(),
-      };
+        }));
+      }
 
-      setActiveGiveaway(mockGiveaway);
+      setActiveGiveaway(giveaway);
       setError(null);
     } catch (err) {
       console.error('Error fetching active giveaway:', err);
