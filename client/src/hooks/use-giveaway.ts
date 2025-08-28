@@ -19,10 +19,12 @@ export function useGiveaway() {
     };
     
     window.addEventListener('giveaway-data-updated', handleStorageChange);
+    window.addEventListener('main-giveaways-updated', handleStorageChange);
     window.addEventListener('storage', handleStorageChange);
     
     return () => {
       window.removeEventListener('giveaway-data-updated', handleStorageChange);
+      window.removeEventListener('main-giveaways-updated', handleStorageChange);
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);

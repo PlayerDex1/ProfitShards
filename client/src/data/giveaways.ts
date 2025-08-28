@@ -77,11 +77,26 @@ export const ACTIVE_GIVEAWAYS: Giveaway[] = [
   }
 ];
 
+// Função para obter giveaways do localStorage (dinâmicos) ou fallback para padrão
+function getDynamicGiveaways(): Giveaway[] {
+  try {
+    const stored = localStorage.getItem('main_giveaways_config');
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return Array.isArray(parsed) ? parsed : ACTIVE_GIVEAWAYS;
+    }
+  } catch (error) {
+    console.error('Erro ao carregar giveaways dinâmicos:', error);
+  }
+  return ACTIVE_GIVEAWAYS;
+}
+
 // Função para obter o giveaway ativo principal
 export function getMainActiveGiveaway(): Giveaway | null {
   const now = new Date();
+  const allGiveaways = getDynamicGiveaways();
   
-  const activeGiveaway = ACTIVE_GIVEAWAYS.find(giveaway => {
+  const activeGiveaway = allGiveaways.find(giveaway => {
     const startDate = new Date(giveaway.startDate);
     const endDate = new Date(giveaway.endDate);
     

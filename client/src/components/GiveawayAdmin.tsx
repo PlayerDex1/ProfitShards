@@ -17,6 +17,7 @@ import {
 import { Giveaway } from "@/types/giveaway";
 import { WinnerManager } from "@/components/WinnerManager";
 import { RequirementsEditor } from "@/components/RequirementsEditor";
+import { MainGiveawaysEditor } from "@/components/MainGiveawaysEditor";
 import { 
   getAllGiveaways, 
   upsertGiveaway, 
@@ -275,6 +276,44 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
               Ganhadores
             </TabsTrigger>
           </TabsList>
+
+          {/* Aba Giveaways Principais */}
+          <TabsContent value="main-giveaways" className="space-y-6">
+            <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+              <div className="flex items-center gap-3 mb-4">
+                <Sparkles className="h-6 w-6 text-purple-600" />
+                <div>
+                  <h3 className="text-lg font-semibold text-purple-900 dark:text-purple-100">
+                    Giveaways Principais
+                  </h3>
+                  <p className="text-sm text-purple-600 dark:text-purple-300">
+                    Edite os giveaways que todos os usuários verão na Home
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-white/50 dark:bg-black/20 p-4 rounded border border-purple-200 dark:border-purple-700">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
+                    <Target className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
+                      Como funciona:
+                    </h4>
+                    <ul className="space-y-1 text-sm text-purple-700 dark:text-purple-300">
+                      <li>• Edite os giveaways diretamente aqui</li>
+                      <li>• Clique "Salvar" para aplicar na Home</li>
+                      <li>• Todos os usuários verão instantaneamente</li>
+                      <li>• Não precisa mexer em código!</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <MainGiveawaysEditor />
+          </TabsContent>
 
           <TabsContent value="giveaways" className="space-y-6">
             {/* Create Button */}
