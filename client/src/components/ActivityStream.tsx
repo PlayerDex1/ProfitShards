@@ -100,9 +100,9 @@ const RunCard = ({ run, index }: { run: ActivityRun; index: number }) => {
         </div>
       </CardHeader>
 
-      <CardContent className="space-y-6 p-6">
+      <CardContent className="space-y-8 p-8">
         {/* Informações Principais */}
-        <div className="grid grid-cols-2 gap-8">
+        <div className="grid grid-cols-2 gap-12">
           {/* Mapa */}
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -313,7 +313,7 @@ export function ActivityStream() {
 
       <CardContent className="p-8">
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {Array.from({ length: 8 }).map((_, i) => (
               <RunSkeleton key={i} />
             ))}
@@ -346,7 +346,7 @@ export function ActivityStream() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
             {currentRuns.map((run, index) => (
               <RunCard key={run.id} run={run} index={index} />
             ))}
