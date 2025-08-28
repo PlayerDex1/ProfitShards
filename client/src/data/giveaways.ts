@@ -97,30 +97,59 @@ export async function getMainActiveGiveaway(): Promise<Giveaway | null> {
     console.log('🎯 BUSCANDO GIVEAWAY DA API...');
     
     const response = await fetch('/api/giveaways/active');
+    console.log('📡 RESPOSTA /active:', response.status);
+    
     if (!response.ok) {
-      throw new Error(`API Error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('❌ ERRO API /active:', response.status, errorText);
+      throw new Error(`API Error: ${response.status} - ${errorText}`);
     }
     
     const data = await response.json();
+    console.log('📦 DADOS RECEBIDOS:', data);
+    
     const giveaway = data.giveaway;
     
-    console.log('🎁 GIVEAWAY DA API:', giveaway ? giveaway.title : 'Nenhum ativo');
+    if (giveaway) {
+      console.log('✅ GIVEAWAY ENCONTRADO:', {
+        id: giveaway.id,
+        title: giveaway.title,
+        status: giveaway.status,
+        startDate: giveaway.startDate,
+        endDate: giveaway.endDate,
+        now: new Date().toISOString()
+      });
+    } else {
+      console.log('❌ NENHUM GIVEAWAY ATIVO NO BANCO');
+    }
     
     return giveaway;
   } catch (error) {
-    console.error('❌ ERRO NA API, usando fallback:', error);
+    console.error('💥 ERRO COMPLETO NA API:', error);
     
     // Fallback para dados locais
     const now = new Date();
     const allGiveaways = getDynamicGiveaways();
     
+    console.log('🔄 USANDO FALLBACK - Giveaways locais:', allGiveaways.length);
+    
     const activeGiveaway = allGiveaways.find(giveaway => {
       const startDate = new Date(giveaway.startDate);
       const endDate = new Date(giveaway.endDate);
       
-      return giveaway.status === 'active' && 
+      const isActive = giveaway.status === 'active' && 
              now >= startDate && 
              now <= endDate;
+             
+      console.log(`🔍 Testando ${giveaway.title}:`, {
+        status: giveaway.status,
+        isActive,
+        now: now.toISOString(),
+        start: startDate.toISOString(),
+        end: endDate.toISOString()
+      });
+      
+      return isActive;
     });
     
     console.log('🔄 GIVEAWAY FALLBACK:', activeGiveaway ? activeGiveaway.title : 'Nenhum ativo');
