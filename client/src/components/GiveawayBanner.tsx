@@ -58,22 +58,22 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
   // Versão compacta (header) - REDUZIDA
   if (compact) {
     return (
-      <div className="bg-gradient-to-r from-orange-500 to-red-500 text-white py-1.5 px-3 relative text-sm">
+      <div className="bg-gradient-to-r from-emerald-600 to-blue-600 text-white py-1.5 px-3 relative text-sm">
         <div className="flex items-center justify-center space-x-3 max-w-5xl mx-auto">
           <div className="flex items-center space-x-1.5">
-            <Gift className="h-4 w-4" />
-            <span className="font-semibold">🎁 {giveaway.prize}</span>
+            <Gift className="h-4 w-4 text-yellow-300" />
+            <span className="font-semibold text-white">🎁 {giveaway.prize}</span>
           </div>
           
           <div className="hidden md:flex items-center space-x-1.5 text-xs">
-            <Clock className="h-3 w-3" />
-            <span>{timeLeft}</span>
+            <Clock className="h-3 w-3 text-yellow-300" />
+            <span className="text-white">{timeLeft}</span>
           </div>
           
           <Button 
             size="sm" 
             onClick={onJoin}
-            className="bg-white text-orange-600 hover:bg-gray-100 font-semibold text-xs px-3 py-1 h-auto"
+            className="bg-yellow-400 text-emerald-800 hover:bg-yellow-300 font-bold text-xs px-3 py-1 h-auto border border-yellow-300"
           >
             PARTICIPAR
           </Button>
@@ -83,7 +83,7 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
           size="sm"
           variant="ghost"
           onClick={() => setDismissed(true)}
-          className="absolute right-1 top-1/2 transform -translate-y-1/2 text-white hover:bg-white/20 p-0.5 h-auto"
+          className="absolute right-1 top-1/2 transform -translate-y-1/2 text-yellow-200 hover:bg-white/20 p-0.5 h-auto"
         >
           <X className="h-3 w-3" />
         </Button>
@@ -91,36 +91,36 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
     );
   }
 
-  // Versão completa (card) - SIDEBAR FRIENDLY
+  // Versão completa (card) - SIDEBAR FRIENDLY - CORES MELHORADAS
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 text-white border border-orange-300 shadow-lg">
+    <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-blue-600 text-white border border-emerald-400 shadow-lg">
       <CardContent className="relative p-4">
         <div className="text-center mb-3">
           <div className="flex items-center justify-center space-x-2 mb-2">
-            <Gift className="h-5 w-5" />
-            <h3 className="text-base font-bold">🎁 Giveaway</h3>
+            <Gift className="h-5 w-5 text-yellow-300" />
+            <h3 className="text-base font-bold text-white">🎁 Giveaway</h3>
           </div>
-          <p className="text-sm opacity-90 font-medium">{giveaway.prize}</p>
-          <Badge className="bg-white/20 text-white border-white/30 text-xs px-2 py-1 mt-2">
+          <p className="text-sm text-yellow-100 font-medium">{giveaway.prize}</p>
+          <Badge className="bg-yellow-400 text-emerald-800 border-yellow-300 text-xs px-2 py-1 mt-2 font-semibold">
             ATIVO
           </Badge>
         </div>
 
         <div className="space-y-2 mb-4 text-sm">
-          <div className="bg-white/15 rounded p-2 text-center">
+          <div className="bg-white/20 backdrop-blur-sm rounded p-2 text-center border border-white/30">
             <div className="flex items-center justify-center space-x-1 mb-1">
-              <Clock className="h-3 w-3" />
-              <span className="text-xs">Termina em:</span>
+              <Clock className="h-3 w-3 text-yellow-300" />
+              <span className="text-xs text-white">Termina em:</span>
             </div>
-            <span className="font-semibold">{timeLeft}</span>
+            <span className="font-semibold text-white">{timeLeft}</span>
           </div>
           
-          <div className="bg-white/15 rounded p-2 text-center">
+          <div className="bg-white/20 backdrop-blur-sm rounded p-2 text-center border border-white/30">
             <div className="flex items-center justify-center space-x-1 mb-1">
-              <Users className="h-3 w-3" />
-              <span className="text-xs">Participantes:</span>
+              <Users className="h-3 w-3 text-yellow-300" />
+              <span className="text-xs text-white">Participantes:</span>
             </div>
-            <span className="font-semibold">{giveaway.currentParticipants}</span>
+            <span className="font-semibold text-white">{giveaway.currentParticipants}</span>
           </div>
         </div>
 
@@ -129,11 +129,11 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
           <Button 
             size="sm"
             onClick={onJoin}
-            className="bg-white text-orange-600 hover:bg-gray-100 font-semibold w-full text-xs"
+            className="bg-yellow-400 text-emerald-800 hover:bg-yellow-300 font-bold w-full text-xs border border-yellow-300 shadow-md"
           >
             🎯 PARTICIPAR
           </Button>
-          <p className="text-xs mt-1 opacity-75">
+          <p className="text-xs mt-1 text-yellow-100">
             Grátis • Ganhe pontos
           </p>
         </div>
