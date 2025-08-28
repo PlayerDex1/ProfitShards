@@ -5,13 +5,12 @@ import { useTheme } from "@/hooks/useTheme";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { useI18n } from "@/i18n";
-import { GiveawayModal } from "@/components/GiveawayModal";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
-  const [showGiveaway, setShowGiveaway] = useState(false);
+
   const { t, lang, setLang } = useI18n();
 
   return (
@@ -138,13 +137,6 @@ export function Header() {
       </header>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
-      
-      {/* Giveaway Modal */}
-      <GiveawayModal 
-        open={showGiveaway}
-        onOpenChange={setShowGiveaway}
-        giveaway={activeGiveaway || undefined}
-      />
     </>
   );
 }
