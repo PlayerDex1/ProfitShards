@@ -97,6 +97,151 @@ export function completeMission(
   });
   
   saveMissionProgress(progress);
+  
+  // Verificar se completou todas as missões obrigatórias e participar automaticamente
+  checkAndAutoParticipate(userId, giveawayId);
+}
+
+// Função para verificar se completou todas as missões e participar automaticamente
+export function checkAndAutoParticipate(userId: string, giveawayId: string): void {
+  try {
+    const progress = getUserMissionProgress(userId, giveawayId);
+    
+    // Buscar giveaway atual
+    const giveaway = getCurrentGiveaway(giveawayId);
+    if (!giveaway) return;
+    
+    // Verificar missões obrigatórias
+    const requiredMissions = giveaway.requirements.filter(req => req.required);
+    const completedRequired = requiredMissions.filter(req => 
+      progress.completedRequirements.includes(req.id)
+    );
+    
+    console.log('🎯 VERIFICANDO AUTO-PARTICIPAÇÃO:', {
+      required: requiredMissions.length,
+      completed: completedRequired.length,
+      allCompleted: completedRequired.length >= requiredMissions.length
+    });
+    
+    // Se completou todas as obrigatórias
+    if (completedRequired.length >= requiredMissions.length) {
+      // Verificar se já está participando
+      const participants = getGiveawayParticipants(giveawayId);
+      if (!participants.includes(userId)) {
+        // Adicionar à lista de participantes
+        participants.push(userId);
+        saveGiveawayParticipants(giveawayId, participants);
+        
+        // Mostrar notificação de sucesso
+        showParticipationSuccess(giveaway.title, progress.totalPoints);
+        
+        console.log('🎉 AUTO-PARTICIPAÇÃO ATIVA:', {
+          userId: userId.slice(0, 8),
+          giveaway: giveaway.title,
+          points: progress.totalPoints
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Erro na auto-participação:', error);
+  }
+}
+
+// Funções auxiliares para gerenciar participantes
+function getCurrentGiveaway(giveawayId: string) {
+  try {
+    // Tentar buscar do localStorage primeiro
+    const stored = localStorage.getItem('main_giveaways_config');
+    if (stored) {
+      const giveaways = JSON.parse(stored);
+      return giveaways.find((g: any) => g.id === giveawayId);
+    }
+    
+    // Fallback para giveaway padrão
+    const defaultGiveaway = {
+      id: giveawayId,
+      title: "Giveaway Ativo",
+      requirements: []
+    };
+    return defaultGiveaway;
+  } catch (error) {
+    console.error('Erro ao buscar giveaway:', error);
+    return null;
+  }
+}
+
+function getGiveawayParticipants(giveawayId: string): string[] {
+  try {
+    const stored = localStorage.getItem(`giveaway_participants_${giveawayId}`);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Erro ao buscar participantes:', error);
+    return [];
+  }
+}
+
+function saveGiveawayParticipants(giveawayId: string, participants: string[]): void {
+  try {
+    localStorage.setItem(`giveaway_participants_${giveawayId}`, JSON.stringify(participants));
+    
+    // Disparar evento para atualizar UI
+    window.dispatchEvent(new CustomEvent('giveaway-participation-updated', {
+      detail: { giveawayId, participants }
+    }));
+  } catch (error) {
+    console.error('Erro ao salvar participantes:', error);
+  }
+}
+
+function showParticipationSuccess(giveawayTitle: string, totalPoints: number): void {
+  // Notificação visual
+  if (typeof window !== 'undefined') {
+    // Criar notificação customizada
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+      <div style="
+        position: fixed; 
+        top: 20px; 
+        right: 20px; 
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: white; 
+        padding: 16px 20px; 
+        border-radius: 12px; 
+        box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+        z-index: 10000;
+        font-family: system-ui, -apple-system, sans-serif;
+        max-width: 350px;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="font-size: 24px;">🎉</div>
+          <div>
+            <div style="font-weight: 600; margin-bottom: 4px;">
+              Parabéns! Você está participando!
+            </div>
+            <div style="font-size: 14px; opacity: 0.9;">
+              ${totalPoints} pontos • ${giveawayTitle}
+            </div>
+          </div>
+        </div>
+      </div>
+      <style>
+        @keyframes slideIn {
+          from { transform: translateX(100%); opacity: 0; }
+          to { transform: translateX(0); opacity: 1; }
+        }
+      </style>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover após 5 segundos
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 5000);
+  }
 }
 
 // Função para verificar se missão está completada

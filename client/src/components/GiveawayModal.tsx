@@ -26,11 +26,17 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
   const { user, isAuthenticated } = useAuth();
   const [participant, setParticipant] = useState<GiveawayParticipant | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isParticipating, setIsParticipating] = useState(false);
 
   // Carregar dados do participante baseado no progresso das missões
   useEffect(() => {
     if (isAuthenticated && giveaway && user) {
       const progress = getUserMissionProgress(user, giveaway.id);
+      
+      // Verificar se está participando
+      const participants = getGiveawayParticipants(giveaway.id);
+      setIsParticipating(participants.includes(user));
+      
       setParticipant({
         id: `participant_${user}_${giveaway.id}`,
         giveawayId: giveaway.id,
@@ -47,10 +53,25 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
     }
   }, [isAuthenticated, giveaway, user]);
 
+  // Função auxiliar para buscar participantes
+  const getGiveawayParticipants = (giveawayId: string): string[] => {
+    try {
+      const stored = localStorage.getItem(`giveaway_participants_${giveawayId}`);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Erro ao buscar participantes:', error);
+      return [];
+    }
+  };
+
   // Atualizar participant quando progresso mudar
   const handleProgressUpdate = () => {
     if (isAuthenticated && giveaway && user) {
       const progress = getUserMissionProgress(user, giveaway.id);
+      
+      // Verificar participação atualizada
+      const participants = getGiveawayParticipants(giveaway.id);
+      setIsParticipating(participants.includes(user));
       setParticipant(prev => prev ? {
         ...prev,
         totalPoints: progress.totalPoints,
@@ -58,6 +79,22 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
       } : null);
     }
   };
+
+  // Listener para atualizações de participação
+  useEffect(() => {
+    const handleParticipationUpdate = () => {
+      if (isAuthenticated && giveaway && user) {
+        const participants = getGiveawayParticipants(giveaway.id);
+        setIsParticipating(participants.includes(user));
+      }
+    };
+
+    window.addEventListener('giveaway-participation-updated', handleParticipationUpdate);
+    
+    return () => {
+      window.removeEventListener('giveaway-participation-updated', handleParticipationUpdate);
+    };
+  }, [isAuthenticated, giveaway, user]);
 
   if (!giveaway) return null;
 
@@ -137,6 +174,11 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
             >
               {giveaway.status === 'active' ? 'ATIVO' : 'EM BREVE'}
             </Badge>
+            {isParticipating && (
+              <Badge className="bg-blue-500 text-white animate-pulse">
+                🎉 PARTICIPANDO
+              </Badge>
+            )}
           </DialogTitle>
         </DialogHeader>
 
