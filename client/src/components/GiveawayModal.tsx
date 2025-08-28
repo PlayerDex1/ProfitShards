@@ -27,15 +27,17 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
   const [participant, setParticipant] = useState<GiveawayParticipant | null>(null);
   const [loading, setLoading] = useState(false);
   const [isParticipating, setIsParticipating] = useState(false);
+  const [participantCount, setParticipantCount] = useState(0);
 
   // Carregar dados do participante baseado no progresso das missões
   useEffect(() => {
     if (isAuthenticated && giveaway && user) {
       const progress = getUserMissionProgress(user, giveaway.id);
       
-      // Verificar se está participando
+      // Verificar se está participando e contar participantes
       const participants = getGiveawayParticipants(giveaway.id);
       setIsParticipating(participants.includes(user));
+      setParticipantCount(participants.length);
       
       setParticipant({
         id: `participant_${user}_${giveaway.id}`,
@@ -72,6 +74,7 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
       // Verificar participação atualizada
       const participants = getGiveawayParticipants(giveaway.id);
       setIsParticipating(participants.includes(user));
+      setParticipantCount(participants.length);
       setParticipant(prev => prev ? {
         ...prev,
         totalPoints: progress.totalPoints,
@@ -86,6 +89,7 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
       if (isAuthenticated && giveaway && user) {
         const participants = getGiveawayParticipants(giveaway.id);
         setIsParticipating(participants.includes(user));
+        setParticipantCount(participants.length);
       }
     };
 
@@ -211,7 +215,7 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
                 <div className="flex items-center justify-between">
                   <span className="text-foreground">Participantes:</span>
                   <span className="font-bold text-foreground">
-                    {giveaway.currentParticipants}
+                    {participantCount}
                     {giveaway.maxParticipants && ` / ${giveaway.maxParticipants}`}
                   </span>
                 </div>

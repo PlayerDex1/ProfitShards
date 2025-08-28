@@ -16,6 +16,33 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
   const { t } = useI18n();
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [dismissed, setDismissed] = useState(false);
+  const [participantCount, setParticipantCount] = useState(0);
+
+  // Buscar participantes do localStorage
+  useEffect(() => {
+    if (!giveaway) return;
+    
+    const getParticipants = () => {
+      try {
+        const stored = localStorage.getItem(`giveaway_participants_${giveaway.id}`);
+        const participants = stored ? JSON.parse(stored) : [];
+        setParticipantCount(participants.length);
+      } catch (error) {
+        console.error('Erro ao buscar participantes:', error);
+        setParticipantCount(0);
+      }
+    };
+    
+    getParticipants();
+    
+    // Listener para atualizações
+    const handleParticipationUpdate = () => getParticipants();
+    window.addEventListener('giveaway-participation-updated', handleParticipationUpdate);
+    
+    return () => {
+      window.removeEventListener('giveaway-participation-updated', handleParticipationUpdate);
+    };
+  }, [giveaway]);
 
   // Calcular tempo restante
   useEffect(() => {
@@ -120,7 +147,7 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
               <Users className="h-3 w-3 text-yellow-300" />
               <span className="text-xs text-white">Participantes:</span>
             </div>
-            <span className="font-semibold text-white">{giveaway.currentParticipants}</span>
+            <span className="font-semibold text-white">{participantCount}</span>
           </div>
         </div>
 
