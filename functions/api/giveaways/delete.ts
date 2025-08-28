@@ -1,5 +1,4 @@
 import { createResponse, createErrorResponse } from '../../_lib/response';
-import { verifyAuth } from '../../_lib/auth';
 
 export async function onRequestDelete(context: any) {
   try {
@@ -9,18 +8,6 @@ export async function onRequestDelete(context: any) {
 
     if (!id) {
       return createErrorResponse('Missing giveaway ID', 400);
-    }
-    
-    // Verificar autenticação de admin
-    const authResult = await verifyAuth(request, env);
-    if (!authResult.success) {
-      return createErrorResponse('Unauthorized', 401);
-    }
-
-    // Verificar se é admin
-    const adminEmails = ['profitshards@gmail.com', 'admin@profitshards.com', 'holdboy01@gmail.com'];
-    if (!adminEmails.includes(authResult.user.email)) {
-      return createErrorResponse('Forbidden - Admin only', 403);
     }
 
     // Deletar giveaway

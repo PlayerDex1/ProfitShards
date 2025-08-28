@@ -1,21 +1,8 @@
 import { createResponse, createErrorResponse } from '../../_lib/response';
-import { verifyAuth } from '../../_lib/auth';
 
 export async function onRequestGet(context: any) {
   try {
-    const { request, env } = context;
-    
-    // Verificar autenticação de admin
-    const authResult = await verifyAuth(request, env);
-    if (!authResult.success) {
-      return createErrorResponse('Unauthorized', 401);
-    }
-
-    // Verificar se é admin
-    const adminEmails = ['profitshards@gmail.com', 'admin@profitshards.com', 'holdboy01@gmail.com'];
-    if (!adminEmails.includes(authResult.user.email)) {
-      return createErrorResponse('Forbidden - Admin only', 403);
-    }
+    const { env } = context;
     
     // Buscar todos os giveaways para admin
     const result = await env.DB.prepare(`
