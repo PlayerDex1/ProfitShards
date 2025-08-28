@@ -30,11 +30,29 @@ export function useGiveaway() {
     try {
       setLoading(true);
       
-      // Inicializar dados se necessário
-      initializeGiveawayData();
+      // Tentar buscar da API primeiro
+      try {
+        const giveaway = await getActiveGiveaway();
+        
+        // Se há giveaway ativo, adicionar requirements se não existir
+        if (giveaway && (!giveaway.requirements || giveaway.requirements.length === 0)) {
+          giveaway.requirements = DEFAULT_REQUIREMENTS.map((req, index) => ({
+            ...req,
+            id: `req_${index}`,
+          }));
+        }
+
+        setActiveGiveaway(giveaway);
+        setError(null);
+        return;
+      } catch (apiError) {
+        console.log('Erro na API, tentando localStorage:', apiError);
+      }
       
-      // Buscar giveaway ativo do storage
-      const giveaway = getActiveGiveaway();
+      // Fallback para localStorage
+      initializeGiveawayData();
+      const { getActiveGiveawaySync } = await import("@/lib/giveawayStorage");
+      const giveaway = getActiveGiveawaySync();
       
       // Se há giveaway ativo, adicionar requirements se não existir
       if (giveaway && (!giveaway.requirements || giveaway.requirements.length === 0)) {
