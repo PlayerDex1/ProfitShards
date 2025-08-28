@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   Gift, Plus, Edit, Trash2, Save, Clock, Calendar, 
   Users, Trophy, Target, AlertCircle, CheckCircle2,
@@ -563,6 +564,23 @@ function GiveawayForm({ formData, setFormData, onSubmit, loading, isEdit }: Give
           requirements={formData.requirements}
           onChange={(requirements) => setFormData(prev => ({ ...prev, requirements }))}
         />
+      </div>
+
+      {/* Winner Instructions */}
+      <div className="space-y-2">
+        <Label htmlFor="winnerAnnouncement">💬 Instruções para Ganhadores</Label>
+        <Textarea
+          id="winnerAnnouncement"
+          value={formData.winnerAnnouncement}
+          onChange={(e) => setFormData(prev => ({ ...prev, winnerAnnouncement: e.target.value }))}
+          placeholder="Instruções específicas sobre como o ganhador deve retirar o prêmio. Por exemplo:&#10;&#10;• Entre em contato em até 48h&#10;• Informe seu nome completo e endereço&#10;• O prêmio será enviado em até 7 dias úteis&#10;&#10;Nota: O contato Discord @playerhold sempre aparecerá automaticamente."
+          rows={6}
+          className="resize-none"
+        />
+        <p className="text-sm text-muted-foreground">
+          ✨ <strong>Dica:</strong> Essas instruções aparecerão no modal do ganhador junto com o contato Discord automático.
+          Use para explicar prazos, requisitos específicos, etc.
+        </p>
       </div>
 
       <div className="flex gap-3 pt-4">

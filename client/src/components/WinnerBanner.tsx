@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Separator } from "@/components/ui/separator";
 import { 
   Trophy, Crown, Gift, Sparkles, Star, Confetti, 
-  Calendar, Award, PartyPopper, Zap, Target
+  Calendar, Award, PartyPopper, Zap, Target, MessageCircle
 } from "lucide-react";
 
 interface WinnerData {
@@ -100,46 +100,76 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
 
   return (
     <>
-      {/* Banner de Ganhador */}
-      <Card className="bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-900/20 dark:via-orange-900/20 dark:to-red-900/20 border-2 border-yellow-300 dark:border-yellow-600 shadow-2xl">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              {/* Ícone animado */}
-              <div className="relative">
-                <div className="p-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full shadow-lg animate-bounce">
+      {/* Banner de Ganhador - MUITO MAIOR */}
+      <Card className="bg-gradient-to-r from-yellow-50 via-orange-50 to-red-50 dark:from-yellow-900/20 dark:via-orange-900/20 dark:to-red-900/20 border-4 border-yellow-400 dark:border-yellow-500 shadow-2xl transform hover:scale-[1.02] transition-all duration-300">
+        <CardContent className="p-12">
+          <div className="text-center space-y-8">
+            {/* Ícone Central GIGANTE */}
+            <div className="relative mx-auto w-fit">
+              <div className="p-8 bg-gradient-to-br from-yellow-400 via-orange-500 to-red-500 rounded-full shadow-2xl animate-bounce">
+                <div className="relative">
                   {getPositionIcon(winnerData.position)}
-                </div>
-                <div className="absolute -top-1 -right-1">
-                  <Sparkles className="h-4 w-4 text-yellow-400 animate-spin" />
+                  <div className="absolute -top-2 -right-2">
+                    <Sparkles className="h-8 w-8 text-yellow-300 animate-spin" />
+                  </div>
+                  <div className="absolute -bottom-2 -left-2">
+                    <Star className="h-6 w-6 text-orange-300 animate-pulse" />
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent mb-2">
-                  🎉 PARABÉNS! VOCÊ GANHOU! 🎉
-                </h3>
-                <div className="flex items-center gap-4 mb-2">
-                  <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-3 py-1 text-sm font-bold">
-                    {getPositionText(winnerData.position)}
-                  </Badge>
-                  <span className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    {winnerData.giveawayTitle}
-                  </span>
-                </div>
-                <p className="text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                  <Gift className="h-4 w-4" />
-                  <strong>Prêmio:</strong> {winnerData.prize}
-                </p>
+              {/* Efeitos ao redor */}
+              <div className="absolute -top-4 -left-4">
+                <Confetti className="h-8 w-8 text-yellow-400 animate-bounce" style={{animationDelay: '0.2s'}} />
+              </div>
+              <div className="absolute -top-4 -right-4">
+                <Trophy className="h-8 w-8 text-orange-400 animate-bounce" style={{animationDelay: '0.4s'}} />
+              </div>
+              <div className="absolute -bottom-4 -left-4">
+                <Crown className="h-8 w-8 text-yellow-500 animate-bounce" style={{animationDelay: '0.6s'}} />
+              </div>
+              <div className="absolute -bottom-4 -right-4">
+                <Award className="h-8 w-8 text-orange-500 animate-bounce" style={{animationDelay: '0.8s'}} />
               </div>
             </div>
 
-            <div className="flex items-center space-x-3">
+            {/* Título GIGANTE */}
+            <div>
+              <h3 className="text-6xl font-black bg-gradient-to-r from-yellow-600 via-orange-600 to-red-600 bg-clip-text text-transparent mb-4 animate-pulse">
+                🎉 PARABÉNS! 🎉
+              </h3>
+              <h4 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+                VOCÊ GANHOU!
+              </h4>
+            </div>
+
+            {/* Informações do Prêmio */}
+            <div className="bg-white/80 dark:bg-gray-800/80 p-8 rounded-2xl border-2 border-yellow-300 dark:border-yellow-600 shadow-xl">
+              <div className="space-y-6">
+                <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-8 py-3 text-2xl font-bold rounded-full shadow-lg">
+                  {getPositionText(winnerData.position)}
+                </Badge>
+                
+                <h5 className="text-3xl font-bold text-gray-800 dark:text-gray-200">
+                  {winnerData.giveawayTitle}
+                </h5>
+                
+                <div className="flex items-center justify-center gap-3 text-xl text-gray-700 dark:text-gray-300">
+                  <Gift className="h-8 w-8 text-green-600" />
+                  <span className="font-bold">Prêmio:</span> 
+                  <span className="text-2xl font-black bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {winnerData.prize}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Botões GRANDES */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Dialog open={showModal} onOpenChange={setShowModal}>
                 <DialogTrigger asChild>
-                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-lg px-6 py-2">
-                    <PartyPopper className="h-4 w-4 mr-2" />
-                    Ver Prêmio
+                  <Button className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 shadow-2xl px-12 py-6 text-xl font-bold rounded-full transform hover:scale-105 transition-all duration-200">
+                    <PartyPopper className="h-6 w-6 mr-3" />
+                    Ver Detalhes do Prêmio
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-2xl">
@@ -197,7 +227,7 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
                       </div>
                     </div>
 
-                    {/* Instruções */}
+                    {/* Instruções Personalizadas */}
                     {winnerData.winnerAnnouncement && (
                       <div className="bg-gray-50 dark:bg-gray-800 p-6 rounded-lg border">
                         <h4 className="font-semibold mb-3 flex items-center gap-2">
@@ -210,14 +240,55 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
                       </div>
                     )}
 
+                    {/* Contato Discord - SEMPRE MOSTRAR */}
+                    <div className="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 p-6 rounded-lg border border-indigo-200 dark:border-indigo-700">
+                      <h4 className="font-semibold mb-4 text-indigo-900 dark:text-indigo-100 flex items-center gap-2">
+                        <MessageCircle className="h-5 w-5 text-indigo-600" />
+                        💬 Contato para Retirar o Prêmio
+                      </h4>
+                      <div className="space-y-4">
+                        <p className="text-indigo-800 dark:text-indigo-200">
+                          <strong>Entre em contato comigo no Discord para combinar a entrega do seu prêmio!</strong>
+                        </p>
+                        
+                        <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-indigo-300 dark:border-indigo-600">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="font-bold text-indigo-900 dark:text-indigo-100">Discord:</p>
+                              <p className="text-lg font-mono bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded text-indigo-800 dark:text-indigo-200">
+                                @playerhold
+                              </p>
+                            </div>
+                            <Button 
+                              onClick={() => {
+                                navigator.clipboard.writeText('@playerhold');
+                                alert('Discord copiado! Cole no Discord para me encontrar.');
+                              }}
+                              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                            >
+                              📋 Copiar
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="text-sm text-indigo-700 dark:text-indigo-300 space-y-2">
+                          <p>📝 <strong>O que dizer:</strong></p>
+                          <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded font-mono text-sm">
+                            "Olá! Ganhei o prêmio '{winnerData.prize}' no giveaway '{winnerData.giveawayTitle}'. 
+                            Como posso retirar?"
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {!winnerData.winnerAnnouncement && (
                       <div className="bg-blue-50 dark:bg-blue-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-700">
                         <h4 className="font-semibold mb-3 text-blue-900 dark:text-blue-100">
-                          📧 Próximos Passos
+                          ⏰ Instruções Adicionais
                         </h4>
                         <p className="text-blue-800 dark:text-blue-200">
-                          Em breve você receberá mais informações sobre como retirar seu prêmio. 
-                          Fique atento ao seu email e às atualizações do site!
+                          Instruções específicas sobre a entrega podem ser adicionadas pelo administrador. 
+                          Por enquanto, use o Discord acima para contato direto!
                         </p>
                       </div>
                     )}
@@ -225,12 +296,13 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
                 </DialogContent>
               </Dialog>
 
+              
               <Button 
                 variant="outline" 
                 onClick={handleDismiss}
-                className="border-gray-300 hover:bg-gray-50"
+                className="border-gray-400 hover:bg-gray-100 px-8 py-4 text-lg font-semibold rounded-full"
               >
-                Dispensar
+                Dispensar Notificação
               </Button>
             </div>
           </div>
