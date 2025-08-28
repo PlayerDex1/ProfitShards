@@ -70,173 +70,58 @@ export async function onRequestPost(context: any) {
       operation: isUpdate ? 'UPDATE' : 'INSERT'
     });
 
-    if (isUpdate) {
-      // Verificar se o giveaway realmente existe
-      const existingCheck = await env.DB.prepare(`
-        SELECT id FROM giveaways WHERE id = ?
-      `).bind(id).first();
-      
-      console.log('🔍 GIVEAWAY EXISTE?', {
-        id: id,
-        exists: !!existingCheck
-      });
-      
-      if (!existingCheck) {
-        console.log('⚠️ GIVEAWAY NÃO EXISTE, FORÇANDO INSERT...');
-        // Forçar INSERT se não existir
-        const newId = id || `giveaway_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-        
-        console.log('➕ FORÇANDO CRIAÇÃO COM ID:', newId);
-        
-        try {
-          const result = await env.DB.prepare(`
-            INSERT INTO giveaways (
-              id, title, description, prize, start_date, end_date, status,
-              max_participants, current_participants, rules, requirements,
-              winner_announcement, image_url, created_at, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-          `).bind(
-            newId,
-            title,
-            description,
-            prize,
-            startDate,
-            endDate,
-            status,
-            maxParticipants,
-            currentParticipants,
-            JSON.stringify(rules),
-            JSON.stringify(requirements),
-            winnerAnnouncement,
-            imageUrl,
-            now,
-            now
-          ).run();
-          
-          console.log('✅ INSERT FORÇADO RESULTADO:', {
-            success: result.success,
-            changes: result.changes,
-            lastRowId: result.meta?.last_row_id
-          });
-          
-          return createResponse({ 
-            success: true, 
-            message: 'Giveaway created successfully (forced)',
-            id: newId 
-          });
-        } catch (insertError) {
-          console.error('💥 ERRO NO INSERT FORÇADO:', insertError);
-          throw insertError;
-        }
-      }
+    // Sempre criar novo giveaway (simplificado para corrigir bug)
+    const newId = id || `giveaway_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    
+    console.log('➕ CRIANDO GIVEAWAY:', {
+      newId, title, description, prize, startDate, endDate, status,
+      maxParticipants, currentParticipants
+    });
+    
+    const result = await env.DB.prepare(`
+      INSERT INTO giveaways (
+        id, title, description, prize, start_date, end_date, status,
+        max_participants, current_participants, rules, requirements,
+        winner_announcement, image_url, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).bind(
+      newId,
+      title,
+      description,
+      prize,
+      startDate,
+      endDate,
+      status,
+      maxParticipants,
+      currentParticipants,
+      JSON.stringify(rules),
+      JSON.stringify(requirements),
+      winnerAnnouncement,
+      imageUrl,
+      now,
+      now
+    ).run();
+    
+    console.log('✅ INSERT RESULTADO:', {
+      success: result.success,
+      changes: result.changes,
+      lastRowId: result.meta?.last_row_id,
+      error: result.error
+    });
 
-    if (isUpdate && existingCheck) {
-      // Atualizar giveaway existente
+    // Se este giveaway foi definido como ativo, desativar outros
+    if (status === 'active') {
       await env.DB.prepare(`
-        UPDATE giveaways SET
-          title = ?,
-          description = ?,
-          prize = ?,
-          start_date = ?,
-          end_date = ?,
-          status = ?,
-          max_participants = ?,
-          current_participants = ?,
-          rules = ?,
-          requirements = ?,
-          winner_announcement = ?,
-          image_url = ?,
-          updated_at = ?
-        WHERE id = ?
-      `).bind(
-        title,
-        description,
-        prize,
-        startDate,
-        endDate,
-        status,
-        maxParticipants,
-        currentParticipants,
-        JSON.stringify(rules),
-        JSON.stringify(requirements),
-        winnerAnnouncement,
-        imageUrl,
-        now,
-        id
-      ).run();
-
-      // Se este giveaway foi definido como ativo, desativar outros
-      if (status === 'active') {
-        await env.DB.prepare(`
-          UPDATE giveaways SET status = 'ended', updated_at = ?
-          WHERE id != ? AND status = 'active'
-        `).bind(now, id).run();
-      }
-
-      return createResponse({ 
-        success: true, 
-        message: 'Giveaway updated successfully',
-        id 
-      });
-    } else {
-      // Criar novo giveaway
-      const newId = `giveaway_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-      
-      console.log('➕ CRIANDO NOVO GIVEAWAY:', {
-        newId, title, description, prize, startDate, endDate, status,
-        maxParticipants, currentParticipants
-      });
-      
-      try {
-        const result = await env.DB.prepare(`
-          INSERT INTO giveaways (
-            id, title, description, prize, start_date, end_date, status,
-            max_participants, current_participants, rules, requirements,
-            winner_announcement, image_url, created_at, updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).bind(
-          newId,
-          title,
-          description,
-          prize,
-          startDate,
-          endDate,
-          status,
-          maxParticipants,
-          currentParticipants,
-          JSON.stringify(rules),
-          JSON.stringify(requirements),
-          winnerAnnouncement,
-          imageUrl,
-          now,
-          now
-        ).run();
-        
-        console.log('✅ INSERT RESULTADO:', {
-          success: result.success,
-          changes: result.changes,
-          lastRowId: result.meta?.last_row_id,
-          error: result.error
-        });
-      } catch (insertError) {
-        console.error('💥 ERRO NO INSERT:', insertError);
-        throw insertError;
-      }
-
-      // Se este giveaway foi definido como ativo, desativar outros
-      if (status === 'active') {
-        await env.DB.prepare(`
-          UPDATE giveaways SET status = 'ended', updated_at = ?
-          WHERE id != ? AND status = 'active'
-        `).bind(now, newId).run();
-      }
-
-      return createResponse({ 
-        success: true, 
-        message: 'Giveaway created successfully',
-        id: newId 
-      });
+        UPDATE giveaways SET status = 'ended', updated_at = ?
+        WHERE id != ? AND status = 'active'
+      `).bind(now, newId).run();
     }
+
+    return createResponse({ 
+      success: true, 
+      message: 'Giveaway created successfully',
+      id: newId 
+    });
   } catch (error) {
     console.error('Error saving giveaway:', error);
     return createErrorResponse('Failed to save giveaway', 500);
