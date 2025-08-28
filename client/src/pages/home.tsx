@@ -16,6 +16,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useGiveaway } from "@/hooks/use-giveaway";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { GiveawayModal } from "@/components/GiveawayModal";
+import { WinnerBanner } from "@/components/WinnerBanner";
+import { PublicWinnersList } from "@/components/PublicWinnersList";
 
 
 export default function Home() {
@@ -46,6 +48,16 @@ export default function Home() {
 				</div>
 			)}
 			
+			{/* Banner de Ganhador */}
+			{isAuthenticated && (
+				<div className="max-w-6xl mx-auto px-4 pt-6">
+					<WinnerBanner 
+						userId={user?.uid} 
+						userEmail={user?.email} 
+					/>
+				</div>
+			)}
+
 			{/* Conteúdo Centralizado */}
 			<div className="max-w-6xl mx-auto px-4 py-12">
 				{/* Hero Section Centralizado */}
@@ -212,7 +224,7 @@ export default function Home() {
 						<ActivityStream />
 					</div>
 
-					{/* Sidebar (1/4) - Giveaway + Support */}
+					{/* Sidebar (1/4) - Giveaway + Winners + Support */}
 					<div className="lg:col-span-1 space-y-6">
 						{/* Giveaway na Sidebar */}
 						{activeGiveaway && (
@@ -224,6 +236,11 @@ export default function Home() {
 								/>
 							</div>
 						)}
+
+						{/* Lista de Ganhadores Públicos */}
+						<div className="sticky top-8">
+							<PublicWinnersList />
+						</div>
 
 						{/* Support Section */}
 						<div className="sticky top-8">
