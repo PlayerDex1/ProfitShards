@@ -77,9 +77,9 @@ export default function Home() {
 					</div>
 				</div>
 
-				{/* Giveaway Banner - Destaque na Home */}
+				{/* Giveaway Banner - Compacto na Home */}
 				{activeGiveaway && (
-					<div className="mb-16">
+					<div className="mb-8">
 						<GiveawayBanner 
 							giveaway={activeGiveaway} 
 							onJoin={() => setShowGiveaway(true)}
