@@ -125,22 +125,17 @@ export function checkAndAutoParticipate(userId: string, giveawayId: string): voi
     
     // Se completou todas as obrigatórias
     if (completedRequired.length >= requiredMissions.length) {
-      // Verificar se já está participando
-      const participants = getGiveawayParticipants(giveawayId);
-      if (!participants.includes(userId)) {
-        // Adicionar à lista de participantes
-        participants.push(userId);
-        saveGiveawayParticipants(giveawayId, participants);
-        
-        // Mostrar notificação de sucesso
-        showParticipationSuccess(giveaway.title, progress.totalPoints);
-        
-        console.log('🎉 AUTO-PARTICIPAÇÃO ATIVA:', {
-          userId: userId.slice(0, 8),
-          giveaway: giveaway.title,
-          points: progress.totalPoints
-        });
-      }
+      // Participar via API (global)
+      await participateInGiveaway(userId, giveawayId, progress.totalPoints, progress.completedRequirements);
+      
+      // Mostrar notificação de sucesso
+      showParticipationSuccess(giveaway.title, progress.totalPoints);
+      
+      console.log('🎉 AUTO-PARTICIPAÇÃO ATIVA:', {
+        userId: userId.slice(0, 8),
+        giveaway: giveaway.title,
+        points: progress.totalPoints
+      });
     }
   } catch (error) {
     console.error('Erro na auto-participação:', error);
@@ -190,6 +185,49 @@ function saveGiveawayParticipants(giveawayId: string, participants: string[]): v
     }));
   } catch (error) {
     console.error('Erro ao salvar participantes:', error);
+  }
+}
+
+// Função para participar via API global
+async function participateInGiveaway(
+  userId: string, 
+  giveawayId: string, 
+  totalPoints: number, 
+  completedRequirements: string[]
+): Promise<boolean> {
+  try {
+    console.log('📡 PARTICIPANDO VIA API...', { userId: userId.slice(0, 10), giveawayId });
+    
+    const response = await fetch('/api/participants/join', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        giveawayId,
+        userId,
+        userEmail: userId, // Pode ser melhorado depois
+        totalPoints,
+        completedRequirements
+      })
+    });
+
+    const result = await response.json();
+    
+    if (result.success) {
+      console.log('✅ PARTICIPAÇÃO API SUCESSO:', result.participantId);
+      
+      // Disparar evento para atualizar UI
+      window.dispatchEvent(new CustomEvent('giveaway-participation-updated', {
+        detail: { giveawayId, participantId: result.participantId }
+      }));
+      
+      return true;
+    } else {
+      console.error('❌ ERRO API:', result);
+      return false;
+    }
+  } catch (error) {
+    console.error('❌ ERRO PARTICIPAÇÃO API:', error);
+    return false;
   }
 }
 

@@ -18,6 +18,7 @@ import { Giveaway } from "@/types/giveaway";
 import { WinnerManager } from "@/components/WinnerManager";
 import { RequirementsEditor } from "@/components/RequirementsEditor";
 import { MainGiveawaysEditor } from "@/components/MainGiveawaysEditor";
+import { LotteryManager } from "@/components/LotteryManager";
 
 interface GiveawayAdminProps {
   className?: string;
@@ -45,14 +46,18 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
 
         {/* Tabs */}
         <Tabs defaultValue="main-giveaways" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="main-giveaways" className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               Principais
             </TabsTrigger>
+            <TabsTrigger value="lottery" className="flex items-center gap-2">
+              <Trophy className="h-4 w-4" />
+              Sorteio & Participantes
+            </TabsTrigger>
             <TabsTrigger value="winners" className="flex items-center gap-2">
               <Crown className="h-4 w-4" />
-              Ganhadores
+              Histórico
             </TabsTrigger>
           </TabsList>
 
@@ -92,6 +97,10 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
             </div>
 
             <MainGiveawaysEditor />
+          </TabsContent>
+
+          <TabsContent value="lottery">
+            <LotteryManager />
           </TabsContent>
 
           <TabsContent value="winners">
