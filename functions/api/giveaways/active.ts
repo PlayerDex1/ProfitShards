@@ -29,7 +29,9 @@ export async function onRequestGet(context: any) {
       console.log('Tabela já existe ou erro menor:', setupError);
     }
     
-    // Buscar giveaway ativo (apenas um por vez)
+    console.log('🔍 BUSCANDO GIVEAWAY ATIVO...');
+    
+    // Buscar qualquer giveaway com status 'active' (sem verificar datas por agora)
     const result = await env.DB.prepare(`
       SELECT 
         id,
@@ -49,11 +51,16 @@ export async function onRequestGet(context: any) {
         updated_at as updatedAt
       FROM giveaways 
       WHERE status = 'active'
-        AND start_date <= datetime('now')
-        AND end_date >= datetime('now')
       ORDER BY created_at DESC
       LIMIT 1
     `).first();
+
+    console.log('📊 RESULTADO BUSCA:', {
+      found: !!result,
+      id: result?.id,
+      status: result?.status,
+      title: result?.title
+    });
 
     if (!result) {
       return createResponse({ giveaway: null });
@@ -65,9 +72,11 @@ export async function onRequestGet(context: any) {
       requirements: result.requirements ? JSON.parse(result.requirements) : [],
     };
 
+    console.log('✅ GIVEAWAY ENCONTRADO:', giveaway.id);
+
     return createResponse({ giveaway });
   } catch (error) {
-    console.error('Error fetching active giveaway:', error);
+    console.error('❌ ERRO NA API ACTIVE:', error);
     return createErrorResponse('Failed to fetch active giveaway', 500);
   }
 }
