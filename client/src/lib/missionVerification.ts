@@ -99,11 +99,13 @@ export function completeMission(
   saveMissionProgress(progress);
   
   // Verificar se completou todas as missões obrigatórias e participar automaticamente
-  checkAndAutoParticipate(userId, giveawayId);
+  checkAndAutoParticipate(userId, giveawayId).catch(error => {
+    console.error('Erro na auto-participação:', error);
+  });
 }
 
 // Função para verificar se completou todas as missões e participar automaticamente
-export function checkAndAutoParticipate(userId: string, giveawayId: string): void {
+export async function checkAndAutoParticipate(userId: string, giveawayId: string): Promise<void> {
   try {
     const progress = getUserMissionProgress(userId, giveawayId);
     
