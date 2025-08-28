@@ -198,6 +198,8 @@ export function MainGiveawaysEditor() {
 
   const saveToAPI = async (giveaway: Giveaway) => {
     setSaveStatus('saving');
+    console.log('🔄 SALVANDO GIVEAWAY:', giveaway);
+    
     try {
       const response = await fetch('/api/giveaways/save', {
         method: 'POST',
@@ -208,7 +210,12 @@ export function MainGiveawaysEditor() {
         body: JSON.stringify(giveaway)
       });
 
+      console.log('📡 RESPOSTA API:', response.status);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log('✅ SUCESSO API:', result);
+        
         setSaveStatus('success');
         
         // Recarregar lista de giveaways
@@ -221,10 +228,12 @@ export function MainGiveawaysEditor() {
         setTimeout(() => setSaveStatus('idle'), 3000);
         return true;
       } else {
-        throw new Error(`API Error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ ERRO API:', response.status, errorText);
+        throw new Error(`API Error: ${response.status} - ${errorText}`);
       }
     } catch (error) {
-      console.error('Erro ao salvar na API:', error);
+      console.error('💥 ERRO COMPLETO:', error);
       setSaveStatus('error');
       setTimeout(() => setSaveStatus('idle'), 3000);
       return false;
