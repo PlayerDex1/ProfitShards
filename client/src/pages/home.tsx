@@ -94,6 +94,7 @@ export default function Home() {
 							{t('home.community.subtitle')}
 						</p>
 					</div>
+				</div>
 
 				{/* WorldShards Resources Section - Centralizado */}
 				<div className="mb-16">
