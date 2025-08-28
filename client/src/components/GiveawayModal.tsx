@@ -29,15 +29,37 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
   const [isParticipating, setIsParticipating] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
 
+  // Função para buscar participantes da API
+  const fetchParticipants = async () => {
+    if (!giveaway) return;
+    
+    try {
+      const response = await fetch(`/api/participants/list?giveawayId=${giveaway.id}`);
+      if (response.ok) {
+        const result = await response.json();
+        setParticipantCount(result.total || 0);
+        
+        // Verificar se usuário está participando
+        if (isAuthenticated && user) {
+          const isUserParticipating = result.participants.some((p: any) => p.userId === user);
+          setIsParticipating(isUserParticipating);
+        }
+      } else {
+        setParticipantCount(giveaway.currentParticipants || 0);
+      }
+    } catch (error) {
+      console.error('Erro ao buscar participantes:', error);
+      setParticipantCount(giveaway.currentParticipants || 0);
+    }
+  };
+
   // Carregar dados do participante baseado no progresso das missões
   useEffect(() => {
     if (isAuthenticated && giveaway && user) {
       const progress = getUserMissionProgress(user, giveaway.id);
       
-      // Verificar se está participando e contar participantes
-      const participants = getGiveawayParticipants(giveaway.id);
-      setIsParticipating(participants.includes(user));
-      setParticipantCount(participants.length);
+      // Buscar participantes da API global
+      fetchParticipants();
       
       setParticipant({
         id: `participant_${user}_${giveaway.id}`,
@@ -71,10 +93,8 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
     if (isAuthenticated && giveaway && user) {
       const progress = getUserMissionProgress(user, giveaway.id);
       
-      // Verificar participação atualizada
-      const participants = getGiveawayParticipants(giveaway.id);
-      setIsParticipating(participants.includes(user));
-      setParticipantCount(participants.length);
+      // Buscar participantes da API
+      fetchParticipants();
       setParticipant(prev => prev ? {
         ...prev,
         totalPoints: progress.totalPoints,
@@ -86,10 +106,8 @@ export function GiveawayModal({ open, onOpenChange, giveaway }: GiveawayModalPro
   // Listener para atualizações de participação
   useEffect(() => {
     const handleParticipationUpdate = () => {
-      if (isAuthenticated && giveaway && user) {
-        const participants = getGiveawayParticipants(giveaway.id);
-        setIsParticipating(participants.includes(user));
-        setParticipantCount(participants.length);
+      if (giveaway) {
+        fetchParticipants();
       }
     };
 

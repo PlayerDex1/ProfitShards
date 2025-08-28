@@ -18,18 +18,26 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
   const [dismissed, setDismissed] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
 
-  // Buscar participantes do localStorage
+  // Buscar participantes da API global
   useEffect(() => {
     if (!giveaway) return;
     
-    const getParticipants = () => {
+    const getParticipants = async () => {
       try {
-        const stored = localStorage.getItem(`giveaway_participants_${giveaway.id}`);
-        const participants = stored ? JSON.parse(stored) : [];
-        setParticipantCount(participants.length);
+        // Primeiro tentar da API
+        const response = await fetch(`/api/participants/list?giveawayId=${giveaway.id}`);
+        if (response.ok) {
+          const result = await response.json();
+          setParticipantCount(result.total || 0);
+          console.log('🎯 PARTICIPANTES API:', result.total);
+        } else {
+          // Fallback para giveaway.currentParticipants
+          setParticipantCount(giveaway.currentParticipants || 0);
+          console.log('🔄 FALLBACK PARTICIPANTES:', giveaway.currentParticipants);
+        }
       } catch (error) {
-        console.error('Erro ao buscar participantes:', error);
-        setParticipantCount(0);
+        console.error('Erro ao buscar participantes da API:', error);
+        setParticipantCount(giveaway.currentParticipants || 0);
       }
     };
     
