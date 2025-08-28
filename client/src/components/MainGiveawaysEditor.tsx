@@ -54,7 +54,7 @@ export function MainGiveawaysEditor() {
     });
   };
 
-  const handleCreateGiveaway = async () => {
+  const handleCreateGiveaway = () => {
     setLoading(true);
     try {
       const newGiveaway: Giveaway = {
@@ -77,7 +77,7 @@ export function MainGiveawaysEditor() {
 
       const updatedGiveaways = [...giveaways, newGiveaway];
       setGiveaways(updatedGiveaways);
-      await saveToFile(updatedGiveaways);
+      saveToFile(updatedGiveaways);
       
       setIsCreateDialogOpen(false);
       resetForm();
@@ -89,7 +89,7 @@ export function MainGiveawaysEditor() {
     }
   };
 
-  const handleEditGiveaway = async () => {
+  const handleEditGiveaway = () => {
     if (!selectedGiveaway) return;
     
     setLoading(true);
@@ -114,7 +114,7 @@ export function MainGiveawaysEditor() {
         g.id === selectedGiveaway.id ? updatedGiveaway : g
       );
       setGiveaways(updatedGiveaways);
-      await saveToFile(updatedGiveaways);
+      saveToFile(updatedGiveaways);
       
       setIsEditDialogOpen(false);
       setSelectedGiveaway(null);
@@ -127,14 +127,14 @@ export function MainGiveawaysEditor() {
     }
   };
 
-  const handleDeleteGiveaway = async (giveawayId: string) => {
+  const handleDeleteGiveaway = (giveawayId: string) => {
     if (!confirm('Tem certeza que deseja deletar este giveaway?')) return;
     
     setLoading(true);
     try {
       const updatedGiveaways = giveaways.filter(g => g.id !== giveawayId);
       setGiveaways(updatedGiveaways);
-      await saveToFile(updatedGiveaways);
+      saveToFile(updatedGiveaways);
     } catch (error) {
       console.error('Erro ao deletar giveaway:', error);
       setSaveStatus('error');
@@ -161,7 +161,7 @@ export function MainGiveawaysEditor() {
     setIsEditDialogOpen(true);
   };
 
-  const saveToFile = async (giveaways: Giveaway[]) => {
+  const saveToFile = (giveaways: Giveaway[]) => {
     setSaveStatus('saving');
     try {
       // Salvar no localStorage temporariamente (simulando API)

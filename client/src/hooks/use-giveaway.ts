@@ -44,8 +44,7 @@ export function useGiveaway() {
       
       // Se não houver giveaway principal, tentar localStorage (admin)
       initializeGiveawayData();
-      const { getActiveGiveawaySync } = await import("@/lib/giveawayStorage");
-      const localGiveaway = getActiveGiveawaySync();
+      const localGiveaway = getActiveGiveaway();
       
       // Se há giveaway ativo, adicionar requirements se não existir
       if (localGiveaway && (!localGiveaway.requirements || localGiveaway.requirements.length === 0)) {
