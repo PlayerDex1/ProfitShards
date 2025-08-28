@@ -9,24 +9,28 @@ import {
   TrendingUp, BarChart3, RefreshCw, Sparkles, Calculator
 } from "lucide-react";
 
-// Tipos para o simulador baseados no WorldShards real
+// Tipos para o simulador baseados na Wiki oficial do WorldShards
 interface Equipment {
   id: string;
   name: string;
-  type: 'helmet' | 'armor' | 'weapon' | 'tool';
+  type: 'chestplate' | 'helmet' | 'gloves' | 'boots' | 'weapon' | 'tool';
   weaponType?: 'club' | 'sword_shield' | 'claws' | 'giant_hammer' | 'greatsword' | 'dual_axes';
-  tier: 1 | 2 | 3;
+  toolType?: 'axe' | 'pickaxe' | 'scythe';
+  tier: 1 | 2 | 3 | 4 | 5;
   level: 1 | 2 | 3 | 4 | 5;
-  rarity: 'common' | 'uncommon' | 'rare' | 'epic' | 'legendary';
+  rarity: 'common' | 'uncommon' | 'rare' | 'epic';
   luck: number;
   price: number;
   description: string;
   craftingMaterials?: string[];
+  isCollectible?: boolean;
 }
 
 interface Build {
+  chestplate?: Equipment;
   helmet?: Equipment;
-  armor?: Equipment;
+  gloves?: Equipment;
+  boots?: Equipment;
   weapon?: Equipment;
   tool?: Equipment;
 }
@@ -267,7 +271,7 @@ export function BuildSimulator() {
               
               {/* Filter */}
               <div className="flex flex-wrap gap-2">
-                {['all', 'helmet', 'armor', 'weapon', 'tool'].map(type => (
+                {['all', 'chestplate', 'helmet', 'gloves', 'boots', 'weapon', 'tool'].map(type => (
                   <Button
                     key={type}
                     variant={selectedType === type ? "default" : "outline"}
@@ -276,8 +280,10 @@ export function BuildSimulator() {
                     className="text-xs"
                   >
                     {type === 'all' ? 'Todos' : 
-                     type === 'helmet' ? 'Capacetes' :
-                     type === 'armor' ? 'Armaduras' :
+                     type === 'chestplate' ? 'Peitorais' :
+                     type === 'helmet' ? 'Elmos' :
+                     type === 'gloves' ? 'Luvas' :
+                     type === 'boots' ? 'Botas' :
                      type === 'weapon' ? 'Armas' :
                      type === 'tool' ? 'Ferramentas' : type}
                   </Button>
