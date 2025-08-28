@@ -91,35 +91,32 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
     );
   }
 
-  // Versão completa (card) - COMPACTA
+  // Versão completa (card) - SIDEBAR FRIENDLY
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 text-white border border-orange-300 shadow-lg max-w-2xl mx-auto">
+    <Card className="relative overflow-hidden bg-gradient-to-br from-orange-500 to-red-500 text-white border border-orange-300 shadow-lg">
       <CardContent className="relative p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center space-x-2">
-            <Gift className="h-6 w-6" />
-            <div>
-              <h3 className="text-lg font-bold">🎁 {giveaway.title}</h3>
-              <p className="text-sm opacity-90">{giveaway.prize}</p>
-            </div>
+        <div className="text-center mb-3">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <Gift className="h-5 w-5" />
+            <h3 className="text-base font-bold">🎁 Giveaway</h3>
           </div>
-          
-          <Badge className="bg-white/20 text-white border-white/30 text-xs px-2 py-1">
+          <p className="text-sm opacity-90 font-medium">{giveaway.prize}</p>
+          <Badge className="bg-white/20 text-white border-white/30 text-xs px-2 py-1 mt-2">
             ATIVO
           </Badge>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 mb-4 text-sm">
-          <div className="bg-white/15 rounded p-2">
-            <div className="flex items-center space-x-1 mb-1">
+        <div className="space-y-2 mb-4 text-sm">
+          <div className="bg-white/15 rounded p-2 text-center">
+            <div className="flex items-center justify-center space-x-1 mb-1">
               <Clock className="h-3 w-3" />
               <span className="text-xs">Termina em:</span>
             </div>
             <span className="font-semibold">{timeLeft}</span>
           </div>
           
-          <div className="bg-white/15 rounded p-2">
-            <div className="flex items-center space-x-1 mb-1">
+          <div className="bg-white/15 rounded p-2 text-center">
+            <div className="flex items-center justify-center space-x-1 mb-1">
               <Users className="h-3 w-3" />
               <span className="text-xs">Participantes:</span>
             </div>
@@ -130,13 +127,14 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
         {/* Call to Action */}
         <div className="text-center">
           <Button 
+            size="sm"
             onClick={onJoin}
-            className="bg-white text-orange-600 hover:bg-gray-100 font-semibold px-6 py-2 w-full"
+            className="bg-white text-orange-600 hover:bg-gray-100 font-semibold w-full text-xs"
           >
-            🎯 PARTICIPAR AGORA
+            🎯 PARTICIPAR
           </Button>
           <p className="text-xs mt-1 opacity-75">
-            Grátis • Ganhe pontos completando missões
+            Grátis • Ganhe pontos
           </p>
         </div>
       </CardContent>

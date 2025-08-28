@@ -77,16 +77,7 @@ export default function Home() {
 					</div>
 				</div>
 
-				{/* Giveaway Banner - Compacto na Home */}
-				{activeGiveaway && (
-					<div className="mb-8">
-						<GiveawayBanner 
-							giveaway={activeGiveaway} 
-							onJoin={() => setShowGiveaway(true)}
-							compact={false}
-						/>
-					</div>
-				)}
+
 
 				{/* Community Activity Section - Centralizado */}
 				<div className="mb-16">
@@ -219,9 +210,21 @@ export default function Home() {
 						<ActivityStream />
 					</div>
 
-					{/* Support Section - Sidebar (1/4) */}
-					<div className="lg:col-span-1">
-							<div className="sticky top-8">
+					{/* Sidebar (1/4) - Giveaway + Support */}
+					<div className="lg:col-span-1 space-y-6">
+						{/* Giveaway na Sidebar */}
+						{activeGiveaway && (
+							<div className="sticky top-6">
+								<GiveawayBanner 
+									giveaway={activeGiveaway} 
+									onJoin={() => setShowGiveaway(true)}
+									compact={false}
+								/>
+							</div>
+						)}
+
+						{/* Support Section */}
+						<div className="sticky top-8">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
 									<CardContent className="p-6">
 										<div className="text-center mb-6">
@@ -309,7 +312,6 @@ export default function Home() {
 										</div>
 									</CardContent>
 								</Card>
-							</div>
 						</div>
 					</div>
 				</div>
