@@ -32,6 +32,7 @@ export async function onRequestPost(context: any) {
     const data = await request.json();
     console.log('🔄 DADOS RECEBIDOS PARA SALVAR:', JSON.stringify(data, null, 2));
     
+    try {
     const {
       id,
       title,
