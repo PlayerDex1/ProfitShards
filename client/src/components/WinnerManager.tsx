@@ -109,13 +109,13 @@ export function WinnerManager({ className }: WinnerManagerProps) {
     
     setLoading(true);
     try {
-      // Enviar notificação via API
-      const response = await fetch('/api/winners/notify', {
+      // Enviar email via API
+      const response = await fetch('/api/winners/send-email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           winnerId: selectedWinner.id,
-          message: notificationMessage,
+          customMessage: notificationMessage,
           adminId: 'admin' // Melhorar para pegar ID real do admin
         })
       });
@@ -134,11 +134,11 @@ export function WinnerManager({ className }: WinnerManagerProps) {
         
         setShowNotificationDialog(false);
         
-        if (result.method === 'manual_notification') {
-          // Mostrar dados para envio manual
-          alert(`✅ Ganhador marcado como notificado!\n\n📧 ENVIE ESTE EMAIL MANUALMENTE:\n\nPara: ${result.data.winnerEmail}\nAssunto: 🎉 Você ganhou! ${selectedWinner.giveawayTitle}\n\nMensagem:\n${result.data.notificationMessage}`);
+        if (result.data?.provider === 'manual_fallback') {
+          // Mostrar dados para envio manual se APIs falharam
+          alert(`⚠️ APIs de email indisponíveis. Email salvo para envio manual.\n\n📧 ENVIE ESTE EMAIL:\n\nPara: ${result.data.winnerEmail}\nAssunto: 🎉 Você ganhou! ${selectedWinner.giveawayTitle}\n\nMensagem salva no sistema para você copiar.`);
         } else {
-          alert(`✅ Email enviado automaticamente via ${result.method}!`);
+          alert(`✅ Email enviado automaticamente via ${result.data?.provider}!\n\n📧 Para: ${result.data?.winnerEmail}\n📬 Message ID: ${result.data?.messageId}\n⏰ Enviado: ${result.data?.sentAt}`);
         }
       } else {
         alert(`❌ Erro: ${result.message}`);
