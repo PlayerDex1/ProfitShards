@@ -137,7 +137,10 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
   };
 
   const handleManualVerification = async () => {
-    if (!verificationDialog.requirement || !userInput.trim()) return;
+    if (!verificationDialog.requirement) return;
+    
+    // Para external_link, o input é opcional
+    if (verificationDialog.requirement.type !== 'external_link' && !userInput.trim()) return;
 
     setVerifyingMission(verificationDialog.requirement.id);
     

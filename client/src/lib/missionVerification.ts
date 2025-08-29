@@ -362,6 +362,15 @@ export function manualVerification(
         } else {
           resolve(false);
         }
+      } else if (requirement.type === 'external_link') {
+        // Para links externos, sempre aceitar (usuário confirma que completou)
+        completeMission(userId, giveawayId, requirement, {
+          confirmation: userInput.trim() || 'Missão completada',
+          verifiedAt: new Date().toISOString(),
+          method: 'external_link_completion',
+          url: requirement.url
+        });
+        resolve(true);
       } else {
         resolve(false);
       }
@@ -378,6 +387,7 @@ function getVerificationMethod(type: GiveawayRequirement['type']): string {
     case 'use_calculator': return 'activity_tracking';
     case 'use_planner': return 'activity_tracking';
     case 'share_social': return 'manual_action';
+    case 'external_link': return 'external_link_completion';
     default: return 'unknown';
   }
 }
