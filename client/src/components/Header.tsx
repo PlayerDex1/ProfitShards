@@ -4,17 +4,43 @@ import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/useTheme";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
+import { GiveawayTopBanner } from "@/components/GiveawayTopBanner";
 import { useI18n } from "@/i18n";
+import { useLocation, useRoute } from "wouter";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const { toggleTheme, isDark } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
+  const [showGiveaway, setShowGiveaway] = useState(false);
+  const [location, setLocation] = useLocation();
 
   const { t, lang, setLang } = useI18n();
 
+  const handleGiveawayClick = () => {
+    if (location !== '/profile') {
+      setLocation('/profile');
+      // Aguarda a navegação e então rola para a seção
+      setTimeout(() => {
+        const giveawaySection = document.querySelector('[data-section="giveaway"]');
+        if (giveawaySection) {
+          giveawaySection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      // Se já está na página profile, só rola para a seção
+      const giveawaySection = document.querySelector('[data-section="giveaway"]');
+      if (giveawaySection) {
+        giveawaySection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  };
+
   return (
     <>
+      {/* Giveaway Top Banner */}
+      <GiveawayTopBanner onGiveawayClick={handleGiveawayClick} />
+      
       <header className="sticky top-0 z-40 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container mx-auto px-4 flex h-16 items-center">
           <div className="mr-6 flex items-center group cursor-pointer">

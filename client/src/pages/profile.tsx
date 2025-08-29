@@ -324,7 +324,9 @@ export default function Profile() {
 
 					{/* Giveaways Admin - (Apenas Admin) */}
 					{activeTab === 'giveaways' && isAdmin && (
-						<GiveawayAdmin />
+						<div data-section="giveaway">
+							<GiveawayAdmin />
+						</div>
 					)}
 
 					{/* Support Section - Discrete */}
