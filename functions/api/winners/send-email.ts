@@ -21,6 +21,8 @@ export async function onRequestPost(context: any) {
       return createErrorResponse('Winner ID and Admin ID are required', 400);
     }
 
+    console.log('🔍 BUSCANDO GANHADOR:', { winnerId, adminId });
+
     // Buscar dados do ganhador
     const winner = await env.DB.prepare(`
       SELECT 
@@ -36,8 +38,15 @@ export async function onRequestPost(context: any) {
       WHERE p.id = ? AND p.is_winner = 1
     `).bind(winnerId).first();
 
+    console.log('📊 RESULTADO BUSCA:', { 
+      found: !!winner, 
+      winnerId,
+      winnerEmail: winner?.user_email 
+    });
+
     if (!winner) {
-      return createErrorResponse('Winner not found', 404);
+      console.error('❌ GANHADOR NÃO ENCONTRADO:', winnerId);
+      return createErrorResponse('Winner not found in database', 404);
     }
 
     // Preparar dados para email

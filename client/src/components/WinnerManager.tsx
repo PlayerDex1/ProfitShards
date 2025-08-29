@@ -107,6 +107,12 @@ export function WinnerManager({ className }: WinnerManagerProps) {
     
     setLoading(true);
     try {
+      console.log('📧 ENVIANDO EMAIL:', {
+        winnerId: selectedWinner.id,
+        winnerEmail: selectedWinner.userEmail,
+        messageLength: notificationMessage.length
+      });
+
       // Enviar email via API
       const response = await fetch('/api/winners/send-email', {
         method: 'POST',
@@ -118,7 +124,15 @@ export function WinnerManager({ className }: WinnerManagerProps) {
         })
       });
 
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error Response:', errorText);
+        alert(`❌ Erro na API: ${response.status} - ${errorText}`);
+        return;
+      }
+
       const result = await response.json();
+      console.log('📧 EMAIL API RESPONSE:', result);
 
       if (result.success) {
         // Atualizar interface
@@ -139,7 +153,8 @@ export function WinnerManager({ className }: WinnerManagerProps) {
           alert(`✅ Email enviado automaticamente via ${result.data?.provider}!\n\n📧 Para: ${result.data?.winnerEmail}\n📬 Message ID: ${result.data?.messageId}\n⏰ Enviado: ${result.data?.sentAt}`);
         }
       } else {
-        alert(`❌ Erro: ${result.message}`);
+        console.error('API Error Result:', result);
+        alert(`❌ Erro: ${result.message || result.error || 'Erro desconhecido'}`);
       }
     } catch (error) {
       console.error('Error sending notification:', error);

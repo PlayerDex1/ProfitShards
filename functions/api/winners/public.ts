@@ -6,6 +6,7 @@ export async function onRequestGet(context: any) {
     const url = new URL(request.url);
     const giveawayId = url.searchParams.get('giveawayId');
     const limit = parseInt(url.searchParams.get('limit') || '50');
+    const isAdmin = url.searchParams.get('admin') === 'true';
 
     // Auto-setup das tabelas
     try {
@@ -47,17 +48,17 @@ export async function onRequestGet(context: any) {
       console.log('Tabelas já existem:', setupError);
     }
 
-    // Query para buscar ganhadores públicos
+    // Query para buscar ganhadores (completo para admin, mascarado para público)
     let query = `
       SELECT 
         p.id,
         p.giveaway_id as giveawayId,
-        SUBSTR(p.user_id, 1, 8) || '***' as userId,
-        CASE 
+        ${isAdmin ? 'p.user_id as userId' : 'SUBSTR(p.user_id, 1, 8) || \'***\' as userId'},
+        ${isAdmin ? 'p.user_email as userEmail' : `CASE 
           WHEN p.user_email IS NOT NULL AND p.user_email != '' 
           THEN SUBSTR(p.user_email, 1, 3) || '***@' || SUBSTR(p.user_email, INSTR(p.user_email, '@') + 1)
           ELSE NULL 
-        END as userEmail,
+        END as userEmail`},
         p.total_points as totalPoints,
         p.winner_position as position,
         p.winner_announced_at as announcedAt,
