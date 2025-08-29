@@ -67,22 +67,50 @@ export async function onRequestPost(context: any) {
     );
 
     if (emailResult.success) {
-      // Marcar como notificado no banco
-      await env.DB.prepare(`
-        UPDATE giveaway_participants SET
-          email_sent = TRUE,
-          email_sent_at = ?,
-          email_provider = ?,
-          email_message_id = ?,
-          updated_at = ?
-        WHERE id = ?
-      `).bind(
-        new Date().toISOString(),
-        emailResult.provider,
-        emailResult.messageId || '',
-        new Date().toISOString(),
-        winnerId
-      ).run();
+      // Criar tabela para tracking de emails se não existir
+      try {
+        await env.DB.prepare(`
+          CREATE TABLE IF NOT EXISTS winner_email_logs (
+            id TEXT PRIMARY KEY,
+            winner_id TEXT NOT NULL,
+            winner_email TEXT NOT NULL,
+            email_provider TEXT NOT NULL,
+            email_message_id TEXT,
+            custom_message TEXT,
+            sent_by TEXT NOT NULL,
+            sent_at INTEGER NOT NULL,
+            giveaway_title TEXT
+          )
+        `).run();
+
+        // Salvar log do email enviado
+        await env.DB.prepare(`
+          INSERT INTO winner_email_logs (
+            id, winner_id, winner_email, email_provider, email_message_id,
+            custom_message, sent_by, sent_at, giveaway_title
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          crypto.randomUUID(),
+          winnerId,
+          winner.user_email,
+          emailResult.provider,
+          emailResult.messageId || '',
+          customMessage || '',
+          adminId,
+          Date.now(),
+          winner.giveaway_title
+        ).run();
+
+        console.log('📧 EMAIL LOG SALVO:', {
+          winnerId,
+          provider: emailResult.provider,
+          messageId: emailResult.messageId
+        });
+
+      } catch (logError) {
+        console.error('Erro ao salvar log de email:', logError);
+        // Não falhar o envio por causa do log
+      }
 
       // Log de auditoria
       await logAuditEvent(
