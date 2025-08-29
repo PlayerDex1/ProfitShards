@@ -39,6 +39,7 @@ export function RequirementsEditor({ requirements, onChange, className }: Requir
     { value: 'use_calculator', label: 'Usar Calculadora', icon: Calculator, description: 'Usar calculadora do site' },
     { value: 'use_planner', label: 'Usar Planejador', icon: Map, description: 'Usar planejador de mapa' },
     { value: 'share_social', label: 'Compartilhar', icon: Share2, description: 'Compartilhar nas redes sociais' },
+    { value: 'external_link', label: 'Link Externo', icon: ExternalLink, description: 'Acessar link específico e completar ação' },
   ];
 
   const getTypeInfo = (type: string) => {
@@ -309,7 +310,7 @@ interface RequirementFormProps {
 
 function RequirementForm({ formData, setFormData, onSubmit, requirementTypes, isEdit }: RequirementFormProps) {
   const selectedType = requirementTypes.find(t => t.value === formData.type);
-  const showUrlField = ['twitter_follow', 'discord_join', 'share_social'].includes(formData.type);
+  const showUrlField = ['twitter_follow', 'discord_join', 'share_social', 'external_link'].includes(formData.type);
 
   return (
     <div className="space-y-4">

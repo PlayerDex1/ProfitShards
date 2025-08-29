@@ -18,7 +18,7 @@ export interface Giveaway {
 
 export interface GiveawayRequirement {
   id: string;
-  type: 'login' | 'twitter_follow' | 'discord_join' | 'use_calculator' | 'use_planner' | 'share_social';
+  type: 'login' | 'twitter_follow' | 'discord_join' | 'use_calculator' | 'use_planner' | 'share_social' | 'external_link';
   description: string;
   points: number;
   url?: string;

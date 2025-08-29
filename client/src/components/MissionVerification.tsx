@@ -88,6 +88,7 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
       case 'use_calculator': return Calculator;
       case 'use_planner': return Map;
       case 'share_social': return Share2;
+      case 'external_link': return ExternalLink;
       default: return Circle;
     }
   };
@@ -115,6 +116,7 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
           
         case 'twitter_follow':
         case 'discord_join':
+        case 'external_link':
           // Abrir dialog de verificação manual
           setVerificationDialog({ requirement, open: true });
           break;
@@ -313,7 +315,9 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
             <DialogTitle>
               {verificationDialog.requirement?.type === 'twitter_follow' 
                 ? '🐦 Verificar Follow no Twitter'
-                : '💬 Verificar Entrada no Discord'
+                : verificationDialog.requirement?.type === 'discord_join'
+                ? '💬 Verificar Entrada no Discord'
+                : '🔗 Completar Missão Externa'
               }
             </DialogTitle>
           </DialogHeader>
@@ -354,7 +358,7 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
                   </p>
                 </div>
               </>
-            ) : (
+            ) : verificationDialog.requirement?.type === 'discord_join' ? (
               <>
                 <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded border">
                   <h4 className="font-medium mb-2">📋 Como verificar:</h4>
@@ -387,6 +391,45 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
                   <p className="text-xs text-muted-foreground mt-1">
                     Digite seu nome de usuário do Discord
                   </p>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded border">
+                  <h4 className="font-medium mb-2">📋 Como completar:</h4>
+                  <ol className="text-sm space-y-1 list-decimal list-inside">
+                    <li>Clique no link abaixo para acessar</li>
+                    <li>Complete a ação solicitada no site</li>
+                    <li>Confirme que completou a missão</li>
+                  </ol>
+                </div>
+                
+                {verificationDialog.requirement?.url && (
+                  <Button 
+                    onClick={() => openExternalLink(verificationDialog.requirement!.url!)}
+                    className="w-full"
+                    variant="outline"
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Acessar Link da Missão
+                  </Button>
+                )}
+                
+                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
+                    <AlertCircle className="h-4 w-4 inline mr-1" />
+                    Apenas clique em "Confirmar" após completar a ação no link externo.
+                  </p>
+                </div>
+                
+                <div>
+                  <Label htmlFor="external-confirmation">Confirmação (opcional):</Label>
+                  <Input
+                    id="external-confirmation"
+                    placeholder="Ex: Email usado, código obtido, etc."
+                    value={userInput}
+                    onChange={(e) => setUserInput(e.target.value)}
+                  />
                 </div>
               </>
             )}
