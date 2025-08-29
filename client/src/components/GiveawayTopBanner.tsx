@@ -30,7 +30,7 @@ export function GiveawayTopBanner({ onGiveawayClick }: GiveawayTopBannerProps) {
   return (
     <div className="relative bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 text-white shadow-lg border-b">
       {/* Background Pattern */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Cg fill-opacity="0.1"%3E%3Cpolygon fill="%23ffffff" points="50 0 60 40 100 50 60 60 50 100 40 60 0 50 40 40"/%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
+      <div className="absolute inset-0 bg-white/5 bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
       
       {/* Main Content */}
       <div className="relative px-4 py-3">
