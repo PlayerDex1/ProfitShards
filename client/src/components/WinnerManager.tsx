@@ -8,8 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Crown, Mail, ExternalLink, Copy, Eye, Send, 
-  Trophy, Users, Calendar, Gift, Check, X, AlertCircle
+  Trophy, Users, Calendar, Gift, Check, X, AlertCircle,
+  MessageCircle
 } from "lucide-react";
+import { DiscordContactsAdmin } from "@/components/DiscordContactsAdmin";
 
 interface Winner {
   id: string;
@@ -286,10 +288,13 @@ export function WinnerManager({ className }: WinnerManagerProps) {
           </Card>
         </div>
 
+        {/* Discord Contacts - NOVA SEÇÃO */}
+        <DiscordContactsAdmin />
+
         {/* Winners List */}
         <Card>
           <CardHeader>
-            <CardTitle>🏆 Lista de Ganhadores</CardTitle>
+            <CardTitle>🏆 Lista de Ganhadores (Tradicional)</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
