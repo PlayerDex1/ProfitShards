@@ -111,6 +111,15 @@ export function LotteryManager() {
       if (result.success) {
         alert(`🎉 ${result.winners.length} ganhador(es) sorteado(s) com sucesso!`);
         await loadParticipants(); // Recarregar dados
+        
+        // Notificar outros componentes sobre o sorteio
+        window.dispatchEvent(new CustomEvent('lottery-completed', {
+          detail: { 
+            winners: result.winners,
+            giveawayId: activeGiveaway.id,
+            totalParticipants: participants.length
+          }
+        }));
       } else {
         alert(`❌ Erro no sorteio: ${result.error}`);
       }
@@ -182,6 +191,14 @@ export function LotteryManager() {
 
       if (result.success) {
         alert(`✅ Giveaway "${activeGiveaway.title}" finalizado com sucesso!`);
+        
+        // Notificar sobre finalização do giveaway
+        window.dispatchEvent(new CustomEvent('giveaway-finished', {
+          detail: { 
+            giveawayId: activeGiveaway.id,
+            giveawayTitle: activeGiveaway.title
+          }
+        }));
         
         // Limpar estado e recarregar dados
         setActiveGiveaway(null);

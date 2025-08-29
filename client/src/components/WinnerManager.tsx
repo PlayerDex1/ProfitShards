@@ -36,24 +36,55 @@ export function WinnerManager({ className }: WinnerManagerProps) {
   const [loading, setLoading] = useState(false);
   const [showNotificationDialog, setShowNotificationDialog] = useState(false);
 
-  // Mock data - substituir por API real
+  // Carregar ganhadores reais da API
   useEffect(() => {
-    const mockWinners: Winner[] = [
-      {
-        id: 'winner_1',
-        giveawayId: 'giveaway_1',
-        giveawayTitle: 'WorldShards Starter Pack',
-        userEmail: 'winner@example.com',
-        userName: 'GamerWinner123',
-        points: 45,
-        selectedAt: new Date().toISOString(),
-        notified: true,
-        claimed: false,
-        shippingStatus: 'pending',
-      }
-    ];
-    setWinners(mockWinners);
+    loadWinners();
+    
+    // Escutar eventos de novos ganhadores
+    const handleLotteryUpdate = () => {
+      setTimeout(() => loadWinners(), 1000); // Aguardar 1s para garantir que dados foram salvos
+    };
+    
+    window.addEventListener('lottery-completed', handleLotteryUpdate);
+    window.addEventListener('giveaway-finished', handleLotteryUpdate);
+    
+    return () => {
+      window.removeEventListener('lottery-completed', handleLotteryUpdate);
+      window.removeEventListener('giveaway-finished', handleLotteryUpdate);
+    };
   }, []);
+
+  const loadWinners = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/winners/public?admin=true&limit=50');
+      const result = await response.json();
+      
+      if (result.winners) {
+        // Converter formato da API para formato do componente
+        const formattedWinners: Winner[] = result.winners.map((w: any) => ({
+          id: w.id,
+          giveawayId: w.giveawayId,
+          giveawayTitle: w.giveawayTitle,
+          userEmail: w.userEmail,
+          userName: w.userEmail.split('@')[0], // Usar parte do email como nome
+          points: w.totalPoints,
+          selectedAt: w.announcedAt,
+          notified: false, // Inicialmente não notificado
+          claimed: false,  // Inicialmente não reivindicado
+          shippingStatus: 'pending' as const
+        }));
+        
+        setWinners(formattedWinners);
+        console.log('🏆 GANHADORES CARREGADOS:', formattedWinners.length);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar ganhadores:', error);
+      setWinners([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleNotifyWinner = async (winner: Winner) => {
     setSelectedWinner(winner);
@@ -168,6 +199,15 @@ export function WinnerManager({ className }: WinnerManagerProps) {
               Notifique ganhadores e gerencie entregas de prêmios
             </p>
           </div>
+          <Button
+            onClick={loadWinners}
+            disabled={loading}
+            variant="outline"
+            className="flex items-center gap-2"
+          >
+            <Trophy className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+            Atualizar Ganhadores
+          </Button>
         </div>
 
         {/* Stats */}
@@ -234,10 +274,16 @@ export function WinnerManager({ className }: WinnerManagerProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {winners.length === 0 ? (
+              {loading ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Trophy className="h-12 w-12 mx-auto mb-4 opacity-50 animate-pulse" />
+                  <p>Carregando ganhadores...</p>
+                </div>
+              ) : winners.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   <Crown className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>Nenhum ganhador selecionado ainda</p>
+                  <p className="text-sm mt-2">Realize um sorteio para ver os ganhadores aqui</p>
                 </div>
               ) : (
                 winners.map((winner) => (
