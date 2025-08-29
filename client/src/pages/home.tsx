@@ -224,7 +224,7 @@ export default function Home() {
 				</div>
 
 				{/* Sidebar Components - SEÇÃO SEPARADA */}
-				<div className="mb-16">
+				<div className="mb-16" id="giveaway-section" data-section="giveaway">
 					<div className="flex flex-col lg:flex-row gap-8 justify-center items-start max-w-[1600px] mx-auto px-4">
 						
 						{/* Giveaway Component */}

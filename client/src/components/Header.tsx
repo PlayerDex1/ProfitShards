@@ -18,20 +18,21 @@ export function Header() {
   const { t, lang, setLang } = useI18n();
 
   const handleGiveawayClick = () => {
-    if (location !== '/profile') {
-      setLocation('/profile');
-      // Aguarda a navegação e então rola para a seção
+    if (location !== '/') {
+      // Navegar para home page
+      setLocation('/');
+      // Aguarda a navegação e então rola para a seção de giveaway
       setTimeout(() => {
-        const giveawaySection = document.querySelector('[data-section="giveaway"]');
+        const giveawaySection = document.getElementById('giveaway-section');
         if (giveawaySection) {
-          giveawaySection.scrollIntoView({ behavior: 'smooth' });
+          giveawaySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
-      }, 100);
+      }, 300);
     } else {
-      // Se já está na página profile, só rola para a seção
-      const giveawaySection = document.querySelector('[data-section="giveaway"]');
+      // Se já está na home, só rola para a seção de giveaway
+      const giveawaySection = document.getElementById('giveaway-section');
       if (giveawaySection) {
-        giveawaySection.scrollIntoView({ behavior: 'smooth' });
+        giveawaySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
     }
   };
