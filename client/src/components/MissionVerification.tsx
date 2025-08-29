@@ -37,6 +37,8 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
     open: boolean;
   }>({ requirement: null, open: false });
   const [userInput, setUserInput] = useState('');
+  const [hasVisitedExternalLink, setHasVisitedExternalLink] = useState<string | null>(null);
+  const [isTrackingVisit, setIsTrackingVisit] = useState(false);
 
   useEffect(() => {
     const updateProgress = () => {
@@ -79,6 +81,45 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
       window.removeEventListener('planner-used', handlePlannerUsed);
     };
   }, [userId, giveawayId, requirements, onProgressUpdate]);
+
+  // Rastrear retorno do link externo
+  useEffect(() => {
+    if (!isTrackingVisit) return;
+
+    let visitTimeout: NodeJS.Timeout;
+    
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && isTrackingVisit) {
+        // Usuário voltou para a aba
+        visitTimeout = setTimeout(() => {
+          if (verificationDialog.requirement) {
+            setHasVisitedExternalLink(verificationDialog.requirement.id);
+            setIsTrackingVisit(false);
+          }
+        }, 1000); // Aguarda 1s para confirmar que voltou
+      }
+    };
+
+    const handleWindowFocus = () => {
+      if (isTrackingVisit) {
+        visitTimeout = setTimeout(() => {
+          if (verificationDialog.requirement) {
+            setHasVisitedExternalLink(verificationDialog.requirement.id);
+            setIsTrackingVisit(false);
+          }
+        }, 1000);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleWindowFocus);
+      if (visitTimeout) clearTimeout(visitTimeout);
+    };
+  }, [isTrackingVisit, verificationDialog.requirement]);
 
   const getRequirementIcon = (type: GiveawayRequirement['type']) => {
     switch (type) {
@@ -168,7 +209,14 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
   };
 
   const openExternalLink = (url: string) => {
+    // Iniciar rastreamento de visita
+    setIsTrackingVisit(true);
+    setHasVisitedExternalLink(null); // Reset previous visit
+    
     window.open(url, '_blank', 'noopener,noreferrer');
+    
+    // Mostrar feedback visual
+    console.log('🔗 Link externo aberto, aguardando retorno do usuário...');
   };
 
   const getProgressPercentage = () => {
@@ -418,30 +466,61 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
                   </Button>
                 )}
                 
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
-                  <p className="text-sm text-blue-800 dark:text-blue-200 text-center">
-                    <CheckCircle className="h-4 w-4 inline mr-1" />
-                    Completou a ação no link? Clique no botão abaixo para confirmar!
-                  </p>
-                </div>
-                
-                <Button 
-                  onClick={handleManualVerification}
-                  disabled={verifyingMission === verificationDialog.requirement?.id}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
-                >
-                  {verifyingMission === verificationDialog.requirement?.id ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Confirmando...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      ✅ Confirmar Conclusão da Missão
-                    </>
-                  )}
-                </Button>
+                {/* Status baseado na visita ao link */}
+                {!hasVisitedExternalLink || hasVisitedExternalLink !== verificationDialog.requirement?.id ? (
+                  <>
+                    {isTrackingVisit ? (
+                      <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                        <p className="text-sm text-yellow-800 dark:text-yellow-200 text-center">
+                          <Loader2 className="h-4 w-4 inline mr-1 animate-spin" />
+                          Aguardando você acessar o link e retornar...
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="p-3 bg-gray-50 dark:bg-gray-900/20 rounded border border-gray-200 dark:border-gray-800">
+                        <p className="text-sm text-gray-800 dark:text-gray-200 text-center">
+                          <AlertCircle className="h-4 w-4 inline mr-1" />
+                          Primeiro acesse o link da missão para poder confirmar.
+                        </p>
+                      </div>
+                    )}
+                    
+                    <Button 
+                      disabled={true}
+                      className="w-full bg-gray-400 text-gray-600 font-bold py-3 cursor-not-allowed"
+                    >
+                      <Circle className="h-4 w-4 mr-2" />
+                      Acesse o link primeiro
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded border border-green-200 dark:border-green-800">
+                      <p className="text-sm text-green-800 dark:text-green-200 text-center">
+                        <CheckCircle className="h-4 w-4 inline mr-1" />
+                        ✅ Link visitado! Agora você pode confirmar a conclusão da missão.
+                      </p>
+                    </div>
+                    
+                    <Button 
+                      onClick={handleManualVerification}
+                      disabled={verifyingMission === verificationDialog.requirement?.id}
+                      className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+                    >
+                      {verifyingMission === verificationDialog.requirement?.id ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          Confirmando...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          ✅ Confirmar Conclusão da Missão
+                        </>
+                      )}
+                    </Button>
+                  </>
+                )}
               </>
             )}
             
@@ -473,7 +552,11 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
               <div className="flex justify-center">
                 <Button 
                   variant="outline" 
-                  onClick={() => setVerificationDialog({ requirement: null, open: false })}
+                  onClick={() => {
+                    setVerificationDialog({ requirement: null, open: false });
+                    setHasVisitedExternalLink(null);
+                    setIsTrackingVisit(false);
+                  }}
                   className="w-full"
                 >
                   Fechar
