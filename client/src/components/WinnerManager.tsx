@@ -107,24 +107,43 @@ export function WinnerManager({ className }: WinnerManagerProps) {
     
     setLoading(true);
     try {
-      // TODO: API call para enviar notificação
-      console.log('Sending notification to:', selectedWinner.userEmail);
-      console.log('Message:', notificationMessage);
-      
-      // Simular envio
-      setWinners(prev => 
-        prev.map(w => 
-          w.id === selectedWinner.id 
-            ? { ...w, notified: true }
-            : w
-        )
-      );
-      
-      setShowNotificationDialog(false);
-      alert('Notificação enviada com sucesso!');
+      // Enviar notificação via API
+      const response = await fetch('/api/winners/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          winnerId: selectedWinner.id,
+          message: notificationMessage,
+          adminId: 'admin' // Melhorar para pegar ID real do admin
+        })
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        // Atualizar interface
+        setWinners(prev => 
+          prev.map(w => 
+            w.id === selectedWinner.id 
+              ? { ...w, notified: true }
+              : w
+          )
+        );
+        
+        setShowNotificationDialog(false);
+        
+        if (result.method === 'manual_notification') {
+          // Mostrar dados para envio manual
+          alert(`✅ Ganhador marcado como notificado!\n\n📧 ENVIE ESTE EMAIL MANUALMENTE:\n\nPara: ${result.data.winnerEmail}\nAssunto: 🎉 Você ganhou! ${selectedWinner.giveawayTitle}\n\nMensagem:\n${result.data.notificationMessage}`);
+        } else {
+          alert(`✅ Email enviado automaticamente via ${result.method}!`);
+        }
+      } else {
+        alert(`❌ Erro: ${result.message}`);
+      }
     } catch (error) {
       console.error('Error sending notification:', error);
-      alert('Erro ao enviar notificação');
+      alert('❌ Erro ao enviar notificação');
     } finally {
       setLoading(false);
     }
