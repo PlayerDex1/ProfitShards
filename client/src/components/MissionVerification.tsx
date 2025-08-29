@@ -403,14 +403,14 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
                   <ol className="text-sm space-y-1 list-decimal list-inside">
                     <li>Clique no link abaixo para acessar</li>
                     <li>Complete a ação solicitada no site</li>
-                    <li>Confirme que completou a missão</li>
+                    <li>Volte aqui e clique em "Confirmar Conclusão"</li>
                   </ol>
                 </div>
                 
                 {verificationDialog.requirement?.url && (
                   <Button 
                     onClick={() => openExternalLink(verificationDialog.requirement!.url!)}
-                    className="w-full"
+                    className="w-full mb-4"
                     variant="outline"
                   >
                     <ExternalLink className="h-4 w-4 mr-2" />
@@ -418,46 +418,68 @@ export function MissionVerification({ requirements, userId, giveawayId, onProgre
                   </Button>
                 )}
                 
-                <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                    <AlertCircle className="h-4 w-4 inline mr-1" />
-                    Apenas clique em "Confirmar" após completar a ação no link externo.
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-200 dark:border-blue-800">
+                  <p className="text-sm text-blue-800 dark:text-blue-200 text-center">
+                    <CheckCircle className="h-4 w-4 inline mr-1" />
+                    Completou a ação no link? Clique no botão abaixo para confirmar!
                   </p>
                 </div>
                 
-                <div>
-                  <Label htmlFor="external-confirmation">Confirmação (opcional):</Label>
-                  <Input
-                    id="external-confirmation"
-                    placeholder="Ex: Email usado, código obtido, etc."
-                    value={userInput}
-                    onChange={(e) => setUserInput(e.target.value)}
-                  />
-                </div>
+                <Button 
+                  onClick={handleManualVerification}
+                  disabled={verifyingMission === verificationDialog.requirement?.id}
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3"
+                >
+                  {verifyingMission === verificationDialog.requirement?.id ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Confirmando...
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      ✅ Confirmar Conclusão da Missão
+                    </>
+                  )}
+                </Button>
               </>
             )}
             
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                onClick={() => setVerificationDialog({ requirement: null, open: false })}
-                className="flex-1"
-              >
-                Cancelar
-              </Button>
-              <Button 
-                onClick={handleManualVerification}
-                disabled={!userInput.trim() || verifyingMission !== null}
-                className="flex-1"
-              >
-                {verifyingMission ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
-                  <CheckCircle className="h-4 w-4 mr-2" />
-                )}
-                Verificar
-              </Button>
-            </div>
+            {verificationDialog.requirement?.type !== 'external_link' && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setVerificationDialog({ requirement: null, open: false })}
+                  className="flex-1"
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  onClick={handleManualVerification}
+                  disabled={!userInput.trim() || verifyingMission !== null}
+                  className="flex-1"
+                >
+                  {verifyingMission ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                  )}
+                  Verificar
+                </Button>
+              </div>
+            )}
+
+            {verificationDialog.requirement?.type === 'external_link' && (
+              <div className="flex justify-center">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setVerificationDialog({ requirement: null, open: false })}
+                  className="w-full"
+                >
+                  Fechar
+                </Button>
+              </div>
+            )}
           </div>
         </DialogContent>
       </Dialog>
