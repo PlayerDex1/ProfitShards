@@ -22,6 +22,12 @@ export async function onRequestPost(context: any) {
     }
 
     console.log('🔍 BUSCANDO GANHADOR:', { winnerId, adminId });
+    console.log('🔧 ENVIRONMENT CHECK:', {
+      hasResendKey: !!env.RESEND_API_KEY,
+      hasSendGridKey: !!env.SENDGRID_API_KEY,
+      hasBrevoKey: !!env.BREVO_API_KEY,
+      emailFrom: env.EMAIL_FROM || 'not set'
+    });
 
     // Buscar dados do ganhador
     const winner = await env.DB.prepare(`
