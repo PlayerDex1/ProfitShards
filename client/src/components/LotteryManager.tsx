@@ -182,8 +182,16 @@ export function LotteryManager() {
 
       if (result.success) {
         alert(`✅ Giveaway "${activeGiveaway.title}" finalizado com sucesso!`);
-        // Recarregar a página para buscar novo giveaway ativo
-        window.location.reload();
+        
+        // Limpar estado e recarregar dados
+        setActiveGiveaway(null);
+        setParticipants([]);
+        setWinners([]);
+        
+        // Recarregar giveaway ativo
+        setTimeout(() => {
+          loadActiveGiveaway();
+        }, 1000);
       } else {
         alert(`❌ Erro ao finalizar: ${result.error}`);
       }

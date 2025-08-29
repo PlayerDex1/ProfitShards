@@ -47,7 +47,7 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
 
         {/* Tabs */}
         <Tabs defaultValue="main-giveaways" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="main-giveaways" className="flex items-center gap-2">
               <Sparkles className="h-4 w-4" />
               Principais
@@ -56,13 +56,9 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
               <Trophy className="h-4 w-4" />
               Sorteio Atual
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex items-center gap-2">
-              <BarChart3 className="h-4 w-4" />
-              Histórico
-            </TabsTrigger>
             <TabsTrigger value="winners" className="flex items-center gap-2">
               <Crown className="h-4 w-4" />
-              Ganhadores
+              Ganhadores & Histórico
             </TabsTrigger>
           </TabsList>
 
@@ -108,12 +104,16 @@ export function GiveawayAdmin({ className }: GiveawayAdminProps) {
             <LotteryManager />
           </TabsContent>
 
-          <TabsContent value="history">
-            <LotteryHistory />
-          </TabsContent>
-
           <TabsContent value="winners">
-            <WinnerManager />
+            <div className="space-y-6">
+              {/* Ganhadores */}
+              <WinnerManager />
+              
+              {/* Histórico */}
+              <div className="border-t pt-6">
+                <LotteryHistory />
+              </div>
+            </div>
           </TabsContent>
         </Tabs>
       </div>
