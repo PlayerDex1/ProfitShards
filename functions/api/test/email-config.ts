@@ -20,9 +20,9 @@ export async function onRequestGet(context: any) {
         keyPreview: env.BREVO_API_KEY ? env.BREVO_API_KEY.substring(0, 8) + '...' : 'not set'
       },
       environment: {
-        nodeEnv: process.env.NODE_ENV || 'not set',
-        cfPages: !!process.env.CF_PAGES,
-        allEnvKeys: Object.keys(env).filter(key => key.includes('EMAIL') || key.includes('RESEND') || key.includes('SENDGRID') || key.includes('BREVO'))
+        platform: 'Cloudflare Workers',
+        allEnvKeys: Object.keys(env).filter(key => key.includes('EMAIL') || key.includes('RESEND') || key.includes('SENDGRID') || key.includes('BREVO')),
+        totalEnvVars: Object.keys(env).length
       }
     };
 
