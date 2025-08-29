@@ -8,10 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Crown, Mail, ExternalLink, Copy, Eye, Send, 
-  Trophy, Users, Calendar, Gift, Check, X, AlertCircle,
-  MessageCircle
+  Trophy, Users, Calendar, Gift, Check, X, AlertCircle, Clock
 } from "lucide-react";
-import { DiscordContactsAdmin } from "@/components/DiscordContactsAdmin";
 
 interface Winner {
   id: string;
@@ -288,13 +286,10 @@ export function WinnerManager({ className }: WinnerManagerProps) {
           </Card>
         </div>
 
-        {/* Discord Contacts - NOVA SEÇÃO */}
-        <DiscordContactsAdmin />
-
         {/* Winners List */}
         <Card>
           <CardHeader>
-            <CardTitle>🏆 Lista de Ganhadores (Tradicional)</CardTitle>
+            <CardTitle>🏆 Lista de Ganhadores</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
@@ -460,30 +455,46 @@ export function WinnerManager({ className }: WinnerManagerProps) {
             </DialogHeader>
             
             <div className="space-y-4">
-              <div>
-                <Label>Para:</Label>
-                <div className="flex items-center gap-2 p-2 bg-muted rounded">
-                  <Mail className="h-4 w-4" />
-                  <span>{selectedWinner?.userEmail}</span>
+              {/* Informações do Ganhador */}
+              <div className="p-4 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 rounded-lg border border-yellow-200">
+                <h4 className="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">
+                  🏆 Dados do Ganhador
+                </h4>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <span className="text-muted-foreground">Email:</span>
+                    <p className="font-mono">{selectedWinner?.userEmail}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Giveaway:</span>
+                    <p className="font-medium">{selectedWinner?.giveawayTitle}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Prêmio:</span>
+                    <p className="font-medium">{selectedWinner?.giveawayTitle}</p>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">Pontos:</span>
+                    <p className="font-medium">{selectedWinner?.points}</p>
+                  </div>
                 </div>
               </div>
               
               <div>
-                <Label>Assunto:</Label>
-                <Input 
-                  value={`🎉 Você ganhou: ${selectedWinner?.giveawayTitle}!`}
-                  readOnly
-                />
-              </div>
-              
-              <div>
-                <Label>Mensagem:</Label>
+                <Label className="text-base font-semibold">📧 Mensagem do Email</Label>
+                <p className="text-sm text-muted-foreground mb-2">
+                  Edite a mensagem abaixo como desejar e clique "Enviar Email"
+                </p>
                 <textarea
                   value={notificationMessage}
                   onChange={(e) => setNotificationMessage(e.target.value)}
-                  rows={12}
-                  className="flex min-h-[200px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+                  rows={14}
+                  className="flex min-h-[300px] w-full rounded-md border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono resize-none"
+                  placeholder="Digite sua mensagem personalizada para o ganhador..."
                 />
+                <p className="text-xs text-muted-foreground mt-1">
+                  💡 O email será enviado automaticamente via Resend com template profissional
+                </p>
               </div>
               
               <div className="flex justify-end gap-2">
@@ -495,13 +506,19 @@ export function WinnerManager({ className }: WinnerManagerProps) {
                 </Button>
                 <Button 
                   onClick={handleSendNotification}
-                  disabled={loading}
-                  className="bg-blue-500 hover:bg-blue-600"
+                  disabled={loading || !notificationMessage.trim()}
+                  className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg"
+                  size="lg"
                 >
-                  {loading ? 'Enviando...' : (
+                  {loading ? (
+                    <>
+                      <Clock className="h-4 w-4 mr-2 animate-spin" />
+                      Enviando Email...
+                    </>
+                  ) : (
                     <>
                       <Send className="h-4 w-4 mr-2" />
-                      Enviar Notificação
+                      📧 Enviar Email Agora
                     </>
                   )}
                 </Button>

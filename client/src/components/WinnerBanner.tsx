@@ -8,7 +8,7 @@ import {
   Trophy, Crown, Gift, Sparkles, Star, Zap, 
   Calendar, Award, PartyPopper, Target, MessageCircle
 } from "lucide-react";
-import { WinnerDiscordConnect } from "@/components/WinnerDiscordConnect";
+
 
 interface WinnerData {
   id: string;
@@ -35,7 +35,7 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [dismissed, setDismissed] = useState(false);
-  const [showDiscordConnect, setShowDiscordConnect] = useState(false);
+
 
   useEffect(() => {
     checkWinnerStatus();
@@ -273,23 +273,19 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
                           </div>
                         </div>
 
-                        <div className="space-y-3">
-                          <Button 
-                            onClick={() => setShowDiscordConnect(true)}
-                            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
-                            size="lg"
-                          >
-                            <MessageCircle className="h-5 w-5 mr-3" />
-                            🔗 Conectar Discord para Receber Prêmio
-                          </Button>
-                          
-                          <div className="text-sm text-indigo-700 dark:text-indigo-300 space-y-2">
-                            <p>💡 <strong>Ou contate manualmente:</strong></p>
-                            <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded font-mono text-sm">
-                              "Olá! Ganhei o prêmio '{winnerData.prize}' no giveaway '{winnerData.giveawayTitle}'. 
-                              Como posso retirar?"
-                            </div>
+                        <div className="text-sm text-indigo-700 dark:text-indigo-300 space-y-2">
+                          <p>📧 <strong>Aguarde nosso email com instruções!</strong></p>
+                          <div className="bg-indigo-100 dark:bg-indigo-900/30 p-3 rounded text-sm">
+                            <p className="font-medium mb-2">✉️ Você receberá um email em breve com:</p>
+                            <ul className="text-left space-y-1">
+                              <li>• Instruções para reivindicar</li>
+                              <li>• Dados necessários para entrega</li>
+                              <li>• Prazo para resposta (7 dias)</li>
+                            </ul>
                           </div>
+                          <p className="text-xs">
+                            💡 <strong>Ou contate diretamente:</strong> Discord @playerhold
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -322,19 +318,7 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
         </CardContent>
       </Card>
 
-      {/* Discord Connect Modal */}
-      {winnerData && (
-        <WinnerDiscordConnect
-          isOpen={showDiscordConnect}
-          onClose={() => setShowDiscordConnect(false)}
-          winnerData={{
-            giveawayTitle: winnerData.giveawayTitle,
-            prize: winnerData.prize,
-            position: winnerData.position,
-            points: winnerData.totalPoints
-          }}
-        />
-      )}
+
     </>
   );
 }
