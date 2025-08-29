@@ -216,19 +216,20 @@ export default function Home() {
 				</div>
 			</div>
 				
-				{/* Activity Stream + Support - Layout Reorganizado para Componentes 500px */}
+				{/* Activity Stream - SEÇÃO INDEPENDENTE COM LARGURA MÁXIMA */}
 				<div className="mb-16">
-				<div className="flex flex-col xl:flex-row gap-8 max-w-[1600px] mx-auto">
-					{/* Activity Stream - Coluna Principal */}
-					<div className="flex-1 min-w-0">
+					<div className="w-full max-w-none px-4">
 						<ActivityStream />
 					</div>
+				</div>
 
-					{/* Sidebar - Giveaway + Winners + Support (500px cada) */}
-					<div className="xl:w-[500px] space-y-8 flex-shrink-0">
-						{/* Giveaway na Sidebar */}
+				{/* Sidebar Components - SEÇÃO SEPARADA */}
+				<div className="mb-16">
+					<div className="flex flex-col lg:flex-row gap-8 justify-center items-start max-w-[1600px] mx-auto px-4">
+						
+						{/* Giveaway Component */}
 						{activeGiveaway && (
-							<div className="sticky top-6">
+							<div className="lg:w-[500px]">
 								<GiveawayBanner 
 									giveaway={activeGiveaway} 
 									onJoin={() => setShowGiveaway(true)}
@@ -238,12 +239,12 @@ export default function Home() {
 						)}
 
 						{/* Lista de Ganhadores Públicos */}
-						<div className="sticky top-8">
+						<div className="lg:w-[500px]">
 							<PublicWinnersList />
 						</div>
 
-						{/* Support Section - AUMENTADO */}
-						<div className="sticky top-8">
+						{/* Support Section */}
+						<div className="lg:w-[500px]">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[500px] min-h-[440px]">
 									<CardContent className="p-8">
 										<div className="text-center mb-8">
@@ -334,8 +335,6 @@ export default function Home() {
 						</div>
 					</div>
 				</div>
-				</div>
-			</div>
 			
 
 
