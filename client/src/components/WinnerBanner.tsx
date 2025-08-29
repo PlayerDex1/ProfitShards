@@ -5,8 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { 
-  Trophy, Crown, Gift, Sparkles, Star, Confetti, 
-  Calendar, Award, PartyPopper, Zap, Target, MessageCircle
+  Trophy, Crown, Gift, Sparkles, Star, Zap, 
+  Calendar, Award, PartyPopper, Target, MessageCircle
 } from "lucide-react";
 
 interface WinnerData {
@@ -119,7 +119,7 @@ export function WinnerBanner({ userId, userEmail }: WinnerBannerProps) {
               </div>
               {/* Efeitos ao redor */}
               <div className="absolute -top-4 -left-4">
-                <Confetti className="h-8 w-8 text-yellow-400 animate-bounce" style={{animationDelay: '0.2s'}} />
+                <Zap className="h-8 w-8 text-yellow-400 animate-bounce" style={{animationDelay: '0.2s'}} />
               </div>
               <div className="absolute -top-4 -right-4">
                 <Trophy className="h-8 w-8 text-orange-400 animate-bounce" style={{animationDelay: '0.4s'}} />
