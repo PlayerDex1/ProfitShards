@@ -216,16 +216,16 @@ export default function Home() {
 				</div>
 			</div>
 				
-				{/* Activity Stream + Support - Layout Equilibrado */}
+				{/* Activity Stream + Support - Layout Reorganizado para Componentes 500px */}
 				<div className="mb-16">
-				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
-					{/* Activity Stream - Coluna Principal (3/4) */}
-					<div className="lg:col-span-3">
+				<div className="flex flex-col xl:flex-row gap-8 max-w-[1600px] mx-auto">
+					{/* Activity Stream - Coluna Principal */}
+					<div className="flex-1 min-w-0">
 						<ActivityStream />
 					</div>
 
-					{/* Sidebar (1/4) - Giveaway + Winners + Support */}
-					<div className="lg:col-span-1 space-y-6">
+					{/* Sidebar - Giveaway + Winners + Support (500px cada) */}
+					<div className="xl:w-[500px] space-y-8 flex-shrink-0">
 						{/* Giveaway na Sidebar */}
 						{activeGiveaway && (
 							<div className="sticky top-6">
@@ -242,46 +242,46 @@ export default function Home() {
 							<PublicWinnersList />
 						</div>
 
-						{/* Support Section */}
+						{/* Support Section - AUMENTADO */}
 						<div className="sticky top-8">
-								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg">
-									<CardContent className="p-6">
-										<div className="text-center mb-6">
-											<h3 className="text-lg font-bold text-foreground mb-2 flex items-center justify-center gap-2">
-												<Sparkles className="h-4 w-4 text-green-500" />
+								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[500px] min-h-[440px]">
+									<CardContent className="p-8">
+										<div className="text-center mb-8">
+											<h3 className="text-2xl font-bold text-foreground mb-4 flex items-center justify-center gap-3">
+												<Sparkles className="h-8 w-8 text-green-500" />
 												💚 {t('support.title')}
 											</h3>
-											<p className="text-muted-foreground text-sm">
+											<p className="text-muted-foreground text-lg leading-relaxed">
 												{t('support.donate')}
 											</p>
 											
 											{/* Créditos do Criador */}
-											<div className="mt-4 pt-4 border-t border-green-500/20">
-												<p className="text-xs text-muted-foreground mb-2">{t('support.creator')}</p>
+											<div className="mt-6 pt-6 border-t border-green-500/20">
+												<p className="text-base text-muted-foreground mb-4 font-medium">{t('support.creator')}</p>
 												<a 
 													href="https://x.com/playerhold" 
 													target="_blank" 
 													rel="noopener noreferrer"
-													className="inline-flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200"
+													className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200 shadow-lg"
 												>
-													<svg className="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+													<svg className="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
 														<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
 													</svg>
-													<span className="text-sm font-semibold text-blue-600">@playerhold</span>
+													<span className="text-lg font-bold text-blue-600">@playerhold</span>
 												</a>
 											</div>
 										</div>
 										
-										<div className="space-y-4">
+										<div className="space-y-6">
 											{/* OpenLoot Ambassador */}
-											<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-md transition-shadow">
-												<CardContent className="p-4">
-													<div className="text-center space-y-3">
-														<div className="flex items-center justify-center gap-2">
-															<Globe className="h-4 w-4 text-blue-500" />
-															<span className="font-semibold text-sm">{t('support.ambassador')}</span>
+											<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-lg transition-shadow">
+												<CardContent className="p-6">
+													<div className="text-center space-y-4">
+														<div className="flex items-center justify-center gap-3">
+															<Globe className="h-6 w-6 text-blue-500" />
+															<span className="font-bold text-lg">{t('support.ambassador')}</span>
 														</div>
-														<p className="text-xs text-muted-foreground">
+														<p className="text-base text-muted-foreground leading-relaxed">
 															{t('support.ambassador.desc')}
 														</p>
 														<a 
@@ -290,8 +290,8 @@ export default function Home() {
 															rel="noopener noreferrer" 
 															className="block"
 														>
-															<Button size="sm" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-medium text-xs">
-																<ArrowRight className="mr-1 h-3 w-3" />
+															<Button size="lg" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-base py-3">
+																<ArrowRight className="mr-2 h-5 w-5" />
 																Ambassador
 															</Button>
 														</a>
@@ -300,27 +300,27 @@ export default function Home() {
 											</Card>
 
 											{/* Direct Donation */}
-											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-md transition-shadow">
-												<CardContent className="p-4">
-													<div className="text-center space-y-3">
-														<div className="flex items-center justify-center gap-2">
-															<Zap className="h-4 w-4 text-green-500" />
-															<span className="font-semibold text-sm">Doação Direta</span>
+											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-lg transition-shadow">
+												<CardContent className="p-6">
+													<div className="text-center space-y-4">
+														<div className="flex items-center justify-center gap-3">
+															<Zap className="h-6 w-6 text-green-500" />
+															<span className="font-bold text-lg">Doação Direta</span>
 														</div>
-														<p className="text-xs text-muted-foreground">
+														<p className="text-base text-muted-foreground">
 															Carteira EVM
 														</p>
-														<div className="flex items-center gap-2 p-2 bg-muted/50 rounded-md border">
-															<div className="text-xs font-mono break-all flex-1 select-all">
+														<div className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg border">
+															<div className="text-base font-mono break-all flex-1 select-all">
 																0x05b...eCD0B5
 															</div>
 															<Button
-																size="sm"
+																size="lg"
 																variant="outline"
 																onClick={() => {
 																	navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
 																}}
-																className="shrink-0 text-xs h-6 px-2"
+																className="shrink-0 text-base h-10 px-4"
 															>
 																{t('donate.copy')}
 															</Button>
