@@ -73,9 +73,9 @@ async function sendViaResend(env: Env, winnerData: WinnerEmailData, customMessag
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        from: 'ProfitShards <onboarding@resend.dev>',
+        from: env.EMAIL_FROM || 'ProfitShards <noreply@resend.dev>',
         to: [winnerData.userEmail],
-        subject: `Atualização importante da sua conta - ProfitShards`,
+        subject: `Resultado do sorteio: ${winnerData.giveawayTitle} - ProfitShards`,
         html: emailContent,
         text: generateEmailText(winnerData, customMessage),
         headers: {
