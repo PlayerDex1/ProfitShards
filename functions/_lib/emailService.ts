@@ -312,7 +312,7 @@ Equipe ProfitShards
         🔗 Acessar ProfitShards
       </a>
       <p style="margin: 0; font-size: 14px; color: #6b7280;">
-        Acesse o site para mais detalhes ou entre em contato via Discord: <strong>@playerhold</strong>
+        Acesse o site para mais detalhes ou entre em contato via Discord: <strong>holdboy</strong>
       </p>
     </div>
 
