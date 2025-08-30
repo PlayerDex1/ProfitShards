@@ -26,6 +26,23 @@ export default function Home() {
 	const { activeGiveaway } = useGiveaway();
 	const [showGiveaway, setShowGiveaway] = useState(false);
 
+	// Função para abrir giveaway e atualizar URL
+	const openGiveaway = () => {
+		setShowGiveaway(true);
+		// Atualizar URL para ?join=giveaway
+		const newUrl = `${window.location.pathname}?join=giveaway`;
+		window.history.pushState({}, '', newUrl);
+		console.log('🎊 GIVEAWAY OPENED + URL UPDATED:', newUrl);
+	};
+
+	// Função para fechar giveaway e limpar URL
+	const closeGiveaway = () => {
+		setShowGiveaway(false);
+		// Limpar URL parameter
+		window.history.pushState({}, '', window.location.pathname);
+		console.log('❌ GIVEAWAY CLOSED + URL CLEANED');
+	};
+
 	useEffect(() => {
 		importBuildsFromUrl();
 	}, []);
@@ -47,12 +64,9 @@ export default function Home() {
 			setTimeout(() => {
 				if (joinGiveaway) {
 					// Abrir modal diretamente
-					console.log('🎊 OPENING GIVEAWAY MODAL...');
+					console.log('🎊 OPENING GIVEAWAY MODAL VIA URL...');
 					setShowGiveaway(true);
-					
-					// Atualizar URL para ficar limpa mas manter funcionalidade
-					const newUrl = `${window.location.pathname}?join=giveaway`;
-					window.history.replaceState({}, '', newUrl);
+					// URL já está correta (?join=giveaway)
 				} else if (focusGiveaway) {
 					// Scroll para seção
 					const giveawaySection = document.getElementById('giveaway-section');
@@ -280,7 +294,7 @@ export default function Home() {
 							<div className="lg:w-[500px]">
 								<GiveawayBanner 
 									giveaway={activeGiveaway} 
-									onJoin={() => setShowGiveaway(true)}
+									onJoin={openGiveaway}
 									compact={false}
 								/>
 							</div>
@@ -510,7 +524,7 @@ export default function Home() {
 			{/* Giveaway Modal */}
 			<GiveawayModal 
 				open={showGiveaway}
-				onOpenChange={setShowGiveaway}
+				onOpenChange={closeGiveaway}
 				giveaway={activeGiveaway || undefined}
 			/>
 		</div>
