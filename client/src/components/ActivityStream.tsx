@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { CompactStats } from "@/components/CompactStats";
 
@@ -195,6 +196,7 @@ const RunSkeleton = () => (
 );
 
 export function ActivityStream() {
+  const { t } = useI18n();
   const [runs, setRuns] = useState<ActivityRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -409,14 +411,14 @@ export function ActivityStream() {
             <CardContent className="pt-6 text-center">
               <div className="flex items-center justify-center space-x-2 mb-3">
                 <Target className="h-5 w-5 text-primary" />
-                <span className="font-semibold text-primary">Sua vez!</span>
+                <span className="font-semibold text-primary">{t('home.resources.yourTurn')}</span>
               </div>
               <p className="text-sm text-muted-foreground mb-4">
-                Faça sua run e apareça aqui para toda a comunidade ver
+                {t('home.resources.makeRun')}
               </p>
               <Button className="bg-primary/20 hover:bg-primary/30 text-primary">
                 <Zap className="mr-2 h-4 w-4" />
-                Começar a Calcular
+                {t('home.resources.startCalculating')}
               </Button>
             </CardContent>
           </Card>

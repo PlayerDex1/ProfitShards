@@ -170,7 +170,7 @@ export default function Home() {
 							🎮 WorldShards Resources
 						</h2>
 						<p className="text-muted-foreground text-lg max-w-xl mx-auto">
-							Acesse o jogo, marketplace e tire suas dúvidas
+							{t('home.resources.title')}
 						</p>
 					</div>
 
@@ -331,7 +331,7 @@ export default function Home() {
 
 													{/* Discord Feedback - Lado Direito */}
 													<div className="flex flex-col items-end">
-														<p className="text-sm text-muted-foreground mb-2 font-medium">Feedback & Suporte</p>
+														<p className="text-sm text-muted-foreground mb-2 font-medium">{t('support.feedback')}</p>
 														<div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
 															onClick={() => {
 																navigator.clipboard.writeText('Holdboy');

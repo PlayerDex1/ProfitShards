@@ -150,6 +150,15 @@ const dicts: Record<Lang, Dict> = {
     'home.welcome.profile': 'Ir ao Perfil',
     'home.goToProfile': 'Acessar Ferramentas',
     'home.startCalculating': 'Começar a Calcular',
+    
+    // WorldShards Resources Section
+    'home.resources.title': 'Acesse o jogo, marketplace e tire suas dúvidas',
+    'home.resources.yourTurn': 'Sua vez!',
+    'home.resources.makeRun': 'Faça sua run e apareça aqui para toda a comunidade ver',
+    'home.resources.startCalculating': 'Começar a Calcular',
+    
+    // Support Section
+    'support.feedback': 'Feedback & Suporte',
 
     // Navigation
     'nav.backToMain': 'Voltar ao Menu Principal',
@@ -474,6 +483,15 @@ const dicts: Record<Lang, Dict> = {
     'home.welcome.profile': 'Go to Profile',
     'home.goToProfile': 'Access Tools',
     'home.startCalculating': 'Start Calculating',
+    
+    // WorldShards Resources Section
+    'home.resources.title': 'Access the game, marketplace and get help',
+    'home.resources.yourTurn': 'Your turn!',
+    'home.resources.makeRun': 'Make your run and appear here for the whole community to see',
+    'home.resources.startCalculating': 'Start Calculating',
+    
+    // Support Section
+    'support.feedback': 'Feedback & Support',
 
     // Navigation
     'nav.backToMain': 'Back to Main Menu',
