@@ -310,20 +310,39 @@ export default function Home() {
 												{t('support.donate')}
 											</p>
 											
-											{/* Créditos do Criador */}
+											{/* Créditos e Contatos */}
 											<div className="mt-6 pt-6 border-t border-green-500/20">
-												<p className="text-base text-muted-foreground mb-4 font-medium">{t('support.creator')}</p>
-												<a 
-													href="https://x.com/playerhold" 
-													target="_blank" 
-													rel="noopener noreferrer"
-													className="inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-xl hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200 shadow-lg"
-												>
-													<svg className="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
-														<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-													</svg>
-													<span className="text-lg font-bold text-blue-600">@playerhold</span>
-												</a>
+												<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+													{/* Created by - Lado Esquerdo */}
+													<div className="flex flex-col items-start">
+														<p className="text-sm text-muted-foreground mb-2 font-medium">{t('support.creator')}</p>
+														<a 
+															href="https://x.com/playerhold" 
+															target="_blank" 
+															rel="noopener noreferrer"
+															className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200"
+														>
+															<svg className="h-4 w-4 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+																<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+															</svg>
+															<span className="text-base font-bold text-blue-600">@playerhold</span>
+														</a>
+													</div>
+
+													{/* Discord Feedback - Lado Direito */}
+													<div className="flex flex-col items-end">
+														<p className="text-sm text-muted-foreground mb-2 font-medium">Feedback & Suporte</p>
+														<div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
+															onClick={() => {
+																navigator.clipboard.writeText('Holdboy');
+																alert('Discord copiado: Holdboy\nEnvie DM para feedback!');
+															}}
+														>
+															<MessageCircle className="h-4 w-4 text-purple-500" />
+															<span className="text-base font-bold text-purple-600">Holdboy</span>
+														</div>
+													</div>
+												</div>
 											</div>
 										</div>
 										
