@@ -4,7 +4,7 @@ import { ActivityStream } from "@/components/ActivityStream";
 import { CommunityStats } from "@/components/CommunityStats";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -28,7 +28,26 @@ export default function Home() {
 
 	useEffect(() => {
 		importBuildsFromUrl();
-	}, []);
+		
+		// Verificar se veio via query parameter para giveaway
+		const urlParams = new URLSearchParams(window.location.search);
+		const focusGiveaway = urlParams.get('giveaway') === 'true';
+		
+		if (focusGiveaway && activeGiveaway) {
+			// Aguardar página carregar e fazer scroll para giveaway
+			setTimeout(() => {
+				const giveawaySection = document.getElementById('giveaway-section');
+				if (giveawaySection) {
+					giveawaySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					// Destacar temporariamente
+					giveawaySection.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.4)';
+					setTimeout(() => {
+						giveawaySection.style.boxShadow = '';
+					}, 3000);
+				}
+			}, 1000);
+		}
+	}, [activeGiveaway]);
 
 	return (
 		<div className="min-h-screen bg-background">
