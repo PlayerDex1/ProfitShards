@@ -1,0 +1,57 @@
+<svg viewBox="0 0 200 60" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Crystal Gradient -->
+    <linearGradient id="crystalGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A90E2;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#5B9BD5;stop-opacity:1" />
+      <stop offset="70%" style="stop-color:#7B68EE;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFD700;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Text Gradient -->
+    <linearGradient id="textGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#7c3aed;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#fbbf24;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow Filter -->
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Crystal Icon -->
+  <g transform="translate(10, 5)">
+    <!-- Outer Crystal -->
+    <polygon 
+      points="25,5 35,15 35,35 25,45 15,35 15,15"
+      fill="url(#crystalGradient)"
+      filter="url(#dropshadow)"
+    />
+    
+    <!-- Inner Glow -->
+    <polygon 
+      points="25,10 32,18 32,32 25,40 18,32 18,18"
+      fill="rgba(255,255,255,0.25)"
+    />
+    
+    <!-- Inner Core -->
+    <polygon 
+      points="25,15 29,20 29,30 25,35 21,30 21,20"
+      fill="rgba(255,255,255,0.4)"
+    />
+    
+    <!-- Highlight Lines -->
+    <line x1="21" y1="12" x2="21" y2="25" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>
+    <line x1="29" y1="15" x2="29" y2="22" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+  </g>
+  
+  <!-- Text Logo -->
+  <text x="60" y="25" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="700" fill="url(#textGradient)">
+    ProfitShards
+  </text>
+  <text x="60" y="42" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="500" fill="#6b7280">
+    Tools
+  </text>
+</svg>
