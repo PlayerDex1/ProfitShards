@@ -75,9 +75,18 @@ async function sendViaResend(env: Env, winnerData: WinnerEmailData, customMessag
       body: JSON.stringify({
         from: env.EMAIL_FROM || 'ProfitShards <noreply@resend.dev>',
         to: [winnerData.userEmail],
-        subject: `🎉 Você ganhou! ${winnerData.giveawayTitle}`,
+        subject: `Resultado do sorteio: ${winnerData.giveawayTitle} - ProfitShards`,
         html: emailContent,
-        text: generateEmailText(winnerData, customMessage)
+        text: generateEmailText(winnerData, customMessage),
+        headers: {
+          'X-Entity-Ref-ID': crypto.randomUUID(),
+          'List-Unsubscribe': '<mailto:unsubscribe@profitshards.online>',
+          'X-Mailer': 'ProfitShards-System-v1.0'
+        },
+        tags: [
+          { name: 'category', value: 'giveaway_notification' },
+          { name: 'giveaway', value: winnerData.giveawayTitle.replace(/[^a-zA-Z0-9]/g, '_') }
+        ]
       })
     });
 
@@ -256,24 +265,32 @@ async function saveForManualSending(env: Env, winnerData: WinnerEmailData, custo
 // 🎨 GERAR HTML PROFISSIONAL
 function generateEmailHTML(winnerData: WinnerEmailData, customMessage?: string): string {
   const message = customMessage || `
-🎉 Parabéns! Você ganhou o "${winnerData.giveawayTitle}"!
+Olá!
 
-🏆 Prêmio: ${winnerData.prize}
-📊 Sua posição: #${winnerData.position}
-⭐ Pontos acumulados: ${winnerData.totalPoints}
+Temos o prazer de informar que você foi selecionado como vencedor em nosso sorteio "${winnerData.giveawayTitle}".
 
-Para reivindicar seu prêmio, entre em contato conosco:
+DETALHES DO SEU PRÊMIO:
+• Item: ${winnerData.prize}
+• Sua posição: #${winnerData.position}
+• Pontos acumulados: ${winnerData.totalPoints}
 
-📧 Responda este email com:
-• Nome completo
-• Endereço completo para entrega  
-• Telefone para contato
+PRÓXIMOS PASSOS:
+Para recebermos seu prêmio, por favor responda este email com as seguintes informações:
 
-💬 Ou entre em contato no Discord: @playerhold
+1. Nome completo
+2. Endereço completo para entrega
+3. Número de telefone para contato
 
-⏰ Você tem 7 dias para reivindicar seu prêmio.
+PRAZO IMPORTANTE:
+Você tem 7 dias corridos a partir desta data para responder com suas informações. Após este prazo, um novo vencedor será selecionado.
 
-Obrigado por participar!
+CONTATO ALTERNATIVO:
+Caso prefira, você também pode entrar em contato conosco através do Discord: @playerhold
+
+Agradecemos sua participação em nosso sorteio.
+
+Atenciosamente,
+Equipe ProfitShards
   `.trim();
 
   return `
@@ -288,11 +305,11 @@ Obrigado por participar!
   <div style="max-width: 600px; margin: 0 auto; background-color: white;">
     
     <!-- Header -->
-    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px 20px; text-align: center;">
-      <h1 style="color: white; margin: 0; font-size: 28px; font-weight: bold;">
-        🏆 PARABÉNS, VOCÊ GANHOU!
+    <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px 20px; text-align: center;">
+      <h1 style="color: white; margin: 0; font-size: 24px; font-weight: normal;">
+        Resultado do Sorteio
       </h1>
-      <h2 style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 20px; font-weight: normal;">
+      <h2 style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 18px; font-weight: normal;">
         ${winnerData.giveawayTitle}
       </h2>
     </div>
