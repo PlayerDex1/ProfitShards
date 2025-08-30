@@ -7,7 +7,7 @@ type Dict = Record<string, string>;
 const dicts: Record<Lang, Dict> = {
   pt: {
     'header.title': 'ProfitShards',
-    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
+    'header.subtitle': 'ProfitShards Tools: Builds, Drops, Results',
     'header.login': 'Entrar',
     'header.logout': 'Sair',
     'header.theme': 'Alternar tema',
@@ -115,7 +115,7 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.history': 'Histórico',
 
     'home.calculator': 'Calculadora',
-    'home.title': 'WorldShards Calculator',
+    'home.title': 'ProfitShards Tools',
     'home.hero.title': 'Maximize Seus Lucros',
     'home.hero.subtitle': 'Calcule, planeje e otimize seus farmings no WorldShards com ferramentas profissionais e dados da comunidade.',
     'home.hero.cta.start': 'Começar a Calcular',
@@ -140,7 +140,7 @@ const dicts: Record<Lang, Dict> = {
     'home.cta.subtitle': 'Junte-se a centenas de players que já estão maximizando seus lucros no WorldShards',
     'home.cta.try': 'Experimentar Agora (Grátis)',
     'home.cta.features': 'Ver Mais Features',
-    'home.footer.description': 'A ferramenta definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.',
+    'home.footer.description': 'A plataforma definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.',
     'home.footer.feature1': 'Cálculos Precisos',
     'home.footer.feature2': 'Analytics Avançados',
     'home.footer.feature3': 'Comunidade Ativa',
@@ -330,7 +330,7 @@ const dicts: Record<Lang, Dict> = {
   },
   en: {
     'header.title': 'ProfitShards',
-    'header.subtitle': 'WorldShards Tools: Builds, Drops, Results',
+    'header.subtitle': 'ProfitShards Tools: Builds, Drops, Results',
     'header.login': 'Sign in',
     'header.logout': 'Sign out',
     'header.theme': 'Toggle theme',
@@ -439,7 +439,7 @@ const dicts: Record<Lang, Dict> = {
     'sidebar.nav.history': 'History',
 
     'home.calculator': 'Calculator',
-    'home.title': 'WorldShards Calculator',
+    'home.title': 'ProfitShards Tools',
     'home.hero.title': 'Maximize Your Profits',
     'home.hero.subtitle': 'Calculate, plan and optimize your WorldShards farming with professional tools and community data.',
     'home.hero.cta.start': 'Start Calculating',
@@ -464,7 +464,7 @@ const dicts: Record<Lang, Dict> = {
     'home.cta.subtitle': 'Join hundreds of players who are already maximizing their WorldShards profits',
     'home.cta.try': 'Try Now (Free)',
     'home.cta.features': 'See More Features',
-    'home.footer.description': 'The ultimate tool for smart farming. Developed by the community, for the community.',
+    'home.footer.description': 'The ultimate platform for smart farming. Developed by the community, for the community.',
     'home.footer.feature1': 'Precise Calculations',
     'home.footer.feature2': 'Advanced Analytics',
     'home.footer.feature3': 'Active Community',

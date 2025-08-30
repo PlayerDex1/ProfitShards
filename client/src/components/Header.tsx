@@ -44,8 +44,8 @@ export function Header() {
       
       <header className="sticky top-0 z-40 w-full border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/60 shadow-sm">
         <div className="container mx-auto px-4 flex h-16 items-center">
-          <div className="mr-6 flex items-center group cursor-pointer">
-            {/* WorldShards Calculator Logo */}
+          <div className="mr-6 flex items-center group cursor-pointer" onClick={() => setLocation('/')} title="Voltar à página inicial">
+            {/* ProfitShards Tools Logo */}
             <div className="flex items-center space-x-3 group-hover:scale-105 transition-transform">
               {/* Crystal Logo Icon */}
               <div className="relative">
@@ -92,10 +92,10 @@ export function Header() {
               {/* Logo Text */}
               <div className="flex flex-col">
                 <span className="font-bold text-xl md:text-xl bg-gradient-to-r from-blue-600 via-purple-600 to-yellow-500 bg-clip-text text-transparent">
-                  WorldShards
+                  ProfitShards
                 </span>
                 <span className="hidden md:block text-sm text-muted-foreground tracking-wider uppercase font-medium">
-                  Calculator
+                  Tools
                 </span>
               </div>
             </div>

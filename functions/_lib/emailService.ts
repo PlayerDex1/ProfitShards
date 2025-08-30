@@ -293,7 +293,7 @@ Equipe ProfitShards
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px 20px; text-align: center;">
       <h1 style="color: white; margin: 0; font-size: 24px; font-weight: normal;">
-        ProfitShards
+        ProfitShards Tools
       </h1>
       <h2 style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px; font-weight: normal;">
         Notificação Importante
@@ -319,7 +319,7 @@ Equipe ProfitShards
     <!-- Footer -->
     <div style="padding: 20px; text-align: center; background: #1f2937; color: #9ca3af;">
       <p style="margin: 0; font-size: 14px;">
-        <strong style="color: white;">ProfitShards</strong> - WorldShards Calculator
+        <strong style="color: white;">ProfitShards Tools</strong> - WorldShards Platform
       </p>
       <p style="margin: 5px 0 0 0; font-size: 12px;">
         Desenvolvido pela comunidade, para a comunidade.
