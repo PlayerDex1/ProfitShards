@@ -89,15 +89,13 @@ export function WinnerManager({ className }: WinnerManagerProps) {
   const handleNotifyWinner = async (winner: Winner) => {
     setSelectedWinner(winner);
     setNotificationMessage(
-      `🎉 Parabéns! Você ganhou o "${winner.giveawayTitle}"!\n\n` +
-      `Prêmio: Starter Pack + 1000 tokens\n` +
-      `Pontos acumulados: ${winner.points}\n\n` +
-      `Para reivindicar seu prêmio, responda este email com:\n` +
-      `- Nome completo\n` +
-      `- Endereço completo para entrega\n` +
-      `- Telefone para contato\n\n` +
-      `Você tem 7 dias para responder, caso contrário um novo ganhador será sorteado.\n\n` +
-      `Obrigado por participar!`
+      `Olá!\n\n` +
+      `Você ganhou um ${winner.giveawayTitle}.\n\n` +
+      `Este é o link da missão do WorldShards para reivindicar:\n\n` +
+      `[COLE AQUI O LINK DA MISSÃO]\n\n` +
+      `Prazo: 7 dias para reivindicar.\n\n` +
+      `Atenciosamente,\n` +
+      `Equipe ProfitShards`
     );
     setShowNotificationDialog(true);
   };

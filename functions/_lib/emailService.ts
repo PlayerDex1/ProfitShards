@@ -267,27 +267,13 @@ function generateEmailHTML(winnerData: WinnerEmailData, customMessage?: string):
   const message = customMessage || `
 Olá!
 
-Temos o prazer de informar que você foi selecionado como vencedor em nosso sorteio "${winnerData.giveawayTitle}".
+Você ganhou um ${winnerData.giveawayTitle}.
 
-DETALHES DO SEU PRÊMIO:
-• Item: ${winnerData.prize}
-• Sua posição: #${winnerData.position}
-• Pontos acumulados: ${winnerData.totalPoints}
+Este é o link da missão do WorldShards para reivindicar:
 
-PRÓXIMOS PASSOS:
-Para recebermos seu prêmio, por favor responda este email com as seguintes informações:
+[COLE AQUI O LINK DA MISSÃO]
 
-1. Nome completo
-2. Endereço completo para entrega
-3. Número de telefone para contato
-
-PRAZO IMPORTANTE:
-Você tem 7 dias corridos a partir desta data para responder com suas informações. Após este prazo, um novo vencedor será selecionado.
-
-CONTATO ALTERNATIVO:
-Caso prefira, você também pode entrar em contato conosco através do Discord: @playerhold
-
-Agradecemos sua participação em nosso sorteio.
+Prazo: 7 dias para reivindicar.
 
 Atenciosamente,
 Equipe ProfitShards
@@ -307,28 +293,16 @@ Equipe ProfitShards
     <!-- Header -->
     <div style="background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%); padding: 30px 20px; text-align: center;">
       <h1 style="color: white; margin: 0; font-size: 24px; font-weight: normal;">
-        Resultado do Sorteio
+        ProfitShards
       </h1>
-      <h2 style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 18px; font-weight: normal;">
-        ${winnerData.giveawayTitle}
+      <h2 style="color: #e0e7ff; margin: 10px 0 0 0; font-size: 16px; font-weight: normal;">
+        Notificação Importante
       </h2>
     </div>
 
-    <!-- Prize Info -->
-    <div style="padding: 30px 20px; background: linear-gradient(135deg, #fef3c7, #fde68a); text-align: center;">
-      <div style="display: inline-block; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-        <h3 style="margin: 0 0 10px 0; color: #92400e; font-size: 18px;">🎁 Seu Prêmio</h3>
-        <p style="margin: 0; font-size: 24px; font-weight: bold; color: #1f2937;">${winnerData.prize}</p>
-        <div style="margin-top: 15px; display: flex; justify-content: space-around; font-size: 14px; color: #6b7280;">
-          <span><strong>Posição:</strong> #${winnerData.position}</span>
-          <span><strong>Pontos:</strong> ${winnerData.totalPoints}</span>
-        </div>
-      </div>
-    </div>
-
     <!-- Message Content -->
-    <div style="padding: 30px 20px; line-height: 1.6; color: #374151;">
-      <pre style="white-space: pre-wrap; font-family: Arial, sans-serif; margin: 0;">${message}</pre>
+    <div style="padding: 40px 30px; line-height: 1.8; color: #333; font-size: 16px;">
+      <div style="white-space: pre-wrap; font-family: Arial, sans-serif;">${message}</div>
     </div>
 
     <!-- CTA Section -->
