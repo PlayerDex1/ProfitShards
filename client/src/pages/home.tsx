@@ -122,30 +122,22 @@ export default function Home() {
 
 			{/* Conteúdo Centralizado */}
 			<div className="max-w-6xl mx-auto px-4 py-12">
-				{/* Hero Section Centralizado */}
-				<div className="text-center mb-16">
-					<div className="flex justify-center mb-4">
-						<Badge className="px-4 py-2 bg-gradient-to-r from-primary/20 to-blue-500/20 text-foreground border-primary/30 font-medium text-base">
-							<Sparkles className="h-5 w-5 mr-2" />
-							{t('home.title')}
-						</Badge>
-					</div>
+				{/* Hero Section Compacto */}
+				<div className="text-center mb-12">
+					<h2 className="text-2xl font-semibold text-foreground mb-6 flex items-center justify-center gap-3">
+						<div className="p-2 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-lg">
+							<Sparkles className="h-5 w-5 text-primary" />
+						</div>
+						WorldShards Calculator
+					</h2>
 					
-					<h1 className="text-4xl md:text-5xl lg:text-6xl font-bold bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent mb-6 leading-tight">
-						{t('home.hero.title')}
-					</h1>
-					
-					<p className="text-muted-foreground mb-8 max-w-2xl mx-auto text-lg md:text-xl leading-relaxed">
-						{t('home.hero.subtitle')}
-					</p>
-					
-					{/* Call-to-Action Centralizado */}
+					{/* Call-to-Action */}
 					<div className="flex justify-center">
 						<Link href="/perfil">
-							<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl">
-								<Zap className="mr-3 h-7 w-7" />
-								{isAuthenticated ? 'Ir ao Meu Perfil' : 'Começar a Calcular'}
-								<ArrowRight className="ml-3 h-7 w-7" />
+							<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-8 py-3 text-lg font-semibold hover:scale-105 rounded-xl">
+								<Zap className="mr-2 h-5 w-5" />
+								{isAuthenticated ? t('home.goToProfile') : t('home.startCalculating')}
+								<ArrowRight className="ml-2 h-5 w-5" />
 							</Button>
 						</Link>
 					</div>
