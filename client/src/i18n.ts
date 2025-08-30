@@ -148,6 +148,8 @@ const dicts: Record<Lang, Dict> = {
     'home.welcome.title': 'Bem-vindo de volta, {username}! 👋',
     'home.welcome.subtitle': 'Pronto para mais uma sessão de farming lucrativo?',
     'home.welcome.profile': 'Ir ao Perfil',
+    'home.goToProfile': 'Acessar Ferramentas',
+    'home.startCalculating': 'Começar a Calcular',
 
     // Navigation
     'nav.backToMain': 'Voltar ao Menu Principal',
@@ -470,6 +472,8 @@ const dicts: Record<Lang, Dict> = {
     'home.welcome.title': 'Welcome back, {username}! 👋',
     'home.welcome.subtitle': 'Ready for another profitable farming session?',
     'home.welcome.profile': 'Go to Profile',
+    'home.goToProfile': 'Access Tools',
+    'home.startCalculating': 'Start Calculating',
 
     // Navigation
     'nav.backToMain': 'Back to Main Menu',
