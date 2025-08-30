@@ -30,44 +30,51 @@ export default function Home() {
 		importBuildsFromUrl();
 	}, []);
 
-	// Efeito separado para scroll do giveaway
+	// Efeito para abrir modal do giveaway via URL
 	useEffect(() => {
 		const urlParams = new URLSearchParams(window.location.search);
+		const joinGiveaway = urlParams.get('join') === 'giveaway';
 		const focusGiveaway = urlParams.get('giveaway') === 'true';
 		
-		if (focusGiveaway) {
-			console.log('🎯 GIVEAWAY FOCUS DETECTED:', { activeGiveaway: !!activeGiveaway });
+		if ((joinGiveaway || focusGiveaway) && activeGiveaway) {
+			console.log('🎯 GIVEAWAY URL DETECTED:', { 
+				join: joinGiveaway, 
+				focus: focusGiveaway,
+				activeGiveaway: !!activeGiveaway 
+			});
 			
-			// Aguardar giveaway carregar e página renderizar
-			const scrollToGiveaway = () => {
-				const giveawaySection = document.getElementById('giveaway-section');
-				console.log('🔍 GIVEAWAY SECTION:', { found: !!giveawaySection });
-				
-				if (giveawaySection) {
-					console.log('📜 SCROLLING TO GIVEAWAY...');
-					giveawaySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+			// Aguardar página carregar
+			setTimeout(() => {
+				if (joinGiveaway) {
+					// Abrir modal diretamente
+					console.log('🎊 OPENING GIVEAWAY MODAL...');
+					setShowGiveaway(true);
 					
-					// Destacar temporariamente
-					giveawaySection.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.6)';
-					giveawaySection.style.transform = 'scale(1.02)';
-					giveawaySection.style.transition = 'all 0.3s ease';
-					
-					setTimeout(() => {
-						giveawaySection.style.boxShadow = '';
-						giveawaySection.style.transform = '';
-					}, 4000);
+					// Atualizar URL para ficar limpa mas manter funcionalidade
+					const newUrl = `${window.location.pathname}?join=giveaway`;
+					window.history.replaceState({}, '', newUrl);
+				} else if (focusGiveaway) {
+					// Scroll para seção
+					const giveawaySection = document.getElementById('giveaway-section');
+					if (giveawaySection) {
+						console.log('📜 SCROLLING TO GIVEAWAY SECTION...');
+						giveawaySection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+						
+						// Destacar temporariamente
+						giveawaySection.style.boxShadow = '0 0 20px rgba(168, 85, 247, 0.6)';
+						giveawaySection.style.transition = 'all 0.3s ease';
+						
+						setTimeout(() => {
+							giveawaySection.style.boxShadow = '';
+						}, 3000);
+					}
 					
 					// Limpar URL parameter
-					window.history.replaceState({}, '', window.location.pathname);
-				} else {
-					console.log('⏳ GIVEAWAY SECTION NOT FOUND, RETRYING...');
-					// Tentar novamente se não encontrou
-					setTimeout(scrollToGiveaway, 500);
+					setTimeout(() => {
+						window.history.replaceState({}, '', window.location.pathname);
+					}, 3000);
 				}
-			};
-
-			// Aguardar mais tempo para garantir que tudo carregou
-			setTimeout(scrollToGiveaway, 2000);
+			}, 1500);
 		}
 	}, [activeGiveaway]);
 
