@@ -3,6 +3,24 @@ import App from "./App";
 import "./index.css";
 import { I18nProvider } from "./i18n";
 
+// Registrar Service Worker para PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('🎉 PWA: Service Worker registered successfully:', registration.scope);
+        
+        // Verificar atualizações
+        registration.addEventListener('updatefound', () => {
+          console.log('🔄 PWA: New version available');
+        });
+      })
+      .catch((error) => {
+        console.log('❌ PWA: Service Worker registration failed:', error);
+      });
+  });
+}
+
 const RESET_VERSION = '2025-08-20-01';
 
 function performOneTimeReset() {
