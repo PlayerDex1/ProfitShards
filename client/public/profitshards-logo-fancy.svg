@@ -1,0 +1,62 @@
+<svg viewBox="0 0 400 100" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Main Text Gradient (similar à imagem) -->
+    <linearGradient id="mainGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#1e3a8a;stop-opacity:1" />
+      <stop offset="25%" style="stop-color:#3b82f6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#8b5cf6;stop-opacity:1" />
+      <stop offset="75%" style="stop-color:#d946ef;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f59e0b;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Glow Effect -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- Text Shadow -->
+    <filter id="textShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Background subtle -->
+  <rect width="400" height="100" fill="rgba(255,255,255,0.02)" rx="10"/>
+  
+  <!-- Main Text: ProfitShards -->
+  <text 
+    x="30" 
+    y="55" 
+    font-family="system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif" 
+    font-size="42" 
+    font-weight="900" 
+    fill="url(#mainGradient)"
+    filter="url(#textShadow)"
+    letter-spacing="-0.03em"
+  >
+    ProfitShards
+  </text>
+  
+  <!-- Subtitle: Tools -->
+  <text 
+    x="32" 
+    y="75" 
+    font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" 
+    font-size="16" 
+    font-weight="700" 
+    fill="#64748b"
+    letter-spacing="0.15em"
+    text-transform="uppercase"
+  >
+    Tools
+  </text>
+  
+  <!-- Decorative elements (opcional) -->
+  <circle cx="350" cy="25" r="3" fill="url(#mainGradient)" opacity="0.6"/>
+  <circle cx="365" cy="35" r="2" fill="url(#mainGradient)" opacity="0.4"/>
+  <circle cx="355" cy="45" r="1.5" fill="url(#mainGradient)" opacity="0.8"/>
+</svg>
