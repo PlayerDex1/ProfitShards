@@ -160,28 +160,28 @@ export default function Home() {
 				</div>
 				
 				{/* WorldShards Resources Section - Centralizado */}
-				<div className="mb-24">
-					<div className="text-center mb-16">
-						<h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 flex items-center justify-center gap-4">
+				<div className="mb-32">
+					<div className="text-center mb-20">
+						<h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
 							<Gamepad2 className="h-10 w-10 text-primary" />
 							🎮 WorldShards Resources
 						</h2>
-						<p className="text-muted-foreground text-xl max-w-2xl mx-auto">
+						<p className="text-muted-foreground text-xl max-w-3xl mx-auto">
 							{t('home.resources.title')}
 						</p>
 					</div>
 
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-12 max-w-6xl mx-auto">
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-7xl mx-auto">
 					{/* Play Game */}
 					<Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-8">
-							<div className="text-center space-y-6">
-								<div className="p-4 bg-green-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<Gamepad2 className="h-10 w-10 text-green-600" />
+						<CardContent className="p-10">
+							<div className="text-center space-y-8">
+								<div className="p-5 bg-green-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<Gamepad2 className="h-12 w-12 text-green-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-green-900 dark:text-green-100 mb-3 text-xl">{t('resources.game.title')}</h3>
-									<p className="text-base text-green-700 dark:text-green-300 mb-6">
+									<h3 className="font-bold text-green-900 dark:text-green-100 mb-4 text-2xl">{t('resources.game.title')}</h3>
+									<p className="text-lg text-green-700 dark:text-green-300 mb-8">
 										{t('resources.game.desc')}
 									</p>
 									<a 
@@ -190,8 +190,8 @@ export default function Home() {
 										rel="noopener noreferrer"
 										className="block"
 									>
-										<Button className="w-full bg-green-600 hover:bg-green-700 text-white py-3">
-											<ExternalLink className="mr-2 h-5 w-5" />
+										<Button className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg">
+											<ExternalLink className="mr-3 h-6 w-6" />
 											{t('resources.game.cta')}
 										</Button>
 									</a>
@@ -202,14 +202,14 @@ export default function Home() {
 
 					{/* Marketplace */}
 					<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-950 dark:to-cyan-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-8">
-							<div className="text-center space-y-6">
-								<div className="p-4 bg-blue-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<ShoppingCart className="h-10 w-10 text-blue-600" />
+						<CardContent className="p-10">
+							<div className="text-center space-y-8">
+								<div className="p-5 bg-blue-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<ShoppingCart className="h-12 w-12 text-blue-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-3 text-xl">{t('resources.marketplace.title')}</h3>
-									<p className="text-base text-blue-700 dark:text-blue-300 mb-6">
+									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-4 text-2xl">{t('resources.marketplace.title')}</h3>
+									<p className="text-lg text-blue-700 dark:text-blue-300 mb-8">
 										{t('resources.marketplace.desc')}
 									</p>
 									<a 
@@ -218,8 +218,8 @@ export default function Home() {
 										rel="noopener noreferrer"
 										className="block"
 									>
-										<Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3">
-											<ExternalLink className="mr-2 h-5 w-5" />
+										<Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg">
+											<ExternalLink className="mr-3 h-6 w-6" />
 											{t('resources.marketplace.cta')}
 										</Button>
 									</a>
@@ -230,18 +230,18 @@ export default function Home() {
 
 					{/* FAQ */}
 					<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-8">
-							<div className="text-center space-y-6">
-								<div className="p-4 bg-purple-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<HelpCircle className="h-10 w-10 text-purple-600" />
+						<CardContent className="p-10">
+							<div className="text-center space-y-8">
+								<div className="p-5 bg-purple-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
+									<HelpCircle className="h-12 w-12 text-purple-600" />
 								</div>
 								<div>
-									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-3 text-xl">{t('resources.faq.title')}</h3>
-									<p className="text-base text-purple-700 dark:text-purple-300 mb-6">
+									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-4 text-2xl">{t('resources.faq.title')}</h3>
+									<p className="text-lg text-purple-700 dark:text-purple-300 mb-8">
 										{t('resources.faq.desc')}
 									</p>
 									<Button 
-										className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3"
+										className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg"
 										onClick={() => {
 											try {
 												if (typeof window !== 'undefined' && typeof document !== 'undefined') {
@@ -255,7 +255,7 @@ export default function Home() {
 											}
 										}}
 									>
-										<MessageCircle className="mr-2 h-5 w-5" />
+										<MessageCircle className="mr-3 h-6 w-6" />
 										{t('resources.faq.cta')}
 									</Button>
 								</div>
@@ -266,19 +266,19 @@ export default function Home() {
 			</div>
 				
 				{/* Activity Stream - SEÇÃO INDEPENDENTE COM LARGURA MÁXIMA */}
-				<div className="mb-24">
+				<div className="mb-32">
 					<div className="w-full max-w-none px-8">
 						<ActivityStream />
 					</div>
 				</div>
 				
 				{/* Sidebar Components - SEÇÃO SEPARADA */}
-				<div className="mb-24" id="giveaway-section" data-section="giveaway">
-					<div className="flex flex-col lg:flex-row gap-12 justify-center items-start w-full max-w-none px-8">
+				<div className="mb-32" id="giveaway-section" data-section="giveaway">
+					<div className="flex flex-col lg:flex-row gap-16 justify-center items-start w-full max-w-none px-8">
 						
 						{/* Giveaway Component */}
 						{activeGiveaway && (
-							<div className="lg:w-[550px]">
+							<div className="lg:w-[600px]">
 								<GiveawayBanner 
 									giveaway={activeGiveaway} 
 									onJoin={openGiveaway}
@@ -288,69 +288,69 @@ export default function Home() {
 						)}
 
 						{/* Lista de Ganhadores Públicos */}
-						<div className="lg:w-[550px]">
+						<div className="lg:w-[600px]">
 							<PublicWinnersList />
 						</div>
 
 						{/* Support Section */}
-						<div className="lg:w-[550px]">
-								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[550px] min-h-[480px]">
-									<CardContent className="p-10">
-										<div className="text-center mb-10">
-											<h3 className="text-3xl font-bold text-foreground mb-6 flex items-center justify-center gap-4">
-												<Sparkles className="h-10 w-10 text-green-500" />
+						<div className="lg:w-[600px]">
+								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[600px] min-h-[520px]">
+									<CardContent className="p-12">
+										<div className="text-center mb-12">
+											<h3 className="text-4xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
+												<Sparkles className="h-12 w-12 text-green-500" />
 												💚 {t('support.title')}
 											</h3>
-											<p className="text-muted-foreground text-xl leading-relaxed">
+											<p className="text-muted-foreground text-2xl leading-relaxed">
 												{t('support.donate')}
 											</p>
 											
 											{/* Créditos e Contatos */}
-											<div className="mt-8 pt-8 border-t border-green-500/20">
-												<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+											<div className="mt-10 pt-10 border-t border-green-500/20">
+												<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
 													{/* Created by - Lado Esquerdo */}
 													<div className="flex flex-col items-start">
-														<p className="text-base text-muted-foreground mb-3 font-medium">{t('support.creator')}</p>
+														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('support.creator')}</p>
 														<a 
 															href="https://x.com/playerhold" 
 															target="_blank" 
 															rel="noopener noreferrer"
-															className="inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200"
+															className="inline-flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-200"
 														>
-															<svg className="h-5 w-5 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
+															<svg className="h-6 w-6 text-blue-500" fill="currentColor" viewBox="0 0 24 24">
 																<path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
 															</svg>
-															<span className="text-lg font-bold text-blue-600">@playerhold</span>
+															<span className="text-xl font-bold text-blue-600">@playerhold</span>
 														</a>
 													</div>
 
 													{/* Discord Feedback - Lado Direito */}
 													<div className="flex flex-col items-end">
-														<p className="text-base text-muted-foreground mb-3 font-medium">{t('support.feedback')}</p>
-														<div className="inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
+														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('support.feedback')}</p>
+														<div className="inline-flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
 															onClick={() => {
 																navigator.clipboard.writeText('Holdboy');
 																alert('Discord copiado: Holdboy\nEnvie DM para feedback!');
 															}}
 														>
-															<MessageCircle className="h-5 w-5 text-purple-500" />
-															<span className="text-lg font-bold text-purple-600">Holdboy</span>
+															<MessageCircle className="h-6 w-6 text-purple-500" />
+															<span className="text-xl font-bold text-purple-600">Holdboy</span>
 														</div>
 													</div>
 												</div>
 											</div>
 										</div>
 										
-										<div className="space-y-8">
+										<div className="space-y-10">
 											{/* OpenLoot Ambassador */}
 											<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-lg transition-shadow">
-												<CardContent className="p-8">
-													<div className="text-center space-y-6">
+												<CardContent className="p-10">
+													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
-															<Globe className="h-7 w-7 text-blue-500" />
-															<span className="font-bold text-xl">{t('support.ambassador')}</span>
+															<Globe className="h-8 w-8 text-blue-500" />
+															<span className="font-bold text-2xl">{t('support.ambassador')}</span>
 														</div>
-														<p className="text-lg text-muted-foreground leading-relaxed">
+														<p className="text-xl text-muted-foreground leading-relaxed">
 															{t('support.ambassador.desc')}
 														</p>
 														<a 
@@ -359,8 +359,8 @@ export default function Home() {
 															rel="noopener noreferrer" 
 															className="block"
 														>
-															<Button size="lg" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg py-4">
-																<ArrowRight className="mr-3 h-6 w-6" />
+															<Button size="lg" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-xl py-5">
+																<ArrowRight className="mr-4 h-7 w-7" />
 																Ambassador
 															</Button>
 														</a>
@@ -370,17 +370,17 @@ export default function Home() {
 
 											{/* Direct Donation */}
 											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-lg transition-shadow">
-												<CardContent className="p-8">
-													<div className="text-center space-y-6">
+												<CardContent className="p-10">
+													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
-															<Zap className="h-7 w-7 text-green-500" />
-															<span className="font-bold text-xl">Doação Direta</span>
+															<Zap className="h-8 w-8 text-green-500" />
+															<span className="font-bold text-2xl">Doação Direta</span>
 														</div>
-														<p className="text-lg text-muted-foreground">
+														<p className="text-xl text-muted-foreground">
 															Carteira EVM
 														</p>
-														<div className="flex items-center gap-4 p-5 bg-muted/50 rounded-lg border">
-															<div className="text-lg font-mono break-all flex-1 select-all">
+														<div className="flex items-center gap-5 p-6 bg-muted/50 rounded-lg border">
+															<div className="text-xl font-mono break-all flex-1 select-all">
 																0x05b...eCD0B5
 															</div>
 															<Button
@@ -389,7 +389,7 @@ export default function Home() {
 																onClick={() => {
 																	navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
 																}}
-																className="shrink-0 text-lg h-12 px-6"
+																className="shrink-0 text-xl h-14 px-8"
 															>
 																{t('donate.copy')}
 															</Button>
@@ -406,28 +406,28 @@ export default function Home() {
 			
 
 			{/* FAQ Section - Centralizado */}
-			<div id="faq-section" className="w-full max-w-none px-8 py-20">
-				<div className="text-center mb-20">
-					<h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
-						<HelpCircle className="h-10 w-10 text-primary" />
+			<div id="faq-section" className="w-full max-w-none px-8 py-24">
+				<div className="text-center mb-24">
+					<h2 className="text-5xl md:text-6xl font-bold text-foreground mb-10 flex items-center justify-center gap-4">
+						<HelpCircle className="h-12 w-12 text-primary" />
 						❓ {t('faq.title')}
 					</h2>
-					<p className="text-muted-foreground text-xl max-w-3xl mx-auto">
+					<p className="text-muted-foreground text-2xl max-w-4xl mx-auto">
 						{t('faq.subtitle')}
 					</p>
 				</div>
 
-				<div className="max-w-6xl mx-auto space-y-10">
+				<div className="max-w-7xl mx-auto space-y-12">
 					{/* FAQ Items */}
 					<Card className="border-blue-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<Calculator className="h-6 w-6 text-blue-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<Calculator className="h-7 w-7 text-blue-500" />
 								{t('faq.calculator.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.calculator.answer')}
 							</p>
 						</CardContent>
@@ -435,13 +435,13 @@ export default function Home() {
 
 					<Card className="border-green-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<Map className="h-6 w-6 text-green-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<Map className="h-7 w-7 text-green-500" />
 								{t('faq.planner.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.planner.answer')}
 							</p>
 						</CardContent>
@@ -449,13 +449,13 @@ export default function Home() {
 
 					<Card className="border-purple-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<Users className="h-6 w-6 text-purple-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<Users className="h-7 w-7 text-purple-500" />
 								{t('faq.stats.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.stats.answer')}
 							</p>
 						</CardContent>
@@ -463,13 +463,13 @@ export default function Home() {
 
 					<Card className="border-yellow-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<Coins className="h-6 w-6 text-yellow-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<Coins className="h-7 w-7 text-yellow-500" />
 								{t('faq.tokens.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.tokens.answer')}
 							</p>
 						</CardContent>
@@ -477,13 +477,13 @@ export default function Home() {
 
 					<Card className="border-orange-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<BarChart3 className="h-6 w-6 text-orange-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<BarChart3 className="h-7 w-7 text-orange-500" />
 								{t('faq.export.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.export.answer')}
 							</p>
 						</CardContent>
@@ -491,13 +491,13 @@ export default function Home() {
 
 					<Card className="border-indigo-200/50">
 						<CardHeader>
-							<CardTitle className="text-left text-xl flex items-center gap-3">
-								<Globe className="h-6 w-6 text-indigo-500" />
+							<CardTitle className="text-left text-2xl flex items-center gap-4">
+								<Globe className="h-7 w-7 text-indigo-500" />
 								{t('faq.offline.question')}
 							</CardTitle>
 						</CardHeader>
 						<CardContent>
-							<p className="text-muted-foreground text-lg">
+							<p className="text-muted-foreground text-xl">
 								{t('faq.offline.answer')}
 							</p>
 						</CardContent>
@@ -507,20 +507,20 @@ export default function Home() {
 			</div>
 
 			{/* Enhanced Footer - Centralizado */}
-			<footer className="mt-24 py-20 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
-				<div className="max-w-5xl mx-auto px-8">
+			<footer className="mt-32 py-24 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
+				<div className="max-w-6xl mx-auto px-8">
 					<div className="text-center">
-						<h2 className="text-5xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-6">
+						<h2 className="text-6xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-8">
 							{t('home.title')}
 						</h2>
-						<p className="text-muted-foreground mb-10 text-xl max-w-3xl mx-auto">
+						<p className="text-muted-foreground mb-12 text-2xl max-w-4xl mx-auto">
 							{t('home.footer.description')}
 						</p>
-						<div className="flex flex-wrap justify-center gap-8 text-lg text-muted-foreground">
-							<span className="flex items-center gap-3">✨ {t('home.footer.feature1')}</span>
-							<span className="flex items-center gap-3">📊 {t('home.footer.feature2')}</span>
-							<span className="flex items-center gap-3">🌍 {t('home.footer.feature3')}</span>
-							<span className="flex items-center gap-3">🆓 {t('home.footer.feature4')}</span>
+						<div className="flex flex-wrap justify-center gap-10 text-xl text-muted-foreground">
+							<span className="flex items-center gap-4">✨ {t('home.footer.feature1')}</span>
+							<span className="flex items-center gap-4">📊 {t('home.footer.feature2')}</span>
+							<span className="flex items-center gap-4">🌍 {t('home.footer.feature3')}</span>
+							<span className="flex items-center gap-4">🆓 {t('home.footer.feature4')}</span>
 						</div>
 					</div>
 				</div>
