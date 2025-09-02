@@ -35,7 +35,7 @@ export default defineConfig({
           'vendor-react': ['react', 'react-dom'],
           'vendor-router': ['wouter'],
           'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
-          'vendor-charts': ['recharts', 'd3'],
+          'vendor-charts': ['recharts'],
           'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
           
           // Feature chunks
