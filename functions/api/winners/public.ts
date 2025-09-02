@@ -8,7 +8,7 @@ export async function onRequestGet(context: any) {
     const limit = parseInt(url.searchParams.get('limit') || '50');
     const isAdmin = url.searchParams.get('admin') === 'true';
 
-    // Auto-setup das tabelas
+    // Auto-setup das tabelas com campos de notificação
     try {
       await env.DB.prepare(`
         CREATE TABLE IF NOT EXISTS giveaway_participants (
@@ -21,7 +21,18 @@ export async function onRequestGet(context: any) {
           participated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
           is_winner INTEGER DEFAULT 0,
           winner_position INTEGER,
-          winner_announced_at TEXT
+          winner_announced_at TEXT,
+          notified BOOLEAN DEFAULT FALSE,
+          notification_method TEXT,
+          notified_by TEXT,
+          notified_at TEXT,
+          claimed BOOLEAN DEFAULT FALSE,
+          claimed_at TEXT,
+          claimed_by TEXT,
+          shipping_status TEXT DEFAULT 'pending',
+          tracking_code TEXT,
+          shipped_at TEXT,
+          shipped_by TEXT
         )
       `).run();
 
@@ -62,6 +73,14 @@ export async function onRequestGet(context: any) {
         p.total_points as totalPoints,
         p.winner_position as position,
         p.winner_announced_at as announcedAt,
+        p.notified as notified,
+        p.notification_method as notificationMethod,
+        p.notified_at as notifiedAt,
+        p.claimed as claimed,
+        p.claimed_at as claimedAt,
+        p.shipping_status as shippingStatus,
+        p.tracking_code as trackingCode,
+        p.shipped_at as shippedAt,
         g.title as giveawayTitle,
         g.prize as prize,
         g.status as giveawayStatus
@@ -91,7 +110,9 @@ export async function onRequestGet(context: any) {
       totalWinners: winners.length,
       giveaways: [...new Set(winners.map(w => w.giveawayId))].length,
       totalPrizes: [...new Set(winners.map(w => w.prize))].length,
-      latestWinner: winners[0] || null
+      latestWinner: winners[0] || null,
+      notifiedCount: winners.filter(w => w.notified).length,
+      claimedCount: winners.filter(w => w.claimed).length
     };
 
     return createResponse({

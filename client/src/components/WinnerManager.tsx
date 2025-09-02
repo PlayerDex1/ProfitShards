@@ -23,6 +23,8 @@ interface Winner {
   claimed: boolean;
   shippingStatus: 'pending' | 'shipped' | 'delivered';
   trackingCode?: string;
+  notificationMethod?: string;
+  notifiedAt?: string;
 }
 
 interface WinnerManagerProps {
@@ -70,9 +72,12 @@ export function WinnerManager({ className }: WinnerManagerProps) {
           userName: w.userEmail.split('@')[0], // Usar parte do email como nome
           points: w.totalPoints,
           selectedAt: w.announcedAt,
-          notified: false, // Inicialmente não notificado
-          claimed: false,  // Inicialmente não reivindicado
-          shippingStatus: 'pending' as const
+          notified: w.notified || false, // Usar status real do banco
+          claimed: w.claimed || false,  // Usar status real do banco
+          shippingStatus: (w.shippingStatus as 'pending' | 'shipped' | 'delivered') || 'pending',
+          trackingCode: w.trackingCode,
+          notificationMethod: w.notificationMethod,
+          notifiedAt: w.notifiedAt
         }));
         
         setWinners(formattedWinners);
@@ -133,11 +138,17 @@ export function WinnerManager({ className }: WinnerManagerProps) {
       console.log('📧 EMAIL API RESPONSE:', result);
 
       if (result.success) {
-        // Atualizar interface
+        // Atualizar interface com dados reais do banco
         setWinners(prev => 
           prev.map(w => 
             w.id === selectedWinner.id 
-              ? { ...w, notified: true }
+              ? { 
+                  ...w, 
+                  notified: true,
+                  // Atualizar com timestamp real
+                  notificationMethod: result.data?.provider || 'unknown',
+                  notifiedAt: result.data?.sentAt || new Date().toISOString()
+                }
               : w
           )
         );
@@ -150,6 +161,11 @@ export function WinnerManager({ className }: WinnerManagerProps) {
         } else {
           alert(`✅ Email enviado automaticamente via ${result.data?.provider}!\n\n📧 Para: ${result.data?.winnerEmail}\n📬 Message ID: ${result.data?.messageId}\n⏰ Enviado: ${result.data?.sentAt}`);
         }
+        
+        // Recarregar dados do banco para garantir sincronização
+        setTimeout(() => {
+          loadWinners();
+        }, 1000);
       } else {
         console.error('API Error Result:', result);
         alert(`❌ Erro: ${result.message || result.error || 'Erro desconhecido'}`);
