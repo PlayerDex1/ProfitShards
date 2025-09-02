@@ -208,25 +208,25 @@ export default function Profile() {
 														<div className="text-2xl font-bold text-foreground">
 															{history.length}
 														</div>
-														<div className="text-sm text-muted-foreground">{t('profile.history.stats.calculations')}</div>
+														<div className="text-base text-muted-foreground">{t('profile.history.stats.calculations')}</div>
 													</div>
 													<div className="text-center">
 														<div className={`text-2xl font-bold ${history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
 															${(history.reduce((sum, h) => sum + (h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0), 0) / history.length).toFixed(2)}
 														</div>
-														<div className="text-sm text-muted-foreground">{t('profile.history.stats.avgProfit')}</div>
+														<div className="text-base text-muted-foreground">{t('profile.history.stats.avgProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-green-600 dark:text-green-400">
 															${Math.max(...history.map(h => h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0)).toFixed(2)}
 														</div>
-														<div className="text-sm text-muted-foreground">{t('profile.history.stats.bestProfit')}</div>
+														<div className="text-base text-muted-foreground">{t('profile.history.stats.bestProfit')}</div>
 													</div>
 													<div className="text-center">
 														<div className="text-2xl font-bold text-foreground">
 															{((history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
 														</div>
-														<div className="text-sm text-muted-foreground">{t('profile.history.stats.successRate')}</div>
+														<div className="text-base text-muted-foreground">{t('profile.history.stats.successRate')}</div>
 													</div>
 												</div>
 											</div>
@@ -256,7 +256,7 @@ export default function Profile() {
 																	</div>
 																	
 																	{/* Data e hora destacadas */}
-																	<div className="flex items-center space-x-4 text-sm">
+																	<div className="flex items-center space-x-4 text-base">
 																		<div className="flex items-center space-x-2 text-foreground font-medium">
 																			<span>📅</span>
 																			<span>{dateStr}</span>
@@ -268,7 +268,7 @@ export default function Profile() {
 																	</div>
 																	
 																	{/* Detalhes do cálculo */}
-																	<div className="grid grid-cols-2 gap-4 text-sm text-muted-foreground bg-muted/50 p-3 rounded-lg">
+																	<div className="grid grid-cols-2 gap-4 text-base text-muted-foreground bg-muted/50 p-3 rounded-lg">
 																		<div>
 																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData && typeof item.formData.investment === 'number' ? item.formData.investment.toFixed(2) : '0.00'}
 																		</div>
@@ -334,7 +334,7 @@ export default function Profile() {
 						<CardContent className="p-4">
 							<div className="text-center">
 								<p className="text-sm text-muted-foreground mb-3">
-									💚 {t('support.donate')}
+										💚 {t('support.donate')}
 								</p>
 								<div className="flex flex-col sm:flex-row gap-3 justify-center">
 									<a 
@@ -342,14 +342,14 @@ export default function Profile() {
 										target="_blank" 
 										rel="noopener noreferrer"
 									>
-										<Button size="sm" variant="outline" className="text-xs">
+										<Button size="sm" variant="outline" className="text-sm">
 											🌐 {t('support.ambassador.cta')}
 										</Button>
 									</a>
 									<Button 
 										size="sm" 
 										variant="outline" 
-										className="text-xs"
+										className="text-sm"
 										onClick={() => {
 											navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
 										}}

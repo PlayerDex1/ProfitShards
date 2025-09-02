@@ -420,7 +420,7 @@ export function MapPlanner({}: MapPlannerProps) {
             {/* Level e Tier em destaque */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-bold text-foreground mb-2 block">🎖️ Level</label>
+                <label className="text-base font-bold text-foreground mb-2 block">🎖️ Level</label>
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
@@ -434,7 +434,7 @@ export function MapPlanner({}: MapPlannerProps) {
                 </select>
               </div>
               <div>
-                <label className="text-sm font-bold text-foreground mb-2 block">🏆 Tier</label>
+                <label className="text-base font-bold text-foreground mb-2 block">🏆 Tier</label>
                 <select
                   value={tier}
                   onChange={(e) => setTier(e.target.value)}
@@ -449,7 +449,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
             {/* Charge */}
             <div>
-              <label className="text-sm font-bold text-foreground mb-2 block">⚡ Cargas (Manual)</label>
+              <label className="text-base font-bold text-foreground mb-2 block">⚡ Cargas (Manual)</label>
               <Input 
                 type="number" 
                 value={charge} 
@@ -466,7 +466,7 @@ export function MapPlanner({}: MapPlannerProps) {
           <div className="space-y-4">
             {/* Tokens Dropados */}
             <div>
-              <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.tokensDropped')}</label>
+              <label className="text-base font-medium text-foreground mb-1 block">{t('planner.tokensDropped')}</label>
               <Input 
                 type="number" 
                 value={tokensDropped} 
@@ -480,7 +480,7 @@ export function MapPlanner({}: MapPlannerProps) {
             {/* Luck e Status */}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.luck')}</label>
+                <label className="text-base font-medium text-foreground mb-1 block">{t('planner.luck')}</label>
                 <Input 
                   type="number" 
                   value={luck} 
@@ -490,7 +490,7 @@ export function MapPlanner({}: MapPlannerProps) {
                 />
               </div>
               <div>
-                <label className="text-sm font-medium text-foreground mb-1 block">{t('planner.status')}</label>
+                <label className="text-base font-medium text-foreground mb-1 block">{t('planner.status')}</label>
                 <select
                   value={status}
                   onChange={(e) => setStatus(e.target.value as any)}
@@ -506,7 +506,7 @@ export function MapPlanner({}: MapPlannerProps) {
 
             {/* Map (opcional, menor destaque) */}
             <div>
-              <label className="text-sm font-medium text-muted-foreground mb-1 block">📍 Mapa (Opcional)</label>
+              <label className="text-base font-medium text-muted-foreground mb-1 block">📍 Mapa (Opcional)</label>
               <select
                 value={mapSize}
                 onChange={(e) => setMapSize(e.target.value as SizeKey)}
@@ -523,8 +523,8 @@ export function MapPlanner({}: MapPlannerProps) {
           {/* Efficiency Metrics */}
           {tokensDropped > 0 && charge > 0 && (
             <div className="p-3 bg-muted/50 rounded-lg border">
-              <div className="text-sm font-medium text-foreground mb-2">Métricas de Eficiência</div>
-              <div className="grid grid-cols-3 gap-3 text-xs">
+              <div className="text-base font-medium text-foreground mb-2">Métricas de Eficiência</div>
+              <div className="grid grid-cols-3 gap-3 text-sm">
                 <div>
                   <div className="text-muted-foreground">Tokens/Charge</div>
                   <div className="font-mono font-medium">{tokensPerCharge.toFixed(1)}</div>
@@ -600,9 +600,9 @@ export function MapPlanner({}: MapPlannerProps) {
             if (localHistory.length === 0) {
               return (
                 <div className="text-center py-8 text-muted-foreground">
-                  <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Nenhum histórico encontrado</p>
-                  <p className="text-xs mt-1">Suas runs aparecerão aqui após serem salvas</p>
+                  <MapPin className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-base">Nenhum histórico encontrado</p>
+                  <p className="text-sm mt-1">Suas runs aparecerão aqui após serem salvas</p>
                 </div>
               );
             }
@@ -637,7 +637,7 @@ export function MapPlanner({}: MapPlannerProps) {
                       <div className="px-4 py-3 border-b bg-muted/30">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
-                            <div className="text-sm font-bold text-foreground">
+                            <div className="text-base font-bold text-foreground">
                               📅 {isToday ? 'Hoje' : (() => {
                                 try {
                                   return day ? new Date(day + 'T12:00:00Z').toLocaleDateString('pt-BR', { 
@@ -650,11 +650,11 @@ export function MapPlanner({}: MapPlannerProps) {
                                 }
                               })()}
                             </div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="text-sm text-muted-foreground">
                               {day}
                             </div>
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-sm text-muted-foreground">
                             {stats.totalRuns} runs • {(stats.totalTokens || 0).toLocaleString()} tokens
                           </div>
                         </div>
@@ -669,7 +669,7 @@ export function MapPlanner({}: MapPlannerProps) {
                             key={h.timestamp} 
                             className="bg-slate-800 rounded-lg border border-slate-700 hover:bg-slate-750 transition-colors duration-200 px-4 py-3"
                           >
-                            <div className="grid grid-cols-6 gap-3 items-center text-xs">
+                            <div className="grid grid-cols-6 gap-3 items-center text-sm">
                               {/* LEVEL/TIER */}
                               <div>
                                 <div className="text-slate-400 uppercase tracking-wide mb-1">LEVEL/TIER</div>
@@ -706,7 +706,7 @@ export function MapPlanner({}: MapPlannerProps) {
                               {/* TIME */}
                               <div>
                                 <div className="text-slate-400 uppercase tracking-wide mb-1">TIME</div>
-                                <div className="text-white font-mono text-xs">
+                                <div className="text-white font-mono text-sm">
                                   {(() => {
                                     try {
                                       return h.timestamp ? new Date(h.timestamp).toLocaleTimeString('pt-BR', { 

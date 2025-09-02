@@ -113,7 +113,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</h3>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<Label htmlFor="investment" className="text-sm font-medium text-foreground">
+							<Label htmlFor="investment" className="text-base font-medium text-foreground">
 								{t('calc.investment')}
 							</Label>
 							<Input
@@ -127,7 +127,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="gemPrice" className="text-sm font-medium text-foreground">
+							<Label htmlFor="gemPrice" className="text-base font-medium text-foreground">
 								{t('calc.gemPrice')}
 							</Label>
 							<Input
@@ -151,7 +151,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</h3>
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div>
-							<Label htmlFor="gemsPurchased" className="text-sm font-medium text-foreground">
+							<Label htmlFor="gemsPurchased" className="text-base font-medium text-foreground">
 								{t('calc.gemsPurchased')}
 							</Label>
 							<Input
@@ -164,7 +164,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="gemsRemaining" className="text-sm font-medium text-foreground">
+							<Label htmlFor="gemsRemaining" className="text-base font-medium text-foreground">
 								{t('calc.gemsRemaining')}
 							</Label>
 							<Input
@@ -177,7 +177,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="gemsConsumed" className="text-sm font-medium text-foreground">
+							<Label htmlFor="gemsConsumed" className="text-base font-medium text-foreground">
 								{t('calc.gemsConsumed')}
 							</Label>
 							<Input
@@ -200,7 +200,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</h3>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
-							<Label htmlFor="tokensEquipment" className="text-sm font-medium text-foreground">
+							<Label htmlFor="tokensEquipment" className="text-base font-medium text-foreground">
 								{t('calc.tokensEquipment')}
 							</Label>
 							<Input
@@ -213,7 +213,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="tokensFarmed" className="text-sm font-medium text-foreground">
+							<Label htmlFor="tokensFarmed" className="text-base font-medium text-foreground">
 								{t('calc.tokensFarmed')}
 							</Label>
 							<Input
@@ -226,7 +226,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="loadsUsed" className="text-sm font-medium text-foreground">
+							<Label htmlFor="loadsUsed" className="text-base font-medium text-foreground">
 								{t('calc.loadsUsed')}
 							</Label>
 							<Input
@@ -239,7 +239,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="tokenPrice" className="text-sm font-medium text-foreground">
+							<Label htmlFor="tokenPrice" className="text-base font-medium text-foreground">
 								{t('calc.tokenPrice')}
 							</Label>
 							<Input
@@ -264,7 +264,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					)}
 					
 					<div className="text-center">
-						<p className="text-xs text-muted-foreground mb-3">
+						<p className="text-sm text-muted-foreground mb-3">
 							💡 Clique no botão abaixo para salvar este cálculo no seu histórico
 						</p>
 						<Button 
