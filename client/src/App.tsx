@@ -9,6 +9,7 @@ import "@/lib/cleanTestGiveaways"; // Limpar giveaways de teste
 // Pages
 import HomePage from "@/pages/home";
 import ProfilePage from "@/pages/profile";
+import TestPage from "@/pages/test";
 import NotFoundPage from "@/pages/not-found";
 
 const queryClient = new QueryClient({
@@ -42,6 +43,7 @@ export default function App() {
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />
           <Route path="/profile" component={ProfilePage} />
+          <Route path="/test" component={TestPage} />
           <Route component={NotFoundPage} />
         </Switch>
         <Toaster />

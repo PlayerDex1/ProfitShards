@@ -5,36 +5,20 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
-  Search, Palette, Layout, BarChart3, Settings, 
-  Sun, Moon, Monitor, Zap, Grid3X3, Sliders,
-  TrendingUp, Users, Gift, Trophy, Star
+  Search, Layout, BarChart3, Settings, 
+  Sun, Moon, Monitor, Grid3X3,
+  TrendingUp, Users, Gift
 } from "lucide-react";
 
-// Componente de Busca Inteligente
+// Componente de Busca Inteligente Simplificado
 function SmartSearch() {
   const [searchTerm, setSearchTerm] = useState('');
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
 
   const handleSearch = (term: string) => {
     if (term.trim()) {
       setSearchHistory(prev => [term, ...prev.filter(h => h !== term)].slice(0, 5));
-      // Aqui implementaríamos a busca real
       console.log('🔍 Buscando:', term);
-    }
-  };
-
-  const handleInputChange = (value: string) => {
-    setSearchTerm(value);
-    
-    // Simular sugestões baseadas no input
-    if (value.length > 2) {
-      const mockSuggestions = [
-        'giveaway', 'calculator', 'analytics', 'winners', 'maps'
-      ].filter(s => s.includes(value.toLowerCase()));
-      setSuggestions(mockSuggestions);
-    } else {
-      setSuggestions([]);
     }
   };
 
@@ -52,7 +36,7 @@ function SmartSearch() {
           <Input
             placeholder="Buscar giveaways, calculadoras, análises..."
             value={searchTerm}
-            onChange={(e) => handleInputChange(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSearch(searchTerm)}
             className="pr-10"
           />
@@ -64,25 +48,6 @@ function SmartSearch() {
             <Search className="h-4 w-4" />
           </Button>
         </div>
-
-        {/* Sugestões em tempo real */}
-        {suggestions.length > 0 && (
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground">Sugestões:</p>
-            <div className="flex flex-wrap gap-2">
-              {suggestions.map((suggestion, index) => (
-                <Badge
-                  key={index}
-                  variant="secondary"
-                  className="cursor-pointer hover:bg-primary hover:text-primary-foreground"
-                  onClick={() => handleSearch(suggestion)}
-                >
-                  {suggestion}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Histórico de buscas */}
         {searchHistory.length > 0 && (
@@ -103,7 +68,7 @@ function SmartSearch() {
           </div>
         )}
 
-        {/* Filtros avançados */}
+        {/* Filtros */}
         <div className="pt-4 border-t">
           <p className="text-sm font-medium mb-3">Filtros:</p>
           <div className="flex flex-wrap gap-2">
@@ -123,35 +88,9 @@ function SmartSearch() {
   );
 }
 
-// Componente de Dashboard Personalizável
+// Componente de Dashboard Personalizável Simplificado
 function CustomizableDashboard() {
-  const [widgets, setWidgets] = useState([
-    { id: 1, type: 'stats', title: 'Estatísticas Gerais', position: 0, visible: true },
-    { id: 2, type: 'chart', title: 'Gráfico de Atividade', position: 1, visible: true },
-    { id: 3, type: 'recent', title: 'Atividades Recentes', position: 2, visible: true },
-    { id: 4, type: 'quick', title: 'Ações Rápidas', position: 3, visible: true }
-  ]);
-
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
-
-  const toggleWidget = (id: number) => {
-    setWidgets(prev => prev.map(w => 
-      w.id === id ? { ...w, visible: !w.visible } : w
-    ));
-  };
-
-  const moveWidget = (id: number, direction: 'up' | 'down') => {
-    setWidgets(prev => {
-      const newWidgets = [...prev];
-      const index = newWidgets.findIndex(w => w.id === id);
-      if (direction === 'up' && index > 0) {
-        [newWidgets[index], newWidgets[index - 1]] = [newWidgets[index - 1], newWidgets[index]];
-      } else if (direction === 'down' && index < newWidgets.length - 1) {
-        [newWidgets[index], newWidgets[index + 1]] = [newWidgets[index + 1], newWidgets[index]];
-      }
-      return newWidgets;
-    });
-  };
 
   return (
     <Card className="w-full">
@@ -180,123 +119,78 @@ function CustomizableDashboard() {
         </div>
       </CardHeader>
       <CardContent>
-        {/* Controles de personalização */}
-        <div className="mb-6 p-4 bg-muted rounded-lg">
-          <p className="text-sm font-medium mb-3">Personalizar Widgets:</p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            {widgets.map((widget) => (
-              <div key={widget.id} className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={widget.visible}
-                  onChange={() => toggleWidget(widget.id)}
-                  className="rounded"
-                />
-                <span className="text-sm">{widget.title}</span>
-                {widget.visible && (
-                  <div className="flex gap-1">
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-6 w-6 p-0"
-                      onClick={() => moveWidget(widget.id, 'up')}
-                    >
-                      ↑
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="h-6 w-6 p-0"
-                      onClick={() => moveWidget(widget.id, 'down')}
-                    >
-                      ↓
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Grid de widgets */}
         <div className={`grid gap-4 ${
           layout === 'grid' 
             ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4' 
             : 'grid-cols-1'
         }`}>
-          {widgets.filter(w => w.visible).map((widget) => (
-            <Card key={widget.id} className="min-h-[200px]">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm">{widget.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {widget.type === 'stats' && (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Users className="h-4 w-4 text-blue-500" />
-                      <span className="text-2xl font-bold">1,234</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Gift className="h-4 w-4 text-green-500" />
-                      <span className="text-2xl font-bold">56</span>
-                    </div>
-                  </div>
-                )}
-                {widget.type === 'chart' && (
-                  <div className="h-32 bg-muted rounded flex items-center justify-center">
-                    <BarChart3 className="h-8 w-8 text-muted-foreground" />
-                  </div>
-                )}
-                {widget.type === 'recent' && (
-                  <div className="space-y-2">
-                    <div className="text-sm">🎉 Novo ganhador anunciado</div>
-                    <div className="text-sm">📊 Métricas atualizadas</div>
-                    <div className="text-sm">🎁 Giveaway criado</div>
-                  </div>
-                )}
-                {widget.type === 'quick' && (
-                  <div className="space-y-2">
-                    <Button size="sm" className="w-full">Criar Giveaway</Button>
-                    <Button size="sm" variant="outline" className="w-full">Ver Analytics</Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          {/* Widget de Estatísticas */}
+          <Card className="min-h-[200px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Estatísticas Gerais</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Users className="h-4 w-4 text-blue-500" />
+                  <span className="text-2xl font-bold">1,234</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Gift className="h-4 w-4 text-green-500" />
+                  <span className="text-2xl font-bold">56</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Widget de Gráfico */}
+          <Card className="min-h-[200px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Gráfico de Atividade</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="h-32 bg-muted rounded flex items-center justify-center">
+                <BarChart3 className="h-8 w-8 text-muted-foreground" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Widget de Atividades */}
+          <Card className="min-h-[200px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Atividades Recentes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="text-sm">🎉 Novo ganhador anunciado</div>
+                <div className="text-sm">📊 Métricas atualizadas</div>
+                <div className="text-sm">🎁 Giveaway criado</div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Widget de Ações */}
+          <Card className="min-h-[200px]">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm">Ações Rápidas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <Button size="sm" className="w-full">Criar Giveaway</Button>
+                <Button size="sm" variant="outline" className="w-full">Ver Analytics</Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </CardContent>
     </Card>
   );
 }
 
-// Componente de Gráficos Interativos
+// Componente de Gráficos Interativos Simplificado
 function InteractiveCharts() {
-  const [selectedChart, setSelectedChart] = useState<'activity' | 'performance' | 'distribution'>('activity');
-  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d'>('30d');
-
-  const mockData = {
-    activity: [
-      { day: 'Seg', users: 120, giveaways: 8, winners: 24 },
-      { day: 'Ter', users: 145, giveaways: 12, winners: 36 },
-      { day: 'Qua', users: 98, giveaways: 6, winners: 18 },
-      { day: 'Qui', users: 167, giveaways: 15, winners: 45 },
-      { day: 'Sex', users: 189, giveaways: 18, winners: 54 },
-      { day: 'Sáb', users: 134, giveaways: 10, winners: 30 },
-      { day: 'Dom', users: 156, giveaways: 14, winners: 42 }
-    ],
-    performance: [
-      { metric: 'Eficiência', value: 85, target: 90, status: 'warning' },
-      { metric: 'Engajamento', value: 92, target: 85, status: 'success' },
-      { metric: 'Conversão', value: 78, target: 80, status: 'warning' },
-      { metric: 'Retenção', value: 88, target: 85, status: 'success' }
-    ],
-    distribution: [
-      { category: 'Small Maps', value: 25, color: '#3B82F6' },
-      { category: 'Medium Maps', value: 35, color: '#10B981' },
-      { category: 'Large Maps', value: 28, color: '#F59E0B' },
-      { category: 'XLarge Maps', value: 12, color: '#EF4444' }
-    ]
-  };
+  const [selectedChart, setSelectedChart] = useState<'activity' | 'performance'>('activity');
 
   return (
     <Card className="w-full">
@@ -306,37 +200,24 @@ function InteractiveCharts() {
             <BarChart3 className="h-5 w-5" />
             Gráficos Interativos
           </CardTitle>
-          <div className="flex items-center gap-2">
-            <select
-              value={selectedChart}
-              onChange={(e) => setSelectedChart(e.target.value as any)}
-              className="px-3 py-1 border rounded text-sm"
-            >
-              <option value="activity">Atividade</option>
-              <option value="performance">Performance</option>
-              <option value="distribution">Distribuição</option>
-            </select>
-            <select
-              value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as any)}
-              className="px-3 py-1 border rounded text-sm"
-            >
-              <option value="7d">7 dias</option>
-              <option value="30d">30 dias</option>
-              <option value="90d">90 dias</option>
-            </select>
-          </div>
+          <select
+            value={selectedChart}
+            onChange={(e) => setSelectedChart(e.target.value as any)}
+            className="px-3 py-1 border rounded text-sm"
+          >
+            <option value="activity">Atividade</option>
+            <option value="performance">Performance</option>
+          </select>
         </div>
       </CardHeader>
       <CardContent>
-        {/* Gráfico de Atividade */}
         {selectedChart === 'activity' && (
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-4">
-              {mockData.activity.map((day, index) => (
+            <div className="grid grid-cols-7 gap-2">
+              {['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'].map((day, index) => (
                 <div key={index} className="text-center p-3 bg-muted rounded">
-                  <div className="text-lg font-bold">{day.users}</div>
-                  <div className="text-sm text-muted-foreground">{day.day}</div>
+                  <div className="text-lg font-bold">{Math.floor(Math.random() * 200) + 50}</div>
+                  <div className="text-sm text-muted-foreground">{day}</div>
                 </div>
               ))}
             </div>
@@ -350,50 +231,22 @@ function InteractiveCharts() {
           </div>
         )}
 
-        {/* Gráfico de Performance */}
         {selectedChart === 'performance' && (
           <div className="space-y-4">
-            {mockData.performance.map((item, index) => (
+            {[
+              { metric: 'Eficiência', value: 85, target: 90 },
+              { metric: 'Engajamento', value: 92, target: 85 },
+              { metric: 'Conversão', value: 78, target: 80 },
+              { metric: 'Retenção', value: 88, target: 85 }
+            ].map((item, index) => (
               <div key={index} className="flex items-center justify-between p-3 bg-muted rounded">
                 <span className="font-medium">{item.metric}</span>
-                <div className="flex items-center gap-3">
-                  <div className="text-right">
-                    <div className="text-lg font-bold">{item.value}%</div>
-                    <div className="text-sm text-muted-foreground">Meta: {item.target}%</div>
-                  </div>
-                  <Badge variant={item.status === 'success' ? 'default' : 'secondary'}>
-                    {item.status === 'success' ? '✅' : '⚠️'}
-                  </Badge>
+                <div className="text-right">
+                  <div className="text-lg font-bold">{item.value}%</div>
+                  <div className="text-sm text-muted-foreground">Meta: {item.target}%</div>
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Gráfico de Distribuição */}
-        {selectedChart === 'distribution' && (
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              {mockData.distribution.map((item, index) => (
-                <div key={index} className="p-4 bg-muted rounded">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div 
-                      className="w-4 h-4 rounded"
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="font-medium">{item.category}</span>
-                  </div>
-                  <div className="text-2xl font-bold">{item.value}%</div>
-                </div>
-              ))}
-            </div>
-            <div className="h-64 bg-muted rounded flex items-center justify-center">
-              <div className="text-center">
-                <TrendingUp className="h-12 w-12 text-muted-foreground mx-auto mb-2" />
-                <p className="text-muted-foreground">Gráfico de pizza interativo</p>
-                <p className="text-sm text-muted-foreground">Hover para detalhes</p>
-              </div>
-            </div>
           </div>
         )}
       </CardContent>
@@ -401,29 +254,14 @@ function InteractiveCharts() {
   );
 }
 
-// Componente de Personalização
+// Componente de Personalização Simplificado
 function PersonalizationPanel() {
   const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
   const [accentColor, setAccentColor] = useState('#3B82F6');
-  const [fontSize, setFontSize] = useState('medium');
-  const [animations, setAnimations] = useState(true);
-  const [shortcuts, setShortcuts] = useState({
-    'Ctrl+K': 'Busca rápida',
-    'Ctrl+D': 'Dashboard',
-    'Ctrl+C': 'Calculadora',
-    'Ctrl+G': 'Giveaways'
-  });
 
   const accentColors = [
     '#3B82F6', '#10B981', '#F59E0B', '#EF4444', 
     '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'
-  ];
-
-  const fontSizes = [
-    { key: 'small', label: 'Pequeno', size: '14px' },
-    { key: 'medium', label: 'Médio', size: '16px' },
-    { key: 'large', label: 'Grande', size: '18px' },
-    { key: 'xlarge', label: 'Extra Grande', size: '20px' }
   ];
 
   return (
@@ -474,50 +312,6 @@ function PersonalizationPanel() {
           </div>
         </div>
 
-        {/* Tamanho da fonte */}
-        <div className="space-y-3">
-          <h3 className="font-medium">Tamanho da Fonte</h3>
-          <div className="flex gap-2">
-            {fontSizes.map(({ key, label, size }) => (
-              <Button
-                key={key}
-                variant={fontSize === key ? 'default' : 'outline'}
-                onClick={() => setFontSize(key)}
-                style={{ fontSize: size }}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        {/* Animações */}
-        <div className="space-y-3">
-          <h3 className="font-medium">Animações</h3>
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={animations}
-              onChange={(e) => setAnimations(e.target.checked)}
-              className="rounded"
-            />
-            <span>Habilitar animações e transições</span>
-          </div>
-        </div>
-
-        {/* Atalhos de teclado */}
-        <div className="space-y-3">
-          <h3 className="font-medium">Atalhos de Teclado</h3>
-          <div className="grid grid-cols-2 gap-3">
-            {Object.entries(shortcuts).map(([key, action]) => (
-              <div key={key} className="flex justify-between items-center p-2 bg-muted rounded">
-                <kbd className="px-2 py-1 bg-background rounded text-sm font-mono">{key}</kbd>
-                <span className="text-sm">{action}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Botões de ação */}
         <div className="flex gap-3 pt-4 border-t">
           <Button onClick={() => console.log('Salvando preferências...')}>
@@ -525,9 +319,6 @@ function PersonalizationPanel() {
           </Button>
           <Button variant="outline" onClick={() => console.log('Resetando...')}>
             Resetar Padrões
-          </Button>
-          <Button variant="outline" onClick={() => console.log('Exportando...')}>
-            Exportar Configuração
           </Button>
         </div>
       </CardContent>
