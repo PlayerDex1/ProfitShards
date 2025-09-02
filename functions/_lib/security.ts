@@ -7,7 +7,9 @@ export interface Env {
 const RATE_LIMITS = {
   auth: { requests: 5, window: 60 }, // 5 tentativas por minuto
   api: { requests: 100, window: 60 }, // 100 requests por minuto
-  strict: { requests: 3, window: 300 } // 3 tentativas por 5 minutos (para ações críticas)
+  strict: { requests: 3, window: 300 }, // 3 tentativas por 5 minutos (para ações críticas)
+  admin: { requests: 20, window: 60 }, // 20 tentativas por minuto (para ações administrativas)
+  email: { requests: 10, window: 60 } // 10 emails por minuto (para envio de notificações)
 };
 
 // Security Headers

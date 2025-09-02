@@ -8,8 +8,8 @@ export async function onRequestPost(context: any) {
   const clientIP = getClientIP(request);
 
   try {
-    // Rate limiting para envio de emails
-    const rateLimitResult = await checkRateLimit(env, clientIP, 'strict', request);
+    // Rate limiting para envio de emails (mais permissivo para admins)
+    const rateLimitResult = await checkRateLimit(env, clientIP, 'email', request);
     if (!rateLimitResult.allowed) {
       return createErrorResponse('Too many email attempts', 429);
     }
