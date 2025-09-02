@@ -26,67 +26,20 @@ export default defineConfig({
     minify: 'terser',
     sourcemap: false,
     
-    // Bundle splitting otimizado
+    // Bundle splitting simplificado e confiável
     rollupOptions: {
       output: {
-        // Chunks principais
+        // Chunks principais - apenas vendor chunks que sabemos que funcionam
         manualChunks: {
-          // Vendor chunks
           'vendor-react': ['react', 'react-dom'],
           'vendor-router': ['wouter'],
           'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-select', '@radix-ui/react-tabs'],
           'vendor-charts': ['recharts'],
-          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge'],
-          
-          // Feature chunks
-          'feature-calculator': [
-            './src/components/Calculator.tsx',
-            './src/components/Results.tsx',
-            './src/components/EquipmentComparison.tsx'
-          ],
-          'feature-giveaways': [
-            './src/components/GiveawayAdmin.tsx',
-            './src/components/GiveawayAnalytics.tsx',
-            './src/components/GiveawayModal.tsx',
-            './src/components/WinnerManager.tsx'
-          ],
-          'feature-dashboard': [
-            './src/components/AdminDashboardV2.tsx',
-            './src/components/HybridDashboard.tsx',
-            './src/components/MetricsDashboard.tsx'
-          ],
-          'feature-maps': [
-            './src/components/MapPlanner.tsx',
-            './src/components/MapMetrics.tsx'
-          ],
-          
-          // Shared chunks
-          'shared-ui': [
-            './src/components/ui/card.tsx',
-            './src/components/ui/button.tsx',
-            './src/components/ui/input.tsx',
-            './src/components/ui/badge.tsx',
-            './src/components/ui/dialog.tsx',
-            './src/components/ui/select.tsx',
-            './src/components/ui/tabs.tsx'
-          ],
-          'shared-hooks': [
-            './src/hooks/use-auth.ts',
-            './src/hooks/use-theme.ts',
-            './src/hooks/use-giveaway.ts'
-          ],
-          'shared-utils': [
-            './src/lib/equipmentBuilds.ts',
-            './src/lib/missionVerification.ts',
-            './src/lib/lazy-loading.tsx'
-          ]
+          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge']
         },
         
         // Nomes de arquivos otimizados
-        chunkFileNames: (chunkInfo) => {
-          const facadeModuleId = chunkInfo.facadeModuleId ? chunkInfo.facadeModuleId.split('/').pop() : 'chunk';
-          return `js/[name]-[hash].js`;
-        },
+        chunkFileNames: 'js/[name]-[hash].js',
         entryFileNames: 'js/[name]-[hash].js',
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
