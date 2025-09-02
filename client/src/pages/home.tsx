@@ -288,13 +288,13 @@ export default function Home() {
 						)}
 
 						{/* Lista de Ganhadores Públicos */}
-						<div className="lg:w-[600px]">
+						<div className="lg:w-[450px]">
 							<PublicWinnersList />
 						</div>
 
 						{/* Support Section */}
-						<div className="lg:w-[600px]">
-								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[600px] min-h-[520px]">
+						<div className="lg:w-[500px]">
+								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[500px] min-h-[520px]">
 									<CardContent className="p-12">
 										<div className="text-center mb-12">
 											<h3 className="text-4xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
