@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n";
 import { Gift, Clock, Users, Trophy, Sparkles, X } from "lucide-react";
 import { Giveaway } from "@/types/giveaway";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { useAuth } from "@/hooks/use-auth";
 
 interface GiveawayBannerProps {
   giveaway?: Giveaway;
@@ -14,9 +16,12 @@ interface GiveawayBannerProps {
 
 export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBannerProps) {
   const { t } = useI18n();
+  const { user } = useAuth();
+  const { checkForWinnerNotification } = usePushNotifications();
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [dismissed, setDismissed] = useState(false);
   const [participantCount, setParticipantCount] = useState(0);
+  const [hasCheckedWinner, setHasCheckedWinner] = useState(false);
 
   // Buscar participantes da API global
   useEffect(() => {
@@ -52,7 +57,7 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
     };
   }, [giveaway]);
 
-  // Calcular tempo restante
+  // Calcular tempo restante e verificar ganhador
   useEffect(() => {
     if (!giveaway || giveaway.status !== 'active') return;
 
@@ -63,6 +68,13 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
 
       if (diff <= 0) {
         setTimeLeft("Encerrado");
+        
+        // Verificar se o usuário é ganhador quando o giveaway termina
+        if (user && !hasCheckedWinner) {
+          checkForWinnerNotification(giveaway.id);
+          setHasCheckedWinner(true);
+        }
+        
         return;
       }
 
@@ -83,7 +95,7 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
     const interval = setInterval(updateTimer, 60000); // Atualizar a cada minuto
 
     return () => clearInterval(interval);
-  }, [giveaway]);
+  }, [giveaway, user, hasCheckedWinner, checkForWinnerNotification]);
 
   // Se não há giveaway ativo ou foi dispensado
   if (!giveaway || giveaway.status !== 'active' || dismissed) {

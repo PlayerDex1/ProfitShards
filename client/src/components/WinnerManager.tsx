@@ -10,6 +10,7 @@ import {
   Crown, Mail, ExternalLink, Copy, Eye, Send, 
   Trophy, Users, Calendar, Gift, Check, X, AlertCircle, Clock
 } from "lucide-react";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 interface Winner {
   id: string;
@@ -32,6 +33,7 @@ interface WinnerManagerProps {
 }
 
 export function WinnerManager({ className }: WinnerManagerProps) {
+  const { notifyEmailSent } = usePushNotifications();
   const [winners, setWinners] = useState<Winner[]>([]);
   const [selectedWinner, setSelectedWinner] = useState<Winner | null>(null);
   const [notificationMessage, setNotificationMessage] = useState('');
@@ -154,6 +156,9 @@ export function WinnerManager({ className }: WinnerManagerProps) {
         );
         
         setShowNotificationDialog(false);
+        
+        // Notificar via push notification
+        notifyEmailSent(selectedWinner.giveawayTitle, 'Prêmio do Giveaway');
         
         if (result.data?.provider === 'manual_fallback') {
           // Mostrar dados para envio manual se APIs falharam

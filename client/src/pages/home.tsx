@@ -18,11 +18,13 @@ import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { WinnerBanner } from "@/components/WinnerBanner";
 import { PublicWinnersList } from "@/components/PublicWinnersList";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
 
 export default function Home() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 	const { activeGiveaway } = useGiveaway();
+	const { checkForWinnerNotification } = usePushNotifications();
 	const [showGiveaway, setShowGiveaway] = useState(false);
 
 	// Função para abrir giveaway e atualizar URL
@@ -45,6 +47,18 @@ export default function Home() {
 	useEffect(() => {
 		importBuildsFromUrl();
 	}, []);
+
+	// Verificar se o usuário é ganhador quando a página carrega
+	useEffect(() => {
+		if (user && activeGiveaway) {
+			// Aguardar um pouco para garantir que tudo carregou
+			const timer = setTimeout(() => {
+				checkForWinnerNotification(activeGiveaway.id);
+			}, 2000);
+			
+			return () => clearTimeout(timer);
+		}
+	}, [user, activeGiveaway, checkForWinnerNotification]);
 
 	// Efeito para abrir modal do giveaway via URL
 	useEffect(() => {

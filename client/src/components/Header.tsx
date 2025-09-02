@@ -1,4 +1,4 @@
-import { Moon, Sun, Calculator, LogIn, LogOut, Globe } from "lucide-react";
+import { Moon, Sun, Calculator, LogIn, LogOut, Globe, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { useTheme } from "@/hooks/useTheme";
@@ -7,6 +7,8 @@ import { AuthModal } from "@/components/AuthModal";
 import { GiveawayTopBanner } from "@/components/GiveawayTopBanner";
 import { useI18n } from "@/i18n";
 import { useLocation, useRoute } from "wouter";
+import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { PushNotification } from "@/components/PushNotification";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
@@ -14,6 +16,7 @@ export function Header() {
   const [showAuth, setShowAuth] = useState(false);
   const [showGiveaway, setShowGiveaway] = useState(false);
   const [location, setLocation] = useLocation();
+  const { notifications, isVisible, closeCurrentNotification, currentNotification } = usePushNotifications();
 
   const { t, lang, setLang } = useI18n();
 
@@ -136,6 +139,22 @@ export function Header() {
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">
+                  {/* Notification Bell */}
+                  <div className="relative">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors relative"
+                    >
+                      <Bell className="h-4 w-4" />
+                      {notifications.filter(n => !n.isRead).length > 0 && (
+                        <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                          {notifications.filter(n => !n.isRead).length}
+                        </span>
+                      )}
+                    </Button>
+                  </div>
+                  
                   <span className="text-sm font-medium px-3 py-1 bg-gradient-to-r from-green-500/10 to-emerald-600/10 border border-green-500/20 rounded-full">
                     Olá, <span className="text-green-600 font-bold">{user}</span>
                   </span>
@@ -164,6 +183,13 @@ export function Header() {
       </header>
 
       {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+      
+      {/* Push Notifications */}
+      <PushNotification
+        isVisible={isVisible}
+        onClose={closeCurrentNotification}
+        notification={currentNotification}
+      />
     </>
   );
 }
