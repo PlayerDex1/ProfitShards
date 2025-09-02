@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   TrendingUp, User, Calculator, Map, BarChart3, Zap, Target, Users, ArrowRight, 
-  Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle 
+  Sparkles, Globe, ExternalLink, ShoppingCart, HelpCircle, Gamepad2, Coins, MessageCircle, Gift, Star 
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useGiveaway } from "@/hooks/use-giveaway";
@@ -276,23 +276,43 @@ export default function Home() {
 				<div className="mb-32" id="giveaway-section" data-section="giveaway">
 					<div className="flex flex-col lg:flex-row gap-16 justify-center items-start w-full max-w-none px-8">
 						
-						{/* Giveaway Component */}
+						{/* Giveaway Component - COMPONENTE SEPARADO */}
 						{activeGiveaway && (
 							<div className="lg:w-[600px]">
-								<GiveawayBanner 
-									giveaway={activeGiveaway} 
-									onJoin={openGiveaway}
-									compact={false}
-								/>
+								<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200">
+									<CardHeader>
+										<CardTitle className="text-2xl font-bold text-purple-900 dark:text-purple-100 flex items-center gap-3">
+											<Gift className="h-8 w-8 text-purple-600" />
+											🎉 Giveaway Ativo
+										</CardTitle>
+									</CardHeader>
+									<CardContent>
+										<GiveawayBanner 
+											giveaway={activeGiveaway} 
+											onJoin={openGiveaway}
+											compact={false}
+										/>
+									</CardContent>
+								</Card>
 							</div>
 						)}
 
-						{/* Lista de Ganhadores Públicos */}
-						<div className="lg:w-[450px]">
-							<PublicWinnersList />
+						{/* Lista de Ganhadores Públicos - COMPONENTE SEPARADO */}
+						<div className="lg:w-[700px]">
+							<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-950 dark:to-cyan-900 hover:shadow-lg transition-all duration-200">
+								<CardHeader>
+									<CardTitle className="text-2xl font-bold text-blue-900 dark:text-blue-100 flex items-center gap-3">
+										<Star className="h-8 w-8 text-blue-600" />
+										🏆 Ganhadores Recentes
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									<PublicWinnersList />
+								</CardContent>
+							</Card>
 						</div>
 
-						{/* Support Section */}
+						{/* Support Section - COMPONENTE SEPARADO */}
 						<div className="lg:w-[500px]">
 								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[500px] min-h-[520px]">
 									<CardContent className="p-12">
@@ -370,7 +390,7 @@ export default function Home() {
 
 											{/* Direct Donation */}
 											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-lg transition-shadow">
-												<CardContent className="p-10">
+												<CardContent className="p-12">
 													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
 															<Zap className="h-8 w-8 text-green-500" />
