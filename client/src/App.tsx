@@ -7,10 +7,10 @@ import { forceCleanCorruptedHistory } from "@/lib/historyApi";
 import "@/lib/cleanTestGiveaways"; // Limpar giveaways de teste
 
 // Pages
-import HomePage from "./pages/home";
-import ProfilePage from "./pages/profile";
-import TestPage from "./pages/test";
-import NotFoundPage from "./pages/not-found";
+import HomePage from "@/pages/home";
+import ProfilePage from "@/pages/profile";
+import TestPage from "@/pages/test";
+import NotFoundPage from "@/pages/not-found";
 
 const queryClient = new QueryClient({
   defaultOptions: {
