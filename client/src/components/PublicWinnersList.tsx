@@ -34,11 +34,21 @@ export function PublicWinnersList() {
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
+  // DEBUG VISÍVEL - FORÇAR DEPLOY
+  console.log('🚀 COMPONENTE PublicWinnersList MONTADO - VERSÃO CORRIGIDA!');
+  console.log('🕐 Timestamp de montagem:', new Date().toISOString());
+  console.log('🔧 Sistema de cache bypass ativo');
+  console.log('⏰ Polling configurado: 2s, 3s, 5s');
+
   useEffect(() => {
+    console.log('🎯 useEffect executado - configurando polling...');
     loadWinners();
     
     // Atualizar mais frequentemente para detectar novos ganhadores
-    const interval = setInterval(loadWinners, 3000); // A cada 3 segundos
+    const interval = setInterval(() => {
+      console.log('🔄 Polling principal: executando...');
+      loadWinners();
+    }, 3000); // A cada 3 segundos
     
     // Escutar eventos de novos ganhadores
     const handleNewWinner = () => {
@@ -65,7 +75,14 @@ export function PublicWinnersList() {
       loadWinners();
     }, 5000); // A cada 5 segundos
     
+    console.log('✅ Todos os intervalos configurados:', {
+      principal: '3s',
+      agressivo: '2s', 
+      cacheBypass: '5s'
+    });
+    
     return () => {
+      console.log('🧹 Cleanup: removendo intervalos e event listeners...');
       clearInterval(interval);
       clearInterval(aggressivePolling);
       clearInterval(cacheBypassPolling);
