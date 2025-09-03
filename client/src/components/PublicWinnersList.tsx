@@ -35,10 +35,12 @@ export function PublicWinnersList() {
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   // DEBUG VISÍVEL - FORÇAR DEPLOY
-  console.log('🚀 COMPONENTE PublicWinnersList MONTADO - VERSÃO CORRIGIDA!');
+  console.log('🚀 COMPONENTE PublicWinnersList MONTADO - VERSÃO CORRIGIDA v2.0!');
   console.log('🕐 Timestamp de montagem:', new Date().toISOString());
   console.log('🔧 Sistema de cache bypass ativo');
   console.log('⏰ Polling configurado: 2s, 3s, 5s');
+  console.log('🎯 DEPLOY FORÇADO - VERSÃO:', '2.0.0');
+  console.log('🔍 Hash do componente:', '50b5d80-deploy-forced');
 
   useEffect(() => {
     console.log('🎯 useEffect executado - configurando polling...');
