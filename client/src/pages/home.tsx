@@ -373,21 +373,19 @@ export default function Home() {
 										</div>
 										
 										<div className="space-y-10">
-											{/* OpenLoot Ambassador */}
-											<Card className="border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-lg transition-shadow">
-												<CardContent className="p-10">
+											<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground shadow-sm border border-green-500/20 bg-gradient-to-br from-blue-500/5 to-purple-500/5 hover:shadow-lg transition-shadow">
+												<div className="p-10">
 													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
-															<Globe className="h-8 w-8 text-blue-500" />
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-globe h-8 w-8 text-blue-500">
+																<circle cx="12" cy="12" r="10"></circle>
+																<path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+																<path d="M2 12h20"></path>
+															</svg>
 															<span className="font-bold text-2xl">OpenLoot (Ambassador)</span>
 														</div>
 														<p className="text-xl text-muted-foreground leading-relaxed">Use my ambassador link</p>
-														<a 
-															href="https://openloot.com/ambassador/link?code=HOLDBOY" 
-															target="_blank" 
-															rel="noopener noreferrer" 
-															className="block"
-														>
+														<a href="https://openloot.com/ambassador/link?code=HOLDBOY" target="_blank" rel="noopener noreferrer" className="block">
 															<button className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary hover:bg-primary/90 h-11 rounded-md px-8 w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-xl py-5">
 																<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right mr-4 h-7 w-7">
 																	<path d="M5 12h14"></path>
@@ -397,20 +395,18 @@ export default function Home() {
 															</button>
 														</a>
 													</div>
-												</CardContent>
-											</Card>
-
-											{/* Direct Donation */}
-											<Card className="border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-lg transition-shadow">
-												<CardContent className="p-12">
+												</div>
+											</div>
+											<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground shadow-sm border border-green-500/20 bg-gradient-to-br from-green-500/5 to-emerald-500/5 hover:shadow-lg transition-shadow">
+												<div className="p-12">
 													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
-															<Zap className="h-8 w-8 text-green-500" />
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap h-8 w-8 text-green-500">
+																<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+															</svg>
 															<span className="font-bold text-2xl">Doação Direta</span>
 														</div>
-														<p className="text-xl text-muted-foreground">
-															Carteira EVM
-														</p>
+														<p className="text-xl text-muted-foreground">Carteira EVM</p>
 														<div className="flex items-center gap-5 p-6 bg-muted/50 rounded-lg border">
 															<div className="text-xl font-mono break-all flex-1 select-all">
 																0x05b...eCD0B5
@@ -426,10 +422,12 @@ export default function Home() {
 															</button>
 														</div>
 													</div>
-												</CardContent>
-											</Card>
+												</div>
+											</div>
 										</div>
+									</div>
 								</div>
+							</div>
 						</div>
 					</div>
 				</div>
