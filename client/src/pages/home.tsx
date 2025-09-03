@@ -532,7 +532,6 @@ export default function Home() {
 					</Card>
 				</div>
 			</div>
-			</div>
 
 			{/* Enhanced Footer - Centralizado */}
 			<footer className="mt-32 py-24 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
