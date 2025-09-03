@@ -19,6 +19,7 @@ import { WinnerBanner } from "@/components/WinnerBanner";
 import { WinnersDisplay } from "@/components/WinnersDisplay";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { Sidebar } from "@/components/Sidebar";
+import { ActivityStream } from "@/components/ActivityStream";
 
 export default function Home() {
 	const { t } = useI18n();
@@ -288,6 +289,13 @@ export default function Home() {
 							</Button>
 						</Link>
 					</div>
+				</div>
+			</div>
+
+			{/* Feed de Atividade Funcional - LIMPO E ORGANIZADO */}
+			<div className="mb-32">
+				<div className="w-full max-w-none px-8">
+					<ActivityStream />
 				</div>
 			</div>
 				
