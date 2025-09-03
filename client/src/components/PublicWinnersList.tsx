@@ -37,8 +37,8 @@ export function PublicWinnersList() {
   useEffect(() => {
     loadWinners();
     
-    // Atualizar a cada 30 segundos para manter dados frescos
-    const interval = setInterval(loadWinners, 30000);
+    // Atualizar mais frequentemente para detectar novos ganhadores
+    const interval = setInterval(loadWinners, 10000); // A cada 10 segundos
     
     // Escutar eventos de novos ganhadores
     const handleNewWinner = () => {
@@ -47,15 +47,29 @@ export function PublicWinnersList() {
       setTimeout(loadWinners, 1000);
     };
     
+    // Escutar eventos específicos
     window.addEventListener('lottery-completed', handleNewWinner);
     window.addEventListener('giveaway-finished', handleNewWinner);
     window.addEventListener('new-winner-announced', handleNewWinner);
     
+    // Também escutar eventos customizados que podem ser disparados
+    window.addEventListener('winner-announced', handleNewWinner);
+    window.addEventListener('giveaway-winner-selected', handleNewWinner);
+    
+    // Polling mais agressivo para detectar mudanças
+    const aggressivePolling = setInterval(() => {
+      console.log('🔍 Polling agressivo: verificando novos ganhadores...');
+      loadWinners();
+    }, 5000); // A cada 5 segundos
+    
     return () => {
       clearInterval(interval);
+      clearInterval(aggressivePolling);
       window.removeEventListener('lottery-completed', handleNewWinner);
       window.removeEventListener('giveaway-finished', handleNewWinner);
       window.removeEventListener('new-winner-announced', handleNewWinner);
+      window.removeEventListener('winner-announced', handleNewWinner);
+      window.removeEventListener('giveaway-winner-selected', handleNewWinner);
     };
   }, []);
 
@@ -75,6 +89,28 @@ export function PublicWinnersList() {
       console.log('🏆 Ganhadores carregados:', result.winners?.length || 0, 'ganhadores');
       
       if (result.winners) {
+        // Verificar se há mudanças nos ganhadores
+        const hasChanges = JSON.stringify(result.winners) !== JSON.stringify(winners);
+        
+        if (hasChanges) {
+          console.log('🔄 Mudanças detectadas nos ganhadores!');
+          console.log('📊 Ganhadores anteriores:', winners.length);
+          console.log('📊 Ganhadores atuais:', result.winners.length);
+          
+          // Se há novos ganhadores, destacar
+          if (result.winners.length > winners.length) {
+            console.log('🎉 NOVOS GANHADORES DETECTADOS!');
+            // Disparar evento customizado para outros componentes
+            window.dispatchEvent(new CustomEvent('winners-updated', {
+              detail: { 
+                previousCount: winners.length, 
+                currentCount: result.winners.length,
+                newWinners: result.winners.slice(0, result.winners.length - winners.length)
+              }
+            }));
+          }
+        }
+        
         setWinners(result.winners);
         setStats(result.stats);
         setLastUpdated(new Date());
@@ -182,6 +218,20 @@ export function PublicWinnersList() {
         )}
 
         <Separator className="mb-6" />
+
+        {/* Botão de Atualização Forçada */}
+        <div className="text-center mb-6">
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={loadWinners}
+            disabled={loading}
+            className="border-purple-300 hover:bg-purple-100 text-purple-700"
+          >
+            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Atualizando...' : 'Verificar Novos Ganhadores'}
+          </Button>
+        </div>
 
         {/* Lista de Ganhadores */}
         {loading ? (
