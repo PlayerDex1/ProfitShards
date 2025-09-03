@@ -308,19 +308,57 @@ export default function Home() {
 						{/* Giveaway Component - COMPONENTE SEPARADO */}
 						{activeGiveaway && (
 							<div className="lg:w-[600px]">
-								<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200">
-									<CardHeader>
-										<CardTitle className="text-2xl font-bold text-purple-900 dark:text-purple-100 flex items-center gap-3">
-											<Gift className="h-8 w-8 text-purple-600" />
+								<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-xl transition-all duration-300 group">
+									<CardHeader className="pb-6">
+										<CardTitle className="text-3xl font-bold text-purple-900 dark:text-purple-100 flex items-center gap-4">
+											<div className="p-3 bg-gradient-to-br from-purple-500 to-violet-500 rounded-xl group-hover:scale-110 transition-transform">
+												<Gift className="h-8 w-8 text-white" />
+											</div>
 											🎉 Giveaway Ativo
 										</CardTitle>
+										
+										{/* Barra de progresso visual */}
+										<div className="w-full bg-purple-200 dark:bg-purple-800 rounded-full h-3 mt-4">
+											<div 
+												className="bg-gradient-to-r from-purple-500 to-violet-500 h-3 rounded-full transition-all duration-500"
+												style={{ 
+													width: `${Math.min((activeGiveaway.currentParticipants / (activeGiveaway.maxParticipants || 100)) * 100, 100)}%` 
+												}}
+											/>
+										</div>
+										<p className="text-sm text-purple-600 dark:text-purple-300 mt-2">
+											{activeGiveaway.currentParticipants} participantes • Meta: {activeGiveaway.maxParticipants || 100}
+										</p>
 									</CardHeader>
-									<CardContent>
+									
+									<CardContent className="space-y-6">
 										<GiveawayBanner 
 											giveaway={activeGiveaway} 
 											onJoin={openGiveaway}
 											compact={false}
 										/>
+										
+										{/* Estatísticas rápidas */}
+										<div className="grid grid-cols-3 gap-4 pt-4 border-t border-purple-200 dark:border-purple-700">
+											<div className="text-center">
+												<div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+													{activeGiveaway?.prize || 'N/A'}
+												</div>
+												<div className="text-sm text-purple-600 dark:text-purple-400">Prêmio</div>
+											</div>
+											<div className="text-center">
+												<div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+													{activeGiveaway?.status || 'Ativo'}
+												</div>
+												<div className="text-sm text-purple-600 dark:text-purple-400">Status</div>
+											</div>
+											<div className="text-center">
+												<div className="text-2xl font-bold text-purple-700 dark:text-purple-300">
+													{activeGiveaway?.currentParticipants || 0}
+												</div>
+												<div className="text-sm text-purple-600 dark:text-purple-400">Participantes</div>
+											</div>
+										</div>
 									</CardContent>
 								</Card>
 							</div>
