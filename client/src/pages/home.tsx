@@ -287,10 +287,10 @@ export default function Home() {
 						<div className="p-4 bg-gradient-to-br from-primary/20 to-green-500/20 rounded-2xl">
 							<Star className="h-12 w-12 text-primary" />
 						</div>
-						⭐ Ferramentas Essenciais
+						⭐ Ferramentas WorldShards
 					</h2>
 					<p className="text-muted-foreground text-xl max-w-4xl mx-auto">
-						Descubra as funcionalidades que transformarão sua experiência no WorldShards e te darão vantagem competitiva
+						Descubra as funcionalidades específicas do WorldShards que te darão controle total sobre gemas, tokens, luck e mapas
 					</p>
 				</div>
 
@@ -301,26 +301,26 @@ export default function Home() {
 							<Calculator className="h-8 w-8 text-blue-600" />
 						</div>
 						<h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
-							🧮 Calculadora de Builds Avançada
+							🧮 Calculadora de Lucro WorldShards
 						</h3>
 						<p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
-							Crie builds perfeitos com cálculos matemáticos precisos. Analise dano, defesa, velocidade e 
-							estatísticas críticas para maximizar seu poder no WorldShards.
+							Calcule seu lucro real com base em gemas, tokens e equipamentos. Analise custos de investimento, 
+							tokens farmados e retorno sobre cargas usadas para maximizar seus ganhos.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Cálculos 100% precisos de dano e defesa</span>
+								<span>Cálculo preciso de gemas compradas vs. consumidas</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Suporte a todas as armas, armaduras e acessórios</span>
+								<span>Análise de tokens em equipamentos vs. farmados</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Comparação de builds em tempo real</span>
+								<span>Controle de cargas usadas e eficiência</span>
 							</div>
 						</div>
 						
@@ -339,26 +339,26 @@ export default function Home() {
 							<Map className="h-8 w-8 text-green-600" />
 						</div>
 						<h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-4">
-							🗺️ Planejador de Rotas Estratégicas
+							🗺️ Planejador de Mapas com Luck
 						</h3>
 						<p className="text-green-700 dark:text-green-300 mb-6 leading-relaxed">
-							Planeje suas jornadas pelo WorldShards com mapas interativos. Descubra os melhores caminhos 
-							para farmar, completar missões e encontrar recursos valiosos.
+							Planeje suas estratégias de mapa baseado no seu luck total. Analise diferentes tamanhos de mapa 
+							(small, medium, large, xlarge) e otimize seus drops de tokens para máxima eficiência.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Mapas interativos com pontos de interesse</span>
+								<span>Análise de mapas por tamanho e luck</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Roteamento inteligente para missões</span>
+								<span>Controle de cargas e tokens dropados</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Localização de recursos e bosses</span>
+								<span>Histórico de eficiência por mapa</span>
 							</div>
 						</div>
 						
@@ -377,26 +377,26 @@ export default function Home() {
 							<BarChart3 className="h-8 w-8 text-purple-600" />
 						</div>
 						<h3 className="text-xl font-bold text-purple-900 dark:text-purple-100 mb-4">
-							📊 Análise de Progresso Detalhada
+							📊 Dashboard de Performance Completo
 						</h3>
 						<p className="text-purple-700 dark:text-purple-300 mb-6 leading-relaxed">
-							Acompanhe seu crescimento no WorldShards com estatísticas avançadas. Visualize seu progresso, 
-							compare períodos e receba insights para otimizar sua estratégia de jogo.
+							Monitore sua performance com métricas avançadas de tokens, luck e eficiência. Analise faixas de luck, 
+							estatísticas por hora e comparações com outros jogadores para otimizar sua estratégia.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Gráficos de evolução de nível e equipamentos</span>
+								<span>Análise de faixas de luck e tokens médios</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Histórico de conquistas e missões</span>
+								<span>Métricas por hora e eficiência de mapas</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Análise de performance em batalhas</span>
+								<span>Comparação com estatísticas da comunidade</span>
 							</div>
 						</div>
 						
