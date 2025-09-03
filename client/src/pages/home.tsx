@@ -280,10 +280,135 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* TESTE ULTRA SIMPLES */}
-			<div className="mb-32 bg-red-500 p-8 text-white text-center">
-				<h2 className="text-4xl font-bold mb-4">🧪 TESTE FEATURES</h2>
-				<p className="text-xl">Se você ver isso, as Features estão funcionando!</p>
+			{/* Features Section - Funcionalidades em Destaque */}
+			<div className="mb-32">
+				<div className="text-center mb-20">
+					<h2 className="text-5xl md:text-6xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
+						<div className="p-4 bg-gradient-to-br from-primary/20 to-green-500/20 rounded-2xl">
+							<Star className="h-12 w-12 text-primary" />
+						</div>
+						⭐ Funcionalidades Principais
+					</h2>
+					<p className="text-muted-foreground text-xl max-w-4xl mx-auto">
+						Descubra o que torna nossa ferramenta única e poderosa para dominar o WorldShards
+					</p>
+				</div>
+
+				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-8">
+					{/* FEATURE 1: Calculadora Avançada */}
+					<div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 hover:shadow-xl transition-all duration-300 group">
+						<div className="p-4 bg-blue-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
+							<Calculator className="h-8 w-8 text-blue-600" />
+						</div>
+						<h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
+							🧮 Calculadora Avançada
+						</h3>
+						<p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
+							Calcule builds complexos com precisão matemática. Suporte completo a todos os equipamentos, 
+							armas, armaduras e itens especiais do WorldShards.
+						</p>
+						
+						{/* Benefícios específicos */}
+						<div className="space-y-2 mb-6">
+							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>100% Preciso matematicamente</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Suporte a todos os equipamentos</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Comparação de builds em tempo real</span>
+							</div>
+						</div>
+						
+						{/* Call to Action */}
+						<Link href="/perfil">
+							<Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+								<Calculator className="mr-2 h-4 w-4" />
+								Usar Calculadora
+							</Button>
+						</Link>
+					</div>
+
+					{/* FEATURE 2: Planejador de Mapa */}
+					<div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 rounded-2xl p-8 border border-green-200 dark:border-green-800 hover:shadow-xl transition-all duration-300 group">
+						<div className="p-4 bg-green-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
+							<Map className="h-8 w-8 text-green-600" />
+						</div>
+						<h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-4">
+							🗺️ Planejador de Mapa
+						</h3>
+						<p className="text-green-700 dark:text-green-300 mb-6 leading-relaxed">
+							Planeje suas rotas e estratégias com ferramentas visuais intuitivas. 
+							Analise pontos de interesse, recursos e rotas mais eficientes.
+						</p>
+						
+						{/* Benefícios específicos */}
+						<div className="space-y-2 mb-6">
+							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Mapas interativos e visuais</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Roteamento inteligente</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Análise de recursos</span>
+							</div>
+						</div>
+						
+						{/* Call to Action */}
+						<Link href="/perfil">
+							<Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white">
+								<Map className="mr-2 h-4 w-4" />
+								Planejar Rota
+							</Button>
+						</Link>
+					</div>
+
+					{/* FEATURE 3: Análise de Estatísticas */}
+					<div className="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 rounded-2xl p-8 border border-purple-200 dark:border-purple-800 hover:shadow-xl transition-all duration-300 group">
+						<div className="p-4 bg-purple-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
+							<BarChart3 className="h-8 w-8 text-purple-600" />
+						</div>
+						<h3 className="text-xl font-bold text-purple-900 dark:text-purple-100 mb-4">
+							📊 Análise de Estatísticas
+						</h3>
+						<p className="text-purple-700 dark:text-purple-300 mb-6 leading-relaxed">
+							Analise seu desempenho com gráficos detalhados e insights para melhorar 
+							suas estratégias e otimizar seu progresso no jogo.
+						</p>
+						
+						{/* Benefícios específicos */}
+						<div className="space-y-2 mb-6">
+							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Gráficos interativos</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Histórico de progresso</span>
+							</div>
+							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
+								<CheckCircle className="h-4 w-4" />
+								<span>Recomendações personalizadas</span>
+							</div>
+						</div>
+						
+						{/* Call to Action */}
+						<Link href="/perfil">
+							<Button className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white">
+								<BarChart3 className="mr-2 h-4 w-4" />
+								Ver Estatísticas
+							</Button>
+						</Link>
+					</div>
+				</div>
 			</div>
 				
 			{/* Activity Stream - SEÇÃO INDEPENDENTE COM LARGURA MÁXIMA */}
