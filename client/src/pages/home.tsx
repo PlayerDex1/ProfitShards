@@ -287,10 +287,10 @@ export default function Home() {
 						<div className="p-4 bg-gradient-to-br from-primary/20 to-green-500/20 rounded-2xl">
 							<Star className="h-12 w-12 text-primary" />
 						</div>
-						⭐ Funcionalidades Principais
+						⭐ Ferramentas Essenciais
 					</h2>
 					<p className="text-muted-foreground text-xl max-w-4xl mx-auto">
-						Descubra o que torna nossa ferramenta única e poderosa para dominar o WorldShards
+						Descubra as funcionalidades que transformarão sua experiência no WorldShards e te darão vantagem competitiva
 					</p>
 				</div>
 
@@ -301,22 +301,22 @@ export default function Home() {
 							<Calculator className="h-8 w-8 text-blue-600" />
 						</div>
 						<h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
-							🧮 Calculadora Avançada
+							🧮 Calculadora de Builds Avançada
 						</h3>
 						<p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
-							Calcule builds complexos com precisão matemática. Suporte completo a todos os equipamentos, 
-							armas, armaduras e itens especiais do WorldShards.
+							Crie builds perfeitos com cálculos matemáticos precisos. Analise dano, defesa, velocidade e 
+							estatísticas críticas para maximizar seu poder no WorldShards.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>100% Preciso matematicamente</span>
+								<span>Cálculos 100% precisos de dano e defesa</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Suporte a todos os equipamentos</span>
+								<span>Suporte a todas as armas, armaduras e acessórios</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
@@ -339,26 +339,26 @@ export default function Home() {
 							<Map className="h-8 w-8 text-green-600" />
 						</div>
 						<h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-4">
-							🗺️ Planejador de Mapa
+							🗺️ Planejador de Rotas Estratégicas
 						</h3>
 						<p className="text-green-700 dark:text-green-300 mb-6 leading-relaxed">
-							Planeje suas rotas e estratégias com ferramentas visuais intuitivas. 
-							Analise pontos de interesse, recursos e rotas mais eficientes.
+							Planeje suas jornadas pelo WorldShards com mapas interativos. Descubra os melhores caminhos 
+							para farmar, completar missões e encontrar recursos valiosos.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Mapas interativos e visuais</span>
+								<span>Mapas interativos com pontos de interesse</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Roteamento inteligente</span>
+								<span>Roteamento inteligente para missões</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Análise de recursos</span>
+								<span>Localização de recursos e bosses</span>
 							</div>
 						</div>
 						
@@ -377,26 +377,26 @@ export default function Home() {
 							<BarChart3 className="h-8 w-8 text-purple-600" />
 						</div>
 						<h3 className="text-xl font-bold text-purple-900 dark:text-purple-100 mb-4">
-							📊 Análise de Estatísticas
+							📊 Análise de Progresso Detalhada
 						</h3>
 						<p className="text-purple-700 dark:text-purple-300 mb-6 leading-relaxed">
-							Analise seu desempenho com gráficos detalhados e insights para melhorar 
-							suas estratégias e otimizar seu progresso no jogo.
+							Acompanhe seu crescimento no WorldShards com estatísticas avançadas. Visualize seu progresso, 
+							compare períodos e receba insights para otimizar sua estratégia de jogo.
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Gráficos interativos</span>
+								<span>Gráficos de evolução de nível e equipamentos</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Histórico de progresso</span>
+								<span>Histórico de conquistas e missões</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Recomendações personalizadas</span>
+								<span>Análise de performance em batalhas</span>
 							</div>
 						</div>
 						
