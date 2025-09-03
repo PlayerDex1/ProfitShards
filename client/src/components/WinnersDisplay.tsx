@@ -96,15 +96,15 @@ export function WinnersDisplay() {
     }
   };
 
-  // Carregar na montagem e verificar a cada 10 segundos
+  // Carregar na montagem e verificar a cada 30 segundos (otimizado para performance)
   useEffect(() => {
     loadWinners();
     
-    // Verificar novos ganhadores a cada 10 segundos
+    // Verificar novos ganhadores a cada 30 segundos
     const interval = setInterval(() => {
-      console.log('⏰ Verificando novos ganhadores...');
+      console.log('⏰ Verificando novos ganhadores... (30s)');
       loadWinners();
-    }, 10000);
+    }, 30000);
     
     return () => clearInterval(interval);
   }, []);
@@ -142,14 +142,14 @@ export function WinnersDisplay() {
   }
 
   return (
-    <Card className="winners-card w-[700px] min-h-[500px] bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200">
+    <Card className="winners-card w-[700px] min-h-[500px] bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-950 dark:to-pink-950 border border-purple-200 dark:border-purple-800">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-3">
             <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg">
               <Trophy className="h-6 w-6 text-white" />
             </div>
-            <span className="text-xl font-bold text-purple-700">
+            <span className="text-xl font-bold text-purple-700 dark:text-purple-300">
               🏆 Ganhadores Recentes
             </span>
           </CardTitle>
@@ -160,14 +160,14 @@ export function WinnersDisplay() {
               disabled={loading}
               variant="outline"
               size="sm"
-              className="border-purple-300 hover:bg-purple-100"
+              className="border-purple-300 dark:border-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900 text-purple-700 dark:text-purple-300"
             >
               <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
               {loading ? 'Atualizando...' : 'Atualizar'}
             </Button>
             
             {lastUpdate && (
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 Última atualização: {lastUpdate.toLocaleTimeString('pt-BR')}
               </span>
             )}
@@ -179,22 +179,22 @@ export function WinnersDisplay() {
         {/* Estatísticas */}
         {stats && (
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-white p-4 rounded-lg border border-purple-200 text-center">
-              <Users className="h-6 w-6 text-purple-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-purple-700">{stats.totalWinners}</div>
-              <div className="text-sm text-gray-600">Total Ganhadores</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-purple-200 dark:border-purple-700 text-center">
+              <Users className="h-6 w-6 text-purple-600 dark:text-purple-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-purple-700 dark:text-purple-300">{stats.totalWinners}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Total Ganhadores</div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg border border-pink-200 text-center">
-              <Gift className="h-6 w-6 text-pink-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-pink-700">{stats.giveaways}</div>
-              <div className="text-sm text-gray-600">Giveaways</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-pink-200 dark:border-pink-700 text-center">
+              <Gift className="h-6 w-6 text-pink-600 dark:text-pink-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-pink-700 dark:text-pink-300">{stats.giveaways}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Giveaways</div>
             </div>
             
-            <div className="bg-white p-4 rounded-lg border border-orange-200 text-center">
-              <TrendingUp className="h-6 w-6 text-orange-600 mx-auto mb-2" />
-              <div className="text-2xl font-bold text-orange-700">{stats.totalPrizes}</div>
-              <div className="text-sm text-gray-600">Prêmios</div>
+            <div className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-orange-200 dark:border-orange-700 text-center">
+              <TrendingUp className="h-6 w-6 text-orange-600 dark:text-orange-400 mx-auto mb-2" />
+              <div className="text-2xl font-bold text-orange-700 dark:text-orange-300">{stats.totalPrizes}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">Prêmios</div>
             </div>
           </div>
         )}
@@ -202,13 +202,13 @@ export function WinnersDisplay() {
         {/* Lista de Ganhadores */}
         {loading ? (
           <div className="text-center py-8">
-            <RefreshCw className="h-8 w-8 animate-spin text-purple-600 mx-auto mb-4" />
-            <p className="text-gray-600">Carregando ganhadores...</p>
+            <RefreshCw className="h-8 w-8 animate-spin text-purple-600 dark:text-purple-400 mx-auto mb-4" />
+            <p className="text-gray-600 dark:text-gray-400">Carregando ganhadores...</p>
           </div>
         ) : (
           <div className="space-y-4 max-h-80 overflow-y-auto">
             {winners.slice(0, 6).map((winner) => (
-              <div key={winner.id} className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow">
+              <div key={winner.id} className="bg-white dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md dark:hover:shadow-lg dark:hover:shadow-purple-900/20 transition-shadow">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center justify-center w-12 h-12 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full">
@@ -220,12 +220,12 @@ export function WinnersDisplay() {
                         <span className="font-bold text-lg">
                           {getPositionText(winner.position)}
                         </span>
-                        <span className="font-medium text-gray-800">
+                        <span className="font-medium text-gray-800 dark:text-gray-200">
                           {winner.userEmail || winner.userId}
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-4 text-sm text-gray-600">
+                      <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
                         <span className="flex items-center gap-1">
                           <Gift className="h-4 w-4" />
                           {winner.giveawayTitle}
@@ -242,7 +242,7 @@ export function WinnersDisplay() {
                     <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white mb-2 px-3 py-1">
                       {winner.prize}
                     </Badge>
-                    <div className="text-sm text-gray-600">
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
                       {winner.totalPoints} pontos
                     </div>
                   </div>
@@ -252,7 +252,7 @@ export function WinnersDisplay() {
             
             {winners.length > 6 && (
               <div className="text-center pt-4">
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   E mais {winners.length - 6} ganhador{winners.length - 6 !== 1 ? 'es' : ''}...
                 </p>
               </div>
@@ -262,9 +262,9 @@ export function WinnersDisplay() {
 
         {winners.length === 0 && !loading && (
           <div className="text-center py-8">
-            <Trophy className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">Nenhum ganhador ainda</h3>
-            <p className="text-gray-600">
+            <Trophy className="h-12 w-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium mb-2 text-gray-800 dark:text-gray-200">Nenhum ganhador ainda</h3>
+            <p className="text-gray-600 dark:text-gray-400">
               Quando houver sorteios, os ganhadores aparecerão aqui!
             </p>
           </div>
