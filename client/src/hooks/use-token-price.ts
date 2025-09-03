@@ -21,6 +21,9 @@ interface UseTokenPriceReturn {
 const TOKEN_PRICE_CACHE_KEY = 'worldshards-token-price-cache';
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos
 
+// Token sendo testado atualmente
+const CURRENT_TOKEN = 'Pudgy Penguins (PUDGY)';
+
 export function useTokenPrice(): UseTokenPriceReturn {
   const [price, setPrice] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);

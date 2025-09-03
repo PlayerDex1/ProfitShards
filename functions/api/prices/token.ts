@@ -30,34 +30,30 @@ export async function onRequest() {
     // Buscar preço atual do CoinGecko
     console.log('🔍 [TOKEN PRICE] Fetching fresh price from CoinGecko...');
     
-    // Tentar diferentes IDs possíveis para o token WorldShards
-    const possibleIds = ['worldshards', 'wsh', 'world-shards'];
+    // Pudgy Penguins Token ID no CoinGecko para teste
+    const tokenId = 'pudgy-penguins';
     let price = null;
     let source = 'CoinGecko';
     
-    for (const id of possibleIds) {
-      try {
-        const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd`, {
-          headers: {
-            'Accept': 'application/json',
-            'User-Agent': 'WorldShards-Calculator/1.0'
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          
-          if (data[id] && data[id].usd) {
-            price = data[id].usd;
-            source = `CoinGecko (${id})`;
-            console.log(`✅ [TOKEN PRICE] Found price for ID '${id}':`, price);
-            break;
-          }
+    try {
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`, {
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'WorldShards-Calculator/1.0'
         }
-      } catch (err) {
-        console.log(`⚠️ [TOKEN PRICE] Failed to fetch price for ID '${id}':`, err);
-        continue;
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        if (data[tokenId] && data[tokenId].usd) {
+          price = data[tokenId].usd;
+          source = `CoinGecko (${tokenId})`;
+          console.log(`✅ [TOKEN PRICE] Found price for Pudgy Penguins:`, price);
+        }
       }
+    } catch (err) {
+      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price for ${tokenId}:`, err);
     }
     
     // Se não encontrou preço, usar fallback
