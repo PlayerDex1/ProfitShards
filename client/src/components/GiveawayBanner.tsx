@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useI18n } from "@/i18n";
-import { Gift, Clock, Users, Trophy, Sparkles, X } from "lucide-react";
+import { Gift, Clock, Users, Trophy, Sparkles, X, Target, Zap } from "lucide-react";
 import { Giveaway } from "@/types/giveaway";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 import { useAuth } from "@/hooks/use-auth";
@@ -140,49 +140,86 @@ export function GiveawayBanner({ giveaway, onJoin, compact = false }: GiveawayBa
 
   // Versão completa (card) - SIDEBAR FRIENDLY - CORES MELHORADAS
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-blue-600 text-white border border-emerald-400 shadow-lg">
-      <CardContent className="relative p-4">
-        <div className="text-center mb-3">
-          <div className="flex items-center justify-center space-x-2 mb-2">
-            <Gift className="h-5 w-5 text-yellow-300" />
-            <h3 className="text-base font-bold text-white">🎁 Giveaway</h3>
+    <Card className="relative overflow-hidden bg-gradient-to-br from-emerald-600 to-blue-600 text-white border border-emerald-400 shadow-lg hover:shadow-xl transition-all duration-300 group">
+      <CardContent className="relative p-6">
+        {/* Header com ícone e título */}
+        <div className="text-center mb-6">
+          <div className="flex items-center justify-center space-x-3 mb-3">
+            <div className="p-3 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl group-hover:scale-110 transition-transform">
+              <Gift className="h-6 w-6 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-white">🎁 Giveaway Ativo</h3>
           </div>
-          <p className="text-sm text-yellow-100 font-medium">{giveaway.prize}</p>
-          <Badge className="bg-yellow-400 text-emerald-800 border-yellow-300 text-xs px-2 py-1 mt-2 font-semibold">
+          <p className="text-lg text-yellow-100 font-medium mb-3">{giveaway.prize}</p>
+          <Badge className="bg-yellow-400 text-emerald-800 border-yellow-300 text-sm px-3 py-1 font-semibold">
             ATIVO
           </Badge>
         </div>
 
-        <div className="space-y-2 mb-4 text-sm">
-          <div className="bg-white/20 backdrop-blur-sm rounded p-2 text-center border border-white/30">
-            <div className="flex items-center justify-center space-x-1 mb-1">
-              <Clock className="h-3 w-3 text-yellow-300" />
-              <span className="text-xs text-white">Termina em:</span>
+        {/* Barra de progresso visual */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-yellow-100">Progresso</span>
+            <span className="text-white font-semibold">{participantCount} / {giveaway.maxParticipants || 100}</span>
+          </div>
+          <div className="w-full bg-white/20 backdrop-blur-sm rounded-full h-3 border border-white/30">
+            <div 
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 h-3 rounded-full transition-all duration-500"
+              style={{ 
+                width: `${Math.min((participantCount / (giveaway.maxParticipants || 100)) * 100, 100)}%` 
+              }}
+            />
+          </div>
+          <p className="text-xs text-yellow-100 mt-1 text-center">
+            {participantCount} participantes • Meta: {giveaway.maxParticipants || 100}
+          </p>
+        </div>
+
+        {/* Informações principais */}
+        <div className="space-y-4 mb-6">
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center border border-white/30">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Clock className="h-4 w-4 text-yellow-300" />
+              <span className="text-sm text-white">Termina em:</span>
             </div>
-            <span className="font-semibold text-white">{timeLeft}</span>
+            <span className="font-bold text-lg text-white">{timeLeft}</span>
           </div>
           
-          <div className="bg-white/20 backdrop-blur-sm rounded p-2 text-center border border-white/30">
-            <div className="flex items-center justify-center space-x-1 mb-1">
-              <Users className="h-3 w-3 text-yellow-300" />
-              <span className="text-xs text-white">Participantes:</span>
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg p-4 text-center border border-white/30">
+            <div className="flex items-center justify-center space-x-2 mb-2">
+              <Users className="h-4 w-4 text-yellow-300" />
+              <span className="text-sm text-white">Participantes:</span>
             </div>
-            <span className="font-semibold text-white">{participantCount}</span>
+            <span className="font-bold text-lg text-white">{participantCount}</span>
           </div>
         </div>
 
         {/* Call to Action */}
         <div className="text-center">
           <Button 
-            size="sm"
+            size="lg"
             onClick={onJoin}
-            className="bg-yellow-400 text-emerald-800 hover:bg-yellow-300 font-bold w-full text-xs border border-yellow-300 shadow-md"
+            className="bg-gradient-to-r from-yellow-400 to-orange-500 text-emerald-800 hover:from-yellow-500 hover:to-orange-600 font-bold w-full text-base border border-yellow-300 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105"
           >
-            🎯 PARTICIPAR
+            🎯 PARTICIPAR AGORA
           </Button>
-          <p className="text-xs mt-1 text-yellow-100">
-            Grátis • Ganhe pontos
+          <p className="text-sm mt-2 text-yellow-100">
+            Grátis • Ganhe pontos • Prêmios incríveis
           </p>
+        </div>
+
+        {/* Informações adicionais */}
+        <div className="mt-6 pt-4 border-t border-white/20">
+          <div className="grid grid-cols-2 gap-4 text-xs text-yellow-100">
+            <div className="flex items-center gap-2">
+              <Target className="h-3 w-3" />
+              <span>Requisitos simples</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="h-3 w-3" />
+              <span>Ganhe pontos</span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
