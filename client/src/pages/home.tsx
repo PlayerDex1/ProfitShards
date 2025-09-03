@@ -161,6 +161,13 @@ export default function Home() {
 					</div>
 				</div>
 
+			{/* Feed de Atividade em DESTAQUE - Logo após o Hero */}
+			<div className="mb-32">
+				<div className="w-full max-w-none px-8">
+					<ActivityStream />
+				</div>
+			</div>
+
 			{/* Features Section - Funcionalidades em Destaque */}
 			<div className="mb-32">
 				<div className="text-center mb-20">
@@ -292,12 +299,7 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* Feed de Atividade Funcional - LIMPO E ORGANIZADO */}
-			<div className="mb-32">
-				<div className="w-full max-w-none px-8">
-					<ActivityStream />
-				</div>
-			</div>
+
 				
 				{/* Sidebar Components - SEÇÃO SEPARADA */}
 				<div className="mb-32" id="giveaway-section" data-section="giveaway">
