@@ -162,9 +162,13 @@ export default function Home() {
 					</div>
 				</div>
 				
-				{/* Community Activity Section - Centralizado */}
-				<div className="mb-24">
-					<div className="text-center mb-16">
+				{/* Community Activity Section - Movido para posição de destaque */}
+				
+				{/* Seção de Resources completamente removida - Agora apenas na Sidebar Lateral */}
+				
+				{/* 🎯 FEED DE ATIVIDADE - POSIÇÃO DE DESTAQUE */}
+				<div className="mb-32">
+					<div className="text-center mb-20">
 						<div className="flex items-center justify-center space-x-4 mb-8">
 							<div className="p-4 bg-orange-500/10 rounded-2xl">
 								<Globe className="h-10 w-10 text-orange-600" />
@@ -177,15 +181,12 @@ export default function Home() {
 							{t('home.community.subtitle')}
 						</p>
 					</div>
+					
+					{/* Feed de Atividade em Destaque */}
+					<div className="max-w-7xl mx-auto px-8">
+						<CommunityStats />
+					</div>
 				</div>
-				
-				{/* Seção de Resources completamente removida - Agora apenas na Sidebar Lateral */}
-					{/* Card Play Game removido */}
-
-					{/* Card Marketplace removido */}
-
-					{/* Card FAQ removido */}
-				{/* Seção de Resources completamente removida - Agora apenas na Sidebar Lateral */}
 
 			{/* Features Section - Funcionalidades em Destaque */}
 			<div className="mb-32">
