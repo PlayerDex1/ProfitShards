@@ -182,9 +182,167 @@ export default function Home() {
 						</p>
 					</div>
 					
-					{/* Feed de Atividade em Destaque */}
+					{/* Feed de Atividade REAL em Destaque */}
 					<div className="max-w-7xl mx-auto px-8">
-						<CommunityStats />
+						<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20" id="activity-stream">
+							<div className="flex flex-col space-y-1.5 p-6 pb-6 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border-b border-border/50">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center space-x-4">
+										<div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl shadow-lg">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity h-6 w-6 text-orange-600">
+												<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
+											</svg>
+										</div>
+										<div>
+											<div className="tracking-tight text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">🔥 Feed da Comunidade</div>
+											<div className="flex items-center space-x-4 mt-2">
+												<p className="text-muted-foreground text-sm">Últimas atividades em tempo real • 7 runs ativas<span className="ml-2 text-xs">• 16:35:46</span></p>
+												<div className="flex items-center space-x-3">
+													<div className="rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 flex items-center space-x-1 bg-orange-500/10 text-orange-700 border-orange-500/20">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up h-3 w-3">
+															<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+															<polyline points="16 7 22 7 22 13"></polyline>
+														</svg>
+														<span className="text-xs font-medium">45 runs</span>
+													</div>
+													<div className="rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 flex items-center space-x-1 bg-green-500/10 text-green-700 border-green-500/20">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign h-3 w-3">
+															<line x1="12" x2="12" y1="2" y2="22"></line>
+															<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+														</svg>
+														<span className="text-xs font-medium">$7k</span>
+													</div>
+													<div className="rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-secondary/80 flex items-center space-x-1 bg-blue-500/10 text-blue-700 border-blue-500/20">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users h-3 w-3">
+															<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+															<circle cx="9" cy="7" r="4"></circle>
+															<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+															<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+														</svg>
+														<span className="text-xs font-medium">1 ativos</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div className="flex items-center space-x-2">
+										<button className="inline-flex items-center justify-center whitespace-nowrap text-sm font-medium ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-11 rounded-md gap-2 min-h-[44px] px-4 hover:shadow-sm transition-all duration-200">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-refresh-cw h-4 w-4">
+												<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path>
+												<path d="M21 3v5h-5"></path>
+												<path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path>
+												<path d="M8 16H3v5"></path>
+											</svg>
+											Atualizar
+										</button>
+									</div>
+								</div>
+							</div>
+							<div className="p-6">
+								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+									{/* Card de Atividade 1 */}
+									<div className="rounded-lg border bg-card/60 backdrop-blur-md text-card-foreground shadow-sm relative overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] bg-gradient-to-br from-background to-muted/30 border-border/50 hover:border-primary/30">
+										<div className="flex flex-col space-y-1.5 p-6 pb-3">
+											<div className="flex items-center justify-between">
+												<div className="flex items-center space-x-3">
+													<div className="p-2 bg-primary/10 rounded-full">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-user h-4 w-4 text-primary">
+															<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+															<circle cx="12" cy="7" r="4"></circle>
+														</svg>
+													</div>
+													<div>
+														<div className="tracking-tight text-base font-semibold">Holdboy01</div>
+														<p className="text-xs text-muted-foreground">Acabou de farmar</p>
+													</div>
+												</div>
+												<div className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs">
+													<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock h-3 w-3 mr-1">
+														<circle cx="12" cy="12" r="10"></circle>
+														<polyline points="12 6 12 12 16 14"></polyline>
+													</svg>
+													21h atrás
+												</div>
+											</div>
+										</div>
+										<div className="space-y-4 p-4">
+											<div className="grid grid-cols-2 gap-4">
+												<div className="space-y-2">
+													<div className="flex items-center space-x-2">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-map-pin h-4 w-4 text-muted-foreground">
+															<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path>
+															<circle cx="12" cy="10" r="3"></circle>
+														</svg>
+														<span className="text-sm font-medium">Mapa</span>
+													</div>
+													<div className="inline-flex items-center rounded-full text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 hover:bg-primary/80 px-3 py-1 border bg-blue-500/20 text-blue-600 border-blue-500/30">Medium</div>
+												</div>
+												<div className="space-y-2">
+													<div className="flex items-center space-x-2">
+														<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-coins h-4 w-4 text-yellow-600">
+															<circle cx="8" cy="8" r="6"></circle>
+															<path d="M18.09 10.37A6 6 0 1 1 10.34 18"></path>
+															<path d="M7 6h1v4"></path>
+															<path d="m16.71 13.88.7.71-2.82 2.82"></path>
+														</svg>
+														<span className="text-sm font-medium">Tokens</span>
+													</div>
+													<div className="flex items-center space-x-2">
+														<span className="text-2xl font-bold text-yellow-600">250</span>
+														<div className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80 text-xs">
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap h-3 w-3 mr-1">
+																<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+															</svg>
+															0.0 eff
+														</div>
+													</div>
+												</div>
+											</div>
+											<div className="grid grid-cols-3 gap-4 p-3 bg-muted/50 rounded-lg">
+												<div className="text-center">
+													<div className="text-xs text-muted-foreground mb-1">Level</div>
+													<div className="font-semibold text-primary">IV</div>
+												</div>
+												<div className="text-center">
+													<div className="text-xs text-muted-foreground mb-1">Tier</div>
+													<div className="font-semibold text-blue-600">III</div>
+												</div>
+												<div className="text-center">
+													<div className="text-xs text-muted-foreground mb-1">Luck</div>
+													<div className="font-semibold text-purple-600">5.200</div>
+												</div>
+											</div>
+											<div className="flex items-center justify-between text-xs text-muted-foreground pt-2 border-t border-border/50">
+												<span>02/09</span>
+												<span>19:08</span>
+												<div className="inline-flex items-center rounded-full border px-2.5 py-0.5 font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 text-foreground text-xs">Charge: 3</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								
+								{/* Call to Action */}
+								<div className="rounded-lg border bg-card/60 backdrop-blur-md text-card-foreground shadow-sm mt-6 bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/30">
+									<div className="p-6 pt-6 text-center">
+										<div className="flex items-center justify-center space-x-2 mb-3">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target h-5 w-5 text-primary">
+												<circle cx="12" cy="12" r="10"></circle>
+												<circle cx="12" cy="12" r="6"></circle>
+												<circle cx="12" cy="12" r="2"></circle>
+											</svg>
+											<span className="font-semibold text-primary">Your turn!</span>
+										</div>
+										<p className="text-sm text-muted-foreground mb-4">Make your run and appear here for the whole community to see</p>
+										<button className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 h-10 px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary">
+											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap mr-2 h-4 w-4">
+												<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+											</svg>
+											Start Calculating
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
 					</div>
 				</div>
 
