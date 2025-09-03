@@ -17,6 +17,7 @@ import { useGiveaway } from "@/hooks/use-giveaway";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { WinnerBanner } from "@/components/WinnerBanner";
+import { WinnersDisplay } from "@/components/WinnersDisplay";
 // Componente de ganhadores removido para recriar do zero
 import { usePushNotifications } from "@/hooks/use-push-notifications";
 
@@ -311,15 +312,9 @@ export default function Home() {
 							</div>
 						)}
 
-						{/* Lista de Ganhadores Públicos - COMPONENTE SEPARADO */}
+						{/* Lista de Ganhadores Públicos - NOVO COMPONENTE */}
 						<div className="lg:w-[700px]">
-							{/* SEÇÃO DE GANHADORES REMOVIDA - SERÁ RECRIADA DO ZERO */}
-							<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground shadow-sm border border-purple-200 dark:border-purple-800 w-[700px] min-h-[500px] flex items-center justify-center">
-								<div className="text-center">
-									<h3 className="text-2xl font-bold text-muted-foreground mb-4">🏆 Ganhadores Recentes</h3>
-									<p className="text-muted-foreground">Componente sendo recriado do zero...</p>
-								</div>
-							</div>
+							<WinnersDisplay />
 						</div>
 
 						{/* Support Section - COMPONENTE SEPARADO */}
