@@ -64,7 +64,20 @@ export function useAuth() {
   }, []);
 
   useEffect(() => {
-    checkAuth();
+    // Verificar se já temos usuário no localStorage para resposta imediata
+    const storedUser = localStorage.getItem(CURRENT_USER_KEY);
+    if (storedUser) {
+      // Se temos usuário, usar imediatamente e verificar em background
+      setUser(storedUser);
+      setUserProfile({ email: storedUser, username: storedUser.split('@')[0] });
+      setLoading(false);
+      
+      // Verificar em background se o usuário ainda é válido
+      setTimeout(() => checkAuth(), 1000);
+    } else {
+      // Se não temos usuário, verificar uma vez
+      checkAuth();
+    }
   }, [checkAuth]);
 
   // Check for login success parameter and force refresh
@@ -82,21 +95,11 @@ export function useAuth() {
       console.log('🔄 [PROFITSHARDS AUTH] Immediate auth refresh...');
       checkAuth();
       
-      // Additional refreshes to handle cookie delays
+      // Apenas uma verificação adicional para garantir sincronização
       setTimeout(() => {
-        console.log('🔄 [PROFITSHARDS AUTH] First delayed refresh...');
+        console.log('🔄 [PROFITSHARDS AUTH] Final auth refresh...');
         checkAuth();
-      }, 1000);
-      
-      setTimeout(() => {
-        console.log('🔄 [PROFITSHARDS AUTH] Second delayed refresh...');
-        checkAuth();
-      }, 3000);
-      
-      setTimeout(() => {
-        console.log('🔄 [PROFITSHARDS AUTH] Final delayed refresh...');
-        checkAuth();
-      }, 6000);
+      }, 2000);
     }
   }, [checkAuth]);
 
