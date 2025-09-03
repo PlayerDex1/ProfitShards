@@ -320,7 +320,7 @@ export default function Home() {
 						{/* Support Section - COMPONENTE SEPARADO */}
 						<div className="lg:w-[700px]">
 								<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[700px] min-h-[520px]">
-									<CardContent className="p-12">
+									<div className="p-12">
 										<div className="text-center mb-12">
 											<h3 className="text-4xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
 												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles h-12 w-12 text-green-500">
