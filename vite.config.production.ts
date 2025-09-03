@@ -2,14 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { fileURLToPath } from "url";
-import { splitVendorChunkPlugin } from 'vite';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
     react(),
-    splitVendorChunkPlugin(),
   ],
   resolve: {
     alias: {
@@ -26,10 +24,10 @@ export default defineConfig({
     minify: 'terser',
     sourcemap: false,
     
-    // Bundle splitting simplificado e confiável
+    // Bundle único para manter comunicação entre componentes
     rollupOptions: {
       output: {
-        // Chunks principais - apenas vendor chunks que sabemos que funcionam
+        // Apenas vendor chunks externos - componentes ficam juntos
         manualChunks: {
           'vendor-react': ['react', 'react-dom'],
           'vendor-router': ['wouter'],
@@ -40,7 +38,7 @@ export default defineConfig({
         
         // Nomes de arquivos otimizados
         chunkFileNames: 'js/[name]-[hash].js',
-        entryFileNames: 'js/[name]-[hash].js',
+        entryFileNames: 'js/index-[hash].js', // Bundle principal único
         assetFileNames: (assetInfo) => {
           const info = assetInfo.name.split('.');
           const ext = info[info.length - 1];
@@ -58,9 +56,9 @@ export default defineConfig({
     // Otimizações de build
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: false, // Manter logs para debug
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        pure_funcs: [], // Não remover funções
       },
       mangle: {
         safari10: true,
@@ -68,10 +66,10 @@ export default defineConfig({
     },
     
     // Chunk size warnings
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000, // Aumentar limite
     
     // CSS code splitting
-    cssCodeSplit: true,
+    cssCodeSplit: false, // CSS único para evitar problemas
     
     // Assets inline limit
     assetsInlineLimit: 4096,
@@ -117,7 +115,7 @@ export default defineConfig({
   
   // Configurações de esbuild
   esbuild: {
-    drop: ['console', 'debugger'],
-    pure: ['console.log', 'console.info', 'console.debug'],
+    drop: ['debugger'], // Manter console para debug
+    pure: [], // Não remover funções
   },
 });
