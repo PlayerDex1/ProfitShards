@@ -179,111 +179,13 @@ export default function Home() {
 					</div>
 				</div>
 				
-				{/* Seção de Resources removida - Agora na Sidebar Lateral */}
-				<div className="mb-32">
-					<div className="text-center mb-20">
-						<h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
-							<Gamepad2 className="h-10 w-10 text-primary" />
-							🎮 WorldShards Resources
-						</h2>
-						<p className="text-muted-foreground text-xl max-w-3xl mx-auto">
-							{t('home.resources.title')}
-						</p>
-					</div>
+				{/* Seção de Resources completamente removida - Agora apenas na Sidebar Lateral */}
+					{/* Card Play Game removido */}
 
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-16 max-w-7xl mx-auto">
-					{/* Play Game */}
-					<Card className="border-green-200 bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-10">
-							<div className="text-center space-y-8">
-								<div className="p-5 bg-green-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<Gamepad2 className="h-12 w-12 text-green-600" />
-								</div>
-								<div>
-									<h3 className="font-bold text-green-900 dark:text-green-100 mb-4 text-2xl">{t('resources.game.title')}</h3>
-									<p className="text-lg text-green-700 dark:text-green-300 mb-8">
-										{t('resources.game.desc')}
-									</p>
-									<a 
-										href="https://www.worldshards.online/en" 
-										target="_blank" 
-										rel="noopener noreferrer"
-										className="block"
-									>
-										<Button className="w-full bg-green-600 hover:bg-green-700 text-white py-4 text-lg">
-											<ExternalLink className="mr-3 h-6 w-6" />
-											{t('resources.game.cta')}
-										</Button>
-									</a>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
+					{/* Card Marketplace removido */}
 
-					{/* Marketplace */}
-					<Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-cyan-100 dark:from-blue-950 dark:to-cyan-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-10">
-							<div className="text-center space-y-8">
-								<div className="p-5 bg-blue-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<ShoppingCart className="h-12 w-12 text-blue-600" />
-								</div>
-								<div>
-									<h3 className="font-bold text-blue-900 dark:text-blue-100 mb-4 text-2xl">{t('resources.marketplace.title')}</h3>
-									<p className="text-lg text-blue-700 dark:text-blue-300 mb-8">
-										{t('resources.marketplace.desc')}
-									</p>
-									<a 
-										href="https://openloot.com/games/worldshards" 
-										target="_blank" 
-										rel="noopener noreferrer"
-										className="block"
-									>
-										<Button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 text-lg">
-											<ExternalLink className="mr-3 h-6 w-6" />
-											{t('resources.marketplace.cta')}
-										</Button>
-									</a>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* FAQ */}
-					<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200 group">
-						<CardContent className="p-10">
-							<div className="text-center space-y-8">
-								<div className="p-5 bg-purple-500/20 rounded-full w-fit mx-auto group-hover:scale-110 transition-transform">
-									<HelpCircle className="h-12 w-12 text-purple-600" />
-								</div>
-								<div>
-									<h3 className="font-bold text-purple-900 dark:text-purple-100 mb-4 text-2xl">{t('resources.faq.title')}</h3>
-									<p className="text-lg text-purple-700 dark:text-purple-300 mb-8">
-										{t('resources.faq.desc')}
-									</p>
-									<Button 
-										className="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 text-lg"
-										onClick={() => {
-											try {
-												if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-													const element = document.getElementById('faq-section');
-													if (element) {
-														element.scrollIntoView({ behavior: 'smooth' });
-													}
-												}
-											} catch (error) {
-												console.error('Error scrolling to FAQ:', error);
-											}
-										}}
-									>
-										<MessageCircle className="mr-3 h-6 w-6" />
-										{t('resources.faq.cta')}
-									</Button>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-				</div>
-			</div>
+					{/* Card FAQ removido */}
+				{/* Seção de Resources completamente removida - Agora apenas na Sidebar Lateral */}
 
 			{/* Features Section - Funcionalidades em Destaque */}
 			<div className="mb-32">
