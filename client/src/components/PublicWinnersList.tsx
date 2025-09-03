@@ -37,13 +37,13 @@ export function PublicWinnersList() {
   useEffect(() => {
     loadWinners();
     
-    // Atualizar a cada 5 segundos para detectar novos ganhadores
-    const interval = setInterval(loadWinners, 5000);
+    // Atualizar mais frequentemente para detectar novos ganhadores
+    const interval = setInterval(loadWinners, 3000); // A cada 3 segundos
     
     // Escutar eventos de novos ganhadores
     const handleNewWinner = () => {
       console.log('🎉 Novo ganhador detectado, atualizando lista...');
-      setTimeout(loadWinners, 1000);
+      setTimeout(loadWinners, 500);
     };
     
     // Event listeners para novos ganhadores
@@ -53,15 +53,22 @@ export function PublicWinnersList() {
     window.addEventListener('winner-announced', handleNewWinner);
     window.addEventListener('giveaway-winner-selected', handleNewWinner);
     
-    // Polling agressivo para detectar mudanças
+    // Polling mais agressivo para detectar mudanças
     const aggressivePolling = setInterval(() => {
       console.log('🔍 Polling agressivo: verificando novos ganhadores...');
       loadWinners();
-    }, 3000);
+    }, 2000); // A cada 2 segundos
+    
+    // Polling extra para bypassar cache
+    const cacheBypassPolling = setInterval(() => {
+      console.log('🚀 Polling de bypass de cache: forçando atualização...');
+      loadWinners();
+    }, 5000); // A cada 5 segundos
     
     return () => {
       clearInterval(interval);
       clearInterval(aggressivePolling);
+      clearInterval(cacheBypassPolling);
       window.removeEventListener('lottery-completed', handleNewWinner);
       window.removeEventListener('giveaway-finished', handleNewWinner);
       window.removeEventListener('new-winner-announced', handleNewWinner);
@@ -74,9 +81,23 @@ export function PublicWinnersList() {
     try {
       setLoading(true);
       
-      // Cache busting para garantir dados frescos
+      // Cache busting agressivo para bypassar Service Worker
       const timestamp = Date.now();
-      const response = await fetch(`/api/winners/public?limit=20&_t=${timestamp}`);
+      const randomId = Math.random().toString(36).substr(2, 9);
+      
+      // Headers para forçar atualização
+      const headers = {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
+        'X-Requested-With': 'XMLHttpRequest'
+      };
+      
+      const response = await fetch(`/api/winners/public?limit=20&_t=${timestamp}&_r=${randomId}`, {
+        method: 'GET',
+        headers: headers,
+        cache: 'no-store'
+      });
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -84,6 +105,7 @@ export function PublicWinnersList() {
       
       const result = await response.json();
       console.log('🏆 Ganhadores carregados:', result.winners?.length || 0, 'ganhadores');
+      console.log('🕐 Timestamp da requisição:', new Date(timestamp).toISOString());
       
       if (result.winners) {
         // Verificar se há mudanças nos ganhadores
