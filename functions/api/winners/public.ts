@@ -104,6 +104,18 @@ export async function onRequestGet(context: any) {
     const winners = result.results || [];
 
     console.log('🎖️ GANHADORES PÚBLICOS:', winners.length);
+    
+    // Log dos ganhadores mais recentes para debug
+    if (winners.length > 0) {
+      const latest = winners[0];
+      console.log('🥇 GANHADOR MAIS RECENTE:', {
+        id: latest.id,
+        giveaway: latest.giveawayTitle,
+        prize: latest.prize,
+        announcedAt: latest.announcedAt,
+        position: latest.position
+      });
+    }
 
     // Estatísticas
     const stats = {
