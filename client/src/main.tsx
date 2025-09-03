@@ -78,4 +78,4 @@ if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
-}
+}// FORÇAR DEPLOY - Wed Sep  3 01:28:16 PM UTC 2025
