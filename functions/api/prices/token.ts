@@ -2,7 +2,7 @@
 const PRICE_CACHE = {
   price: null as number | null,
   lastUpdate: 0,
-  cacheDuration: 5 * 60 * 1000, // 5 minutos
+  cacheDuration: 2 * 60 * 1000, // 2 minutos (reduzido de 5 para 2)
 };
 
 export async function onRequest() {
@@ -22,7 +22,7 @@ export async function onRequest() {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300', // 5 minutos
+          'Cache-Control': 'public, max-age=120', // 2 minutos (120 segundos)
         }
       });
     }
@@ -77,7 +77,7 @@ export async function onRequest() {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300',
+          'Cache-Control': 'public, max-age=120', // 2 minutos (120 segundos)
         }
       });
     }
@@ -98,7 +98,7 @@ export async function onRequest() {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=120', // 2 minutos (120 segundos)
       }
     });
 
@@ -119,7 +119,7 @@ export async function onRequest() {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, max-age=300',
+          'Cache-Control': 'public, max-age=120', // 2 minutos (120 segundos)
         }
       });
     }
@@ -138,7 +138,7 @@ export async function onRequest() {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Cache-Control': 'public, max-age=300',
+        'Cache-Control': 'public, max-age=120', // 2 minutos (120 segundos)
       }
     });
   }
