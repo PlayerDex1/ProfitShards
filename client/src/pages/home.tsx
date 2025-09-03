@@ -20,6 +20,7 @@ import { WinnerBanner } from "@/components/WinnerBanner";
 import { WinnersDisplay } from "@/components/WinnersDisplay";
 // Componente de ganhadores removido para recriar do zero
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { Sidebar } from "@/components/Sidebar";
 
 export default function Home() {
 	const { t } = useI18n();
@@ -110,8 +111,12 @@ export default function Home() {
 		<div className="min-h-screen bg-background">
 			<Header />
 			
-			{/* Botão discreto para voltar ao perfil */}
-			{isAuthenticated && (
+			{/* Layout principal com Sidebar */}
+			<div className="flex">
+				{/* Conteúdo principal */}
+				<div className="flex-1">
+					{/* Botão discreto para voltar ao perfil */}
+					{isAuthenticated && (
 				<div className="w-full max-w-none px-8 pt-8">
 					<div className="flex justify-end">
 						<Link href="/perfil">
@@ -174,7 +179,7 @@ export default function Home() {
 					</div>
 				</div>
 				
-				{/* WorldShards Resources Section - Centralizado */}
+				{/* Seção de Resources removida - Agora na Sidebar Lateral */}
 				<div className="mb-32">
 					<div className="text-center mb-20">
 						<h2 className="text-4xl md:text-5xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
@@ -683,6 +688,11 @@ export default function Home() {
 					</div>
 				</div>
 			</footer>
+				</div>
+				
+				{/* Sidebar Lateral */}
+				<Sidebar />
+			</div>
 			
 			{/* Giveaway Modal */}
 			<GiveawayModal 
