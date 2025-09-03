@@ -151,13 +151,27 @@ export default function Home() {
 					
 					{/* Call-to-Action */}
 					<div className="flex justify-center">
-						<Link href="/perfil">
-							<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl">
+						{isAuthenticated ? (
+							<Link href="/perfil">
+								<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl">
+									<Zap className="mr-3 h-6 w-6" />
+									{t('home.goToProfile')}
+									<ArrowRight className="ml-3 h-6 w-6" />
+								</Button>
+							</Link>
+						) : (
+							<Button 
+								size="lg" 
+								className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl"
+								onClick={() => {
+									alert('🔐 Faça login para acessar todas as funcionalidades!\n\nEntre com sua conta para usar a Calculadora, Planejador e Estatísticas.');
+								}}
+							>
 								<Zap className="mr-3 h-6 w-6" />
-								{isAuthenticated ? t('home.goToProfile') : t('home.startCalculating')}
+								🔐 Fazer Login
 								<ArrowRight className="ml-3 h-6 w-6" />
 							</Button>
-						</Link>
+						)}
 					</div>
 				</div>
 
@@ -165,6 +179,24 @@ export default function Home() {
 			<div className="mb-32">
 				<div className="w-full max-w-none px-8">
 					<ActivityStream />
+					{!isAuthenticated && (
+						<div className="mt-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
+							<h3 className="text-xl font-bold text-blue-700 dark:text-blue-300 mb-3">
+								🚀 Quer aparecer aqui também?
+							</h3>
+							<p className="text-blue-600 dark:text-blue-400 mb-4">
+								Faça login e comece a usar as ferramentas para aparecer no feed da comunidade!
+							</p>
+							<Button 
+								className="bg-blue-600 hover:bg-blue-700 text-white"
+								onClick={() => {
+									alert('🔐 Faça login para aparecer no feed da comunidade!\n\nUse as ferramentas e suas atividades aparecerão aqui para todos verem.');
+								}}
+							>
+								🔐 Fazer Login
+							</Button>
+						</div>
+					)}
 				</div>
 			</div>
 
@@ -180,6 +212,13 @@ export default function Home() {
 					<p className="text-muted-foreground text-xl max-w-4xl mx-auto">
 						Descubra as funcionalidades específicas do WorldShards que te darão controle total sobre gemas, tokens, luck e mapas
 					</p>
+					{!isAuthenticated && (
+						<div className="mt-6 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-lg">
+							<p className="text-orange-700 dark:text-orange-300 text-lg font-medium">
+								🔐 <strong>Faça login</strong> para acessar todas as funcionalidades e começar a calcular seus lucros!
+							</p>
+						</div>
+					)}
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-8">
@@ -213,12 +252,24 @@ export default function Home() {
 						</div>
 						
 						{/* Call to Action */}
-						<Link href="/perfil">
-							<Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+						{isAuthenticated ? (
+							<Link href="/perfil">
+								<Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
+									<Calculator className="mr-2 h-4 w-4" />
+									Usar Calculadora
+								</Button>
+							</Link>
+						) : (
+							<Button 
+								className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
+								onClick={() => {
+									alert('🔐 Faça login para acessar a Calculadora!\n\nAcesse seu perfil para começar a calcular seus lucros.');
+								}}
+							>
 								<Calculator className="mr-2 h-4 w-4" />
-								Usar Calculadora
+								🔐 Login Necessário
 							</Button>
-						</Link>
+						)}
 					</div>
 
 					{/* FEATURE 2: Planejador de Mapa */}
@@ -251,12 +302,24 @@ export default function Home() {
 						</div>
 						
 						{/* Call to Action */}
-						<Link href="/perfil">
-							<Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white">
+						{isAuthenticated ? (
+							<Link href="/perfil">
+								<Button className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white">
+									<Map className="mr-2 h-4 w-4" />
+									Planejar Rota
+								</Button>
+							</Link>
+						) : (
+							<Button 
+								className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
+								onClick={() => {
+									alert('🔐 Faça login para acessar o Planejador de Mapas!\n\nAcesse seu perfil para planejar suas estratégias.');
+								}}
+							>
 								<Map className="mr-2 h-4 w-4" />
-								Planejar Rota
+								🔐 Login Necessário
 							</Button>
-						</Link>
+						)}
 					</div>
 
 					{/* FEATURE 3: Análise de Estatísticas */}
@@ -289,12 +352,24 @@ export default function Home() {
 						</div>
 						
 						{/* Call to Action */}
-						<Link href="/perfil">
-							<Button className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white">
+						{isAuthenticated ? (
+							<Link href="/perfil">
+								<Button className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white">
+									<BarChart3 className="mr-2 h-4 w-4" />
+									Ver Estatísticas
+								</Button>
+							</Link>
+						) : (
+							<Button 
+								className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white"
+								onClick={() => {
+									alert('🔐 Faça login para acessar as Estatísticas!\n\nAcesse seu perfil para ver seu dashboard completo.');
+								}}
+							>
 								<BarChart3 className="mr-2 h-4 w-4" />
-								Ver Estatísticas
+								🔐 Login Necessário
 							</Button>
-						</Link>
+						)}
 					</div>
 				</div>
 			</div>
@@ -316,11 +391,33 @@ export default function Home() {
 										</CardTitle>
 									</CardHeader>
 									<CardContent>
-										<GiveawayBanner 
-											giveaway={activeGiveaway} 
-											onJoin={openGiveaway}
-											compact={false}
-										/>
+										{isAuthenticated ? (
+											<GiveawayBanner 
+												giveaway={activeGiveaway} 
+												onJoin={openGiveaway}
+												compact={false}
+											/>
+										) : (
+											<div className="text-center p-8">
+												<div className="p-4 bg-orange-500/20 rounded-full w-fit mx-auto mb-4">
+													<Gift className="h-12 w-12 text-orange-600" />
+												</div>
+												<h3 className="text-xl font-bold text-orange-700 dark:text-orange-300 mb-3">
+													🔐 Login Necessário
+												</h3>
+												<p className="text-orange-600 dark:text-orange-400 mb-6">
+													Faça login para participar do giveaway e concorrer aos prêmios!
+												</p>
+												<Button 
+													className="bg-orange-600 hover:bg-orange-700 text-white"
+													onClick={() => {
+														alert('🔐 Faça login para participar do Giveaway!\n\nEntre com sua conta para concorrer aos prêmios.');
+													}}
+												>
+													🔐 Fazer Login
+												</Button>
+											</div>
+										)}
 									</CardContent>
 								</Card>
 							</div>
