@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,18 +33,24 @@ export function PublicWinnersList() {
   const [stats, setStats] = useState<WinnerStats | null>(null);
   const [loading, setLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  const [forceUpdate, setForceUpdate] = useState(0);
+  const lastWinnerCount = useRef(0);
+  const lastWinnerId = useRef<string>('');
 
   useEffect(() => {
     loadWinners();
     
     // Atualizar mais frequentemente para detectar novos ganhadores
-    const interval = setInterval(loadWinners, 10000); // A cada 10 segundos
+    const interval = setInterval(loadWinners, 5000); // A cada 5 segundos
     
     // Escutar eventos de novos ganhadores
     const handleNewWinner = () => {
       console.log('🎉 Novo ganhador detectado, atualizando lista...');
       // Aguardar um pouco para garantir que dados foram salvos
-      setTimeout(loadWinners, 1000);
+      setTimeout(() => {
+        setForceUpdate(prev => prev + 1);
+        loadWinners();
+      }, 1000);
     };
     
     // Escutar eventos específicos
@@ -60,18 +66,39 @@ export function PublicWinnersList() {
     const aggressivePolling = setInterval(() => {
       console.log('🔍 Polling agressivo: verificando novos ganhadores...');
       loadWinners();
-    }, 5000); // A cada 5 segundos
+    }, 3000); // A cada 3 segundos
+    
+    // Verificação de mudanças a cada 2 segundos
+    const changeDetection = setInterval(() => {
+      if (winners.length > 0) {
+        const latestWinner = winners[0];
+        if (latestWinner.id !== lastWinnerId.current) {
+          console.log('🔄 MUDANÇA DETECTADA: Novo ganhador identificado!');
+          lastWinnerId.current = latestWinner.id;
+          setForceUpdate(prev => prev + 1);
+        }
+      }
+    }, 2000);
     
     return () => {
       clearInterval(interval);
       clearInterval(aggressivePolling);
+      clearInterval(changeDetection);
       window.removeEventListener('lottery-completed', handleNewWinner);
       window.removeEventListener('giveaway-finished', handleNewWinner);
       window.removeEventListener('new-winner-announced', handleNewWinner);
       window.removeEventListener('winner-announced', handleNewWinner);
       window.removeEventListener('giveaway-winner-selected', handleNewWinner);
     };
-  }, []);
+  }, [winners.length]);
+
+  // Forçar atualização quando forceUpdate mudar
+  useEffect(() => {
+    if (forceUpdate > 0) {
+      console.log('🚀 Forçando atualização dos ganhadores...');
+      loadWinners();
+    }
+  }, [forceUpdate]);
 
   const loadWinners = async () => {
     try {
@@ -91,24 +118,30 @@ export function PublicWinnersList() {
       if (result.winners) {
         // Verificar se há mudanças nos ganhadores
         const hasChanges = JSON.stringify(result.winners) !== JSON.stringify(winners);
+        const countChanged = result.winners.length !== lastWinnerCount.current;
         
-        if (hasChanges) {
+        if (hasChanges || countChanged) {
           console.log('🔄 Mudanças detectadas nos ganhadores!');
-          console.log('📊 Ganhadores anteriores:', winners.length);
+          console.log('📊 Ganhadores anteriores:', lastWinnerCount.current);
           console.log('📊 Ganhadores atuais:', result.winners.length);
           
           // Se há novos ganhadores, destacar
-          if (result.winners.length > winners.length) {
+          if (result.winners.length > lastWinnerCount.current) {
             console.log('🎉 NOVOS GANHADORES DETECTADOS!');
             // Disparar evento customizado para outros componentes
             window.dispatchEvent(new CustomEvent('winners-updated', {
               detail: { 
-                previousCount: winners.length, 
+                previousCount: lastWinnerCount.current, 
                 currentCount: result.winners.length,
-                newWinners: result.winners.slice(0, result.winners.length - winners.length)
+                newWinners: result.winners.slice(0, result.winners.length - lastWinnerCount.current)
               }
             }));
+            
+            // Forçar re-render
+            setForceUpdate(prev => prev + 1);
           }
+          
+          lastWinnerCount.current = result.winners.length;
         }
         
         setWinners(result.winners);
@@ -119,11 +152,15 @@ export function PublicWinnersList() {
         if (result.winners.length > 0) {
           const latest = result.winners[0];
           console.log('🥇 Ganhador mais recente:', {
+            id: latest.id,
             giveaway: latest.giveawayTitle,
             prize: latest.prize,
             announcedAt: latest.announcedAt,
             position: latest.position
           });
+          
+          // Atualizar referência do último ganhador
+          lastWinnerId.current = latest.id;
         }
       }
     } catch (error) {
@@ -223,14 +260,28 @@ export function PublicWinnersList() {
         <div className="text-center mb-6">
           <Button 
             variant="outline" 
-            size="sm" 
-            onClick={loadWinners}
+            size="lg" 
+            onClick={() => {
+              console.log('🔄 Atualização forçada solicitada pelo usuário');
+              setForceUpdate(prev => prev + 1);
+              loadWinners();
+            }}
             disabled={loading}
-            className="border-purple-300 hover:bg-purple-100 text-purple-700"
+            className="border-purple-300 hover:bg-purple-100 text-purple-700 px-8 py-3 text-lg font-semibold"
           >
-            <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            {loading ? 'Atualizando...' : 'Verificar Novos Ganhadores'}
+            <RefreshCw className={`h-5 w-5 mr-3 ${loading ? 'animate-spin' : ''}`} />
+            {loading ? 'Atualizando...' : '🔄 FORÇAR ATUALIZAÇÃO'}
           </Button>
+          
+          {/* Indicador de última verificação */}
+          <div className="mt-3 text-sm text-muted-foreground">
+            <span className="font-medium">Última verificação:</span> {lastUpdated ? lastUpdated.toLocaleTimeString('pt-BR') : 'Nunca'}
+            {forceUpdate > 0 && (
+              <span className="ml-3 text-purple-600 font-semibold">
+                🔄 {forceUpdate} atualizações forçadas
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Lista de Ganhadores */}
