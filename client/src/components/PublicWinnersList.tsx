@@ -32,23 +32,66 @@ export function PublicWinnersList() {
   const [winners, setWinners] = useState<PublicWinner[]>([]);
   const [stats, setStats] = useState<WinnerStats | null>(null);
   const [loading, setLoading] = useState(false);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
   useEffect(() => {
     loadWinners();
+    
+    // Atualizar a cada 30 segundos para manter dados frescos
+    const interval = setInterval(loadWinners, 30000);
+    
+    // Escutar eventos de novos ganhadores
+    const handleNewWinner = () => {
+      console.log('🎉 Novo ganhador detectado, atualizando lista...');
+      // Aguardar um pouco para garantir que dados foram salvos
+      setTimeout(loadWinners, 1000);
+    };
+    
+    window.addEventListener('lottery-completed', handleNewWinner);
+    window.addEventListener('giveaway-finished', handleNewWinner);
+    window.addEventListener('new-winner-announced', handleNewWinner);
+    
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('lottery-completed', handleNewWinner);
+      window.removeEventListener('giveaway-finished', handleNewWinner);
+      window.removeEventListener('new-winner-announced', handleNewWinner);
+    };
   }, []);
 
   const loadWinners = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/winners/public?limit=20');
+      
+      // Cache busting para garantir dados frescos
+      const timestamp = Date.now();
+      const response = await fetch(`/api/winners/public?limit=20&_t=${timestamp}`);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
       const result = await response.json();
+      console.log('🏆 Ganhadores carregados:', result.winners?.length || 0, 'ganhadores');
       
       if (result.winners) {
         setWinners(result.winners);
         setStats(result.stats);
+        setLastUpdated(new Date());
+        
+        // Log dos ganhadores mais recentes para debug
+        if (result.winners.length > 0) {
+          const latest = result.winners[0];
+          console.log('🥇 Ganhador mais recente:', {
+            giveaway: latest.giveawayTitle,
+            prize: latest.prize,
+            announcedAt: latest.announcedAt,
+            position: latest.position
+          });
+        }
       }
     } catch (error) {
-      console.error('Erro ao carregar ganhadores:', error);
+      console.error('❌ Erro ao carregar ganhadores:', error);
     } finally {
       setLoading(false);
     }
@@ -88,16 +131,23 @@ export function PublicWinnersList() {
               🏆 Ganhadores Recentes
             </span>
           </CardTitle>
-          <Button 
-            variant="outline" 
-            size="lg" 
-            onClick={loadWinners}
-            disabled={loading}
-            className="border-purple-200 hover:bg-purple-50 px-4 py-2"
-          >
-            <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Atualizar
-          </Button>
+          <div className="flex flex-col items-end gap-2">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              onClick={loadWinners}
+              disabled={loading}
+              className="border-purple-200 hover:bg-purple-50 px-4 py-2"
+            >
+              <RefreshCw className={`h-5 w-5 mr-2 ${loading ? 'animate-spin' : ''}`} />
+              Atualizar
+            </Button>
+            {lastUpdated && (
+              <span className="text-xs text-muted-foreground">
+                Última atualização: {lastUpdated.toLocaleTimeString('pt-BR')}
+              </span>
+            )}
+          </div>
         </div>
       </CardHeader>
 
