@@ -1,11 +1,12 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { DollarSign, Gem, Zap } from "lucide-react";
+import { DollarSign, Gem, Zap, RefreshCw } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalculatorFormData, CalculationResults } from "@/types/calculator";
 import { useI18n } from "@/i18n";
+import { useTokenPrice } from "@/hooks/use-token-price";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -16,9 +17,22 @@ interface CalculatorProps {
 
 export const Calculator = memo(function Calculator({ formData, results, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
 	const { t } = useI18n();
+	const { price: tokenPrice, loading: priceLoading, error: priceError, refreshPrice, isStale } = useTokenPrice();
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
+
+	// Atualizar preço do token quando disponível
+	useEffect(() => {
+		if (tokenPrice && tokenPrice > 0) {
+			onUpdateFormData('tokenPrice', tokenPrice);
+		}
+	}, [tokenPrice, onUpdateFormData]);
+
+	// Função para atualizar preço manualmente
+	const handleRefreshPrice = async () => {
+		await refreshPrice();
+	};
 
 	useEffect(() => {
 		// Mark fields as touched if they already have non-zero value
@@ -239,9 +253,42 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							/>
 						</div>
 						<div>
-							<Label htmlFor="tokenPrice" className="text-base font-medium text-foreground">
-								{t('calc.tokenPrice')}
-							</Label>
+							<div className="flex items-center justify-between mb-2">
+								<Label htmlFor="tokenPrice" className="text-base font-medium text-foreground">
+									{t('calc.tokenPrice')}
+								</Label>
+								<div className="flex items-center gap-2">
+									{tokenPrice && (
+										<span className={`text-xs px-2 py-1 rounded-full ${
+											isStale 
+												? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' 
+												: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
+										}`}>
+											{isStale ? '⚠️ Desatualizado' : '✅ Atualizado'}
+										</span>
+									)}
+									<Button
+										variant="outline"
+										size="sm"
+										onClick={handleRefreshPrice}
+										disabled={priceLoading}
+										className="p-2 h-8 w-8"
+										title="Atualizar preço do token"
+									>
+										<RefreshCw className={`w-4 h-4 ${priceLoading ? 'animate-spin' : ''}`} />
+									</Button>
+								</div>
+							</div>
+							
+							{tokenPrice && (
+								<div className="mb-2 text-sm text-muted-foreground">
+									💰 Preço atual: <span className="font-medium">${tokenPrice.toFixed(5)}</span>
+									{priceError && (
+										<span className="text-red-500 ml-2">⚠️ Erro: {priceError}</span>
+									)}
+								</div>
+							)}
+							
 							<Input
 								id="tokenPrice"
 								type="number"
