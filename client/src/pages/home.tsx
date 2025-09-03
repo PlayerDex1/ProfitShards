@@ -318,24 +318,28 @@ export default function Home() {
 						</div>
 
 						{/* Support Section - COMPONENTE SEPARADO */}
-						<div className="lg:w-[500px]">
-								<Card className="bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[500px] min-h-[520px]">
+						<div className="lg:w-[700px]">
+								<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[700px] min-h-[520px]">
 									<CardContent className="p-12">
 										<div className="text-center mb-12">
 											<h3 className="text-4xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
-												<Sparkles className="h-12 w-12 text-green-500" />
-												💚 {t('support.title')}
+												<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-sparkles h-12 w-12 text-green-500">
+													<path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"></path>
+													<path d="M20 3v4"></path>
+													<path d="M22 5h-4"></path>
+													<path d="M4 17v2"></path>
+													<path d="M5 18H3"></path>
+												</svg>
+												💚 Support the Project
 											</h3>
-											<p className="text-muted-foreground text-2xl leading-relaxed">
-												{t('support.donate')}
-											</p>
+											<p className="text-muted-foreground text-2xl leading-relaxed">Donate to keep the site online</p>
 											
 											{/* Créditos e Contatos */}
 											<div className="mt-10 pt-10 border-t border-green-500/20">
 												<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
 													{/* Created by - Lado Esquerdo */}
 													<div className="flex flex-col items-start">
-														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('support.creator')}</p>
+														<p className="text-lg text-muted-foreground mb-4 font-medium">Created by</p>
 														<a 
 															href="https://x.com/playerhold" 
 															target="_blank" 
@@ -351,14 +355,16 @@ export default function Home() {
 
 													{/* Discord Feedback - Lado Direito */}
 													<div className="flex flex-col items-end">
-														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('support.feedback')}</p>
+														<p className="text-lg text-muted-foreground mb-4 font-medium">Feedback & Support</p>
 														<div className="inline-flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
 															onClick={() => {
 																navigator.clipboard.writeText('Holdboy');
 																alert('Discord copiado: Holdboy\nEnvie DM para feedback!');
 															}}
 														>
-															<MessageCircle className="h-6 w-6 text-purple-500" />
+															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle h-6 w-6 text-purple-500">
+																<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"></path>
+															</svg>
 															<span className="text-xl font-bold text-purple-600">Holdboy</span>
 														</div>
 													</div>
@@ -373,21 +379,22 @@ export default function Home() {
 													<div className="text-center space-y-8">
 														<div className="flex items-center justify-center gap-4">
 															<Globe className="h-8 w-8 text-blue-500" />
-															<span className="font-bold text-2xl">{t('support.ambassador')}</span>
+															<span className="font-bold text-2xl">OpenLoot (Ambassador)</span>
 														</div>
-														<p className="text-xl text-muted-foreground leading-relaxed">
-															{t('support.ambassador.desc')}
-														</p>
+														<p className="text-xl text-muted-foreground leading-relaxed">Use my ambassador link</p>
 														<a 
 															href="https://openloot.com/ambassador/link?code=HOLDBOY" 
 															target="_blank" 
 															rel="noopener noreferrer" 
 															className="block"
 														>
-															<Button size="lg" className="w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-xl py-5">
-																<ArrowRight className="mr-4 h-7 w-7" />
+															<button className="inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary hover:bg-primary/90 h-11 rounded-md px-8 w-full bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-xl py-5">
+																<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right mr-4 h-7 w-7">
+																	<path d="M5 12h14"></path>
+																	<path d="m12 5 7 7-7 7"></path>
+																</svg>
 																Ambassador
-															</Button>
+															</button>
 														</a>
 													</div>
 												</CardContent>
@@ -408,23 +415,21 @@ export default function Home() {
 															<div className="text-xl font-mono break-all flex-1 select-all">
 																0x05b...eCD0B5
 															</div>
-															<Button
-																size="lg"
-																variant="outline"
+															<button 
 																onClick={() => {
 																	navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
+																	alert('Carteira copiada para a área de transferência!');
 																}}
-																className="shrink-0 text-xl h-14 px-8"
+																className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md shrink-0 text-xl h-14 px-8"
 															>
-																{t('donate.copy')}
-															</Button>
+																Copy
+															</button>
 														</div>
 													</div>
 												</CardContent>
 											</Card>
 										</div>
-									</CardContent>
-								</Card>
+								</div>
 						</div>
 					</div>
 				</div>
