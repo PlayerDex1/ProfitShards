@@ -141,40 +141,54 @@ export default function Home() {
 			{/* Hero Section Moderno */}
 			<HeroModern />
 
-			{/* Container Principal Centralizado */}
+			{/* Layout Principal com Feed Lateral */}
 			<div className="container mx-auto px-4 py-8">
-				{/* Features Section Moderna */}
-				<FeaturesModern />
-				
-				{/* Feed de Atividade em DESTAQUE */}
-				<div className="mb-16">
-					<div className="text-center mb-8">
-						<h2 className="text-4xl font-bold text-foreground mb-4">
-							📊 <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Atividade da Comunidade</span>
-						</h2>
-						<p className="text-muted-foreground text-lg">
-							Acompanhe as últimas atividades e conquistas dos jogadores
-						</p>
+				<div className="grid lg:grid-cols-4 gap-8">
+					{/* Conteúdo Principal */}
+					<div className="lg:col-span-3">
+						{/* Features Section Moderna */}
+						<FeaturesModern />
 					</div>
-					<ActivityStream />
-					{!isAuthenticated && (
-						<div className="mt-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
-							<h3 className="text-xl font-bold text-blue-700 dark:text-blue-300 mb-3">
-								{t('home.wantToAppear')}
-							</h3>
-							<p className="text-blue-600 dark:text-blue-400 mb-4">
-								{t('home.loginToAppear')}
-							</p>
-							<Button 
-								className="bg-blue-600 hover:bg-blue-700 text-white"
-								onClick={() => {
-									alert(t('home.loginRequired.feed'));
-								}}
-							>
-								{t('home.loginButton')}
-							</Button>
+
+					{/* Feed de Atividade - Lateral Destacado */}
+					<div className="lg:col-span-1">
+						<div className="sticky top-24">
+							<div className="bg-gradient-to-br from-primary/5 to-blue-500/5 border border-primary/20 rounded-2xl p-6">
+								<div className="text-center mb-6">
+									<h3 className="text-2xl font-bold text-foreground mb-2">
+										📊 <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Atividade</span>
+									</h3>
+									<p className="text-sm text-muted-foreground">
+										Últimas atividades da comunidade
+									</p>
+								</div>
+								
+								<div className="max-h-96 overflow-y-auto">
+									<ActivityStream />
+								</div>
+								
+								{!isAuthenticated && (
+									<div className="mt-4 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
+										<h4 className="text-sm font-bold text-blue-700 dark:text-blue-300 mb-2">
+											{t('home.wantToAppear')}
+										</h4>
+										<p className="text-xs text-blue-600 dark:text-blue-400 mb-3">
+											{t('home.loginToAppear')}
+										</p>
+										<Button 
+											size="sm"
+											className="bg-blue-600 hover:bg-blue-700 text-white text-xs"
+											onClick={() => {
+												alert(t('home.loginRequired.feed'));
+											}}
+										>
+											{t('home.loginButton')}
+										</Button>
+									</div>
+								)}
+							</div>
 						</div>
-					)}
+					</div>
 				</div>
 			</div>
 
