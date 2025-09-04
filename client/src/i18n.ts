@@ -172,6 +172,10 @@ const dicts: Record<Lang, Dict> = {
     'home.features.analytics.description': 'Monitore sua performance com métricas avançadas de tokens, luck e eficiência. Analise faixas de luck, estatísticas por hora e comparações com outros jogadores para otimizar sua estratégia.',
     'home.features.analytics.benefit1': 'Análise de faixas de luck e tokens médios',
     'home.features.analytics.benefit2': 'Métricas por hora e eficiência de mapas',
+    
+    // Sidebar Section
+    'home.sidebar.title': '⭐ Ferramentas WorldShards',
+    'home.sidebar.subtitle': 'Descubra as funcionalidades específicas do WorldShards que te darão controle total sobre gemas, tokens, luck e mapas',
     'home.cta.try': 'Experimentar Agora (Grátis)',
     'home.cta.features': 'Ver Mais Features',
     'home.footer.description': 'A plataforma definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.',
@@ -539,6 +543,10 @@ const dicts: Record<Lang, Dict> = {
     'home.features.analytics.description': 'Monitor your performance with advanced metrics of tokens, luck and efficiency. Analyze luck ranges, hourly statistics and comparisons with other players to optimize your strategy.',
     'home.features.analytics.benefit1': 'Analysis of luck ranges and average tokens',
     'home.features.analytics.benefit2': 'Hourly metrics and map efficiency',
+    
+    // Sidebar Section
+    'home.sidebar.title': '⭐ WorldShards Tools',
+    'home.sidebar.subtitle': 'Discover the specific WorldShards features that will give you total control over gems, tokens, luck and maps',
     'home.cta.try': 'Try Now (Free)',
     'home.cta.features': 'See More Features',
     'home.footer.description': 'The ultimate platform for smart farming. Developed by the community, for the community.',

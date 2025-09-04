@@ -207,10 +207,10 @@ export default function Home() {
 						<div className="p-4 bg-gradient-to-br from-primary/20 to-green-500/20 rounded-2xl">
 							<Star className="h-12 w-12 text-primary" />
 						</div>
-						⭐ Ferramentas WorldShards
+						{t('home.sidebar.title')}
 					</h2>
 					<p className="text-muted-foreground text-xl max-w-4xl mx-auto">
-						Descubra as funcionalidades específicas do WorldShards que te darão controle total sobre gemas, tokens, luck e mapas
+						{t('home.sidebar.subtitle')}
 					</p>
 					{!isAuthenticated && (
 						<div className="mt-6 p-4 bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-lg">
