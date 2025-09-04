@@ -168,7 +168,7 @@ export default function Home() {
 								}}
 							>
 								<Zap className="mr-3 h-6 w-6" />
-								🔐 Fazer Login
+								{t('home.loginButton')}
 								<ArrowRight className="ml-3 h-6 w-6" />
 							</Button>
 						)}
@@ -182,10 +182,10 @@ export default function Home() {
 					{!isAuthenticated && (
 						<div className="mt-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
 							<h3 className="text-xl font-bold text-blue-700 dark:text-blue-300 mb-3">
-								🚀 Quer aparecer aqui também?
+								{t('home.wantToAppear')}
 							</h3>
 							<p className="text-blue-600 dark:text-blue-400 mb-4">
-								Faça login e comece a usar as ferramentas para aparecer no feed da comunidade!
+								{t('home.loginToAppear')}
 							</p>
 							<Button 
 								className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -193,7 +193,7 @@ export default function Home() {
 									alert(t('home.loginRequired.feed'));
 								}}
 							>
-								🔐 Fazer Login
+								{t('home.loginButton')}
 							</Button>
 						</div>
 					)}
@@ -267,7 +267,7 @@ export default function Home() {
 								}}
 							>
 								<Calculator className="mr-2 h-4 w-4" />
-								🔐 Login Necessário
+								{t('home.loginRequired')}
 							</Button>
 						)}
 					</div>
@@ -317,7 +317,7 @@ export default function Home() {
 								}}
 							>
 								<Map className="mr-2 h-4 w-4" />
-								🔐 Login Necessário
+								{t('home.loginRequired')}
 							</Button>
 						)}
 					</div>
@@ -347,7 +347,7 @@ export default function Home() {
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Comparação com estatísticas da comunidade</span>
+								<span>{t('home.communityComparison')}</span>
 							</div>
 						</div>
 						
@@ -367,7 +367,7 @@ export default function Home() {
 								}}
 							>
 								<BarChart3 className="mr-2 h-4 w-4" />
-								🔐 Login Necessário
+								{t('home.loginRequired')}
 							</Button>
 						)}
 					</div>
@@ -403,7 +403,7 @@ export default function Home() {
 													<Gift className="h-12 w-12 text-orange-600" />
 												</div>
 												<h3 className="text-xl font-bold text-orange-700 dark:text-orange-300 mb-3">
-													🔐 Login Necessário
+													{t('home.loginRequired')}
 												</h3>
 												<p className="text-orange-600 dark:text-orange-400 mb-6">
 													Faça login para participar do giveaway e concorrer aos prêmios!
@@ -414,7 +414,7 @@ export default function Home() {
 														alert(t('home.loginRequired.giveaway'));
 													}}
 												>
-													🔐 Fazer Login
+													{t('home.loginButton')}
 												</Button>
 											</div>
 										)}
