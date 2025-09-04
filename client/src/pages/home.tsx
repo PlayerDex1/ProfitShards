@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { HeaderModern } from "@/components/HeaderModern";
 import { HeroModern } from "@/components/HeroModern";
+import { FeaturesModern } from "@/components/FeaturesModern";
 import { Sidebar } from "@/components/Sidebar";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
@@ -109,6 +110,9 @@ export default function Home() {
 			<main>
 				{/* Hero Section Moderno */}
 				<HeroModern />
+				
+				{/* Features Section Moderna */}
+				<FeaturesModern />
 				
 				{/* Main Content Grid */}
 				<div className="container mx-auto px-4 py-20">
