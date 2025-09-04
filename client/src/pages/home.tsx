@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Header } from "@/components/Header";
-import { ThemeToggle } from "@/components/ThemeToggle";
-import { CommunityStats } from "@/components/CommunityStats";
+import { HeaderModern } from "@/components/HeaderModern";
+import { HeroModern } from "@/components/HeroModern";
+import { FeaturesModern } from "@/components/FeaturesModern";
+import { SidebarModern } from "@/components/SidebarModern";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link, useLocation } from "wouter";
@@ -19,7 +20,6 @@ import { GiveawayModal } from "@/components/GiveawayModal";
 import { WinnerBanner } from "@/components/WinnerBanner";
 import { WinnersDisplay } from "@/components/WinnersDisplay";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
-import { Sidebar } from "@/components/Sidebar";
 import { ActivityStream } from "@/components/ActivityStream";
 
 export default function Home() {
@@ -109,7 +109,7 @@ export default function Home() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<Header />
+			<HeaderModern />
 			
 			{/* Layout principal com Sidebar */}
 			<div className="flex">
