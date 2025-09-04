@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { HeaderModern } from "@/components/HeaderModern";
-import { HeroModern } from "@/components/HeroModern";
-import { FeaturesModern } from "@/components/FeaturesModern";
-import { SidebarModern } from "@/components/SidebarModern";
+import { Header } from "@/components/Header";
+import { Sidebar } from "@/components/Sidebar";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link, useLocation } from "wouter";
@@ -109,7 +107,7 @@ export default function Home() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<HeaderModern />
+			<Header />
 			
 			{/* Layout principal com Sidebar */}
 			<div className="flex">
