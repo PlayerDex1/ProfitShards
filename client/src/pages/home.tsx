@@ -228,26 +228,25 @@ export default function Home() {
 							<Calculator className="h-8 w-8 text-blue-600" />
 						</div>
 						<h3 className="text-xl font-bold text-blue-900 dark:text-blue-100 mb-4">
-							🧮 Calculadora de Lucro WorldShards
+							{t('home.features.calculator.title')}
 						</h3>
 						<p className="text-blue-700 dark:text-blue-300 mb-6 leading-relaxed">
-							Calcule seu lucro real com base em gemas, tokens e equipamentos. Analise custos de investimento, 
-							tokens farmados e retorno sobre cargas usadas para maximizar seus ganhos.
+							{t('home.features.calculator.description')}
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Cálculo preciso de gemas compradas vs. consumidas</span>
+								<span>{t('home.features.calculator.benefit1')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Análise de tokens em equipamentos vs. farmados</span>
+								<span>{t('home.features.calculator.benefit2')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Controle de cargas usadas e eficiência</span>
+								<span>{t('home.features.calculator.benefit3')}</span>
 							</div>
 						</div>
 						
@@ -256,7 +255,7 @@ export default function Home() {
 							<Link href="/perfil">
 								<Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white">
 									<Calculator className="mr-2 h-4 w-4" />
-									Usar Calculadora
+									{t('home.features.calculator.useButton')}
 								</Button>
 							</Link>
 						) : (
@@ -278,26 +277,25 @@ export default function Home() {
 							<Map className="h-8 w-8 text-green-600" />
 						</div>
 						<h3 className="text-xl font-bold text-green-900 dark:text-green-100 mb-4">
-							🗺️ Planejador de Mapas com Luck
+							{t('home.features.planner.title')}
 						</h3>
 						<p className="text-green-700 dark:text-green-300 mb-6 leading-relaxed">
-							Planeje suas estratégias de mapa baseado no seu luck total. Analise diferentes tamanhos de mapa 
-							(small, medium, large, xlarge) e otimize seus drops de tokens para máxima eficiência.
+							{t('home.features.planner.description')}
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Análise de mapas por tamanho e luck</span>
+								<span>{t('home.features.planner.benefit1')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Controle de cargas e tokens dropados</span>
+								<span>{t('home.features.planner.benefit2')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Histórico de eficiência por mapa</span>
+								<span>{t('home.features.planner.benefit3')}</span>
 							</div>
 						</div>
 						
@@ -328,22 +326,21 @@ export default function Home() {
 							<BarChart3 className="h-8 w-8 text-purple-600" />
 						</div>
 						<h3 className="text-xl font-bold text-purple-900 dark:text-purple-100 mb-4">
-							📊 Dashboard de Performance Completo
+							{t('home.features.analytics.title')}
 						</h3>
 						<p className="text-purple-700 dark:text-purple-300 mb-6 leading-relaxed">
-							Monitore sua performance com métricas avançadas de tokens, luck e eficiência. Analise faixas de luck, 
-							estatísticas por hora e comparações com outros jogadores para otimizar sua estratégia.
+							{t('home.features.analytics.description')}
 						</p>
 						
 						{/* Benefícios específicos */}
 						<div className="space-y-2 mb-6">
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Análise de faixas de luck e tokens médios</span>
+								<span>{t('home.features.analytics.benefit1')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
-								<span>Métricas por hora e eficiência de mapas</span>
+								<span>{t('home.features.analytics.benefit2')}</span>
 							</div>
 							<div className="flex items-center gap-2 text-sm text-purple-600 dark:text-purple-400">
 								<CheckCircle className="h-4 w-4" />
