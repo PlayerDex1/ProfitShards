@@ -36,7 +36,7 @@ export function FeaturesModern() {
         t('home.features.calculator.benefit3')
       ],
       buttonText: t('home.features.calculator.useButton'),
-      href: isAuthenticated ? '/profile' : '/auth',
+      href: isAuthenticated ? '/perfil' : '/auth',
       gradient: 'from-blue-500 to-cyan-500',
       bgGradient: 'from-blue-500/5 to-cyan-500/5',
       borderGradient: 'from-blue-500/20 to-cyan-500/20',
