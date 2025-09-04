@@ -141,9 +141,21 @@ export default function Home() {
 			{/* Hero Section Moderno */}
 			<HeroModern />
 
-			{/* Feed de Atividade em DESTAQUE - Logo após o Hero */}
-			<div className="mb-32">
-				<div className="w-full max-w-none px-8">
+			{/* Container Principal Centralizado */}
+			<div className="container mx-auto px-4 py-8">
+				{/* Features Section Moderna */}
+				<FeaturesModern />
+				
+				{/* Feed de Atividade em DESTAQUE */}
+				<div className="mb-16">
+					<div className="text-center mb-8">
+						<h2 className="text-4xl font-bold text-foreground mb-4">
+							📊 <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Atividade da Comunidade</span>
+						</h2>
+						<p className="text-muted-foreground text-lg">
+							Acompanhe as últimas atividades e conquistas dos jogadores
+						</p>
+					</div>
 					<ActivityStream />
 					{!isAuthenticated && (
 						<div className="mt-8 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
@@ -166,66 +178,61 @@ export default function Home() {
 				</div>
 			</div>
 
-			{/* Features Section Moderna */}
-			<FeaturesModern />
-
-
-				
-				{/* Sidebar Components - SEÇÃO SEPARADA */}
-				<div className="mb-32" id="giveaway-section" data-section="giveaway">
-					<div className="flex flex-col lg:flex-row gap-16 justify-center items-start w-full max-w-none px-8">
+			{/* Seção Giveaway e Winners - Centralizada */}
+			<div className="container mx-auto px-4 py-8">
+				<div className="grid lg:grid-cols-2 gap-8">
 						
-						{/* Giveaway Component - COMPONENTE SEPARADO */}
-						{activeGiveaway && (
-							<div className="lg:w-[600px]">
-								<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200">
-									<CardHeader>
-										<CardTitle className="text-2xl font-bold text-purple-900 dark:text-purple-100 flex items-center gap-3">
-											<Gift className="h-8 w-8 text-purple-600" />
-											🎉 Giveaway Ativo
-										</CardTitle>
-									</CardHeader>
-									<CardContent>
-										{isAuthenticated ? (
-											<GiveawayBanner 
-												giveaway={activeGiveaway} 
-												onJoin={openGiveaway}
-												compact={false}
-											/>
-										) : (
-											<div className="text-center p-8">
-												<div className="p-4 bg-orange-500/20 rounded-full w-fit mx-auto mb-4">
-													<Gift className="h-12 w-12 text-orange-600" />
-												</div>
-												<h3 className="text-xl font-bold text-orange-700 dark:text-orange-300 mb-3">
-													{t('home.loginRequired')}
-												</h3>
-												<p className="text-orange-600 dark:text-orange-400 mb-6">
-													Faça login para participar do giveaway e concorrer aos prêmios!
-												</p>
-												<Button 
-													className="bg-orange-600 hover:bg-orange-700 text-white"
-													onClick={() => {
-														alert(t('home.loginRequired.giveaway'));
-													}}
-												>
-													{t('home.loginButton')}
-												</Button>
+					{/* Giveaway Component */}
+					{activeGiveaway && (
+						<div>
+							<Card className="border-purple-200 bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 hover:shadow-lg transition-all duration-200">
+								<CardHeader>
+									<CardTitle className="text-2xl font-bold text-purple-900 dark:text-purple-100 flex items-center gap-3">
+										<Gift className="h-8 w-8 text-purple-600" />
+										🎉 Giveaway Ativo
+									</CardTitle>
+								</CardHeader>
+								<CardContent>
+									{isAuthenticated ? (
+										<GiveawayBanner 
+											giveaway={activeGiveaway} 
+											onJoin={openGiveaway}
+											compact={false}
+										/>
+									) : (
+										<div className="text-center p-8">
+											<div className="p-4 bg-orange-500/20 rounded-full w-fit mx-auto mb-4">
+												<Gift className="h-12 w-12 text-orange-600" />
 											</div>
-										)}
-									</CardContent>
-								</Card>
-							</div>
-						)}
-
-						{/* Lista de Ganhadores Públicos - NOVO COMPONENTE */}
-						<div className="lg:w-[700px]">
-							<WinnersDisplay />
+											<h3 className="text-xl font-bold text-orange-700 dark:text-orange-300 mb-3">
+												{t('home.loginRequired')}
+											</h3>
+											<p className="text-orange-600 dark:text-orange-400 mb-6">
+												Faça login para participar do giveaway e concorrer aos prêmios!
+											</p>
+											<Button 
+												className="bg-orange-600 hover:bg-orange-700 text-white"
+												onClick={() => {
+													alert(t('home.loginRequired.giveaway'));
+												}}
+											>
+												{t('home.loginButton')}
+											</Button>
+										</div>
+									)}
+								</CardContent>
+							</Card>
 						</div>
+					)}
 
-						{/* Support Section - COMPONENTE SEPARADO */}
-						<div className="lg:w-[700px]">
-								<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg w-[700px] min-h-[520px]">
+					{/* Lista de Ganhadores */}
+					<div>
+						<WinnersDisplay />
+					</div>
+
+				{/* Support Section - Centralizada */}
+				<div className="mt-16">
+					<div className="rounded-lg bg-card/60 backdrop-blur-md text-card-foreground bg-gradient-to-br from-green-500/10 via-emerald-500/10 to-teal-500/10 border border-green-500/30 shadow-lg max-w-4xl mx-auto">
 									<div className="p-12">
 										<div className="text-center mb-12">
 											<h3 className="text-4xl font-bold text-foreground mb-8 flex items-center justify-center gap-4">
