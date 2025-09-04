@@ -1,0 +1,29 @@
+# Cloudflare Pages Configuration for Staging Environment
+# This file configures the staging deployment for dev.profitshards.online
+
+name = "profitshards-staging"
+compatibility_date = "2024-01-15"
+
+[env.staging]
+name = "profitshards-staging"
+route = "dev.profitshards.online/*"
+
+# Build configuration for staging
+[build]
+command = "npm run build"
+cwd = "client"
+
+# Environment variables for staging
+[vars]
+NODE_ENV = "staging"
+VITE_APP_ENV = "staging"
+VITE_APP_URL = "https://dev.profitshards.online"
+
+# Pages configuration
+[[pages_builds]]
+source = "client/dist"
+destination = "dev.profitshards.online"
+
+# Functions configuration for staging
+[functions]
+directory = "functions"
