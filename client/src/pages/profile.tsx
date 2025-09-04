@@ -333,15 +333,15 @@ export default function Profile() {
 						<div className="space-y-8">
 							{/* Header do Hub */}
 							<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
-								<CardContent className="p-6">
+								<CardContent className="p-4">
 									<div className="text-center">
-										<div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-4 border-2 border-orange-500/30">
-											<Activity className="h-8 w-8 text-orange-600" />
+										<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-3 border border-orange-500/30">
+											<Activity className="h-6 w-6 text-orange-600" />
 										</div>
-										<h2 className="text-3xl font-bold text-foreground mb-2">
+										<h2 className="text-2xl font-bold text-foreground mb-1">
 											🔥 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Hub de Atividade</span>
 										</h2>
-										<p className="text-muted-foreground">
+										<p className="text-sm text-muted-foreground">
 											Central de atividades da comunidade, giveaways e interações
 										</p>
 									</div>
@@ -352,15 +352,15 @@ export default function Profile() {
 							<div className="space-y-8">
 								{/* Feed de Atividade - Seção Principal */}
 								<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
-									<CardContent className="p-8">
-										<div className="text-center mb-8">
-											<div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-6 border-2 border-orange-500/30">
-												<Activity className="h-8 w-8 text-orange-600" />
+									<CardContent className="p-6">
+										<div className="text-center mb-6">
+											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-4 border border-orange-500/30">
+												<Activity className="h-6 w-6 text-orange-600" />
 											</div>
-											<h3 className="text-4xl font-bold text-foreground mb-3">
+											<h3 className="text-2xl font-bold text-foreground mb-2">
 												📊 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Feed da Comunidade</span>
 											</h3>
-											<p className="text-lg text-muted-foreground">
+											<p className="text-sm text-muted-foreground">
 												Últimas atividades e conquistas dos jogadores em tempo real
 											</p>
 										</div>
