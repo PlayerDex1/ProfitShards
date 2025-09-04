@@ -27,16 +27,16 @@ export async function onRequest() {
       });
     }
 
-    // Buscar preço atual do CoinGecko
-    console.log('🔍 [TOKEN PRICE] Fetching fresh price from CoinGecko...');
+    // Buscar preço atual do DexScreener
+    console.log('🔍 [TOKEN PRICE] Fetching fresh price from DexScreener...');
     
-    // Pudgy Penguins Token ID no CoinGecko para teste
-    const tokenId = 'pudgy-penguins';
+    // Token address do DexScreener (extraído da URL)
+    const tokenAddress = 'b4vwozy1fgtp8selxsxydwszavpugnj77durv2k4mhuv';
     let price = null;
-    let source = 'CoinGecko';
+    let source = 'DexScreener';
     
     try {
-      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`, {
+      const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'WorldShards-Calculator/1.0'
@@ -46,14 +46,26 @@ export async function onRequest() {
       if (response.ok) {
         const data = await response.json();
         
-        if (data[tokenId] && data[tokenId].usd) {
-          price = data[tokenId].usd;
-          source = `CoinGecko (${tokenId})`;
-          console.log(`✅ [TOKEN PRICE] Found price for Pudgy Penguins:`, price);
+        if (data.pairs && data.pairs.length > 0) {
+          // Pegar o primeiro par (mais líquido)
+          const pair = data.pairs[0];
+          if (pair.priceUsd) {
+            price = parseFloat(pair.priceUsd);
+            source = `DexScreener (${pair.dexId})`;
+            console.log(`✅ [TOKEN PRICE] Found price from DexScreener:`, price);
+            console.log(`📊 [TOKEN PRICE] Token info:`, {
+              name: pair.baseToken.name,
+              symbol: pair.baseToken.symbol,
+              dex: pair.dexId,
+              liquidity: pair.liquidity?.usd
+            });
+          }
         }
+      } else {
+        console.log(`⚠️ [TOKEN PRICE] DexScreener API error: ${response.status}`);
       }
     } catch (err) {
-      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price for ${tokenId}:`, err);
+      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price from DexScreener:`, err);
     }
     
     // Se não encontrou preço, usar fallback

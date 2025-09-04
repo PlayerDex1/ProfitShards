@@ -282,7 +282,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							
 							{tokenPrice && (
 								<div className="mb-2 text-sm text-muted-foreground">
-									💰 Preço atual do Pudgy Penguins: <span className="font-medium">${tokenPrice.toFixed(5)}</span>
+									💰 Preço atual (DexScreener): <span className="font-medium">${tokenPrice.toFixed(8)}</span>
 									{priceError && (
 										<span className="text-red-500 ml-2">⚠️ Erro: {priceError}</span>
 									)}
