@@ -12,10 +12,11 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Gamepad2 } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
+import { OpenLootDashboard } from "@/components/OpenLootDashboard";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -79,6 +80,7 @@ export default function Profile() {
 		{ id: 'calculator', label: t('profile.tabs.calculator'), icon: Calculator },
 		{ id: 'history', label: t('profile.tabs.history'), icon: Calculator },
 		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
+		{ id: 'openloot', label: 'OpenLoot', icon: Gamepad2 },
 		// Removido: aba de equipamentos - simplificando interface
 		// Abas Test só aparecem para admins
 		...(isAdmin ? [
@@ -316,6 +318,11 @@ export default function Profile() {
 					)}
 
 					{/* Removido: seção de equipamentos - simplificando interface */}
+
+					{/* OpenLoot Integration */}
+					{activeTab === 'openloot' && (
+						<OpenLootDashboard />
+					)}
 
 					{/* Test - Métricas de Farming (Apenas Admin) */}
 					{activeTab === 'test' && isAdmin && (
