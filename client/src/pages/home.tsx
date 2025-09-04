@@ -164,7 +164,7 @@ export default function Home() {
 								size="lg" 
 								className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl"
 								onClick={() => {
-									alert('🔐 Faça login para acessar todas as funcionalidades!\n\nEntre com sua conta para usar a Calculadora, Planejador e Estatísticas.');
+									alert(t('home.loginRequired.all'));
 								}}
 							>
 								<Zap className="mr-3 h-6 w-6" />
@@ -190,7 +190,7 @@ export default function Home() {
 							<Button 
 								className="bg-blue-600 hover:bg-blue-700 text-white"
 								onClick={() => {
-									alert('🔐 Faça login para aparecer no feed da comunidade!\n\nUse as ferramentas e suas atividades aparecerão aqui para todos verem.');
+									alert(t('home.loginRequired.feed'));
 								}}
 							>
 								🔐 Fazer Login
@@ -263,7 +263,7 @@ export default function Home() {
 							<Button 
 								className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white"
 								onClick={() => {
-									alert('🔐 Faça login para acessar a Calculadora!\n\nAcesse seu perfil para começar a calcular seus lucros.');
+									alert(t('home.loginRequired.calculator'));
 								}}
 							>
 								<Calculator className="mr-2 h-4 w-4" />
@@ -313,7 +313,7 @@ export default function Home() {
 							<Button 
 								className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white"
 								onClick={() => {
-									alert('🔐 Faça login para acessar o Planejador de Mapas!\n\nAcesse seu perfil para planejar suas estratégias.');
+									alert(t('home.loginRequired.planner'));
 								}}
 							>
 								<Map className="mr-2 h-4 w-4" />
@@ -363,7 +363,7 @@ export default function Home() {
 							<Button 
 								className="w-full bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white"
 								onClick={() => {
-									alert('🔐 Faça login para acessar as Estatísticas!\n\nAcesse seu perfil para ver seu dashboard completo.');
+									alert(t('home.loginRequired.stats'));
 								}}
 							>
 								<BarChart3 className="mr-2 h-4 w-4" />
@@ -411,7 +411,7 @@ export default function Home() {
 												<Button 
 													className="bg-orange-600 hover:bg-orange-700 text-white"
 													onClick={() => {
-														alert('🔐 Faça login para participar do Giveaway!\n\nEntre com sua conta para concorrer aos prêmios.');
+														alert(t('home.loginRequired.giveaway'));
 													}}
 												>
 													🔐 Fazer Login
@@ -525,7 +525,7 @@ export default function Home() {
 															<button 
 																onClick={() => {
 																	navigator.clipboard.writeText('0x05b6D4956C8317FF143120Ec5C100c6FE0eCD0B5');
-																	alert('Carteira copiada para a área de transferência!');
+																	alert(t('home.walletCopied'));
 																}}
 																className="inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input bg-background hover:bg-accent hover:text-accent-foreground rounded-md shrink-0 text-xl h-14 px-8"
 															>

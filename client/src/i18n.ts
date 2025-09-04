@@ -143,6 +143,15 @@ const dicts: Record<Lang, Dict> = {
     'home.community.subtitle': 'Veja em tempo real o que outros players estão fazendo. Inspire-se e compita!',
     'home.cta.title': 'Pronto para Começar Sua Jornada? 🚀',
     'home.cta.subtitle': 'Junte-se a centenas de players que já estão maximizando seus lucros no WorldShards',
+    
+    // Login Required Messages
+    'home.loginRequired.all': '🔐 Faça login para acessar todas as funcionalidades!\n\nEntre com sua conta para usar a Calculadora, Planejador e Estatísticas.',
+    'home.loginRequired.feed': '🔐 Faça login para aparecer no feed da comunidade!\n\nUse as ferramentas e suas atividades aparecerão aqui para todos verem.',
+    'home.loginRequired.calculator': '🔐 Faça login para acessar a Calculadora!\n\nAcesse seu perfil para começar a calcular seus lucros.',
+    'home.loginRequired.planner': '🔐 Faça login para acessar o Planejador de Mapas!\n\nAcesse seu perfil para planejar suas estratégias.',
+    'home.loginRequired.stats': '🔐 Faça login para acessar as Estatísticas!\n\nAcesse seu perfil para ver seu dashboard completo.',
+    'home.loginRequired.giveaway': '🔐 Faça login para participar do Giveaway!\n\nEntre com sua conta para concorrer aos prêmios.',
+    'home.walletCopied': 'Carteira copiada para a área de transferência!',
     'home.cta.try': 'Experimentar Agora (Grátis)',
     'home.cta.features': 'Ver Mais Features',
     'home.footer.description': 'A plataforma definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.',
@@ -481,6 +490,15 @@ const dicts: Record<Lang, Dict> = {
     'home.community.subtitle': 'See in real time what other players are doing. Get inspired and compete!',
     'home.cta.title': 'Ready to Start Your Journey? 🚀',
     'home.cta.subtitle': 'Join hundreds of players who are already maximizing their WorldShards profits',
+    
+    // Login Required Messages
+    'home.loginRequired.all': '🔐 Login required to access all features!\n\nSign in with your account to use Calculator, Planner and Statistics.',
+    'home.loginRequired.feed': '🔐 Login required to appear in community feed!\n\nUse the tools and your activities will appear here for everyone to see.',
+    'home.loginRequired.calculator': '🔐 Login required to access Calculator!\n\nAccess your profile to start calculating your profits.',
+    'home.loginRequired.planner': '🔐 Login required to access Map Planner!\n\nAccess your profile to plan your strategies.',
+    'home.loginRequired.stats': '🔐 Login required to access Statistics!\n\nAccess your profile to see your complete dashboard.',
+    'home.loginRequired.giveaway': '🔐 Login required to participate in Giveaway!\n\nSign in with your account to compete for prizes.',
+    'home.walletCopied': 'Wallet copied to clipboard!',
     'home.cta.try': 'Try Now (Free)',
     'home.cta.features': 'See More Features',
     'home.footer.description': 'The ultimate platform for smart farming. Developed by the community, for the community.',
