@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { HeaderModern } from "@/components/HeaderModern";
+import { HeroModern } from "@/components/HeroModern";
 import { Sidebar } from "@/components/Sidebar";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
@@ -137,42 +138,8 @@ export default function Home() {
 				</div>
 			)}
 			
-			{/* Conteúdo Centralizado */}
-			<div className="w-full max-w-none px-8 py-16">
-				{/* Hero Section Compacto */}
-				<div className="text-center mb-20">
-					<h2 className="text-4xl font-semibold text-foreground mb-8 flex items-center justify-center gap-4">
-						<div className="p-3 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-xl">
-							<Sparkles className="h-6 w-6 text-primary" />
-						</div>
-						WorldShards Calculator 🚀
-					</h2>
-					
-					{/* Call-to-Action */}
-					<div className="flex justify-center">
-						{isAuthenticated ? (
-							<Link href="/perfil">
-								<Button size="lg" className="btn-premium bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl px-10 py-4 text-xl font-semibold rounded-xl">
-									<Zap className="mr-3 h-6 w-6" />
-									{t('home.goToProfile')}
-									<ArrowRight className="ml-3 h-6 w-6" />
-								</Button>
-							</Link>
-						) : (
-							<Button 
-								size="lg" 
-								className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl"
-								onClick={() => {
-									alert(t('home.loginRequired.all'));
-								}}
-							>
-								<Zap className="mr-3 h-6 w-6" />
-								{t('home.loginButton')}
-								<ArrowRight className="ml-3 h-6 w-6" />
-							</Button>
-						)}
-					</div>
-				</div>
+			{/* Hero Section Moderno */}
+			<HeroModern />
 
 			{/* Feed de Atividade em DESTAQUE - Logo após o Hero */}
 			<div className="mb-32">
@@ -561,7 +528,6 @@ export default function Home() {
 					</div>
 				</div>
 			</footer>
-				</div>
 				
 				{/* Sidebar Lateral */}
 				<Sidebar />
