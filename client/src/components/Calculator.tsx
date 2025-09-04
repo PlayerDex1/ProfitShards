@@ -10,6 +10,8 @@ import { useTokenPrice } from "@/hooks/use-token-price";
 import { useCalculatorHistory } from "@/hooks/use-calculator-history";
 import { CalculatorChartsSimple } from "@/components/CalculatorChartsSimple";
 import { useToastContext } from "@/contexts/ToastContext";
+import { RecommendationsEngine } from "@/components/RecommendationsEngine";
+import { StrategyScorer } from "@/components/StrategyScorer";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -389,6 +391,48 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				</>
 			)}
 		</div>
+
+		{/* Análise Inteligente */}
+		{results && (
+			<div className="mt-8 space-y-6">
+				{/* Scoring da Estratégia */}
+				<StrategyScorer 
+					formData={formData}
+					results={results}
+				/>
+
+				{/* Recomendações */}
+				<RecommendationsEngine 
+					formData={formData}
+					results={results}
+					onApplyRecommendation={(recommendation) => {
+						// Implementar ações baseadas nas recomendações
+						switch (recommendation.id) {
+							case 'negative-roi':
+								info('Recomendação', 'Considere ajustar o investimento ou gems consumidas');
+								break;
+							case 'high-gem-cost':
+								info('Recomendação', 'Tente usar mapas mais eficientes ou reduzir gems');
+								break;
+							case 'level-luck-balance':
+								info('Recomendação', 'Para níveis baixos, foque mais em leveling');
+								break;
+							case 'low-token-price':
+								info('Recomendação', 'Com preços baixos, foque em volume de tokens');
+								break;
+							case 'long-payback':
+								info('Recomendação', 'Considere estratégias com retorno mais rápido');
+								break;
+							case 'diversification':
+								info('Recomendação', 'Diversifique entre diferentes estratégias');
+								break;
+							default:
+								info('Recomendação', recommendation.description);
+						}
+					}}
+				/>
+			</div>
+		)}
 
 		{/* Gráficos */}
 		{showCharts && results && (
