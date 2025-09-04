@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { HeaderModern } from "@/components/HeaderModern";
 import { HeroModern } from "@/components/HeroModern";
 import { FeaturesModern } from "@/components/FeaturesModern";
-import { Sidebar } from "@/components/Sidebar";
+import { SidebarModern } from "@/components/SidebarModern";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link, useLocation } from "wouter";
@@ -125,7 +125,7 @@ export default function Home() {
 
 						{/* Sidebar */}
 						<div className="lg:col-span-1">
-							<Sidebar />
+							<SidebarModern />
 						</div>
 					</div>
 				</div>
