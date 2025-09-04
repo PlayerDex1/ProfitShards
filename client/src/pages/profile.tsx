@@ -12,16 +12,21 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Activity } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
+import { ActivityStream } from "@/components/ActivityStream";
+import { GiveawayBanner } from "@/components/GiveawayBanner";
+import { GiveawayModal } from "@/components/GiveawayModal";
+import { useGiveaway } from "@/hooks/use-giveaway";
 
 export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 	// Removido: useEquipment - simplificando interface
 	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
+	const { currentGiveaway, participateInGiveaway, isParticipating, isLoading } = useGiveaway();
 	const [activeTab, setActiveTab] = useState('calculator');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
@@ -79,6 +84,7 @@ export default function Profile() {
 		{ id: 'calculator', label: t('profile.tabs.calculator'), icon: Calculator },
 		{ id: 'history', label: t('profile.tabs.history'), icon: Calculator },
 		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
+		{ id: 'activity', label: 'Hub de Atividade', icon: Activity },
 		// Removido: aba de equipamentos - simplificando interface
 		// Abas Test só aparecem para admins
 		...(isAdmin ? [
@@ -320,6 +326,86 @@ export default function Profile() {
 					{/* Test - Métricas de Farming (Apenas Admin) */}
 					{activeTab === 'test' && isAdmin && (
 						<MetricsDashboard />
+					)}
+
+					{/* Hub de Atividade */}
+					{activeTab === 'activity' && (
+						<div className="space-y-8">
+							{/* Header do Hub */}
+							<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
+								<CardContent className="p-6">
+									<div className="text-center">
+										<div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-4 border-2 border-orange-500/30">
+											<Activity className="h-8 w-8 text-orange-600" />
+										</div>
+										<h2 className="text-3xl font-bold text-foreground mb-2">
+											🔥 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Hub de Atividade</span>
+										</h2>
+										<p className="text-muted-foreground">
+											Central de atividades da comunidade, giveaways e interações
+										</p>
+									</div>
+								</CardContent>
+							</Card>
+
+							{/* Grid com Giveaway e Feed */}
+							<div className="grid lg:grid-cols-2 gap-8">
+								{/* Giveaway Section */}
+								<Card className="bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20">
+									<CardContent className="p-6">
+										<div className="text-center mb-6">
+											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-full mb-4 border border-green-500/30">
+												<Gift className="h-6 w-6 text-green-600" />
+											</div>
+											<h3 className="text-2xl font-bold text-foreground mb-2">
+												🎁 <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">Giveaway</span>
+											</h3>
+											<p className="text-muted-foreground">
+												Participe dos sorteios e ganhe recompensas
+											</p>
+										</div>
+										
+										{currentGiveaway ? (
+											<div className="space-y-4">
+												<GiveawayBanner 
+													giveaway={currentGiveaway}
+													onParticipate={() => participateInGiveaway(currentGiveaway.id)}
+													isParticipating={isParticipating}
+													isLoading={isLoading}
+												/>
+											</div>
+										) : (
+											<div className="text-center py-8">
+												<p className="text-muted-foreground">
+													Nenhum giveaway ativo no momento
+												</p>
+											</div>
+										)}
+									</CardContent>
+								</Card>
+
+								{/* Feed de Atividade Section */}
+								<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
+									<CardContent className="p-6">
+										<div className="text-center mb-6">
+											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-4 border border-orange-500/30">
+												<Activity className="h-6 w-6 text-orange-600" />
+											</div>
+											<h3 className="text-2xl font-bold text-foreground mb-2">
+												📊 <span className="bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">Feed da Comunidade</span>
+											</h3>
+											<p className="text-muted-foreground">
+												Últimas atividades e conquistas dos jogadores
+											</p>
+										</div>
+										
+										<div className="max-h-96 overflow-y-auto">
+											<ActivityStream />
+										</div>
+									</CardContent>
+								</Card>
+							</div>
+						</div>
 					)}
 
 					{/* Giveaways Admin - (Apenas Admin) */}
