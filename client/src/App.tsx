@@ -1,6 +1,7 @@
 import { Route, Switch } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
+import { ToastProvider } from "@/contexts/ToastContext";
 import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { forceCleanCorruptedHistory } from "@/lib/historyApi";
@@ -37,8 +38,9 @@ function ThemeInitializer() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <div className="min-h-screen bg-background text-foreground">
-        <ThemeInitializer />
+      <ToastProvider>
+        <div className="min-h-screen bg-background text-foreground">
+          <ThemeInitializer />
         <Switch>
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />
@@ -47,7 +49,8 @@ export default function App() {
           <Route component={NotFoundPage} />
         </Switch>
         <Toaster />
-      </div>
+        </div>
+      </ToastProvider>
     </QueryClientProvider>
   );
 }

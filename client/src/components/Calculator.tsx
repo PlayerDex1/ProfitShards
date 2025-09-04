@@ -9,6 +9,7 @@ import { useI18n } from "@/i18n";
 import { useTokenPrice } from "@/hooks/use-token-price";
 import { useCalculatorHistory } from "@/hooks/use-calculator-history";
 import { CalculatorCharts } from "@/components/CalculatorCharts";
+import { useToastContext } from "@/contexts/ToastContext";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -21,6 +22,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const { t } = useI18n();
 	const { price: tokenPrice, loading: priceLoading, error: priceError, refreshPrice, isStale } = useTokenPrice();
 	const { calculations, addCalculation, clearHistory, getStats, exportHistory } = useCalculatorHistory();
+	const { success, error, info } = useToastContext();
 	const [showCharts, setShowCharts] = useState(false);
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
@@ -32,6 +34,13 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			onUpdateFormData('tokenPrice', tokenPrice);
 		}
 	}, [tokenPrice, onUpdateFormData]);
+
+	// Notificar quando preço do token é atualizado
+	useEffect(() => {
+		if (tokenPrice && tokenPrice > 0 && !priceLoading) {
+			info('Preço Atualizado', `WorldShards: $${tokenPrice.toFixed(5)}`);
+		}
+	}, [tokenPrice, priceLoading, info]);
 
 	// Função para atualizar preço manualmente
 	const handleRefreshPrice = async () => {
@@ -83,8 +92,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 
 	const handleManualSave = () => {
 		// Manual save with feedback
-		setSaveMessage('✅ Cálculo salvo no histórico!');
-		setTimeout(() => setSaveMessage(''), 3000);
+		success('Cálculo Salvo!', `ROI: ${results.roi.toFixed(1)}% - Lucro: ${results.profit.toFixed(2)} tokens`);
 		onSaveToHistory(formData, results);
 		
 		// Also add to local history for charts
@@ -355,7 +363,10 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			{calculations.length > 0 && (
 				<>
 					<Button
-						onClick={exportHistory}
+						onClick={() => {
+							exportHistory();
+							info('Histórico Exportado', 'Arquivo JSON baixado com sucesso!');
+						}}
 						variant="outline"
 						className="btn-premium"
 					>
@@ -364,7 +375,10 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</Button>
 					
 					<Button
-						onClick={clearHistory}
+						onClick={() => {
+							clearHistory();
+							info('Histórico Limpo', 'Todos os dados foram removidos');
+						}}
 						variant="outline"
 						className="btn-premium text-red-600 hover:text-red-700"
 					>
