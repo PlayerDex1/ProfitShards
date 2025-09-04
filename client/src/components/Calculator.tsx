@@ -22,7 +22,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const { t } = useI18n();
 	const { price: tokenPrice, loading: priceLoading, error: priceError, refreshPrice, isStale } = useTokenPrice();
 	const { calculations, addCalculation, clearHistory, getStats, exportHistory } = useCalculatorHistory();
-	const { success, error, info } = useToastContext();
+	const { success, error: showError, info } = useToastContext();
 	const [showCharts, setShowCharts] = useState(false);
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
@@ -129,6 +129,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	}
 
 	return (
+		<>
 		<Card>
 			<CardHeader className="py-4">
 				<div className="flex items-center gap-3">
@@ -403,5 +404,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				/>
 			</div>
 		)}
+		</>
 	);
 });
