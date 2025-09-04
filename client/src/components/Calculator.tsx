@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { DollarSign, Gem, Zap, RefreshCw } from "lucide-react";
+import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { CalculatorFormData, CalculationResults } from "@/types/calculator";
 import { useI18n } from "@/i18n";
 import { useTokenPrice } from "@/hooks/use-token-price";
+import { useCalculatorHistory } from "@/hooks/use-calculator-history";
+import { CalculatorCharts } from "@/components/CalculatorCharts";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -18,6 +20,8 @@ interface CalculatorProps {
 export const Calculator = memo(function Calculator({ formData, results, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
 	const { t } = useI18n();
 	const { price: tokenPrice, loading: priceLoading, error: priceError, refreshPrice, isStale } = useTokenPrice();
+	const { calculations, addCalculation, clearHistory, getStats, exportHistory } = useCalculatorHistory();
+	const [showCharts, setShowCharts] = useState(false);
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
@@ -82,6 +86,16 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		setSaveMessage('✅ Cálculo salvo no histórico!');
 		setTimeout(() => setSaveMessage(''), 3000);
 		onSaveToHistory(formData, results);
+		
+		// Also add to local history for charts
+		addCalculation({
+			gemsSpent: formData.gemsSpent,
+			tokensEarned: formData.tokensEarned,
+			profit: results.profit,
+			roi: results.roi,
+			tokenPrice: formData.tokenPrice,
+			strategy: 'Manual Calculation',
+		});
 	};
 
 	if (error) {
@@ -326,5 +340,54 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				</div>
 			</CardContent>
 		</Card>
+
+		{/* Controles de Gráficos */}
+		<div className="mt-6 flex gap-4 justify-center">
+			<Button
+				onClick={() => setShowCharts(!showCharts)}
+				variant="outline"
+				className="btn-premium"
+			>
+				<BarChart3 className="w-4 h-4 mr-2" />
+				{showCharts ? 'Ocultar Gráficos' : 'Mostrar Gráficos'}
+			</Button>
+			
+			{calculations.length > 0 && (
+				<>
+					<Button
+						onClick={exportHistory}
+						variant="outline"
+						className="btn-premium"
+					>
+						<Download className="w-4 h-4 mr-2" />
+						Exportar
+					</Button>
+					
+					<Button
+						onClick={clearHistory}
+						variant="outline"
+						className="btn-premium text-red-600 hover:text-red-700"
+					>
+						<Trash2 className="w-4 h-4 mr-2" />
+						Limpar
+					</Button>
+				</>
+			)}
+		</div>
+
+		{/* Gráficos */}
+		{showCharts && (
+			<div className="mt-6">
+				<CalculatorCharts 
+					calculations={calculations}
+					currentData={{
+						gemsSpent: formData.gemsSpent,
+						tokensEarned: formData.tokensEarned,
+						profit: results.profit,
+						roi: results.roi,
+					}}
+				/>
+			</div>
+		)}
 	);
 });
