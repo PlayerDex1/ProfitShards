@@ -27,16 +27,16 @@ export async function onRequest() {
       });
     }
 
-    // Buscar preço atual do DexScreener
-    console.log('🔍 [TOKEN PRICE] Fetching fresh price from DexScreener...');
+    // Buscar preço atual do WorldShards (CoinGecko)
+    console.log('🔍 [TOKEN PRICE] Fetching fresh price from CoinGecko...');
     
-    // Token address do DexScreener (extraído da URL)
-    const tokenAddress = 'b4vwozy1fgtp8selxsxydwszavpugnj77durv2k4mhuv';
+    // WorldShards Token ID no CoinGecko (será lançado amanhã)
+    const tokenId = 'worldshards';
     let price = null;
-    let source = 'DexScreener';
+    let source = 'CoinGecko';
     
     try {
-      const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`, {
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'WorldShards-Calculator/1.0'
@@ -46,26 +46,19 @@ export async function onRequest() {
       if (response.ok) {
         const data = await response.json();
         
-        if (data.pairs && data.pairs.length > 0) {
-          // Pegar o primeiro par (mais líquido)
-          const pair = data.pairs[0];
-          if (pair.priceUsd) {
-            price = parseFloat(pair.priceUsd);
-            source = `DexScreener (${pair.dexId})`;
-            console.log(`✅ [TOKEN PRICE] Found price from DexScreener:`, price);
-            console.log(`📊 [TOKEN PRICE] Token info:`, {
-              name: pair.baseToken.name,
-              symbol: pair.baseToken.symbol,
-              dex: pair.dexId,
-              liquidity: pair.liquidity?.usd
-            });
-          }
+        if (data[tokenId] && data[tokenId].usd) {
+          price = data[tokenId].usd;
+          source = `CoinGecko (${tokenId})`;
+          console.log(`✅ [TOKEN PRICE] Found price for WorldShards:`, price);
+          console.log(`🎮 [TOKEN PRICE] WorldShards token launched successfully!`);
+        } else {
+          console.log(`⏳ [TOKEN PRICE] WorldShards token not yet launched on CoinGecko`);
         }
       } else {
-        console.log(`⚠️ [TOKEN PRICE] DexScreener API error: ${response.status}`);
+        console.log(`⚠️ [TOKEN PRICE] CoinGecko API error: ${response.status}`);
       }
     } catch (err) {
-      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price from DexScreener:`, err);
+      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price for ${tokenId}:`, err);
     }
     
     // Se não encontrou preço, usar fallback
