@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Header } from "@/components/Header";
+import { HeaderModern } from "@/components/HeaderModern";
 import { Sidebar } from "@/components/Sidebar";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
@@ -107,7 +107,7 @@ export default function Home() {
 
 	return (
 		<div className="min-h-screen bg-background">
-			<Header />
+			<HeaderModern />
 			
 			{/* Layout principal com Sidebar */}
 			<div className="flex">
