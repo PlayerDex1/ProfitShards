@@ -141,51 +141,97 @@ export default function Home() {
 			{/* Hero Section Moderno */}
 			<HeroModern />
 
-			{/* Layout Principal com Feed Lateral Maior */}
+			{/* Features Section Moderna */}
 			<div className="container mx-auto px-4 py-8">
-				<div className="grid lg:grid-cols-3 gap-8">
-					{/* Conteúdo Principal */}
-					<div className="lg:col-span-2">
-						{/* Features Section Moderna */}
-						<FeaturesModern />
+				<FeaturesModern />
+			</div>
+
+			{/* Feed de Atividade - Seção Exclusiva e Destacada */}
+			<div className="relative py-16 overflow-hidden">
+				{/* Background Exclusivo com Animação */}
+				<div className="absolute inset-0 bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5">
+					<div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,165,0,0.1),transparent_50%)] animate-pulse"></div>
+					<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 via-red-500 to-pink-500"></div>
+				</div>
+				
+				{/* Conteúdo do Feed */}
+				<div className="container mx-auto px-4 relative z-10">
+					{/* Header Exclusivo do Feed */}
+					<div className="text-center mb-12">
+						<div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-6 border-2 border-orange-500/30">
+							<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity text-orange-600">
+								<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
+							</svg>
+						</div>
+						<h2 className="text-5xl font-bold text-foreground mb-4">
+							🔥 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Feed da Comunidade</span>
+						</h2>
+						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+							Acompanhe as últimas atividades, conquistas e estratégias dos jogadores em tempo real
+						</p>
+						
+						{/* Stats Exclusivos do Feed */}
+						<div className="flex justify-center items-center space-x-8 mt-8">
+							<div className="flex items-center space-x-2 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up text-orange-600">
+									<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+									<polyline points="16 7 22 7 22 13"></polyline>
+								</svg>
+								<span className="text-sm font-semibold text-orange-700">22 runs hoje</span>
+							</div>
+							<div className="flex items-center space-x-2 bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign text-green-600">
+									<line x1="12" x2="12" y1="2" y2="22"></line>
+									<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+								</svg>
+								<span className="text-sm font-semibold text-green-700">$3k em lucros</span>
+							</div>
+							<div className="flex items-center space-x-2 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
+								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users text-blue-600">
+									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+									<circle cx="9" cy="7" r="4"></circle>
+									<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+									<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+								</svg>
+								<span className="text-sm font-semibold text-blue-700">1 jogador ativo</span>
+							</div>
+						</div>
 					</div>
 
-					{/* Feed de Atividade - Lateral Destacado */}
-					<div className="lg:col-span-1">
-						<div className="sticky top-24">
-							<div className="bg-gradient-to-br from-primary/5 to-blue-500/5 border border-primary/20 rounded-2xl p-6">
-								<div className="text-center mb-6">
-									<h3 className="text-3xl font-bold text-foreground mb-2">
-										📊 <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">Atividade</span>
-									</h3>
-									<p className="text-base text-muted-foreground">
-										Últimas atividades da comunidade
-									</p>
-								</div>
-								
-								<div className="max-h-[600px] overflow-y-auto">
-									<ActivityStream />
-								</div>
-								
-								{!isAuthenticated && (
-									<div className="mt-6 p-5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-lg text-center">
-										<h4 className="text-base font-bold text-blue-700 dark:text-blue-300 mb-2">
+					{/* Feed de Atividade com Container Exclusivo */}
+					<div className="max-w-6xl mx-auto">
+						<div className="bg-gradient-to-br from-background/80 via-background/60 to-background/80 backdrop-blur-xl border border-orange-500/20 rounded-3xl p-8 shadow-2xl">
+							<ActivityStream />
+							
+							{!isAuthenticated && (
+								<div className="mt-8 p-8 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border border-orange-500/20 rounded-2xl text-center">
+									<div className="flex items-center justify-center space-x-3 mb-4">
+										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target text-orange-600">
+											<circle cx="12" cy="12" r="10"></circle>
+											<circle cx="12" cy="12" r="6"></circle>
+											<circle cx="12" cy="12" r="2"></circle>
+										</svg>
+										<h3 className="text-2xl font-bold text-orange-700 dark:text-orange-300">
 											{t('home.wantToAppear')}
-										</h4>
-										<p className="text-sm text-blue-600 dark:text-blue-400 mb-4">
-											{t('home.loginToAppear')}
-										</p>
-										<Button 
-											className="bg-blue-600 hover:bg-blue-700 text-white"
-											onClick={() => {
-												alert(t('home.loginRequired.feed'));
-											}}
-										>
-											{t('home.loginButton')}
-										</Button>
+										</h3>
 									</div>
-								)}
-							</div>
+									<p className="text-lg text-orange-600 dark:text-orange-400 mb-6">
+										{t('home.loginToAppear')}
+									</p>
+									<Button 
+										size="lg"
+										className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3"
+										onClick={() => {
+											alert(t('home.loginRequired.feed'));
+										}}
+									>
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap mr-2">
+											<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
+										</svg>
+										{t('home.loginButton')}
+									</Button>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
