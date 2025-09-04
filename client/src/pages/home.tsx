@@ -348,25 +348,6 @@ export default function Home() {
 
 
 
-			{/* Enhanced Footer - Centralizado */}
-			<footer className="mt-32 py-24 border-t border-border/50 bg-gradient-to-r from-background via-muted/5 to-background">
-				<div className="max-w-6xl mx-auto px-8">
-					<div className="text-center">
-						<h2 className="text-6xl font-bold bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent mb-8">
-							{t('home.title')}
-						</h2>
-						<p className="text-muted-foreground mb-12 text-2xl max-w-4xl mx-auto">
-							{t('home.footer.description')}
-						</p>
-						<div className="flex flex-wrap justify-center gap-10 text-xl text-muted-foreground">
-							<span className="flex items-center gap-4">✨ {t('home.footer.feature1')}</span>
-							<span className="flex items-center gap-4">📊 {t('home.footer.feature2')}</span>
-							<span className="flex items-center gap-4">🌍 {t('home.footer.feature3')}</span>
-							<span className="flex items-center gap-4">🆓 {t('home.footer.feature4')}</span>
-						</div>
-					</div>
-				</div>
-			</footer>
 				
 			</div>
 			
