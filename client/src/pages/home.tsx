@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { HeaderModern } from "@/components/HeaderModern";
 import { HeroModern } from "@/components/HeroModern";
 import { FeaturesModern } from "@/components/FeaturesModern";
-import { Sidebar } from "@/components/Sidebar";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
 import { Link, useLocation } from "wouter";
@@ -362,8 +361,6 @@ export default function Home() {
 				</div>
 			</footer>
 				
-				{/* Sidebar Lateral */}
-				<Sidebar />
 			</div>
 			
 			{/* Giveaway Modal */}
