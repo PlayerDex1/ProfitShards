@@ -8,7 +8,7 @@ import { CalculatorFormData, CalculationResults } from "@/types/calculator";
 import { useI18n } from "@/i18n";
 import { useTokenPrice } from "@/hooks/use-token-price";
 import { useCalculatorHistory } from "@/hooks/use-calculator-history";
-import { CalculatorCharts } from "@/components/CalculatorCharts";
+import { CalculatorChartsSimple } from "@/components/CalculatorChartsSimple";
 import { useToastContext } from "@/contexts/ToastContext";
 
 interface CalculatorProps {
@@ -391,15 +391,15 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		</div>
 
 		{/* Gráficos */}
-		{showCharts && (
+		{showCharts && results && (
 			<div className="mt-6">
-				<CalculatorCharts 
+				<CalculatorChartsSimple 
 					calculations={calculations}
 					currentData={{
-						gemsSpent: formData.gemsSpent,
-						tokensEarned: formData.tokensEarned,
-						profit: results.profit,
-						roi: results.roi,
+						gemsSpent: formData.gemsSpent || 0,
+						tokensEarned: formData.tokensEarned || 0,
+						profit: results.profit || 0,
+						roi: results.roi || 0,
 					}}
 				/>
 			</div>
