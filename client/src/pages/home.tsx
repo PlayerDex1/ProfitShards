@@ -146,7 +146,7 @@ export default function Home() {
 						<div className="p-3 bg-gradient-to-br from-primary/20 to-blue-500/20 rounded-xl">
 							<Sparkles className="h-6 w-6 text-primary" />
 						</div>
-						WorldShards Calculator
+						WorldShards Calculator 🧪
 					</h2>
 					
 					{/* Call-to-Action */}
