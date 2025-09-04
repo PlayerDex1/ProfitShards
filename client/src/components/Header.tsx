@@ -1,7 +1,7 @@
-import { Moon, Sun, Calculator, LogIn, LogOut, Globe, Bell } from "lucide-react";
+import { Calculator, LogIn, LogOut, Globe, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
-import { useTheme } from "@/hooks/useTheme";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { useState } from "react";
 import { AuthModal } from "@/components/AuthModal";
 import { GiveawayTopBanner } from "@/components/GiveawayTopBanner";
@@ -12,7 +12,6 @@ import { PushNotification } from "@/components/PushNotification";
 
 export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
-  const { toggleTheme, isDark } = useTheme();
   const [showAuth, setShowAuth] = useState(false);
   const [showGiveaway, setShowGiveaway] = useState(false);
   const [location, setLocation] = useLocation();
@@ -123,19 +122,7 @@ export function Header() {
               </div>
 
               {/* Theme Toggle */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={toggleTheme}
-                className="text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              >
-                {isDark ? (
-                  <Sun className="h-5 w-5" />
-                ) : (
-                  <Moon className="h-5 w-5" />
-                )}
-                <span className="sr-only">Alternar tema</span>
-              </Button>
+              <ThemeToggle />
               
               {isAuthenticated ? (
                 <div className="flex items-center space-x-3">

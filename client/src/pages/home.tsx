@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { CommunityStats } from "@/components/CommunityStats";
 import { useI18n } from "@/i18n";
 import { importBuildsFromUrl } from "@/lib/equipmentBuilds";
@@ -153,7 +154,7 @@ export default function Home() {
 					<div className="flex justify-center">
 						{isAuthenticated ? (
 							<Link href="/perfil">
-								<Button size="lg" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200 px-10 py-4 text-xl font-semibold hover:scale-105 rounded-xl">
+								<Button size="lg" className="btn-premium bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl px-10 py-4 text-xl font-semibold rounded-xl">
 									<Zap className="mr-3 h-6 w-6" />
 									{t('home.goToProfile')}
 									<ArrowRight className="ml-3 h-6 w-6" />
@@ -223,7 +224,7 @@ export default function Home() {
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto px-8">
 					{/* FEATURE 1: Calculadora Avançada */}
-					<div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 hover:shadow-xl transition-all duration-300 group">
+					<div className="card-premium bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950 dark:to-indigo-900 rounded-2xl p-8 border border-blue-200 dark:border-blue-800 group">
 						<div className="p-4 bg-blue-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
 							<Calculator className="h-8 w-8 text-blue-600" />
 						</div>
@@ -272,7 +273,7 @@ export default function Home() {
 					</div>
 
 					{/* FEATURE 2: Planejador de Mapa */}
-					<div className="bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 rounded-2xl p-8 border border-green-200 dark:border-green-800 hover:shadow-xl transition-all duration-300 group">
+					<div className="card-premium bg-gradient-to-br from-green-50 to-emerald-100 dark:from-green-950 dark:to-emerald-900 rounded-2xl p-8 border border-green-200 dark:border-green-800 group">
 						<div className="p-4 bg-green-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
 							<Map className="h-8 w-8 text-green-600" />
 						</div>
@@ -321,7 +322,7 @@ export default function Home() {
 					</div>
 
 					{/* FEATURE 3: Análise de Estatísticas */}
-					<div className="bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 rounded-2xl p-8 border border-purple-200 dark:border-purple-800 hover:shadow-xl transition-all duration-300 group">
+					<div className="card-premium bg-gradient-to-br from-purple-50 to-violet-100 dark:from-purple-950 dark:to-violet-900 rounded-2xl p-8 border border-purple-200 dark:border-purple-800 group">
 						<div className="p-4 bg-purple-500/20 rounded-xl w-fit mb-6 group-hover:scale-110 transition-transform duration-300">
 							<BarChart3 className="h-8 w-8 text-purple-600" />
 						</div>
