@@ -20,13 +20,30 @@ interface CalculatorChartsProps {
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
 export function CalculatorCharts({ calculations, currentData }: CalculatorChartsProps) {
+  // Verificações de segurança
+  if (!calculations || !Array.isArray(calculations)) {
+    return (
+      <div className="card-premium p-6 text-center">
+        <p className="text-muted-foreground">Nenhum dado disponível para gráficos</p>
+      </div>
+    );
+  }
+
+  if (!currentData) {
+    return (
+      <div className="card-premium p-6 text-center">
+        <p className="text-muted-foreground">Dados atuais não disponíveis</p>
+      </div>
+    );
+  }
+
   const chartData = useMemo(() => {
     return calculations.map((calc, index) => ({
       name: `Run ${index + 1}`,
-      gems: calc.gemsSpent,
-      tokens: calc.tokensEarned,
-      profit: calc.profit,
-      roi: calc.roi,
+      gems: calc.gemsSpent || 0,
+      tokens: calc.tokensEarned || 0,
+      profit: calc.profit || 0,
+      roi: calc.roi || 0,
     }));
   }, [calculations]);
 
@@ -62,16 +79,17 @@ export function CalculatorCharts({ calculations, currentData }: CalculatorCharts
     return trend / (recent.length - 1);
   }, [calculations]);
 
-  return (
-    <div className="space-y-6">
+  try {
+    return (
+      <div className="space-y-6">
       {/* Header com estatísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="card-premium p-4 text-center">
-          <div className="text-2xl font-bold text-blue-600">{currentData.roi.toFixed(1)}%</div>
+          <div className="text-2xl font-bold text-blue-600">{(currentData.roi || 0).toFixed(1)}%</div>
           <div className="text-sm text-muted-foreground">ROI Atual</div>
         </div>
         <div className="card-premium p-4 text-center">
-          <div className="text-2xl font-bold text-green-600">{currentData.profit.toFixed(2)}</div>
+          <div className="text-2xl font-bold text-green-600">{(currentData.profit || 0).toFixed(2)}</div>
           <div className="text-sm text-muted-foreground">Lucro</div>
         </div>
         <div className="card-premium p-4 text-center">
@@ -189,5 +207,13 @@ export function CalculatorCharts({ calculations, currentData }: CalculatorCharts
         </div>
       </div>
     </div>
-  );
+    );
+  } catch (error) {
+    console.error('Erro ao renderizar gráficos:', error);
+    return (
+      <div className="card-premium p-6 text-center">
+        <p className="text-red-600">Erro ao carregar gráficos. Tente novamente.</p>
+      </div>
+    );
+  }
 }
