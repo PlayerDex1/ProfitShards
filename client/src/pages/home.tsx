@@ -438,16 +438,16 @@ export default function Home() {
 													<path d="M4 17v2"></path>
 													<path d="M5 18H3"></path>
 												</svg>
-												💚 Support the Project
+												{t('home.support.title')}
 											</h3>
-											<p className="text-muted-foreground text-2xl leading-relaxed">Donate to keep the site online</p>
+											<p className="text-muted-foreground text-2xl leading-relaxed">{t('home.support.subtitle')}</p>
 											
 											{/* Créditos e Contatos */}
 											<div className="mt-10 pt-10 border-t border-green-500/20">
 												<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-8">
 													{/* Created by - Lado Esquerdo */}
 													<div className="flex flex-col items-start">
-														<p className="text-lg text-muted-foreground mb-4 font-medium">Created by</p>
+														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('home.support.createdBy')}</p>
 														<a 
 															href="https://x.com/playerhold" 
 															target="_blank" 
@@ -463,11 +463,11 @@ export default function Home() {
 
 													{/* Discord Feedback - Lado Direito */}
 													<div className="flex flex-col items-end">
-														<p className="text-lg text-muted-foreground mb-4 font-medium">Feedback & Support</p>
+														<p className="text-lg text-muted-foreground mb-4 font-medium">{t('home.support.feedback')}</p>
 														<div className="inline-flex items-center gap-4 px-6 py-4 bg-gradient-to-r from-purple-500/10 to-indigo-500/10 border border-purple-500/20 rounded-lg hover:from-purple-500/20 hover:to-indigo-500/20 transition-all duration-200 cursor-pointer"
 															onClick={() => {
 																navigator.clipboard.writeText('Holdboy');
-																alert('Discord copiado: Holdboy\nEnvie DM para feedback!');
+																alert(t('home.support.discordCopied'));
 															}}
 														>
 															<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-message-circle h-6 w-6 text-purple-500">

@@ -176,6 +176,13 @@ const dicts: Record<Lang, Dict> = {
     // Sidebar Section
     'home.sidebar.title': '⭐ Ferramentas WorldShards',
     'home.sidebar.subtitle': 'Descubra as funcionalidades específicas do WorldShards que te darão controle total sobre gemas, tokens, luck e mapas',
+    
+    // Support Section
+    'home.support.title': '💚 Support the Project',
+    'home.support.subtitle': 'Donate to keep the site online',
+    'home.support.createdBy': 'Created by',
+    'home.support.feedback': 'Feedback & Support',
+    'home.support.discordCopied': 'Discord copiado: Holdboy\nEnvie DM para feedback!',
     'home.cta.try': 'Experimentar Agora (Grátis)',
     'home.cta.features': 'Ver Mais Features',
     'home.footer.description': 'A plataforma definitiva para farming inteligente. Desenvolvida pela comunidade, para a comunidade.',
@@ -547,6 +554,13 @@ const dicts: Record<Lang, Dict> = {
     // Sidebar Section
     'home.sidebar.title': '⭐ WorldShards Tools',
     'home.sidebar.subtitle': 'Discover the specific WorldShards features that will give you total control over gems, tokens, luck and maps',
+    
+    // Support Section
+    'home.support.title': '💚 Support the Project',
+    'home.support.subtitle': 'Donate to keep the site online',
+    'home.support.createdBy': 'Created by',
+    'home.support.feedback': 'Feedback & Support',
+    'home.support.discordCopied': 'Discord copied: Holdboy\nSend DM for feedback!',
     'home.cta.try': 'Try Now (Free)',
     'home.cta.features': 'See More Features',
     'home.footer.description': 'The ultimate platform for smart farming. Developed by the community, for the community.',
