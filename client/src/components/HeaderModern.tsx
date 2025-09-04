@@ -83,7 +83,7 @@ export function HeaderModern() {
             
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
-                <Link href="/profile">
+                <Link href="/perfil">
                   <Button variant="outline" size="sm" className="group">
                     <User className="h-4 w-4 mr-2" />
                     <span className="hidden sm:inline">{user?.username || 'Profile'}</span>
@@ -141,7 +141,7 @@ export function HeaderModern() {
               
               {isAuthenticated ? (
                 <div className="pt-2 border-t">
-                  <Link href="/profile">
+                  <Link href="/perfil">
                     <Button variant="outline" className="w-full justify-start" onClick={() => setMobileMenuOpen(false)}>
                       <User className="h-4 w-4 mr-3" />
                       Profile
