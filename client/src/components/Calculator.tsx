@@ -264,7 +264,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 												? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300' 
 												: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'
 										}`}>
-											{isStale ? '⚠️ Desatualizado' : '✅ Atualizado'}
+											{isStale ? `⚠️ ${t('calc.outdated')}` : `✅ ${t('calc.updated')}`}
 										</span>
 									)}
 									<Button
@@ -273,7 +273,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 										onClick={handleRefreshPrice}
 										disabled={priceLoading}
 										className="p-2 h-8 w-8"
-										title="Atualizar preço do token"
+										title={t('calc.refreshPrice')}
 									>
 										<RefreshCw className={`w-4 h-4 ${priceLoading ? 'animate-spin' : ''}`} />
 									</Button>
@@ -282,9 +282,9 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 							
 							{tokenPrice && (
 								<div className="mb-2 text-sm text-muted-foreground">
-									💰 Preço atual WorldShards: <span className="font-medium">${tokenPrice.toFixed(5)}</span>
+									💰 {t('calc.currentPrice')}: <span className="font-medium">${tokenPrice.toFixed(5)}</span>
 									{priceError && (
-										<span className="text-red-500 ml-2">⚠️ Erro: {priceError}</span>
+										<span className="text-red-500 ml-2">⚠️ {t('calc.error')}: {priceError}</span>
 									)}
 								</div>
 							)}
