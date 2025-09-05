@@ -9,9 +9,28 @@ interface RelatoriosVisuaisProps {
 export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
   console.log('🔍 RelatoriosVisuais - history:', history);
   
-  const totalCalculations = history?.length || 0;
-  const avgROI = history?.length > 0 
-    ? history.reduce((sum, item) => sum + (item.results?.roi || 0), 0) / history.length 
+  // Dados de teste se não houver histórico
+  const testHistory = history?.length > 0 ? history : [
+    {
+      formData: { investment: 500, gemsPurchased: 25000 },
+      results: { roi: 45.2, profit: 226 },
+      timestamp: new Date().toISOString()
+    },
+    {
+      formData: { investment: 750, gemsPurchased: 35000 },
+      results: { roi: 38.7, profit: 290.25 },
+      timestamp: new Date(Date.now() - 86400000).toISOString()
+    },
+    {
+      formData: { investment: 1000, gemsPurchased: 50000 },
+      results: { roi: 52.1, profit: 521 },
+      timestamp: new Date(Date.now() - 172800000).toISOString()
+    }
+  ];
+  
+  const totalCalculations = testHistory?.length || 0;
+  const avgROI = testHistory?.length > 0 
+    ? testHistory.reduce((sum, item) => sum + (item.results?.roi || 0), 0) / testHistory.length 
     : 0;
 
   return (
@@ -25,7 +44,7 @@ export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
         </p>
         <div className="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded border border-yellow-300 dark:border-yellow-700">
           <p className="text-yellow-800 dark:text-yellow-200 font-medium">
-            ✅ COMPONENTE FUNCIONANDO! Histórico: {history?.length || 0} itens
+            ✅ COMPONENTE FUNCIONANDO! Dados: {history?.length > 0 ? 'REAIS' : 'TESTE'}
           </p>
         </div>
       </div>
@@ -68,8 +87,8 @@ export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
           </CardHeader>
           <CardContent>
             <div className="text-sm text-muted-foreground">
-              {history?.length > 0 
-                ? new Date(history[0].timestamp).toLocaleDateString()
+              {testHistory?.length > 0 
+                ? new Date(testHistory[0].timestamp).toLocaleDateString()
                 : 'Nenhuma'
               }
             </div>
@@ -85,9 +104,9 @@ export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {history?.length > 0 ? (
+          {testHistory?.length > 0 ? (
             <div className="space-y-2">
-              {history.slice(0, 5).map((item, index) => (
+              {testHistory.slice(0, 5).map((item, index) => (
                 <div key={index} className="flex justify-between items-center p-2 bg-muted/50 rounded">
                   <span>Investimento: ${item.formData?.investment || 0}</span>
                   <span className="text-green-600 font-medium">
