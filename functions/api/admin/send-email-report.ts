@@ -1,3 +1,5 @@
+import { addSecurityHeaders } from '../../_lib/security';
+
 interface Env {
   DB: D1Database;
   RESEND_API_KEY?: string;
@@ -40,26 +42,22 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     
     if (!env.DB) {
       console.log('❌ D1 Database não disponível');
-      return new Response(JSON.stringify({ 
+      const response = Response.json({ 
         success: false,
         error: 'Database not available' 
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 500 });
+      return addSecurityHeaders(response);
     }
 
     // Verificar autenticação
     const cookieHeader = request.headers.get('Cookie');
     if (!cookieHeader) {
       console.log('❌ Cookie não encontrado');
-      return new Response(JSON.stringify({ 
+      const response = Response.json({ 
         success: false,
         error: 'Unauthorized' 
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 401 });
+      return addSecurityHeaders(response);
     }
 
     const sessionCookie = cookieHeader
@@ -69,42 +67,53 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
 
     if (!sessionCookie) {
       console.log('❌ Session cookie não encontrado');
-      return new Response(JSON.stringify({ 
+      const response = Response.json({ 
         success: false,
         error: 'Session not found' 
-      }), {
-        status: 401,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 401 });
+      return addSecurityHeaders(response);
+    }
+
+    // Buscar usuário pela sessão
+    const session = await env.DB.prepare(`
+      SELECT u.id, u.email 
+      FROM sessions s 
+      JOIN users u ON s.user_id = u.id 
+      WHERE s.session_id = ? AND s.expires_at > ?
+    `).bind(sessionCookie, Date.now()).first() as { id: string; email: string } | null;
+
+    if (!session) {
+      console.log('❌ Sessão inválida');
+      const response = Response.json({ 
+        success: false,
+        error: 'Invalid session' 
+      }, { status: 401 });
+      return addSecurityHeaders(response);
     }
 
     // Verificar se é admin
-    const userEmail = sessionCookie.split('|')[0];
-    const adminUsers = ['holdboy01@gmail.com', 'profitshards@gmail.com', 'admin@profitshards.com'];
-    
-    if (!adminUsers.includes(userEmail)) {
-      console.log('❌ Usuário não é admin:', userEmail);
-      return new Response(JSON.stringify({ 
+    const isAdmin = session.email === 'holdboy01@gmail.com';
+    if (!isAdmin) {
+      console.log('❌ Usuário não é admin:', session.email);
+      const response = Response.json({ 
         success: false,
         error: 'Admin access required' 
-      }), {
-        status: 403,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 403 });
+      return addSecurityHeaders(response);
     }
+
+    console.log('✅ Admin autenticado para envio de relatório:', session.email);
 
     // Obter dados da requisição
     const body = await request.json();
     const { email, reportType = 'daily', includeCharts = true } = body;
 
     if (!email) {
-      return new Response(JSON.stringify({ 
+      const response = Response.json({ 
         success: false,
         error: 'Email is required' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 400 });
+      return addSecurityHeaders(response);
     }
 
     // Coletar dados para o relatório
@@ -118,7 +127,7 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     
     if (emailResult.success) {
       console.log('✅ Relatório enviado com sucesso para:', email);
-      return new Response(JSON.stringify({
+      const response = Response.json({
         success: true,
         message: 'Relatório enviado com sucesso',
         data: {
@@ -126,31 +135,25 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
           reportType,
           timestamp: new Date().toISOString()
         }
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 200 });
+      return addSecurityHeaders(response);
     } else {
       console.log('❌ Erro ao enviar email:', emailResult.error);
-      return new Response(JSON.stringify({
+      const response = Response.json({
         success: false,
         error: 'Erro ao enviar email: ' + emailResult.error
-      }), {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      }, { status: 500 });
+      return addSecurityHeaders(response);
     }
 
   } catch (error) {
     console.error('❌ Erro no send email report:', error);
-    return new Response(JSON.stringify({
+    const response = Response.json({
       success: false,
       error: 'Erro interno do servidor',
       details: error instanceof Error ? error.message : 'Unknown error'
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    }, { status: 500 });
+    return addSecurityHeaders(response);
   }
 }
 
