@@ -19,7 +19,6 @@ import { GiveawayModal } from "@/components/GiveawayModal";
 import { WinnerBanner } from "@/components/WinnerBanner";
 import { WinnersDisplay } from "@/components/WinnersDisplay";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
-import { ActivityStream } from "@/components/ActivityStream";
 
 export default function Home() {
 	const { t } = useI18n();
@@ -198,42 +197,6 @@ export default function Home() {
 						</div>
 					</div>
 
-					{/* Feed de Atividade com Container Exclusivo */}
-					<div className="max-w-6xl mx-auto">
-						<div className="bg-gradient-to-br from-background/80 via-background/60 to-background/80 backdrop-blur-xl border border-orange-500/20 rounded-3xl p-8 shadow-2xl">
-							<ActivityStream />
-							
-							{!isAuthenticated && (
-								<div className="mt-8 p-8 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border border-orange-500/20 rounded-2xl text-center">
-									<div className="flex items-center justify-center space-x-3 mb-4">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-target text-orange-600">
-											<circle cx="12" cy="12" r="10"></circle>
-											<circle cx="12" cy="12" r="6"></circle>
-											<circle cx="12" cy="12" r="2"></circle>
-										</svg>
-										<h3 className="text-2xl font-bold text-orange-700 dark:text-orange-300">
-											{t('home.wantToAppear')}
-										</h3>
-									</div>
-									<p className="text-lg text-orange-600 dark:text-orange-400 mb-6">
-										{t('home.loginToAppear')}
-									</p>
-									<Button 
-										size="lg"
-										className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white text-lg px-8 py-3"
-										onClick={() => {
-											alert(t('home.loginRequired.feed'));
-										}}
-									>
-										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-zap mr-2">
-											<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"></path>
-										</svg>
-										{t('home.loginButton')}
-									</Button>
-								</div>
-							)}
-						</div>
-					</div>
 				</div>
 			</div>
 
