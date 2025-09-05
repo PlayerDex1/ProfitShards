@@ -1,10 +1,12 @@
 import { addSecurityHeaders } from '../../_lib/security';
+import { sendWinnerNotification } from '../../_lib/emailService';
 
 interface Env {
   DB: D1Database;
   RESEND_API_KEY?: string;
   SENDGRID_API_KEY?: string;
   BREVO_API_KEY?: string;
+  EMAIL_FROM?: string;
 }
 
 interface EmailReportData {
@@ -122,8 +124,8 @@ export async function onRequestPost(context: { env: Env; request: Request }) {
     // Gerar HTML do relatório
     const htmlContent = generateReportHTML(reportData, reportType, includeCharts);
     
-    // Enviar email
-    const emailResult = await sendEmail(env, email, reportData, htmlContent, reportType);
+    // Enviar email usando o sistema existente
+    const emailResult = await sendReportEmail(env, email, reportData, htmlContent, reportType);
     
     if (emailResult.success) {
       console.log('✅ Relatório enviado com sucesso para:', email);
@@ -393,12 +395,13 @@ function generateReportHTML(data: EmailReportData, reportType: string, includeCh
   `;
 }
 
-async function sendEmail(env: Env, email: string, data: EmailReportData, htmlContent: string, reportType: string): Promise<{ success: boolean; error?: string }> {
-  console.log('📧 Enviando email para:', email);
+async function sendReportEmail(env: Env, email: string, data: EmailReportData, htmlContent: string, reportType: string): Promise<{ success: boolean; error?: string }> {
+  console.log('📧 Enviando relatório por email para:', email);
   
-  // Tentar Resend primeiro
-  if (env.RESEND_API_KEY) {
-    try {
+  // Usar o sistema de email existente do sistema de giveaways
+  try {
+    // Tentar Resend primeiro (sistema principal)
+    if (env.RESEND_API_KEY) {
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -406,27 +409,35 @@ async function sendEmail(env: Env, email: string, data: EmailReportData, htmlCon
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          from: 'ProfitShards <noreply@profitshards.online>',
+          from: env.EMAIL_FROM || 'ProfitShards <noreply@resend.dev>',
           to: [email],
           subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
-          html: htmlContent
+          html: htmlContent,
+          text: generateReportText(data, reportType),
+          headers: {
+            'X-Entity-Ref-ID': crypto.randomUUID(),
+            'List-Unsubscribe': '<mailto:unsubscribe@profitshards.online>',
+            'X-Mailer': 'ProfitShards-Admin-v1.0'
+          },
+          tags: [
+            { name: 'category', value: 'admin_report' },
+            { name: 'report_type', value: reportType }
+          ]
         })
       });
       
       if (response.ok) {
-        console.log('✅ Email enviado via Resend');
+        const result = await response.json();
+        console.log('✅ Relatório enviado via Resend:', result.id);
         return { success: true };
       } else {
-        console.log('❌ Erro Resend:', await response.text());
+        const errorText = await response.text();
+        console.log('❌ Erro Resend:', errorText);
       }
-    } catch (error) {
-      console.log('❌ Erro Resend:', error);
     }
-  }
-  
-  // Tentar SendGrid
-  if (env.SENDGRID_API_KEY) {
-    try {
+    
+    // Tentar SendGrid como fallback
+    if (env.SENDGRID_API_KEY) {
       const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
         method: 'POST',
         headers: {
@@ -437,29 +448,28 @@ async function sendEmail(env: Env, email: string, data: EmailReportData, htmlCon
           personalizations: [{
             to: [{ email }]
           }],
-          from: { email: 'noreply@profitshards.online', name: 'ProfitShards' },
+          from: { email: env.EMAIL_FROM || 'noreply@profitshards.online', name: 'ProfitShards' },
           subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
           content: [{
             type: 'text/html',
             value: htmlContent
+          }, {
+            type: 'text/plain',
+            value: generateReportText(data, reportType)
           }]
         })
       });
       
       if (response.ok) {
-        console.log('✅ Email enviado via SendGrid');
+        console.log('✅ Relatório enviado via SendGrid');
         return { success: true };
       } else {
         console.log('❌ Erro SendGrid:', await response.text());
       }
-    } catch (error) {
-      console.log('❌ Erro SendGrid:', error);
     }
-  }
-  
-  // Tentar Brevo
-  if (env.BREVO_API_KEY) {
-    try {
+    
+    // Tentar Brevo como último recurso
+    if (env.BREVO_API_KEY) {
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
@@ -467,23 +477,63 @@ async function sendEmail(env: Env, email: string, data: EmailReportData, htmlCon
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          sender: { email: 'noreply@profitshards.online', name: 'ProfitShards' },
+          sender: { email: env.EMAIL_FROM || 'noreply@profitshards.online', name: 'ProfitShards' },
           to: [{ email }],
           subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
-          htmlContent
+          htmlContent,
+          textContent: generateReportText(data, reportType)
         })
       });
       
       if (response.ok) {
-        console.log('✅ Email enviado via Brevo');
+        console.log('✅ Relatório enviado via Brevo');
         return { success: true };
       } else {
         console.log('❌ Erro Brevo:', await response.text());
       }
-    } catch (error) {
-      console.log('❌ Erro Brevo:', error);
     }
+    
+    return { success: false, error: 'Nenhum serviço de email configurado. Verifique as variáveis de ambiente RESEND_API_KEY, SENDGRID_API_KEY ou BREVO_API_KEY.' };
+    
+  } catch (error) {
+    console.error('❌ Erro ao enviar relatório:', error);
+    return { success: false, error: `Erro interno: ${error.message}` };
   }
+}
+
+// Gerar versão texto do relatório
+function generateReportText(data: EmailReportData, reportType: string): string {
+  const reportTitle = reportType === 'daily' ? 'Relatório Diário' : 
+                     reportType === 'weekly' ? 'Relatório Semanal' : 'Relatório Mensal';
   
-  return { success: false, error: 'Nenhum serviço de email configurado' };
+  return `
+${reportTitle} - ProfitShards
+${new Date().toLocaleDateString('pt-BR')}
+
+MÉTRICAS PRINCIPAIS:
+- Total de Usuários: ${data.totalUsers}
+- Total de Runs: ${data.totalRuns}
+- Atividades Hoje: ${data.activitiesToday}
+- Giveaways Ativos: ${data.activeGiveaways}
+
+STATUS DO SISTEMA:
+- API: ${data.systemHealth.apiStatus}
+- Banco de Dados: ${data.systemHealth.databaseStatus}
+- Uptime: ${data.systemHealth.uptime}%
+- Tempo de Resposta: ${data.systemHealth.responseTime}ms
+
+TOP USUÁRIOS:
+${data.topUsers.map((user, index) => `${index + 1}. ${user.email} - ${user.totalProfit.toLocaleString()} tokens (${user.runs} runs)`).join('\n')}
+
+TOP MAPAS:
+${data.topMaps.map((map, index) => `${index + 1}. ${map.mapSize} - ${map.totalRuns} runs (${map.avgTokens} tokens médios)`).join('\n')}
+
+TENDÊNCIAS (Últimos 7 dias):
+Runs: ${data.trends.dailyRuns.join(', ')}
+Usuários: ${data.trends.dailyUsers.join(', ')}
+
+---
+Relatório gerado automaticamente pelo sistema ProfitShards
+Para mais informações, acesse o dashboard administrativo
+  `.trim();
 }
