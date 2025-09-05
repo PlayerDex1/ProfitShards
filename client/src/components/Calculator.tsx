@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2 } from "lucide-react";
+import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2, FileText } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,8 @@ import { CalculatorChartsSimple } from "@/components/CalculatorChartsSimple";
 import { useToastContext } from "@/contexts/ToastContext";
 import { RecommendationsEngine } from "@/components/RecommendationsEngine";
 import { StrategyScorer } from "@/components/StrategyScorer";
+import { DashboardInterativo } from "@/components/DashboardInterativo";
+import { RelatoriosVisuais } from "@/components/RelatoriosVisuais";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -29,6 +31,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
+	const [activeSection, setActiveSection] = useState<'calculator' | 'dashboard' | 'reports'>('calculator');
 
 	// Atualizar preço do token quando disponível
 	useEffect(() => {
@@ -141,6 +144,34 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					<CardTitle className="text-xl font-bold text-foreground">
 						{t('calc.title')}
 					</CardTitle>
+				</div>
+				
+				{/* Navigation Buttons */}
+				<div className="flex gap-2 mt-4">
+					<Button
+						variant={activeSection === 'calculator' ? 'default' : 'outline'}
+						size="sm"
+						onClick={() => setActiveSection('calculator')}
+					>
+						<DollarSign className="w-4 h-4 mr-2" />
+						Calculadora
+					</Button>
+					<Button
+						variant={activeSection === 'dashboard' ? 'default' : 'outline'}
+						size="sm"
+						onClick={() => setActiveSection('dashboard')}
+					>
+						<BarChart3 className="w-4 h-4 mr-2" />
+						Dashboard
+					</Button>
+					<Button
+						variant={activeSection === 'reports' ? 'default' : 'outline'}
+						size="sm"
+						onClick={() => setActiveSection('reports')}
+					>
+						<FileText className="w-4 h-4 mr-2" />
+						Relatórios
+					</Button>
 				</div>
 			</CardHeader>
 			<CardContent className="space-y-6">
@@ -446,6 +477,20 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 						roi: results.roi || 0,
 					}}
 				/>
+			</div>
+		)}
+
+		{/* Dashboard Interativo */}
+		{activeSection === 'dashboard' && (
+			<div className="mt-6">
+				<DashboardInterativo formData={formData} results={results} />
+			</div>
+		)}
+
+		{/* Relatórios Visuais */}
+		{activeSection === 'reports' && (
+			<div className="mt-6">
+				<RelatoriosVisuais history={calculations} />
 			</div>
 		)}
 		</>
