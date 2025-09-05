@@ -5,6 +5,10 @@ const PRICE_CACHE = {
   cacheDuration: 2 * 60 * 1000, // 2 minutos (reduzido de 5 para 2)
 };
 
+// Limpar cache para forçar atualização com novo endereço
+PRICE_CACHE.price = null;
+PRICE_CACHE.lastUpdate = 0;
+
 export async function onRequest() {
   try {
     const now = Date.now();
@@ -70,7 +74,7 @@ export async function onRequest() {
     // Se não encontrou preço, usar fallback
     if (!price) {
       // Fallback para um preço estimado baseado em dados históricos
-      const fallbackPrice = 0.042; // Preço base estimado
+      const fallbackPrice = 0.045; // Preço base estimado atualizado
       console.log('⚠️ [TOKEN PRICE] No price found, using fallback price:', fallbackPrice);
       
       PRICE_CACHE.price = fallbackPrice;
