@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, User, Clock, Target } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { CompactStats } from "@/components/CompactStats";
@@ -30,6 +30,9 @@ interface ActivityStreamResponse {
   runs: ActivityRun[];
   cached?: boolean;
   total?: number;
+  page?: number;
+  limit?: number;
+  hasMore?: boolean;
   error?: string;
   fallback?: boolean;
   timestamp?: string;
@@ -204,18 +207,24 @@ export function ActivityStream() {
   const [isCached, setIsCached] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('');
   
-  // Estados de paginação
+  // Estados de scroll infinito
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 8; // Reduzido para dar mais espaço
+  const [hasMore, setHasMore] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [totalRuns, setTotalRuns] = useState(0);
 
-  const loadFeed = async (forceRefresh = false) => {
-    setLoading(true);
+  const loadFeed = async (forceRefresh = false, page = 1, append = false) => {
+    if (append) {
+      setLoadingMore(true);
+    } else {
+      setLoading(true);
+    }
     setError(null);
     
     try {
       const url = forceRefresh 
-        ? '/api/feed/activity-stream?force=true&_=' + Date.now()
-        : '/api/feed/activity-stream';
+        ? `/api/feed/activity-stream?force=true&page=${page}&limit=20&_=${Date.now()}`
+        : `/api/feed/activity-stream?page=${page}&limit=20`;
         
       const response = await fetch(url, {
         method: 'GET',
@@ -226,9 +235,16 @@ export function ActivityStream() {
       const result: ActivityStreamResponse = await response.json();
       
       if (result.success) {
-        setRuns(result.runs || []);
+        if (append) {
+          setRuns(prev => [...prev, ...(result.runs || [])]);
+        } else {
+          setRuns(result.runs || []);
+        }
+        setHasMore(result.hasMore || false);
+        setTotalRuns(result.total || 0);
         setIsCached(result.cached || false);
         setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
+        setCurrentPage(page);
       } else {
         setError(result.error || 'Erro ao carregar feed');
       }
@@ -236,40 +252,47 @@ export function ActivityStream() {
       console.error('Erro ao carregar feed:', error);
       setError('Erro de conexão');
     } finally {
-      setLoading(false);
+      if (append) {
+        setLoadingMore(false);
+      } else {
+        setLoading(false);
+      }
     }
   };
 
   const refreshFeed = async () => {
     setIsRefreshing(true);
     try {
-      await loadFeed(true); // Força refresh ignorando cache
+      await loadFeed(true, 1, false); // Força refresh ignorando cache
     } finally {
       setIsRefreshing(false);
     }
   };
 
+  const loadMore = async () => {
+    if (hasMore && !loadingMore) {
+      await loadFeed(false, currentPage + 1, true);
+    }
+  };
+
+  // Scroll infinito
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 1000) {
+        loadMore();
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [hasMore, loadingMore, currentPage]);
+
   useEffect(() => {
     loadFeed();
     // Auto-refresh a cada 1 minuto para dados mais atuais
-    const interval = setInterval(loadFeed, 1 * 60 * 1000);
+    const interval = setInterval(() => loadFeed(false, 1, false), 1 * 60 * 1000);
     return () => clearInterval(interval);
   }, []);
-
-  // Calcular dados da paginação
-  const totalPages = Math.ceil(runs.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const currentRuns = runs.slice(startIndex, endIndex);
-
-  const goToPage = (page: number) => {
-    setCurrentPage(page);
-    // Scroll suave para o topo do feed
-    document.getElementById('activity-stream')?.scrollIntoView({ 
-      behavior: 'smooth', 
-      block: 'start' 
-    });
-  };
 
   return (
     <Card id="activity-stream" className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
@@ -285,7 +308,12 @@ export function ActivityStream() {
               </CardTitle>
               <div className="flex items-center space-x-4 mt-2">
                 <p className="text-muted-foreground text-sm">
-                  Últimas atividades em tempo real • {runs.length} runs ativas
+                  Últimas atividades em tempo real • {runs.length} runs carregadas
+                  {totalRuns > 0 && (
+                    <span className="ml-2 text-xs text-blue-500">
+                      • {totalRuns} total disponível
+                    </span>
+                  )}
                   {lastUpdate && (
                     <span className="ml-2 text-xs">
                       • {lastUpdate}
@@ -348,61 +376,46 @@ export function ActivityStream() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentRuns.map((run, index) => (
-              <RunCard key={run.id} run={run} index={index} />
-            ))}
-          </div>
-        )}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {runs.map((run, index) => (
+                <RunCard key={run.id} run={run} index={index} />
+              ))}
+            </div>
 
-        {/* Controles de Paginação */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="flex items-center space-x-1"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span>Anterior</span>
-              </Button>
-              
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                  <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => goToPage(page)}
-                    className={cn(
-                      "w-8 h-8 p-0",
-                      currentPage === page && "bg-primary text-primary-foreground"
-                    )}
-                  >
-                    {page}
-                  </Button>
-                ))}
+            {/* Indicador de carregamento infinito */}
+            {loadingMore && (
+              <div className="mt-8 flex items-center justify-center">
+                <div className="flex items-center space-x-3">
+                  <RefreshCw className="h-5 w-5 animate-spin text-primary" />
+                  <span className="text-muted-foreground">Carregando mais atividades...</span>
+                </div>
               </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="flex items-center space-x-1"
-              >
-                <span>Próxima</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages} • {runs.length} runs
-            </div>
-          </div>
+            )}
+
+            {/* Botão para carregar mais (fallback) */}
+            {hasMore && !loadingMore && runs.length > 0 && (
+              <div className="mt-8 flex items-center justify-center">
+                <Button
+                  variant="outline"
+                  onClick={loadMore}
+                  className="flex items-center space-x-2"
+                >
+                  <TrendingUp className="h-4 w-4" />
+                  <span>Carregar Mais Atividades</span>
+                </Button>
+              </div>
+            )}
+
+            {/* Indicador de fim */}
+            {!hasMore && runs.length > 0 && (
+              <div className="mt-8 text-center">
+                <div className="text-sm text-muted-foreground">
+                  🎉 Você viu todas as atividades disponíveis!
+                </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Call-to-action para incentivar participação */}

@@ -57,10 +57,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     // 2. BUSCAR DADOS REAIS DO BANCO
     let activityRuns: ActivityRun[] = [];
 
+    // Parâmetros de paginação
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const offset = (page - 1) * limit;
+
     if (env.DB) {
       try {
-        // Buscar últimas 20 runs das últimas 24 horas (mesma janela que recent-runs)
-        const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+        // Buscar runs das últimas 7 dias (expandido para mais dados)
+        const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
         
         const dbResult = await env.DB.prepare(`
           SELECT 
@@ -77,8 +82,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           FROM feed_runs 
           WHERE created_at > ? 
           ORDER BY created_at DESC 
-          LIMIT 20
-        `).bind(twentyFourHoursAgo).all();
+          LIMIT ? OFFSET ?
+        `).bind(sevenDaysAgo, limit, offset).all();
 
         console.log(`📊 Encontradas ${dbResult.results?.length || 0} runs recentes`);
         console.log('🔍 SAMPLE: Primeiras runs do banco:', dbResult.results?.slice(0, 3).map(r => ({
@@ -154,9 +159,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     // 5. RETORNAR RESULTADO
     return new Response(JSON.stringify({
       success: true,
-      runs: activityRuns.slice(0, 15), // Máximo 15 itens
+      runs: activityRuns,
       cached: false,
       total: activityRuns.length,
+      page: page,
+      limit: limit,
+      hasMore: activityRuns.length === limit, // Se retornou o limite, provavelmente há mais
       timestamp: new Date().toISOString()
     }), {
       status: 200,
