@@ -12,14 +12,19 @@ export function DashboardInterativo({ formData, results }: DashboardInterativoPr
   console.log('🔍 DashboardInterativo - results:', results);
   
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-lg border-2 border-blue-200 dark:border-blue-800">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-foreground mb-2">
+        <h3 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
           📊 Dashboard Interativo
         </h3>
-        <p className="text-muted-foreground">
+        <p className="text-blue-500 dark:text-blue-300 text-lg">
           Análise visual dos seus resultados
         </p>
+        <div className="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded border border-yellow-300 dark:border-yellow-700">
+          <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+            ✅ COMPONENTE FUNCIONANDO! Dados recebidos: {formData ? 'SIM' : 'NÃO'}
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

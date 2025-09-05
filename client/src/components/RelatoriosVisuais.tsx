@@ -15,14 +15,19 @@ export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
     : 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/20 dark:to-emerald-950/20 rounded-lg border-2 border-green-200 dark:border-green-800">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold text-foreground mb-2">
+        <h3 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-2">
           📈 Relatórios Visuais
         </h3>
-        <p className="text-muted-foreground">
+        <p className="text-green-500 dark:text-green-300 text-lg">
           Análise detalhada do seu histórico
         </p>
+        <div className="mt-4 p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded border border-yellow-300 dark:border-yellow-700">
+          <p className="text-yellow-800 dark:text-yellow-200 font-medium">
+            ✅ COMPONENTE FUNCIONANDO! Histórico: {history?.length || 0} itens
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -92,9 +97,21 @@ export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
               ))}
             </div>
           ) : (
-            <p className="text-muted-foreground text-center py-4">
-              Nenhum histórico disponível
-            </p>
+            <div className="space-y-4">
+              <p className="text-muted-foreground text-center py-4">
+                Nenhum histórico disponível ainda
+              </p>
+              <div className="bg-blue-50 dark:bg-blue-950/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h4 className="font-semibold text-blue-600 dark:text-blue-400 mb-2">
+                  💡 Dica: Como gerar relatórios
+                </h4>
+                <ul className="text-sm text-blue-700 dark:text-blue-300 space-y-1">
+                  <li>• Faça alguns cálculos na calculadora</li>
+                  <li>• Salve os resultados no histórico</li>
+                  <li>• Volte aqui para ver suas análises</li>
+                </ul>
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
