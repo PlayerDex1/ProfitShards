@@ -817,6 +817,341 @@ export function EnhancedAdminDashboard() {
           </div>
         </TabsContent>
 
+        {/* Aba Maps */}
+        <TabsContent value="maps" className="space-y-6">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Map className="h-6 w-6 text-green-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-green-900 dark:text-green-100">
+                  🗺️ Analytics de Mapas
+                </h2>
+                <p className="text-sm text-green-600 dark:text-green-300">
+                  Análise detalhada de performance por tipo de mapa
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader>
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <div className="h-3 bg-muted rounded w-full"></div>
+                      <div className="h-3 bg-muted rounded w-2/3"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : mapAnalytics ? (
+            <>
+              {/* Estatísticas por Tamanho de Mapa */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {mapAnalytics.mapSizeStats.map((stat, index) => (
+                  <Card key={index}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">{stat.mapSize}</CardTitle>
+                      <MapPin className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{stat.totalRuns}</div>
+                      <p className="text-xs text-muted-foreground">
+                        {stat.avgTokens.toFixed(0)} tokens médios
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {stat.avgEfficiency.toFixed(1)}% eficiência
+                      </p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Gráfico de Atividade por Hora */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clock className="h-5 w-5" />
+                    Atividade por Hora do Dia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-64 flex items-end justify-between gap-1">
+                    {mapAnalytics.hourlyActivity.map((hour, index) => (
+                      <div key={index} className="flex flex-col items-center gap-1">
+                        <div 
+                          className="bg-green-500 rounded-t w-6 transition-all hover:bg-green-600"
+                          style={{ height: `${(hour.runs / Math.max(...mapAnalytics.hourlyActivity.map(h => h.runs))) * 200}px` }}
+                          title={`${hour.hour}:00 - ${hour.runs} runs`}
+                        />
+                        <span className="text-xs text-muted-foreground">{hour.hour}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Estatísticas de Level e Tier */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Distribuição por Level</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {mapAnalytics.levelTierStats.slice(0, 5).map((stat, index) => (
+                        <div key={index} className="flex items-center justify-between">
+                          <span className="text-sm">Level {stat.level}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-blue-600 h-2 rounded-full" 
+                                style={{ width: `${(stat.runs / Math.max(...mapAnalytics.levelTierStats.map(s => s.runs))) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium">{stat.runs}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Eficiência por Carga</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {mapAnalytics.chargeEfficiency.map((stat, index) => (
+                        <div key={index} className="flex items-center justify-between">
+                          <span className="text-sm">Carga {stat.chargeRange}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div 
+                                className="bg-purple-600 h-2 rounded-full" 
+                                style={{ width: `${(stat.avgEfficiency / Math.max(...mapAnalytics.chargeEfficiency.map(s => s.avgEfficiency))) * 100}%` }}
+                              ></div>
+                            </div>
+                            <span className="text-sm font-medium">{stat.avgEfficiency.toFixed(1)}%</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <Map className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <div className="text-lg font-semibold text-muted-foreground mb-2">
+                  Carregando dados de mapas...
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Aguarde enquanto carregamos as estatísticas dos mapas.
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={loadMapAnalytics}
+                  className="mt-3"
+                >
+                  <RefreshCw className="h-4 w-4 mr-2" />
+                  Recarregar
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Aba Feed */}
+        <TabsContent value="feed" className="space-y-6">
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-6 rounded-lg border border-orange-200 dark:border-orange-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="h-6 w-6 text-orange-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                  🔥 Feed da Comunidade - Admin
+                </h2>
+                <p className="text-sm text-orange-600 dark:text-orange-300">
+                  Visão administrativa das atividades da comunidade
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Estatísticas do Feed */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Atividades Hoje</CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {mapAnalytics?.recentActivity.last24h || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Últimas 24 horas
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Atividades Esta Semana</CardTitle>
+                <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {mapAnalytics?.recentActivity.last7d || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Últimos 7 dias
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Usuários Únicos</CardTitle>
+                <Users className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {mapAnalytics?.userBehaviorPatterns.totalUniqueUsers || 0}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Total de usuários ativos
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">Taxa de Crescimento</CardTitle>
+                <ArrowUp className="h-4 w-4 text-muted-foreground" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  +{mapAnalytics?.recentActivity.growthRate || 0}%
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Comparado ao mês anterior
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Comportamento dos Usuários */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Tipos de Usuários</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Usuários Casuais</span>
+                    <Badge variant="secondary">
+                      {mapAnalytics?.userBehaviorPatterns.casualUsers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Usuários Regulares</span>
+                    <Badge variant="default">
+                      {mapAnalytics?.userBehaviorPatterns.regularUsers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Power Users</span>
+                    <Badge variant="destructive">
+                      {mapAnalytics?.userBehaviorPatterns.powerUsers || 0}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Média de Runs por Usuário</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center">
+                  <div className="text-3xl font-bold text-primary">
+                    {mapAnalytics?.userBehaviorPatterns.avgRunsPerUser?.toFixed(1) || 0}
+                  </div>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Runs por usuário
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Ações Rápidas</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Button 
+                  onClick={() => fetch('/api/admin/force-map-runs-today?force=true', { method: 'POST' })}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Plus className="h-4 w-4" />
+                  Forçar Atividades de Hoje
+                </Button>
+                <Button 
+                  onClick={() => window.open('/api/feed/activity-stream?force=true', '_blank')}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Eye className="h-4 w-4" />
+                  Ver Feed em JSON
+                </Button>
+                <Button 
+                  onClick={loadAllData}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Atualizar Dados
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Link para o Feed Principal */}
+          <Card className="bg-gradient-to-r from-orange-100 to-red-100 dark:from-orange-900/20 dark:to-red-900/20 border-orange-300 dark:border-orange-700">
+            <CardContent className="pt-6 text-center">
+              <div className="flex items-center justify-center space-x-2 mb-3">
+                <Activity className="h-5 w-5 text-orange-600" />
+                <span className="font-semibold text-orange-900 dark:text-orange-100">
+                  Feed da Comunidade
+                </span>
+              </div>
+              <p className="text-sm text-orange-700 dark:text-orange-300 mb-4">
+                Visualize o feed completo da comunidade com todas as atividades em tempo real
+              </p>
+              <Button 
+                onClick={() => window.location.href = '/#feed'}
+                className="bg-orange-600 hover:bg-orange-700 text-white"
+              >
+                <Activity className="mr-2 h-4 w-4" />
+                Ir para o Feed da Comunidade
+              </Button>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Analytics Avançados */}
         <TabsContent value="analytics" className="space-y-6">
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
