@@ -20,6 +20,7 @@ import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
+import { TestComponent } from "@/components/TestComponent";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -98,6 +99,8 @@ export default function Profile() {
 			<Header />
 			
 			<main className="container mx-auto px-4 py-8">
+				{/* Test Component */}
+				<TestComponent />
 				{/* Profile Header */}
 				<div className="mb-8">
 					<div className="flex items-center justify-between">
