@@ -14,8 +14,13 @@ import {
   Flame, Map, Shield, Crown, Gauge, Hash, UserCheck, AlertCircle,
   Gift, DollarSign, UserPlus, Settings, Download, Upload, Trash2,
   Play, Pause, Square, Edit, Plus, EyeOff, CheckCircle, XCircle,
-  Search, Mail, Bell, Server, Cpu, HardDrive, Wifi, AlertTriangle
+  Search, Mail, Bell, Server, Cpu, HardDrive, Wifi, AlertTriangle,
+  Sparkles, FileText, Save
 } from 'lucide-react';
+import { MainGiveawaysEditor } from './MainGiveawaysEditor';
+import { WinnerManager } from './WinnerManager';
+import { LotteryManager } from './LotteryManager';
+import { GiveawayAnalytics } from './GiveawayAnalytics';
 
 // Interfaces para os dados
 interface MapAnalytics {
@@ -63,19 +68,7 @@ interface MapAnalytics {
   };
 }
 
-interface GiveawayData {
-  id: string;
-  title: string;
-  description: string;
-  status: 'active' | 'inactive' | 'completed';
-  participants: number;
-  maxParticipants?: number;
-  startDate: string;
-  endDate: string;
-  requirements: any[];
-  winners?: string[];
-  completionRate: number;
-}
+// Removido - usando sistema existente de giveaways
 
 interface UserData {
   email: string;
@@ -101,7 +94,7 @@ export function EnhancedAdminDashboard() {
   const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
-  const [giveaways, setGiveaways] = useState<GiveawayData[]>([]);
+  // Removido - usando sistema existente de giveaways
   const [users, setUsers] = useState<UserData[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   
@@ -129,19 +122,7 @@ export function EnhancedAdminDashboard() {
     }
   };
 
-  const loadGiveaways = async () => {
-    try {
-      const response = await fetch('/api/giveaways/list', {
-        credentials: 'include'
-      });
-      const result = await response.json();
-      if (result.success) {
-        setGiveaways(result.giveaways || []);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar giveaways:', error);
-    }
-  };
+  // Removido - usando sistema existente de giveaways
 
   const loadUsers = async () => {
     try {
@@ -206,7 +187,6 @@ export function EnhancedAdminDashboard() {
     try {
       await Promise.all([
         loadMapAnalytics(),
-        loadGiveaways(),
         loadUsers(),
         loadSystemHealth()
       ]);
@@ -240,38 +220,7 @@ export function EnhancedAdminDashboard() {
     }
   };
 
-  const createGiveaway = async () => {
-    const title = prompt('Título do Giveaway:');
-    const description = prompt('Descrição:');
-    const maxParticipants = prompt('Máximo de participantes (opcional):');
-    
-    if (!title || !description) return;
-
-    try {
-      const response = await fetch('/api/giveaways/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        credentials: 'include',
-        body: JSON.stringify({
-          title,
-          description,
-          maxParticipants: maxParticipants ? parseInt(maxParticipants) : undefined,
-          requirements: []
-        })
-      });
-      const result = await response.json();
-      if (result.success) {
-        alert('✅ Giveaway criado com sucesso!');
-        loadGiveaways();
-      } else {
-        alert('❌ Erro ao criar giveaway: ' + result.error);
-      }
-    } catch (error) {
-      alert('❌ Erro ao criar giveaway: ' + error);
-    }
-  };
+  // Removido - usando sistema existente de giveaways
 
   useEffect(() => {
     if (isAdmin) {
@@ -450,10 +399,10 @@ export function EnhancedAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">
-                  {giveaways.filter(g => g.status === 'active').length}
+                  Sistema Integrado
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {giveaways.reduce((sum, g) => sum + g.participants, 0)} participantes
+                  Gestão completa disponível
                 </p>
               </CardContent>
             </Card>
@@ -515,102 +464,82 @@ export function EnhancedAdminDashboard() {
           </div>
         </TabsContent>
 
-        {/* Gestão de Giveaways */}
+        {/* Gestão de Giveaways - Sistema Completo */}
         <TabsContent value="giveaways" className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Gestão de Giveaways</h2>
-            <Button onClick={createGiveaway} className="gap-2">
-              <Plus className="h-4 w-4" />
-              Criar Giveaway
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Giveaways</CardTitle>
-                <Gift className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{giveaways.length}</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Ativos</CardTitle>
-                <Play className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {giveaways.filter(g => g.status === 'active').length}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Participantes</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {giveaways.reduce((sum, g) => sum + g.participants, 0)}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Taxa Média</CardTitle>
-                <Percent className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {giveaways.length > 0 
-                    ? (giveaways.reduce((sum, g) => sum + g.completionRate, 0) / giveaways.length * 100).toFixed(1)
-                    : 0}%
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Lista de Giveaways */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Giveaways</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {giveaways.map((giveaway, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-medium">{giveaway.title}</h3>
-                        <Badge variant={giveaway.status === 'active' ? 'default' : 'secondary'}>
-                          {giveaway.status}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-2">{giveaway.description}</p>
-                      <div className="flex items-center gap-4 text-sm">
-                        <span>{giveaway.participants} participantes</span>
-                        <span>{(giveaway.completionRate * 100).toFixed(1)}% conclusão</span>
-                        <span>Até {new Date(giveaway.endDate).toLocaleDateString()}</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline">
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button size="sm" variant="outline">
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Sparkles className="h-6 w-6 text-purple-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                  🎁 Sistema Completo de Giveaways
+                </h2>
+                <p className="text-sm text-purple-600 dark:text-purple-300">
+                  Gerencie giveaways principais, sorteios e vencedores
+                </p>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+            
+            <div className="bg-white/50 dark:bg-black/20 p-4 rounded border border-purple-200 dark:border-purple-700">
+              <div className="flex items-start gap-3">
+                <div className="p-2 bg-purple-100 dark:bg-purple-800 rounded-full">
+                  <Target className="h-4 w-4 text-purple-600 dark:text-purple-300" />
+                </div>
+                <div className="flex-1">
+                  <h4 className="font-medium text-purple-900 dark:text-purple-100 mb-2">
+                    Sistema Integrado:
+                  </h4>
+                  <ul className="space-y-1 text-sm text-purple-700 dark:text-purple-300">
+                    <li>• <strong>Giveaways Principais:</strong> Crie e edite giveaways que aparecem na Home</li>
+                    <li>• <strong>Sorteio Atual:</strong> Gerencie o sistema de loteria em tempo real</li>
+                    <li>• <strong>Ganhadores:</strong> Visualize e notifique vencedores</li>
+                    <li>• <strong>Analytics:</strong> Estatísticas completas de participação</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tabs do Sistema de Giveaway */}
+          <Tabs defaultValue="main-giveaways" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="main-giveaways" className="flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Principais
+              </TabsTrigger>
+              <TabsTrigger value="lottery" className="flex items-center gap-2">
+                <Trophy className="h-4 w-4" />
+                Sorteio Atual
+              </TabsTrigger>
+              <TabsTrigger value="winners" className="flex items-center gap-2">
+                <Crown className="h-4 w-4" />
+                Ganhadores
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4" />
+                Analytics
+              </TabsTrigger>
+            </TabsList>
+
+            {/* Aba Giveaways Principais */}
+            <TabsContent value="main-giveaways" className="space-y-6">
+              <MainGiveawaysEditor />
+            </TabsContent>
+
+            {/* Aba Sorteio Atual */}
+            <TabsContent value="lottery" className="space-y-6">
+              <LotteryManager />
+            </TabsContent>
+
+            {/* Aba Ganhadores */}
+            <TabsContent value="winners" className="space-y-6">
+              <WinnerManager />
+            </TabsContent>
+
+            {/* Aba Analytics */}
+            <TabsContent value="analytics" className="space-y-6">
+              <GiveawayAnalytics />
+            </TabsContent>
+          </Tabs>
         </TabsContent>
 
         {/* Gestão de Usuários */}
