@@ -30,6 +30,18 @@ to = "/"
 status = 301
 force = true
 
+[[redirects]]
+from = "/planner"
+to = "/perfil?tab=planner"
+status = 301
+force = true
+
+[[redirects]]
+from = "/analytics"
+to = "/perfil?tab=activity"
+status = 301
+force = true
+
 # SPA routing - deve ser o último
 [[redirects]]
 from = "/*"

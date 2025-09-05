@@ -3,6 +3,8 @@
 /calculadora    /    301!
 /calculator    /    301!
 /calc    /    301!
+/planner    /perfil?tab=planner    301!
+/analytics    /perfil?tab=activity    301!
 
 # SPA routing - deve ser o último
 /*    /index.html   200
