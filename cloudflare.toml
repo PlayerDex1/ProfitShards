@@ -5,26 +5,30 @@ output_dir = "client/dist"
 [build.environment]
 NODE_VERSION = "18"
 
-# Redirecionamentos específicos
+# Redirecionamentos específicos (devem vir antes do SPA routing)
 [[redirects]]
 from = "/profile"
 to = "/perfil"
 status = 301
+force = true
 
 [[redirects]]
 from = "/calculadora"
 to = "/"
 status = 301
+force = true
 
 [[redirects]]
 from = "/calculator"
 to = "/"
 status = 301
+force = true
 
 [[redirects]]
 from = "/calc"
 to = "/"
 status = 301
+force = true
 
 # SPA routing - deve ser o último
 [[redirects]]

@@ -1,8 +1,8 @@
-# Redirecionamentos específicos
-/profile    /perfil    301
-/calculadora    /    301
-/calculator    /    301
-/calc    /    301
+# Redirecionamentos específicos (devem vir antes do SPA routing)
+/profile    /perfil    301!
+/calculadora    /    301!
+/calculator    /    301!
+/calc    /    301!
 
 # SPA routing - deve ser o último
 /*    /index.html   200
