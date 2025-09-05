@@ -331,22 +331,6 @@ export default function Profile() {
 					{/* Hub de Atividade */}
 					{activeTab === 'activity' && (
 						<div className="space-y-8">
-							{/* Header do Hub */}
-							<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
-								<CardContent className="p-4">
-									<div className="text-center">
-										<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-3 border border-orange-500/30">
-											<Activity className="h-6 w-6 text-orange-600" />
-										</div>
-										<h2 className="text-2xl font-bold text-foreground mb-1">
-											🔥 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Hub de Atividade</span>
-										</h2>
-										<p className="text-sm text-muted-foreground">
-											Central de atividades da comunidade, giveaways e interações
-										</p>
-									</div>
-								</CardContent>
-							</Card>
 
 							{/* Layout com Feed em Destaque */}
 							<div className="space-y-8">
