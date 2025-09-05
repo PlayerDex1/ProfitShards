@@ -68,6 +68,18 @@ try {
 
 // Automatic resets disabled as requested; keep only manual URL trigger above
 
+// Expor React globalmente para debug
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+
+// @ts-ignore
+window.React = React;
+// @ts-ignore
+window.ReactDOM = ReactDOM;
+
+console.log('🔍 React exposto globalmente:', typeof window.React);
+console.log('🔍 ReactDOM exposto globalmente:', typeof window.ReactDOM);
+
 createRoot(document.getElementById("root")!).render(
   <I18nProvider>
     <App />

@@ -145,6 +145,40 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		{/* Debug Component - Sempre visível */}
 		<DebugComponent />
 		
+		{/* Teste de renderização condicional simples */}
+		<div style={{
+			background: 'purple',
+			color: 'white',
+			padding: '20px',
+			margin: '20px 0',
+			border: '5px solid yellow',
+			fontSize: '24px',
+			fontWeight: 'bold'
+		}}>
+			🧪 TESTE DE RENDERIZAÇÃO CONDICIONAL 🧪
+			<br />
+			activeSection atual: <span style={{color: 'lime'}}>{activeSection}</span>
+			<br />
+			<button 
+				onClick={() => setActiveSection('dashboard')}
+				style={{background: 'blue', color: 'white', padding: '10px', margin: '5px'}}
+			>
+				Ir para Dashboard
+			</button>
+			<button 
+				onClick={() => setActiveSection('reports')}
+				style={{background: 'green', color: 'white', padding: '10px', margin: '5px'}}
+			>
+				Ir para Relatórios
+			</button>
+			<button 
+				onClick={() => setActiveSection('calculator')}
+				style={{background: 'red', color: 'white', padding: '10px', margin: '5px'}}
+			>
+				Voltar para Calculadora
+			</button>
+		</div>
+		
 		<Card>
 			<CardHeader className="py-4">
 				<div className="flex items-center gap-3">
