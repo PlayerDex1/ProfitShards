@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, Filter, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
 import { CompactStats } from "@/components/CompactStats";
@@ -30,6 +30,9 @@ interface ActivityStreamResponse {
   runs: ActivityRun[];
   cached?: boolean;
   total?: number;
+  page?: number;
+  limit?: number;
+  hasMore?: boolean;
   error?: string;
   fallback?: boolean;
   timestamp?: string;
@@ -204,9 +207,11 @@ export function ActivityStream() {
   const [isCached, setIsCached] = useState(false);
   const [lastUpdate, setLastUpdate] = useState<string>('');
   
-  // Estados de paginação
+  // Estados de paginação tradicional
   const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 8; // Reduzido para dar mais espaço
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalRuns, setTotalRuns] = useState(0);
+  const ITEMS_PER_PAGE = 6; // Reduzido para ter mais páginas
 
   const loadFeed = async (forceRefresh = false) => {
     setLoading(true);
@@ -214,8 +219,8 @@ export function ActivityStream() {
     
     try {
       const url = forceRefresh 
-        ? '/api/feed/activity-stream?force=true&_=' + Date.now()
-        : '/api/feed/activity-stream';
+        ? `/api/feed/activity-stream?force=true&limit=100&_=${Date.now()}`
+        : `/api/feed/activity-stream?limit=100`;
         
       const response = await fetch(url, {
         method: 'GET',
@@ -227,6 +232,8 @@ export function ActivityStream() {
       
       if (result.success) {
         setRuns(result.runs || []);
+        setTotalRuns(result.runs?.length || 0);
+        setTotalPages(Math.ceil((result.runs?.length || 0) / ITEMS_PER_PAGE));
         setIsCached(result.cached || false);
         setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
       } else {
@@ -249,15 +256,7 @@ export function ActivityStream() {
     }
   };
 
-  useEffect(() => {
-    loadFeed();
-    // Auto-refresh a cada 1 minuto para dados mais atuais
-    const interval = setInterval(loadFeed, 1 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Calcular dados da paginação
-  const totalPages = Math.ceil(runs.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentRuns = runs.slice(startIndex, endIndex);
@@ -270,6 +269,13 @@ export function ActivityStream() {
       block: 'start' 
     });
   };
+
+  useEffect(() => {
+    loadFeed();
+    // Auto-refresh a cada 1 minuto para dados mais atuais
+    const interval = setInterval(loadFeed, 1 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <Card id="activity-stream" className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
@@ -285,7 +291,7 @@ export function ActivityStream() {
               </CardTitle>
               <div className="flex items-center space-x-4 mt-2">
                 <p className="text-muted-foreground text-sm">
-                  Últimas atividades em tempo real • {runs.length} runs ativas
+                  Últimas atividades em tempo real • {totalRuns} runs disponíveis
                   {lastUpdate && (
                     <span className="ml-2 text-xs">
                       • {lastUpdate}
@@ -348,61 +354,79 @@ export function ActivityStream() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {currentRuns.map((run, index) => (
-              <RunCard key={run.id} run={run} index={index} />
-            ))}
-          </div>
-        )}
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {currentRuns.map((run, index) => (
+                <RunCard key={run.id} run={run} index={index} />
+              ))}
+            </div>
 
-        {/* Controles de Paginação */}
-        {totalPages > 1 && (
-          <div className="mt-8 flex items-center justify-center space-x-4">
-            <div className="flex items-center space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="flex items-center space-x-1"
-              >
-                <ChevronLeft className="h-4 w-4" />
-                <span>Anterior</span>
-              </Button>
-              
-              <div className="flex items-center space-x-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {/* Controles de Paginação */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center space-x-4">
+                <div className="flex items-center space-x-2">
                   <Button
-                    key={page}
-                    variant={currentPage === page ? "default" : "ghost"}
+                    variant="outline"
                     size="sm"
-                    onClick={() => goToPage(page)}
-                    className={cn(
-                      "w-8 h-8 p-0",
-                      currentPage === page && "bg-primary text-primary-foreground"
-                    )}
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center space-x-1"
                   >
-                    {page}
+                    <ChevronLeft className="h-4 w-4" />
+                    <span>Anterior</span>
                   </Button>
-                ))}
+                  
+                  <div className="flex items-center space-x-1">
+                    {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => i + 1).map((page) => (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => goToPage(page)}
+                        className={cn(
+                          "w-8 h-8 p-0",
+                          currentPage === page && "bg-primary text-primary-foreground"
+                        )}
+                      >
+                        {page}
+                      </Button>
+                    ))}
+                    {totalPages > 10 && (
+                      <>
+                        <span className="text-muted-foreground">...</span>
+                        <Button
+                          variant={currentPage === totalPages ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => goToPage(totalPages)}
+                          className={cn(
+                            "w-8 h-8 p-0",
+                            currentPage === totalPages && "bg-primary text-primary-foreground"
+                          )}
+                        >
+                          {totalPages}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                  
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center space-x-1"
+                  >
+                    <span>Próxima</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+                
+                <div className="text-sm text-muted-foreground">
+                  Página {currentPage} de {totalPages} • {totalRuns} runs
+                </div>
               </div>
-              
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="flex items-center space-x-1"
-              >
-                <span>Próxima</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </div>
-            
-            <div className="text-sm text-muted-foreground">
-              Página {currentPage} de {totalPages} • {runs.length} runs
-            </div>
-          </div>
+            )}
+          </>
         )}
 
         {/* Call-to-action para incentivar participação */}

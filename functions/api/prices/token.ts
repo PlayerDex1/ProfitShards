@@ -5,6 +5,10 @@ const PRICE_CACHE = {
   cacheDuration: 2 * 60 * 1000, // 2 minutos (reduzido de 5 para 2)
 };
 
+// Limpar cache para forçar atualização com novo endereço
+PRICE_CACHE.price = null;
+PRICE_CACHE.lastUpdate = 0;
+
 export async function onRequest() {
   try {
     const now = Date.now();
@@ -17,7 +21,7 @@ export async function onRequest() {
         price: PRICE_CACHE.price,
         cached: true,
         lastUpdate: PRICE_CACHE.lastUpdate,
-        source: 'CoinGecko (cached)'
+        source: 'DexScreener (cached)'
       }), {
         status: 200,
         headers: {
@@ -27,16 +31,16 @@ export async function onRequest() {
       });
     }
 
-    // Buscar preço atual do WorldShards (CoinGecko)
-    console.log('🔍 [TOKEN PRICE] Fetching fresh price from CoinGecko...');
+    // Buscar preço atual do WorldShards (DexScreener)
+    console.log('🔍 [TOKEN PRICE] Fetching fresh price from DexScreener...');
     
-    // WorldShards Token ID no CoinGecko (será lançado amanhã)
-    const tokenId = 'worldshards';
+    // Token BSC do WorldShards no DexScreener
+    const tokenAddress = '0x38fd4ee2ade8b4be157dfee3d6b8979c78a56145';
     let price = null;
-    let source = 'CoinGecko';
+    let source = 'DexScreener';
     
     try {
-      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${tokenId}&vs_currencies=usd`, {
+      const response = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`, {
         headers: {
           'Accept': 'application/json',
           'User-Agent': 'WorldShards-Calculator/1.0'
@@ -46,25 +50,31 @@ export async function onRequest() {
       if (response.ok) {
         const data = await response.json();
         
-        if (data[tokenId] && data[tokenId].usd) {
-          price = data[tokenId].usd;
-          source = `CoinGecko (${tokenId})`;
-          console.log(`✅ [TOKEN PRICE] Found price for WorldShards:`, price);
-          console.log(`🎮 [TOKEN PRICE] WorldShards token launched successfully!`);
+        if (data.pairs && data.pairs.length > 0) {
+          // Pegar o primeiro par (mais líquido)
+          const pair = data.pairs[0];
+          if (pair.priceUsd) {
+            price = parseFloat(pair.priceUsd);
+            source = `DexScreener (${pair.dexId})`;
+            console.log(`✅ [TOKEN PRICE] Found price for WorldShards:`, price);
+            console.log(`🎮 [TOKEN PRICE] WorldShards token price from DexScreener!`);
+          } else {
+            console.log(`⏳ [TOKEN PRICE] No price data in DexScreener response`);
+          }
         } else {
-          console.log(`⏳ [TOKEN PRICE] WorldShards token not yet launched on CoinGecko`);
+          console.log(`⏳ [TOKEN PRICE] No pairs found for WorldShards token on DexScreener`);
         }
       } else {
-        console.log(`⚠️ [TOKEN PRICE] CoinGecko API error: ${response.status}`);
+        console.log(`⚠️ [TOKEN PRICE] DexScreener API error: ${response.status}`);
       }
     } catch (err) {
-      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price for ${tokenId}:`, err);
+      console.log(`⚠️ [TOKEN PRICE] Failed to fetch price from DexScreener:`, err);
     }
     
     // Se não encontrou preço, usar fallback
     if (!price) {
       // Fallback para um preço estimado baseado em dados históricos
-      const fallbackPrice = 0.042; // Preço base estimado
+      const fallbackPrice = 0.045; // Preço base estimado atualizado
       console.log('⚠️ [TOKEN PRICE] No price found, using fallback price:', fallbackPrice);
       
       PRICE_CACHE.price = fallbackPrice;
@@ -119,7 +129,7 @@ export async function onRequest() {
         cached: true,
         error: 'Using cached price due to API error',
         lastUpdate: PRICE_CACHE.lastUpdate,
-        source: 'CoinGecko (cached, error fallback)'
+        source: 'DexScreener (cached, error fallback)'
       }), {
         status: 200,
         headers: {

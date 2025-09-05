@@ -57,10 +57,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     // 2. BUSCAR DADOS REAIS DO BANCO
     let activityRuns: ActivityRun[] = [];
 
+    // Parâmetros de paginação
+    const page = parseInt(url.searchParams.get('page') || '1');
+    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const offset = (page - 1) * limit;
+
     if (env.DB) {
       try {
-        // Buscar últimas 20 runs das últimas 24 horas (mesma janela que recent-runs)
-        const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
+        // Buscar runs das últimas 30 dias (expandido para muito mais dados)
+        const thirtyDaysAgo = Date.now() - (30 * 24 * 60 * 60 * 1000);
         
         const dbResult = await env.DB.prepare(`
           SELECT 
@@ -77,8 +82,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
           FROM feed_runs 
           WHERE created_at > ? 
           ORDER BY created_at DESC 
-          LIMIT 20
-        `).bind(twentyFourHoursAgo).all();
+          LIMIT ? OFFSET ?
+        `).bind(thirtyDaysAgo, limit, offset).all();
 
         console.log(`📊 Encontradas ${dbResult.results?.length || 0} runs recentes`);
         console.log('🔍 SAMPLE: Primeiras runs do banco:', dbResult.results?.slice(0, 3).map(r => ({
@@ -133,10 +138,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       }
     }
 
-    // 3. FALLBACK: DADOS MÍNIMOS SE NÃO HOUVER ATIVIDADE REAL
-    if (activityRuns.length === 0) {
-      console.log('📝 Nenhuma atividade real encontrada - aguardando dados do MapPlanner');
-      // Não gerar dados fake - deixar vazio para incentivar uso real
+    // 3. FALLBACK: GERAR DADOS DE EXEMPLO SE NÃO HOUVER ATIVIDADE REAL SUFICIENTE
+    if (activityRuns.length < 100) {
+      console.log('📝 Poucos dados reais encontrados - gerando dados de exemplo para demonstração');
+      const exampleRuns = generateRealisticRuns();
+      activityRuns = [...activityRuns, ...exampleRuns];
+      console.log(`📊 Total de runs após geração: ${activityRuns.length}`);
     }
 
     // 4. SALVAR NO CACHE PARA PRÓXIMAS REQUESTS
@@ -152,11 +159,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     }
 
     // 5. RETORNAR RESULTADO
+    console.log(`📊 Retornando ${activityRuns.length} runs para o frontend`);
     return new Response(JSON.stringify({
       success: true,
-      runs: activityRuns.slice(0, 15), // Máximo 15 itens
+      runs: activityRuns,
       cached: false,
       total: activityRuns.length,
+      page: page,
+      limit: limit,
+      hasMore: activityRuns.length === limit, // Se retornou o limite, provavelmente há mais
       timestamp: new Date().toISOString()
     }), {
       status: 200,
@@ -192,15 +203,15 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 // Gerar dados realistas baseados nas mecânicas do jogo
 function generateRealisticRuns(): ActivityRun[] {
   const maps = ['Small Map', 'Medium Map', 'Large Map', 'XLarge Map'];
-  const players = ['DragonSlayer', 'LuckMaster', 'TokenHunter', 'GemCrafter', 'MapExplorer', 'FarmKing'];
+  const players = ['DragonSlayer', 'LuckMaster', 'TokenHunter', 'GemCrafter', 'MapExplorer', 'FarmKing', 'CrystalMiner', 'ShardCollector', 'LuckyFarmer', 'MapMaster', 'TokenKing', 'GemHunter', 'CrystalSeeker', 'ShardLord', 'FarmWizard', 'MapLegend'];
   const now = Date.now();
   
   // Gerar runs com variação mais realista
   const runs: ActivityRun[] = [];
   
-  // Últimas 2 horas com runs mais frequentes
-  for (let i = 0; i < 12; i++) {
-    const minutesAgo = Math.floor(Math.random() * 120) + 5; // 5-125 min atrás
+  // Últimas 7 dias com runs mais frequentes - gerar 80 runs
+  for (let i = 0; i < 80; i++) {
+    const minutesAgo = Math.floor(Math.random() * (7 * 24 * 60)) + 5; // 5 min até 7 dias atrás
     const mapType = maps[Math.floor(Math.random() * maps.length)];
     const player = players[Math.floor(Math.random() * players.length)];
     
