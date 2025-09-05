@@ -159,6 +159,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     }
 
     // 5. RETORNAR RESULTADO
+    console.log(`📊 Retornando ${activityRuns.length} runs para o frontend`);
     return new Response(JSON.stringify({
       success: true,
       runs: activityRuns,
