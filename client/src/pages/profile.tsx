@@ -12,12 +12,13 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Activity } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Activity, Crown } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
+import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
 
@@ -89,7 +90,8 @@ export default function Profile() {
 		// Abas Test só aparecem para admins
 		...(isAdmin ? [
 			{ id: 'test', label: t('profile.tabs.test'), icon: TestTube },
-			{ id: 'giveaways', label: 'Giveaways Admin', icon: Gift }
+			{ id: 'giveaways', label: 'Giveaways Admin', icon: Gift },
+			{ id: 'admin-dashboard', label: 'Dashboard Admin', icon: Crown }
 		] : []),
 	];
 
@@ -396,6 +398,13 @@ export default function Profile() {
 					{activeTab === 'giveaways' && isAdmin && (
 						<div data-section="giveaway">
 							<GiveawayAdmin />
+						</div>
+					)}
+
+					{/* Ultimate Admin Dashboard - (Apenas Admin) */}
+					{activeTab === 'admin-dashboard' && isAdmin && (
+						<div data-section="admin-dashboard">
+							<UltimateAdminDashboard />
 						</div>
 					)}
 
