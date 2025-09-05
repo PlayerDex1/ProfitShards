@@ -32,6 +32,12 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
 	const [activeSection, setActiveSection] = useState<'calculator' | 'dashboard' | 'reports'>('calculator');
+	
+	// Debug logs
+	console.log('🔍 Calculator - activeSection:', activeSection);
+	console.log('🔍 Calculator - formData:', formData);
+	console.log('🔍 Calculator - results:', results);
+	console.log('🔍 Calculator - calculations:', calculations);
 
 	// Atualizar preço do token quando disponível
 	useEffect(() => {
@@ -483,6 +489,11 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		{/* Dashboard Interativo */}
 		{activeSection === 'dashboard' && (
 			<div className="mt-6">
+				<div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+					<p className="text-blue-600 dark:text-blue-400 font-medium">
+						🔍 DEBUG: Dashboard ativo - activeSection: {activeSection}
+					</p>
+				</div>
 				<DashboardInterativo formData={formData} results={results} />
 			</div>
 		)}
@@ -490,6 +501,11 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		{/* Relatórios Visuais */}
 		{activeSection === 'reports' && (
 			<div className="mt-6">
+				<div className="mb-4 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+					<p className="text-green-600 dark:text-green-400 font-medium">
+						🔍 DEBUG: Relatórios ativo - activeSection: {activeSection}
+					</p>
+				</div>
 				<RelatoriosVisuais history={calculations} />
 			</div>
 		)}

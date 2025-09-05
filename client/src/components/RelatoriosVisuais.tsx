@@ -7,6 +7,8 @@ interface RelatoriosVisuaisProps {
 }
 
 export function RelatoriosVisuais({ history }: RelatoriosVisuaisProps) {
+  console.log('🔍 RelatoriosVisuais - history:', history);
+  
   const totalCalculations = history?.length || 0;
   const avgROI = history?.length > 0 
     ? history.reduce((sum, item) => sum + (item.results?.roi || 0), 0) / history.length 

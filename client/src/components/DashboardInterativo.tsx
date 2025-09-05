@@ -8,6 +8,9 @@ interface DashboardInterativoProps {
 }
 
 export function DashboardInterativo({ formData, results }: DashboardInterativoProps) {
+  console.log('🔍 DashboardInterativo - formData:', formData);
+  console.log('🔍 DashboardInterativo - results:', results);
+  
   return (
     <div className="space-y-6">
       <div className="text-center mb-6">
