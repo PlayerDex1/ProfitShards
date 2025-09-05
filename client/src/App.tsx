@@ -1,4 +1,4 @@
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastProvider } from "@/contexts/ToastContext";
@@ -13,6 +13,23 @@ import HomePage from "@/pages/home";
 import ProfilePage from "@/pages/profile";
 import TestPage from "@/pages/test";
 import NotFoundPage from "@/pages/not-found";
+
+// Redirect components
+function PlannerRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=planner");
+  }, [setLocation]);
+  return null;
+}
+
+function AnalyticsRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=activity");
+  }, [setLocation]);
+  return null;
+}
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +63,8 @@ export default function App() {
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />
           <Route path="/test" component={TestPage} />
+          <Route path="/planner" component={PlannerRedirect} />
+          <Route path="/analytics" component={AnalyticsRedirect} />
           <Route component={NotFoundPage} />
         </Switch>
         <Toaster />
