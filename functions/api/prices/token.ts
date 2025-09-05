@@ -31,7 +31,7 @@ export async function onRequest() {
     console.log('🔍 [TOKEN PRICE] Fetching fresh price from DexScreener...');
     
     // Token BSC do WorldShards no DexScreener
-    const tokenAddress = '0xc331602c21e794702270e2e577c1ba2721141a8d';
+    const tokenAddress = '0x38fd4ee2ade8b4be157dfee3d6b8979c78a56145';
     let price = null;
     let source = 'DexScreener';
     
