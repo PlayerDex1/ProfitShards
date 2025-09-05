@@ -19,6 +19,7 @@ import { GiveawayModal } from "@/components/GiveawayModal";
 import { WinnerBanner } from "@/components/WinnerBanner";
 import { WinnersDisplay } from "@/components/WinnersDisplay";
 import { usePushNotifications } from "@/hooks/use-push-notifications";
+import { GlobalStats } from "@/components/GlobalStats";
 
 export default function Home() {
 	const { t } = useI18n();
@@ -139,6 +140,9 @@ export default function Home() {
 			
 			{/* Hero Section Moderno */}
 			<HeroModern />
+
+			{/* Estatísticas Globais */}
+			<GlobalStats />
 
 			{/* Features Section Moderna */}
 			<div className="container mx-auto px-4 py-8">
