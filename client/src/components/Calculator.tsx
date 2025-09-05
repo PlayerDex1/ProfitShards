@@ -14,6 +14,7 @@ import { RecommendationsEngine } from "@/components/RecommendationsEngine";
 import { StrategyScorer } from "@/components/StrategyScorer";
 import { DashboardInterativo } from "@/components/DashboardInterativo";
 import { RelatoriosVisuais } from "@/components/RelatoriosVisuais";
+import { DebugComponent } from "@/components/DebugComponent";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -141,6 +142,9 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 
 	return (
 		<>
+		{/* Debug Component - Sempre visível */}
+		<DebugComponent />
+		
 		<Card>
 			<CardHeader className="py-4">
 				<div className="flex items-center gap-3">
@@ -494,6 +498,23 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 						🔍 DEBUG: Dashboard ativo - activeSection: {activeSection}
 					</p>
 				</div>
+				<div style={{
+					background: 'lime',
+					color: 'black',
+					padding: '20px',
+					margin: '20px 0',
+					border: '5px solid red',
+					fontSize: '20px',
+					fontWeight: 'bold'
+				}}>
+					🚨 DASHBOARD SECTION RENDERIZANDO! 🚨
+					<br />
+					activeSection: {activeSection}
+					<br />
+					formData: {formData ? 'EXISTS' : 'NULL'}
+					<br />
+					results: {results ? 'EXISTS' : 'NULL'}
+				</div>
 				<DashboardInterativo formData={formData} results={results} />
 			</div>
 		)}
@@ -505,6 +526,21 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					<p className="text-green-600 dark:text-green-400 font-medium">
 						🔍 DEBUG: Relatórios ativo - activeSection: {activeSection}
 					</p>
+				</div>
+				<div style={{
+					background: 'orange',
+					color: 'white',
+					padding: '20px',
+					margin: '20px 0',
+					border: '5px solid purple',
+					fontSize: '20px',
+					fontWeight: 'bold'
+				}}>
+					🚨 RELATÓRIOS SECTION RENDERIZANDO! 🚨
+					<br />
+					activeSection: {activeSection}
+					<br />
+					calculations: {calculations?.length || 0} itens
 				</div>
 				<RelatoriosVisuais history={calculations} />
 			</div>
