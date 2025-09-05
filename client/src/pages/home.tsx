@@ -145,55 +145,6 @@ export default function Home() {
 				<FeaturesModern />
 			</div>
 
-			{/* Feed de Atividade - Seção Exclusiva e Destacada */}
-			<div className="relative py-16 overflow-hidden">
-				
-				{/* Conteúdo do Feed */}
-				<div className="container mx-auto px-4 relative z-10">
-					{/* Header Exclusivo do Feed */}
-					<div className="text-center mb-12">
-						<div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-6 border-2 border-orange-500/30">
-							<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-activity text-orange-600">
-								<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
-							</svg>
-						</div>
-						<h2 className="text-5xl font-bold text-foreground mb-4">
-							🔥 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Feed da Comunidade</span>
-						</h2>
-						<p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-							Acompanhe as últimas atividades, conquistas e estratégias dos jogadores em tempo real
-						</p>
-						
-						{/* Stats Exclusivos do Feed */}
-						<div className="flex justify-center items-center space-x-8 mt-8">
-							<div className="flex items-center space-x-2 bg-orange-500/10 px-4 py-2 rounded-full border border-orange-500/20">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trending-up text-orange-600">
-									<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-									<polyline points="16 7 22 7 22 13"></polyline>
-								</svg>
-								<span className="text-sm font-semibold text-orange-700">22 runs hoje</span>
-							</div>
-							<div className="flex items-center space-x-2 bg-green-500/10 px-4 py-2 rounded-full border border-green-500/20">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-dollar-sign text-green-600">
-									<line x1="12" x2="12" y1="2" y2="22"></line>
-									<path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-								</svg>
-								<span className="text-sm font-semibold text-green-700">$3k em lucros</span>
-							</div>
-							<div className="flex items-center space-x-2 bg-blue-500/10 px-4 py-2 rounded-full border border-blue-500/20">
-								<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-users text-blue-600">
-									<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
-									<circle cx="9" cy="7" r="4"></circle>
-									<path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-									<path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-								</svg>
-								<span className="text-sm font-semibold text-blue-700">1 jogador ativo</span>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
 
 			{/* Seção Giveaway e Winners - Centralizada */}
 			<div className="container mx-auto px-4 py-8">
