@@ -230,13 +230,23 @@ export function ActivityStream() {
       
       const result: ActivityStreamResponse = await response.json();
       
+      console.log('🔥 ActivityStream - API Response:', {
+        success: result.success,
+        runsCount: result.runs?.length || 0,
+        total: result.total,
+        cached: result.cached,
+        error: result.error
+      });
+      
       if (result.success) {
+        console.log('🔥 ActivityStream - Setting runs:', result.runs?.slice(0, 3));
         setRuns(result.runs || []);
         setTotalRuns(result.runs?.length || 0);
         setTotalPages(Math.ceil((result.runs?.length || 0) / ITEMS_PER_PAGE));
         setIsCached(result.cached || false);
         setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
       } else {
+        console.error('🔥 ActivityStream - API Error:', result.error);
         setError(result.error || 'Erro ao carregar feed');
       }
     } catch (error) {
@@ -260,6 +270,19 @@ export function ActivityStream() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentRuns = runs.slice(startIndex, endIndex);
+  
+  // Debug logs
+  console.log('🔥 ActivityStream - State:', {
+    loading,
+    error,
+    runsLength: runs.length,
+    currentRunsLength: currentRuns.length,
+    totalRuns,
+    totalPages,
+    currentPage,
+    startIndex,
+    endIndex
+  });
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
