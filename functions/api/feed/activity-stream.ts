@@ -139,10 +139,11 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     }
 
     // 3. FALLBACK: GERAR DADOS DE EXEMPLO SE NÃO HOUVER ATIVIDADE REAL SUFICIENTE
-    if (activityRuns.length < 50) {
+    if (activityRuns.length < 100) {
       console.log('📝 Poucos dados reais encontrados - gerando dados de exemplo para demonstração');
       const exampleRuns = generateRealisticRuns();
       activityRuns = [...activityRuns, ...exampleRuns];
+      console.log(`📊 Total de runs após geração: ${activityRuns.length}`);
     }
 
     // 4. SALVAR NO CACHE PARA PRÓXIMAS REQUESTS
