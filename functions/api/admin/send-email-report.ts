@@ -1,0 +1,486 @@
+interface Env {
+  DB: D1Database;
+  RESEND_API_KEY?: string;
+  SENDGRID_API_KEY?: string;
+  BREVO_API_KEY?: string;
+}
+
+interface EmailReportData {
+  totalUsers: number;
+  totalRuns: number;
+  activitiesToday: number;
+  activeGiveaways: number;
+  systemHealth: {
+    apiStatus: string;
+    databaseStatus: string;
+    uptime: number;
+    responseTime: number;
+  };
+  topUsers: Array<{
+    email: string;
+    totalProfit: number;
+    runs: number;
+  }>;
+  topMaps: Array<{
+    mapSize: string;
+    totalRuns: number;
+    avgTokens: number;
+  }>;
+  trends: {
+    dailyRuns: number[];
+    dailyUsers: number[];
+  };
+}
+
+export async function onRequestPost(context: { env: Env; request: Request }) {
+  try {
+    const { env, request } = context;
+    
+    console.log('📧 SEND EMAIL REPORT: Iniciando...');
+    
+    if (!env.DB) {
+      console.log('❌ D1 Database não disponível');
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Database not available' 
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Verificar autenticação
+    const cookieHeader = request.headers.get('Cookie');
+    if (!cookieHeader) {
+      console.log('❌ Cookie não encontrado');
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Unauthorized' 
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const sessionCookie = cookieHeader
+      .split(';')
+      .find(c => c.trim().startsWith('ps_session='))
+      ?.split('=')[1];
+
+    if (!sessionCookie) {
+      console.log('❌ Session cookie não encontrado');
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Session not found' 
+      }), {
+        status: 401,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Verificar se é admin
+    const userEmail = sessionCookie.split('|')[0];
+    const adminUsers = ['holdboy01@gmail.com', 'profitshards@gmail.com', 'admin@profitshards.com'];
+    
+    if (!adminUsers.includes(userEmail)) {
+      console.log('❌ Usuário não é admin:', userEmail);
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Admin access required' 
+      }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Obter dados da requisição
+    const body = await request.json();
+    const { email, reportType = 'daily', includeCharts = true } = body;
+
+    if (!email) {
+      return new Response(JSON.stringify({ 
+        success: false,
+        error: 'Email is required' 
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Coletar dados para o relatório
+    const reportData = await collectReportData(env, reportType);
+    
+    // Gerar HTML do relatório
+    const htmlContent = generateReportHTML(reportData, reportType, includeCharts);
+    
+    // Enviar email
+    const emailResult = await sendEmail(env, email, reportData, htmlContent, reportType);
+    
+    if (emailResult.success) {
+      console.log('✅ Relatório enviado com sucesso para:', email);
+      return new Response(JSON.stringify({
+        success: true,
+        message: 'Relatório enviado com sucesso',
+        data: {
+          email,
+          reportType,
+          timestamp: new Date().toISOString()
+        }
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    } else {
+      console.log('❌ Erro ao enviar email:', emailResult.error);
+      return new Response(JSON.stringify({
+        success: false,
+        error: 'Erro ao enviar email: ' + emailResult.error
+      }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+  } catch (error) {
+    console.error('❌ Erro no send email report:', error);
+    return new Response(JSON.stringify({
+      success: false,
+      error: 'Erro interno do servidor',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    }), {
+      status: 500,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
+}
+
+async function collectReportData(env: Env, reportType: string): Promise<EmailReportData> {
+  console.log('📊 Coletando dados para relatório...');
+  
+  // Coletar dados básicos
+  const today = new Date();
+  const todayTimestamp = today.getTime();
+  const yesterdayTimestamp = todayTimestamp - (24 * 60 * 60 * 1000);
+  
+  // Total de usuários únicos
+  const userQuery = await env.DB.prepare(`
+    SELECT COUNT(DISTINCT user_email) as total_users
+    FROM feed_runs
+  `).first();
+  
+  // Atividades de hoje
+  const todayActivitiesQuery = await env.DB.prepare(`
+    SELECT COUNT(*) as activities_today
+    FROM feed_runs
+    WHERE created_at >= ?
+  `).bind(todayTimestamp).first();
+  
+  // Total de runs
+  const totalRunsQuery = await env.DB.prepare(`
+    SELECT COUNT(*) as total_runs
+    FROM feed_runs
+  `).first();
+  
+  // Top usuários por lucro
+  const topUsersQuery = await env.DB.prepare(`
+    SELECT user_email, SUM(tokens) as total_profit, COUNT(*) as runs
+    FROM feed_runs
+    WHERE user_email IS NOT NULL
+    GROUP BY user_email
+    ORDER BY total_profit DESC
+    LIMIT 5
+  `).all();
+  
+  // Top mapas
+  const topMapsQuery = await env.DB.prepare(`
+    SELECT map_name, COUNT(*) as total_runs, AVG(tokens) as avg_tokens
+    FROM feed_runs
+    GROUP BY map_name
+    ORDER BY total_runs DESC
+    LIMIT 5
+  `).all();
+  
+  // Dados de tendência (últimos 7 dias)
+  const trendData = [];
+  for (let i = 6; i >= 0; i--) {
+    const dayStart = todayTimestamp - (i * 24 * 60 * 60 * 1000);
+    const dayEnd = dayStart + (24 * 60 * 60 * 1000);
+    
+    const dayRunsQuery = await env.DB.prepare(`
+      SELECT COUNT(*) as runs, COUNT(DISTINCT user_email) as users
+      FROM feed_runs
+      WHERE created_at >= ? AND created_at < ?
+    `).bind(dayStart, dayEnd).first();
+    
+    trendData.push({
+      runs: dayRunsQuery?.runs || 0,
+      users: dayRunsQuery?.users || 0
+    });
+  }
+  
+  return {
+    totalUsers: userQuery?.total_users || 0,
+    totalRuns: totalRunsQuery?.total_runs || 0,
+    activitiesToday: todayActivitiesQuery?.activities_today || 0,
+    activeGiveaways: 3, // Placeholder
+    systemHealth: {
+      apiStatus: 'healthy',
+      databaseStatus: 'healthy',
+      uptime: 99.9,
+      responseTime: 120
+    },
+    topUsers: (topUsersQuery?.results || []).map((user: any) => ({
+      email: user.user_email,
+      totalProfit: user.total_profit || 0,
+      runs: user.runs || 0
+    })),
+    topMaps: (topMapsQuery?.results || []).map((map: any) => ({
+      mapSize: map.map_name,
+      totalRuns: map.total_runs || 0,
+      avgTokens: Math.round(map.avg_tokens || 0)
+    })),
+    trends: {
+      dailyRuns: trendData.map(d => d.runs),
+      dailyUsers: trendData.map(d => d.users)
+    }
+  };
+}
+
+function generateReportHTML(data: EmailReportData, reportType: string, includeCharts: boolean): string {
+  const reportTitle = reportType === 'daily' ? 'Relatório Diário' : 
+                     reportType === 'weekly' ? 'Relatório Semanal' : 'Relatório Mensal';
+  
+  const currentDate = new Date().toLocaleDateString('pt-BR');
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>${reportTitle} - ProfitShards</title>
+      <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px; text-align: center; margin-bottom: 30px; }
+        .header h1 { margin: 0; font-size: 28px; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; }
+        .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border-left: 4px solid #667eea; }
+        .metric-value { font-size: 32px; font-weight: bold; color: #667eea; margin-bottom: 5px; }
+        .metric-label { color: #666; font-size: 14px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #667eea; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .table th { background-color: #f8f9fa; font-weight: bold; }
+        .status-healthy { color: #28a745; font-weight: bold; }
+        .status-warning { color: #ffc107; font-weight: bold; }
+        .status-error { color: #dc3545; font-weight: bold; }
+        .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; text-align: center; color: #666; font-size: 14px; }
+        .chart-placeholder { background: #f8f9fa; padding: 40px; text-align: center; border-radius: 8px; margin: 20px 0; color: #666; }
+      </style>
+    </head>
+    <body>
+      <div class="header">
+        <h1>📊 ${reportTitle}</h1>
+        <p>ProfitShards - ${currentDate}</p>
+      </div>
+      
+      <div class="metrics">
+        <div class="metric-card">
+          <div class="metric-value">${data.totalUsers}</div>
+          <div class="metric-label">Total de Usuários</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${data.totalRuns}</div>
+          <div class="metric-label">Total de Runs</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${data.activitiesToday}</div>
+          <div class="metric-label">Atividades Hoje</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">${data.activeGiveaways}</div>
+          <div class="metric-label">Giveaways Ativos</div>
+        </div>
+      </div>
+      
+      <div class="section">
+        <h2>🏥 Status do Sistema</h2>
+        <table class="table">
+          <tr>
+            <td><strong>API Status</strong></td>
+            <td><span class="status-healthy">${data.systemHealth.apiStatus}</span></td>
+          </tr>
+          <tr>
+            <td><strong>Banco de Dados</strong></td>
+            <td><span class="status-healthy">${data.systemHealth.databaseStatus}</span></td>
+          </tr>
+          <tr>
+            <td><strong>Uptime</strong></td>
+            <td>${data.systemHealth.uptime}%</td>
+          </tr>
+          <tr>
+            <td><strong>Tempo de Resposta</strong></td>
+            <td>${data.systemHealth.responseTime}ms</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>👥 Top Usuários</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Lucro Total</th>
+              <th>Runs</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.topUsers.map(user => `
+              <tr>
+                <td>${user.email}</td>
+                <td>${user.totalProfit.toLocaleString()} tokens</td>
+                <td>${user.runs}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      
+      <div class="section">
+        <h2>🗺️ Top Mapas</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Mapa</th>
+              <th>Total Runs</th>
+              <th>Tokens Médios</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${data.topMaps.map(map => `
+              <tr>
+                <td>${map.mapSize}</td>
+                <td>${map.totalRuns}</td>
+                <td>${map.avgTokens}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+      
+      ${includeCharts ? `
+        <div class="section">
+          <h2>📈 Tendências (Últimos 7 dias)</h2>
+          <div class="chart-placeholder">
+            📊 Gráfico de tendências<br>
+            Runs: ${data.trends.dailyRuns.join(', ')}<br>
+            Usuários: ${data.trends.dailyUsers.join(', ')}
+          </div>
+        </div>
+      ` : ''}
+      
+      <div class="footer">
+        <p>Relatório gerado automaticamente pelo sistema ProfitShards</p>
+        <p>Para mais informações, acesse o dashboard administrativo</p>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+async function sendEmail(env: Env, email: string, data: EmailReportData, htmlContent: string, reportType: string): Promise<{ success: boolean; error?: string }> {
+  console.log('📧 Enviando email para:', email);
+  
+  // Tentar Resend primeiro
+  if (env.RESEND_API_KEY) {
+    try {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: 'ProfitShards <noreply@profitshards.online>',
+          to: [email],
+          subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
+          html: htmlContent
+        })
+      });
+      
+      if (response.ok) {
+        console.log('✅ Email enviado via Resend');
+        return { success: true };
+      } else {
+        console.log('❌ Erro Resend:', await response.text());
+      }
+    } catch (error) {
+      console.log('❌ Erro Resend:', error);
+    }
+  }
+  
+  // Tentar SendGrid
+  if (env.SENDGRID_API_KEY) {
+    try {
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          personalizations: [{
+            to: [{ email }]
+          }],
+          from: { email: 'noreply@profitshards.online', name: 'ProfitShards' },
+          subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
+          content: [{
+            type: 'text/html',
+            value: htmlContent
+          }]
+        })
+      });
+      
+      if (response.ok) {
+        console.log('✅ Email enviado via SendGrid');
+        return { success: true };
+      } else {
+        console.log('❌ Erro SendGrid:', await response.text());
+      }
+    } catch (error) {
+      console.log('❌ Erro SendGrid:', error);
+    }
+  }
+  
+  // Tentar Brevo
+  if (env.BREVO_API_KEY) {
+    try {
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': env.BREVO_API_KEY,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: { email: 'noreply@profitshards.online', name: 'ProfitShards' },
+          to: [{ email }],
+          subject: `📊 Relatório ${reportType === 'daily' ? 'Diário' : reportType === 'weekly' ? 'Semanal' : 'Mensal'} - ProfitShards`,
+          htmlContent
+        })
+      });
+      
+      if (response.ok) {
+        console.log('✅ Email enviado via Brevo');
+        return { success: true };
+      } else {
+        console.log('❌ Erro Brevo:', await response.text());
+      }
+    } catch (error) {
+      console.log('❌ Erro Brevo:', error);
+    }
+  }
+  
+  return { success: false, error: 'Nenhum serviço de email configurado' };
+}

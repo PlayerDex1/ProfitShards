@@ -19,6 +19,7 @@ import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
+import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
 
@@ -401,10 +402,10 @@ export default function Profile() {
 						</div>
 					)}
 
-					{/* Ultimate Admin Dashboard - (Apenas Admin) */}
+					{/* Enhanced Admin Dashboard - (Apenas Admin) */}
 					{activeTab === 'admin-dashboard' && isAdmin && (
 						<div data-section="admin-dashboard">
-							<UltimateAdminDashboard />
+							<EnhancedAdminDashboard />
 						</div>
 					)}
 
