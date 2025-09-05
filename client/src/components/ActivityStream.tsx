@@ -214,6 +214,7 @@ export function ActivityStream() {
   const ITEMS_PER_PAGE = 6; // Reduzido para ter mais páginas
 
   const loadFeed = async (forceRefresh = false) => {
+    console.log('🔥 ActivityStream - Starting loadFeed...');
     setLoading(true);
     setError(null);
     
@@ -222,11 +223,19 @@ export function ActivityStream() {
         ? `/api/feed/activity-stream?force=true&limit=100&_=${Date.now()}`
         : `/api/feed/activity-stream?limit=100`;
         
+      console.log('🔥 ActivityStream - Fetching URL:', url);
+        
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
         headers: forceRefresh ? { 'Cache-Control': 'no-cache' } : {}
       });
+      
+      console.log('🔥 ActivityStream - Response status:', response.status);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
       
       const result: ActivityStreamResponse = await response.json();
       
@@ -235,25 +244,28 @@ export function ActivityStream() {
         runsCount: result.runs?.length || 0,
         total: result.total,
         cached: result.cached,
-        error: result.error
+        error: result.error,
+        firstRun: result.runs?.[0]
       });
       
-      if (result.success) {
-        console.log('🔥 ActivityStream - Setting runs:', result.runs?.slice(0, 3));
-        setRuns(result.runs || []);
-        setTotalRuns(result.runs?.length || 0);
-        setTotalPages(Math.ceil((result.runs?.length || 0) / ITEMS_PER_PAGE));
+      if (result.success && result.runs) {
+        console.log('🔥 ActivityStream - Setting runs:', result.runs.length);
+        setRuns(result.runs);
+        setTotalRuns(result.runs.length);
+        setTotalPages(Math.ceil(result.runs.length / ITEMS_PER_PAGE));
         setIsCached(result.cached || false);
         setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
+        console.log('🔥 ActivityStream - State updated successfully');
       } else {
         console.error('🔥 ActivityStream - API Error:', result.error);
         setError(result.error || 'Erro ao carregar feed');
       }
     } catch (error) {
-      console.error('Erro ao carregar feed:', error);
-      setError('Erro de conexão');
+      console.error('🔥 ActivityStream - Fetch Error:', error);
+      setError(`Erro de conexão: ${error.message}`);
     } finally {
       setLoading(false);
+      console.log('🔥 ActivityStream - loadFeed completed');
     }
   };
 
@@ -343,9 +355,18 @@ export function ActivityStream() {
       </CardHeader>
 
       <CardContent className="p-6">
+        {/* Debug Info */}
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg text-sm">
+          <strong>Debug Info:</strong> Loading: {loading ? 'true' : 'false'}, 
+          Error: {error || 'none'}, 
+          Runs: {runs.length}, 
+          CurrentRuns: {currentRuns.length}, 
+          TotalRuns: {totalRuns}
+        </div>
+
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 8 }).map((_, i) => (
+            {Array.from({ length: 6 }).map((_, i) => (
               <RunSkeleton key={i} />
             ))}
           </div>
@@ -357,7 +378,7 @@ export function ActivityStream() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={loadFeed}
+                onClick={() => loadFeed(true)}
                 className="mt-3"
               >
                 Tentar Novamente
@@ -374,6 +395,14 @@ export function ActivityStream() {
               <p className="text-sm text-muted-foreground">
                 Seja o primeiro a fazer uma run e aparecer aqui!
               </p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={() => loadFeed(true)}
+                className="mt-3"
+              >
+                Recarregar Feed
+              </Button>
             </CardContent>
           </Card>
         ) : (
