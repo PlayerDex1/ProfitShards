@@ -142,42 +142,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 
 	return (
 		<>
-		{/* Debug Component - Sempre visível */}
-		<DebugComponent />
-		
-		{/* Teste de renderização condicional simples */}
-		<div style={{
-			background: 'purple',
-			color: 'white',
-			padding: '20px',
-			margin: '20px 0',
-			border: '5px solid yellow',
-			fontSize: '24px',
-			fontWeight: 'bold'
-		}}>
-			🧪 TESTE DE RENDERIZAÇÃO CONDICIONAL 🧪
-			<br />
-			activeSection atual: <span style={{color: 'lime'}}>{activeSection}</span>
-			<br />
-			<button 
-				onClick={() => setActiveSection('dashboard')}
-				style={{background: 'blue', color: 'white', padding: '10px', margin: '5px'}}
-			>
-				Ir para Dashboard
-			</button>
-			<button 
-				onClick={() => setActiveSection('reports')}
-				style={{background: 'green', color: 'white', padding: '10px', margin: '5px'}}
-			>
-				Ir para Relatórios
-			</button>
-			<button 
-				onClick={() => setActiveSection('calculator')}
-				style={{background: 'red', color: 'white', padding: '10px', margin: '5px'}}
-			>
-				Voltar para Calculadora
-			</button>
-		</div>
 		
 		<Card>
 			<CardHeader className="py-4">
@@ -527,28 +491,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		{/* Dashboard Interativo */}
 		{activeSection === 'dashboard' && (
 			<div className="mt-6">
-				<div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-					<p className="text-blue-600 dark:text-blue-400 font-medium">
-						🔍 DEBUG: Dashboard ativo - activeSection: {activeSection}
-					</p>
-				</div>
-				<div style={{
-					background: 'lime',
-					color: 'black',
-					padding: '20px',
-					margin: '20px 0',
-					border: '5px solid red',
-					fontSize: '20px',
-					fontWeight: 'bold'
-				}}>
-					🚨 DASHBOARD SECTION RENDERIZANDO! 🚨
-					<br />
-					activeSection: {activeSection}
-					<br />
-					formData: {formData ? 'EXISTS' : 'NULL'}
-					<br />
-					results: {results ? 'EXISTS' : 'NULL'}
-				</div>
 				<DashboardInterativo formData={formData} results={results} />
 			</div>
 		)}
