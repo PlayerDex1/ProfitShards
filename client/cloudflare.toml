@@ -5,6 +5,28 @@ output_dir = "dist"
 [build.environment]
 NODE_VERSION = "18"
 
+# Redirecionamentos específicos
+[[redirects]]
+from = "/profile"
+to = "/perfil"
+status = 301
+
+[[redirects]]
+from = "/calculadora"
+to = "/"
+status = 301
+
+[[redirects]]
+from = "/calculator"
+to = "/"
+status = 301
+
+[[redirects]]
+from = "/calc"
+to = "/"
+status = 301
+
+# SPA routing - deve ser o último
 [[redirects]]
 from = "/*"
 to = "/index.html"

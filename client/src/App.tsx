@@ -45,7 +45,6 @@ export default function App() {
         <Switch>
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />
-          <Route path="/profile" component={ProfilePage} />
           <Route path="/test" component={TestPage} />
           <Route component={NotFoundPage} />
         </Switch>
