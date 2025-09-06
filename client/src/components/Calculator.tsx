@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2, FileText } from "lucide-react";
+import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -10,11 +10,6 @@ import { useTokenPrice } from "@/hooks/use-token-price";
 import { useCalculatorHistory } from "@/hooks/use-calculator-history";
 import { CalculatorChartsSimple } from "@/components/CalculatorChartsSimple";
 import { useToastContext } from "@/contexts/ToastContext";
-import { RecommendationsEngine } from "@/components/RecommendationsEngine";
-import { StrategyScorer } from "@/components/StrategyScorer";
-import { DashboardInterativo } from "@/components/DashboardInterativo";
-import { RelatoriosVisuais } from "@/components/RelatoriosVisuais";
-import { DebugComponent } from "@/components/DebugComponent";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;
@@ -32,10 +27,8 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
-	const [activeSection, setActiveSection] = useState<'calculator' | 'dashboard' | 'reports'>('calculator');
 	
 	// Debug logs
-	console.log('🔍 Calculator - activeSection:', activeSection);
 	console.log('🔍 Calculator - formData:', formData);
 	console.log('🔍 Calculator - results:', results);
 	console.log('🔍 Calculator - calculations:', calculations);
@@ -156,33 +149,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</CardTitle>
 				</div>
 				
-				{/* Navigation Buttons */}
-				<div className="flex gap-2 mt-4">
-					<Button
-						variant={activeSection === 'calculator' ? 'default' : 'outline'}
-						size="sm"
-						onClick={() => setActiveSection('calculator')}
-					>
-						<DollarSign className="w-4 h-4 mr-2" />
-						Calculadora
-					</Button>
-					<Button
-						variant={activeSection === 'dashboard' ? 'default' : 'outline'}
-						size="sm"
-						onClick={() => setActiveSection('dashboard')}
-					>
-						<BarChart3 className="w-4 h-4 mr-2" />
-						Dashboard
-					</Button>
-					<Button
-						variant={activeSection === 'reports' ? 'default' : 'outline'}
-						size="sm"
-						onClick={() => setActiveSection('reports')}
-					>
-						<FileText className="w-4 h-4 mr-2" />
-						Relatórios
-					</Button>
-				</div>
 			</CardHeader>
 			<CardContent className="space-y-6">
 				{/* Gem Price Section */}
@@ -646,47 +612,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			</Card>
 		)}
 
-		{/* Análise Inteligente */}
-		{results && (
-			<div className="mt-8 space-y-6">
-				{/* Scoring da Estratégia */}
-				<StrategyScorer 
-					formData={formData}
-					results={results}
-				/>
-
-				{/* Recomendações */}
-				<RecommendationsEngine 
-					formData={formData}
-					results={results}
-					onApplyRecommendation={(recommendation) => {
-						// Implementar ações baseadas nas recomendações
-						switch (recommendation.id) {
-							case 'negative-roi':
-								info('Recomendação', 'Considere ajustar o investimento ou gems consumidas');
-								break;
-							case 'high-gem-cost':
-								info('Recomendação', 'Tente usar mapas mais eficientes ou reduzir gems');
-								break;
-							case 'level-luck-balance':
-								info('Recomendação', 'Para níveis baixos, foque mais em leveling');
-								break;
-							case 'low-token-price':
-								info('Recomendação', 'Com preços baixos, foque em volume de tokens');
-								break;
-							case 'long-payback':
-								info('Recomendação', 'Considere estratégias com retorno mais rápido');
-								break;
-							case 'diversification':
-								info('Recomendação', 'Diversifique entre diferentes estratégias');
-								break;
-							default:
-								info('Recomendação', recommendation.description);
-						}
-					}}
-				/>
-			</div>
-		)}
 
 		{/* Gráficos */}
 		{showCharts && results && (
@@ -703,39 +628,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			</div>
 		)}
 
-		{/* Dashboard Interativo */}
-		{activeSection === 'dashboard' && (
-			<div className="mt-6">
-				<DashboardInterativo formData={formData} results={results} />
-			</div>
-		)}
-
-		{/* Relatórios Visuais */}
-		{activeSection === 'reports' && (
-			<div className="mt-6">
-				<div className="mb-4 p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
-					<p className="text-green-600 dark:text-green-400 font-medium">
-						🔍 DEBUG: Relatórios ativo - activeSection: {activeSection}
-					</p>
-				</div>
-				<div style={{
-					background: 'orange',
-					color: 'white',
-					padding: '20px',
-					margin: '20px 0',
-					border: '5px solid purple',
-					fontSize: '20px',
-					fontWeight: 'bold'
-				}}>
-					🚨 RELATÓRIOS SECTION RENDERIZANDO! 🚨
-					<br />
-					activeSection: {activeSection}
-					<br />
-					calculations: {calculations?.length || 0} itens
-				</div>
-				<RelatoriosVisuais history={calculations} />
-			</div>
-		)}
 		</>
 	);
 });
