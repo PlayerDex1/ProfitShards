@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
+import { useAdminDashboard } from '../hooks/use-admin-dashboard';
 import { 
   TrendingUp, TrendingDown, Users, Target, Zap, MapPin, Clock, Trophy, 
   Activity, BarChart3, Database, RefreshCw, Calendar, Percent, Star, 
@@ -91,6 +92,18 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
+  const { 
+    stats, 
+    loading: dashboardLoading, 
+    error: dashboardError, 
+    lastUpdate, 
+    isRefreshing, 
+    refreshStats,
+    formatNumber,
+    formatCurrency,
+    formatPercentage,
+    formatTimeAgo
+  } = useAdminDashboard();
   const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
@@ -369,65 +382,214 @@ export function EnhancedAdminDashboard() {
 
         {/* Visão Geral com Gráficos de Linha */}
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Cards de Métricas */}
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Usuários</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {mapAnalytics?.userBehaviorPatterns.totalUniqueUsers || 0}
+          {/* Header com refresh */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold">📊 Dashboard Admin</h2>
+              <p className="text-muted-foreground">
+                Dados em tempo real • Última atualização: {lastUpdate ? formatTimeAgo(lastUpdate) : 'Carregando...'}
+              </p>
+            </div>
+            <Button 
+              onClick={refreshStats} 
+              disabled={isRefreshing}
+              variant="outline"
+              className="gap-2"
+            >
+              <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              {isRefreshing ? 'Atualizando...' : 'Atualizar'}
+            </Button>
+          </div>
+
+          {dashboardError && (
+            <Card className="border-red-200 bg-red-50">
+              <CardContent className="pt-6">
+                <div className="flex items-center gap-2 text-red-600">
+                  <AlertCircle className="h-4 w-4" />
+                  <span>Erro ao carregar dados: {dashboardError}</span>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  +12% em relação ao mês passado
-                </p>
               </CardContent>
             </Card>
+          )}
 
+          {dashboardLoading && !stats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader className="pb-2">
+                    <div className="h-4 bg-muted rounded w-24"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-8 bg-muted rounded w-16 mb-2"></div>
+                    <div className="h-3 bg-muted rounded w-20"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
+          {stats && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Cards de Métricas Reais */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total de Usuários</CardTitle>
+                  <Users className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {formatNumber(stats.overview.totalUsers)}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.overview.activeUsersToday} ativos hoje
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total de Cálculos</CardTitle>
+                  <Target className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {formatNumber(stats.overview.totalCalculations)}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {stats.overview.calculationsToday} hoje
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
+                  <DollarSign className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {formatCurrency(stats.overview.totalProfit)}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Melhor: {formatCurrency(stats.overview.bestProfit)}
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Taxa de Sucesso</CardTitle>
+                  <Percent className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">
+                    {formatPercentage(stats.overview.successRate)}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    ROI médio: {formatPercentage(stats.overview.averageROI)}
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Seção de Atividade Recente */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Atividade Recente
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {stats.recentActivity.recentCalculations.slice(0, 5).map((calc, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <p className="font-medium">Usuário {calc.user_id?.slice(-4) || 'N/A'}</p>
+                          <p className="text-sm text-muted-foreground">
+                            {formatCurrency(calc.final_profit)} • ROI: {formatPercentage(calc.roi)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-sm font-medium">{formatTimeAgo(calc.created_at)}</p>
+                          <Badge variant={calc.final_profit > 0 ? "default" : "secondary"}>
+                            {calc.final_profit > 0 ? "Lucrativo" : "Prejuízo"}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                    {stats.recentActivity.recentCalculations.length === 0 && (
+                      <p className="text-center text-muted-foreground py-4">
+                        Nenhuma atividade recente
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" />
+                    Top Performers
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {stats.recentActivity.topPerformers.map((performer, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-bold">#{index + 1}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium">Usuário {performer.user_id?.slice(-4) || 'N/A'}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {performer.calculations_count} cálculos
+                            </p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-green-600">
+                            {formatCurrency(performer.total_profit)}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            ROI: {formatPercentage(performer.avg_roi)}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                    {stats.recentActivity.topPerformers.length === 0 && (
+                      <p className="text-center text-muted-foreground py-4">
+                        Nenhum performer encontrado
+                      </p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Sistema de Giveaways */}
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total de Runs</CardTitle>
-                <Target className="h-4 w-4 text-muted-foreground" />
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Gift className="h-5 w-5" />
+                  Sistema de Giveaways
+                </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">
-                  {mapAnalytics?.recentActivity.last30d || 0}
+                <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-blue-500/10 rounded-lg">
+                  <div>
+                    <p className="font-semibold">Sistema Integrado</p>
+                    <p className="text-sm text-muted-foreground">
+                      Gestão completa de giveaways disponível
+                    </p>
+                  </div>
+                  <Button variant="outline" onClick={() => setActiveTab('giveaways')}>
+                    Gerenciar Giveaways
+                  </Button>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Últimos 30 dias
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Atividades Hoje</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  {mapAnalytics?.recentActivity.last24h || 0}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  {mapAnalytics?.recentActivity.growthRate || 0}% de crescimento
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Giveaways Ativos</CardTitle>
-                <Gift className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">
-                  Sistema Integrado
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Gestão completa disponível
-                </p>
               </CardContent>
             </Card>
           </div>
