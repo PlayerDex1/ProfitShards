@@ -8,8 +8,19 @@ const DEFAULT_FORM: CalculatorFormData = {
 	investment: 0,
 	gemsPurchased: 0,
 	gemsRemaining: 0,
-	gemsConsumed: 0,
-	tokensEquipment: 0,
+	gemsConsumed: 0, // Calculado automaticamente
+	tokensEquipment: 0, // Calculado automaticamente
+	
+	// Equipamentos separados
+	weaponGems: 0,
+	weaponTokens: 0,
+	armorGems: 0,
+	armorTokens: 0,
+	axeGems: 0,
+	axeTokens: 0,
+	pickaxeGems: 0,
+	pickaxeTokens: 0,
+	
 	tokensFarmed: 0,
 	loadsUsed: 0,
 	tokenPrice: 0,
@@ -111,15 +122,41 @@ export function useCalculator() {
 		const tokenPrice = formData.tokenPrice || 0;
 		const gemPrice = formData.gemPrice || 0.00714; // default gem price
 		const tokensFarmed = formData.tokensFarmed || 0;
-		const tokensEquipment = formData.tokensEquipment || 0;
-		const gemsConsumed = formData.gemsConsumed || 0;
 		const loadsUsed = formData.loadsUsed || 1; // avoid division by zero
 
+		// Calcular totais dos equipamentos separados
+		const totalEquipmentGems = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
+		const totalEquipmentTokens = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
+
+		// Breakdown por equipamento
+		const equipmentBreakdown = {
+			weapon: {
+				gems: formData.weaponGems || 0,
+				tokens: formData.weaponTokens || 0,
+				cost: (formData.weaponGems || 0) * gemPrice + (formData.weaponTokens || 0) * tokenPrice
+			},
+			armor: {
+				gems: formData.armorGems || 0,
+				tokens: formData.armorTokens || 0,
+				cost: (formData.armorGems || 0) * gemPrice + (formData.armorTokens || 0) * tokenPrice
+			},
+			axe: {
+				gems: formData.axeGems || 0,
+				tokens: formData.axeTokens || 0,
+				cost: (formData.axeGems || 0) * gemPrice + (formData.axeTokens || 0) * tokenPrice
+			},
+			pickaxe: {
+				gems: formData.pickaxeGems || 0,
+				tokens: formData.pickaxeTokens || 0,
+				cost: (formData.pickaxeGems || 0) * gemPrice + (formData.pickaxeTokens || 0) * tokenPrice
+			}
+		};
+
 		// Tokens efetivamente farmados líquidos (subtrai os tokens gastos na aceleração)
-		const netFarmedTokens = Math.max(0, tokensFarmed - tokensEquipment);
+		const netFarmedTokens = Math.max(0, tokensFarmed - totalEquipmentTokens);
 		const totalTokens = netFarmedTokens;
 		const totalTokenValue = totalTokens * tokenPrice * luckMultiplier;
-		const gemsCost = gemsConsumed * gemPrice;
+		const gemsCost = totalEquipmentGems * gemPrice;
 		const grossProfit = totalTokenValue; // já não somamos tokens gastos
 		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
 		const finalProfit = grossProfit - gemsCost;
@@ -129,7 +166,7 @@ export function useCalculator() {
 
 		return {
 			totalTokens,
-			tokensEquipment,
+			tokensEquipment: totalEquipmentTokens, // Para compatibilidade
 			tokensFarmed,
 			totalTokenValue,
 			gemsCost,
@@ -139,6 +176,7 @@ export function useCalculator() {
 			netProfit,
 			roi,
 			efficiency,
+			equipmentBreakdown,
 		};
 	}, [formData, luckMultiplier]);
 

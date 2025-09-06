@@ -227,7 +227,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 						<Gem className="w-4 h-4" />
 						Gemas
 					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						<div>
 							<Label htmlFor="gemsPurchased" className="text-base font-medium text-foreground">
 								{t('calc.gemsPurchased')}
@@ -254,18 +254,153 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 								className="mt-1"
 							/>
 						</div>
-						<div>
-							<Label htmlFor="gemsConsumed" className="text-base font-medium text-foreground">
-								{t('calc.gemsConsumed')}
-							</Label>
-							<Input
-								id="gemsConsumed"
-								type="number"
-								value={displayValue('gemsConsumed', formData.gemsConsumed)}
-								onChange={handleInputChange('gemsConsumed')}
-								placeholder="0"
-								className="mt-1"
-							/>
+					</div>
+				</div>
+
+				{/* Equipamentos Section */}
+				<div className="space-y-4">
+					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+						<Zap className="w-4 h-4" />
+						Equipamentos (Aceleração)
+					</h3>
+					
+					{/* Arma */}
+					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
+							⚔️ Arma
+						</h4>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<Label htmlFor="weaponGems" className="text-sm font-medium text-foreground">
+									Gemas Gastas
+								</Label>
+								<Input
+									id="weaponGems"
+									type="number"
+									value={displayValue('weaponGems', formData.weaponGems)}
+									onChange={handleInputChange('weaponGems')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label htmlFor="weaponTokens" className="text-sm font-medium text-foreground">
+									Tokens Gastos
+								</Label>
+								<Input
+									id="weaponTokens"
+									type="number"
+									value={displayValue('weaponTokens', formData.weaponTokens)}
+									onChange={handleInputChange('weaponTokens')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* Armadura */}
+					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
+							🛡️ Armadura
+						</h4>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<Label htmlFor="armorGems" className="text-sm font-medium text-foreground">
+									Gemas Gastas
+								</Label>
+								<Input
+									id="armorGems"
+									type="number"
+									value={displayValue('armorGems', formData.armorGems)}
+									onChange={handleInputChange('armorGems')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label htmlFor="armorTokens" className="text-sm font-medium text-foreground">
+									Tokens Gastos
+								</Label>
+								<Input
+									id="armorTokens"
+									type="number"
+									value={displayValue('armorTokens', formData.armorTokens)}
+									onChange={handleInputChange('armorTokens')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* Machado */}
+					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
+							🪓 Machado
+						</h4>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<Label htmlFor="axeGems" className="text-sm font-medium text-foreground">
+									Gemas Gastas
+								</Label>
+								<Input
+									id="axeGems"
+									type="number"
+									value={displayValue('axeGems', formData.axeGems)}
+									onChange={handleInputChange('axeGems')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label htmlFor="axeTokens" className="text-sm font-medium text-foreground">
+									Tokens Gastos
+								</Label>
+								<Input
+									id="axeTokens"
+									type="number"
+									value={displayValue('axeTokens', formData.axeTokens)}
+									onChange={handleInputChange('axeTokens')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+						</div>
+					</div>
+
+					{/* Picareta */}
+					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
+							⛏️ Picareta
+						</h4>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<div>
+								<Label htmlFor="pickaxeGems" className="text-sm font-medium text-foreground">
+									Gemas Gastas
+								</Label>
+								<Input
+									id="pickaxeGems"
+									type="number"
+									value={displayValue('pickaxeGems', formData.pickaxeGems)}
+									onChange={handleInputChange('pickaxeGems')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
+							<div>
+								<Label htmlFor="pickaxeTokens" className="text-sm font-medium text-foreground">
+									Tokens Gastos
+								</Label>
+								<Input
+									id="pickaxeTokens"
+									type="number"
+									value={displayValue('pickaxeTokens', formData.pickaxeTokens)}
+									onChange={handleInputChange('pickaxeTokens')}
+									placeholder="0"
+									className="mt-1"
+								/>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -274,22 +409,9 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				<div className="space-y-4">
 					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
 						<Zap className="w-4 h-4" />
-						Tokens
+						Tokens Farmados
 					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="tokensEquipment" className="text-base font-medium text-foreground">
-								{t('calc.tokensEquipment')}
-							</Label>
-							<Input
-								id="tokensEquipment"
-								type="number"
-								value={displayValue('tokensEquipment', formData.tokensEquipment)}
-								onChange={handleInputChange('tokensEquipment')}
-								placeholder="0"
-								className="mt-1"
-							/>
-						</div>
+					<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 						<div>
 							<Label htmlFor="tokensFarmed" className="text-base font-medium text-foreground">
 								{t('calc.tokensFarmed')}
@@ -430,6 +552,104 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				</>
 			)}
 		</div>
+
+		{/* Breakdown por Equipamento */}
+		{results && results.equipmentBreakdown && (
+			<Card className="mt-6">
+				<CardHeader>
+					<CardTitle className="text-lg font-semibold flex items-center gap-2">
+						📊 Breakdown por Equipamento
+					</CardTitle>
+				</CardHeader>
+				<CardContent>
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+						{/* Arma */}
+						<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+							<h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+								⚔️ Arma
+							</h4>
+							<div className="space-y-1 text-sm">
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Gemas:</span>
+									<span className="font-medium">{results.equipmentBreakdown.weapon.gems}</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Tokens:</span>
+									<span className="font-medium">{results.equipmentBreakdown.weapon.tokens}</span>
+								</div>
+								<div className="flex justify-between pt-1 border-t border-border/30">
+									<span className="text-muted-foreground">Custo Total:</span>
+									<span className="font-medium text-orange-600">${results.equipmentBreakdown.weapon.cost.toFixed(2)}</span>
+								</div>
+							</div>
+						</div>
+
+						{/* Armadura */}
+						<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+							<h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+								🛡️ Armadura
+							</h4>
+							<div className="space-y-1 text-sm">
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Gemas:</span>
+									<span className="font-medium">{results.equipmentBreakdown.armor.gems}</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Tokens:</span>
+									<span className="font-medium">{results.equipmentBreakdown.armor.tokens}</span>
+								</div>
+								<div className="flex justify-between pt-1 border-t border-border/30">
+									<span className="text-muted-foreground">Custo Total:</span>
+									<span className="font-medium text-orange-600">${results.equipmentBreakdown.armor.cost.toFixed(2)}</span>
+								</div>
+							</div>
+						</div>
+
+						{/* Machado */}
+						<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+							<h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+								🪓 Machado
+							</h4>
+							<div className="space-y-1 text-sm">
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Gemas:</span>
+									<span className="font-medium">{results.equipmentBreakdown.axe.gems}</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Tokens:</span>
+									<span className="font-medium">{results.equipmentBreakdown.axe.tokens}</span>
+								</div>
+								<div className="flex justify-between pt-1 border-t border-border/30">
+									<span className="text-muted-foreground">Custo Total:</span>
+									<span className="font-medium text-orange-600">${results.equipmentBreakdown.axe.cost.toFixed(2)}</span>
+								</div>
+							</div>
+						</div>
+
+						{/* Picareta */}
+						<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
+							<h4 className="font-medium text-foreground mb-2 flex items-center gap-2">
+								⛏️ Picareta
+							</h4>
+							<div className="space-y-1 text-sm">
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Gemas:</span>
+									<span className="font-medium">{results.equipmentBreakdown.pickaxe.gems}</span>
+								</div>
+								<div className="flex justify-between">
+									<span className="text-muted-foreground">Tokens:</span>
+									<span className="font-medium">{results.equipmentBreakdown.pickaxe.tokens}</span>
+								</div>
+								<div className="flex justify-between pt-1 border-t border-border/30">
+									<span className="text-muted-foreground">Custo Total:</span>
+									<span className="font-medium text-orange-600">${results.equipmentBreakdown.pickaxe.cost.toFixed(2)}</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</CardContent>
+			</Card>
+		)}
 
 		{/* Análise Inteligente */}
 		{results && (
