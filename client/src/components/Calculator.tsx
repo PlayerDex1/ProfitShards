@@ -105,7 +105,8 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const handleManualSave = () => {
 		// Manual save with feedback
 		const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
-		success('Cálculo Salvo!', `ROI: ${results.roi.toFixed(1)}% - ${totalGemsUsed} gems utilizadas`);
+		const totalTokensUsed = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
+		success('Cálculo Salvo!', `ROI: ${results.roi.toFixed(1)}% - ${totalGemsUsed} gems + ${totalTokensUsed} tokens`);
 		onSaveToHistory(formData, results);
 		
 		// Also add to local history for charts
@@ -211,56 +212,28 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</div>
 				</div>
 
-				{/* Gems Summary Section */}
-				<div className="space-y-4">
-					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-						<Gem className="w-4 h-4" />
-						Resumo das Gemas
-					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<Label htmlFor="gemsPurchased" className="text-base font-medium text-foreground">
-								{t('calc.gemsPurchased')}
-							</Label>
-							<Input
-								id="gemsPurchased"
-								type="number"
-								value={displayValue('gemsPurchased', formData.gemsPurchased)}
-								onChange={handleInputChange('gemsPurchased')}
-								placeholder="0"
-								className="mt-1"
-							/>
-						</div>
-						<div>
-							<Label htmlFor="gemsRemaining" className="text-base font-medium text-foreground">
-								{t('calc.gemsRemaining')}
-							</Label>
-							<Input
-								id="gemsRemaining"
-								type="number"
-								value={displayValue('gemsRemaining', formData.gemsRemaining)}
-								onChange={handleInputChange('gemsRemaining')}
-								placeholder="0"
-								className="mt-1"
-							/>
-						</div>
-					</div>
+				{/* Auto-calculated summary */}
+				{(() => {
+					const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
+					const totalTokensUsed = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
+					const gemsCost = totalGemsUsed * (formData.gemPrice || 0.00714);
+					const tokensCost = totalTokensUsed * (formData.tokenPrice || 0);
+					const totalCost = gemsCost + tokensCost;
 					
-					{/* Auto-calculated summary */}
-					{(() => {
-						const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
-						const totalCost = totalGemsUsed * (formData.gemPrice || 0.00714);
-						
-						if (totalGemsUsed > 0) {
-							return (
-								<div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-									<div className="flex items-center justify-between">
+					if (totalGemsUsed > 0 || totalTokensUsed > 0) {
+						return (
+							<div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+								<div className="space-y-2">
+									<h4 className="font-medium text-blue-800 dark:text-blue-200">
+										📊 Resumo dos Gastos
+									</h4>
+									<div className="grid grid-cols-2 gap-4 text-sm">
 										<div>
-											<h4 className="font-medium text-blue-800 dark:text-blue-200">
-												📊 Total de Gemas Utilizadas
-											</h4>
-											<p className="text-sm text-blue-600 dark:text-blue-300">
-												{totalGemsUsed.toLocaleString()} gemas
+											<p className="text-blue-600 dark:text-blue-300">
+												💎 {totalGemsUsed.toLocaleString()} gemas
+											</p>
+											<p className="text-blue-600 dark:text-blue-300">
+												💰 {totalTokensUsed.toLocaleString()} tokens
 											</p>
 										</div>
 										<div className="text-right">
@@ -273,11 +246,11 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 										</div>
 									</div>
 								</div>
-							);
-						}
-						return null;
-					})()}
-				</div>
+							</div>
+						);
+					}
+					return null;
+				})()}
 
 				{/* Equipamentos Section */}
 				<div className="space-y-4">

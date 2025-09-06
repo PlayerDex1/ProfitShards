@@ -5,9 +5,7 @@ import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
-	// Removido: investment - não é mais necessário
-	gemsPurchased: 0,
-	gemsRemaining: 0,
+	// Removido: investment, gemsPurchased, gemsRemaining - não são mais necessários
 	gemsConsumed: 0, // Calculado automaticamente
 	tokensEquipment: 0, // Calculado automaticamente
 	
@@ -155,14 +153,19 @@ export function useCalculator() {
 		const netFarmedTokens = Math.max(0, tokensFarmed - totalEquipmentTokens);
 		const totalTokens = netFarmedTokens;
 		const totalTokenValue = totalTokens * tokenPrice * luckMultiplier;
+		
+		// Custo total = Gems + Tokens utilizados nos equipamentos
 		const gemsCost = totalEquipmentGems * gemPrice;
-		const grossProfit = totalTokenValue; // já não somamos tokens gastos
-		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
-		const finalProfit = grossProfit - gemsCost;
+		const tokensCost = totalEquipmentTokens * tokenPrice;
+		const totalEquipmentCost = gemsCost + tokensCost;
+		
+		const grossProfit = totalTokenValue;
+		const rebuyCost = 0;
+		const finalProfit = grossProfit - totalEquipmentCost;
 		const netProfit = finalProfit;
 		
-		// NOVA LÓGICA: ROI baseado no custo das gems (não mais no investimento)
-		const roi = gemsCost > 0 ? (finalProfit / gemsCost) * 100 : 0;
+		// NOVA LÓGICA: ROI baseado no custo total (gems + tokens)
+		const roi = totalEquipmentCost > 0 ? (finalProfit / totalEquipmentCost) * 100 : 0;
 		const efficiency = loadsUsed > 0 ? netFarmedTokens / loadsUsed : 0;
 
 		return {
@@ -170,7 +173,7 @@ export function useCalculator() {
 			tokensEquipment: totalEquipmentTokens, // Para compatibilidade
 			tokensFarmed,
 			totalTokenValue,
-			gemsCost,
+			gemsCost: totalEquipmentCost, // Custo total (gems + tokens)
 			grossProfit,
 			rebuyCost,
 			finalProfit,
