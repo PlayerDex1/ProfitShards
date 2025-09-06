@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useI18n } from '@/i18n';
+import { useGlobalStats } from '@/hooks/use-global-stats';
 import { 
   Calculator, 
   Map, 
@@ -13,12 +14,14 @@ import {
   TrendingUp,
   Target,
   Users,
-  Star
+  Star,
+  Loader2
 } from 'lucide-react';
 
 export function HeroModern() {
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
+  const { stats, loading, formatNumber, formatCurrency, formatPercentage } = useGlobalStats();
 
   const features = [
     {
@@ -41,11 +44,31 @@ export function HeroModern() {
     }
   ];
 
-  const stats = [
-    { label: "Active Users", value: "10K+", icon: Users },
-    { label: "Calculations", value: "1M+", icon: Calculator },
-    { label: "Success Rate", value: "98%", icon: Target },
-    { label: "Satisfaction", value: "4.9★", icon: Star }
+  const displayStats = [
+    { 
+      label: "Usuários Ativos", 
+      value: loading ? "..." : formatNumber(stats?.totalUsers || 0), 
+      icon: Users,
+      description: "Últimos 30 dias"
+    },
+    { 
+      label: "Cálculos Realizados", 
+      value: loading ? "..." : formatNumber(stats?.totalCalculations || 0), 
+      icon: Calculator,
+      description: "Total de cálculos"
+    },
+    { 
+      label: "Taxa de Sucesso", 
+      value: loading ? "..." : formatPercentage(stats?.successRate || 0), 
+      icon: Target,
+      description: "Cálculos lucrativos"
+    },
+    { 
+      label: "Lucro Total", 
+      value: loading ? "..." : formatCurrency(stats?.totalProfit || 0), 
+      icon: TrendingUp,
+      description: "Soma de todos os lucros"
+    }
   ];
 
   return (
@@ -109,15 +132,20 @@ export function HeroModern() {
 
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
-            {stats.map((stat, index) => {
+            {displayStats.map((stat, index) => {
               const Icon = stat.icon;
               return (
                 <div key={index} className="text-center group">
                   <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-r from-primary/10 to-blue-500/10 mb-3 group-hover:scale-110 transition-transform duration-300">
-                    <Icon className="h-6 w-6 text-primary" />
+                    {loading ? (
+                      <Loader2 className="h-6 w-6 text-primary animate-spin" />
+                    ) : (
+                      <Icon className="h-6 w-6 text-primary" />
+                    )}
                   </div>
                   <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
+                  <div className="text-xs text-muted-foreground/70 mt-1">{stat.description}</div>
                 </div>
               );
             })}
