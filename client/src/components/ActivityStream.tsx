@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { RefreshCw, Zap, MapPin, Coins, TrendingUp, Activity, User, Clock, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { useI18n } from "@/i18n";
 import { cn } from "@/lib/utils";
-import { CompactStats } from "@/components/CompactStats";
 
 interface ActivityRun {
   id: string;
@@ -214,7 +213,6 @@ export function ActivityStream() {
   const ITEMS_PER_PAGE = 6; // Reduzido para ter mais páginas
 
   const loadFeed = async (forceRefresh = false) => {
-    console.log('🔥 ActivityStream - Starting loadFeed...');
     setLoading(true);
     setError(null);
     
@@ -223,15 +221,11 @@ export function ActivityStream() {
         ? `/api/feed/activity-stream?force=true&limit=100&_=${Date.now()}`
         : `/api/feed/activity-stream?limit=100`;
         
-      console.log('🔥 ActivityStream - Fetching URL:', url);
-        
       const response = await fetch(url, {
         method: 'GET',
         credentials: 'include',
         headers: forceRefresh ? { 'Cache-Control': 'no-cache' } : {}
       });
-      
-      console.log('🔥 ActivityStream - Response status:', response.status);
       
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -239,33 +233,19 @@ export function ActivityStream() {
       
       const result: ActivityStreamResponse = await response.json();
       
-      console.log('🔥 ActivityStream - API Response:', {
-        success: result.success,
-        runsCount: result.runs?.length || 0,
-        total: result.total,
-        cached: result.cached,
-        error: result.error,
-        firstRun: result.runs?.[0]
-      });
-      
       if (result.success && result.runs) {
-        console.log('🔥 ActivityStream - Setting runs:', result.runs.length);
         setRuns(result.runs);
         setTotalRuns(result.runs.length);
         setTotalPages(Math.ceil(result.runs.length / ITEMS_PER_PAGE));
         setIsCached(result.cached || false);
         setLastUpdate(new Date().toLocaleTimeString('pt-BR'));
-        console.log('🔥 ActivityStream - State updated successfully');
       } else {
-        console.error('🔥 ActivityStream - API Error:', result.error);
         setError(result.error || 'Erro ao carregar feed');
       }
     } catch (error) {
-      console.error('🔥 ActivityStream - Fetch Error:', error);
       setError(`Erro de conexão: ${error.message}`);
     } finally {
       setLoading(false);
-      console.log('🔥 ActivityStream - loadFeed completed');
     }
   };
 
@@ -282,19 +262,6 @@ export function ActivityStream() {
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const currentRuns = runs.slice(startIndex, endIndex);
-  
-  // Debug logs
-  console.log('🔥 ActivityStream - State:', {
-    loading,
-    error,
-    runsLength: runs.length,
-    currentRunsLength: currentRuns.length,
-    totalRuns,
-    totalPages,
-    currentPage,
-    startIndex,
-    endIndex
-  });
 
   const goToPage = (page: number) => {
     setCurrentPage(page);
@@ -314,55 +281,7 @@ export function ActivityStream() {
 
   return (
     <Card id="activity-stream" className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
-      <CardHeader className="pb-6 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border-b border-border/50">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl shadow-lg">
-              <Activity className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                🔥 Feed da Comunidade
-              </CardTitle>
-              <div className="flex items-center space-x-4 mt-2">
-                <p className="text-muted-foreground text-sm">
-                  Últimas atividades em tempo real • {totalRuns} runs disponíveis
-                  {lastUpdate && (
-                    <span className="ml-2 text-xs">
-                      • {lastUpdate}
-                      {isCached && <span className="text-orange-500"> (cache)</span>}
-                    </span>
-                  )}
-                </p>
-                <CompactStats />
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={refreshFeed}
-              disabled={isRefreshing}
-              className="gap-2 min-h-[44px] px-4 hover:shadow-sm transition-all duration-200"
-            >
-              <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
-              Atualizar
-            </Button>
-          </div>
-        </div>
-      </CardHeader>
-
       <CardContent className="p-6">
-        {/* Debug Info */}
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-lg text-sm">
-          <strong>Debug Info:</strong> Loading: {loading ? 'true' : 'false'}, 
-          Error: {error || 'none'}, 
-          Runs: {runs.length}, 
-          CurrentRuns: {currentRuns.length}, 
-          TotalRuns: {totalRuns}
-        </div>
 
         {loading ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
