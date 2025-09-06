@@ -21,7 +21,7 @@ import {
 export function HeroModern() {
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
-  const { stats, loading, formatNumber, formatCurrency, formatPercentage } = useGlobalStats();
+  const { stats, loading, isDemo, formatNumber, formatCurrency, formatPercentage } = useGlobalStats();
 
   const features = [
     {
@@ -145,7 +145,12 @@ export function HeroModern() {
                   </div>
                   <div className="text-2xl font-bold text-foreground mb-1">{stat.value}</div>
                   <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  <div className="text-xs text-muted-foreground/70 mt-1">{stat.description}</div>
+                  <div className="text-xs text-muted-foreground/70 mt-1">
+                    {stat.description}
+                    {isDemo && (
+                      <span className="ml-1 text-blue-500 font-medium">(Demo)</span>
+                    )}
+                  </div>
                 </div>
               );
             })}

@@ -21,6 +21,7 @@ interface GlobalStatsResponse {
   data: GlobalStats;
   timestamp: string;
   period: string;
+  isDemo?: boolean;
   error?: string;
 }
 
@@ -28,6 +29,7 @@ export function useGlobalStats() {
   const [stats, setStats] = useState<GlobalStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isDemo, setIsDemo] = useState(false);
 
   const fetchStats = async () => {
     try {
@@ -49,9 +51,11 @@ export function useGlobalStats() {
       
       if (data.success) {
         setStats(data.data);
+        setIsDemo(data.isDemo || false);
       } else {
         setError(data.error || 'Erro ao carregar estatísticas');
         setStats(data.data); // Usar dados de fallback
+        setIsDemo(true); // Em caso de erro, mostrar como demo
       }
     } catch (err) {
       console.error('❌ Erro ao buscar estatísticas globais:', err);
@@ -113,6 +117,7 @@ export function useGlobalStats() {
     stats,
     loading,
     error,
+    isDemo,
     refetch: fetchStats,
     formatNumber,
     formatCurrency,

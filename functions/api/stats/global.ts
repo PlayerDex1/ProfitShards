@@ -16,33 +16,49 @@ interface GlobalStats {
 
 export async function onRequestGet({ env }: { env: Env }) {
   try {
-    // Buscar estatísticas dos usuários
-    const userStats = await env.DB.prepare(`
-      SELECT 
-        COUNT(DISTINCT user_id) as total_users,
-        COUNT(*) as total_calculations,
-        SUM(final_profit) as total_profit,
-        AVG(roi) as average_roi,
-        COUNT(CASE WHEN final_profit > 0 THEN 1 END) * 100.0 / COUNT(*) as success_rate,
-        MAX(final_profit) as best_profit,
-        AVG(efficiency) as average_efficiency
-      FROM user_calculations
-      WHERE created_at > ?
-    `).bind(Date.now() - (30 * 24 * 60 * 60 * 1000)) // Últimos 30 dias
-    .first();
+    // Verificar se a tabela existe
+    let tableExists = false;
+    try {
+      await env.DB.prepare(`SELECT COUNT(*) FROM user_calculations LIMIT 1`).first();
+      tableExists = true;
+    } catch (error) {
+      console.log('Tabela user_calculations não existe ou está vazia');
+    }
+
+    let userStats = null;
+    
+    if (tableExists) {
+      // Buscar estatísticas dos usuários
+      userStats = await env.DB.prepare(`
+        SELECT 
+          COUNT(DISTINCT user_id) as total_users,
+          COUNT(*) as total_calculations,
+          SUM(final_profit) as total_profit,
+          AVG(roi) as average_roi,
+          COUNT(CASE WHEN final_profit > 0 THEN 1 END) * 100.0 / COUNT(*) as success_rate,
+          MAX(final_profit) as best_profit,
+          AVG(efficiency) as average_efficiency
+        FROM user_calculations
+        WHERE created_at > ?
+      `).bind(Date.now() - (30 * 24 * 60 * 60 * 1000)) // Últimos 30 dias
+      .first();
+    }
 
     // Buscar usuários ativos hoje
-    const todayStart = new Date();
-    todayStart.setHours(0, 0, 0, 0);
-    const todayTimestamp = todayStart.getTime();
+    let todayStats = null;
+    if (tableExists) {
+      const todayStart = new Date();
+      todayStart.setHours(0, 0, 0, 0);
+      const todayTimestamp = todayStart.getTime();
 
-    const todayStats = await env.DB.prepare(`
-      SELECT 
-        COUNT(DISTINCT user_id) as active_users_today,
-        COUNT(*) as calculations_today
-      FROM user_calculations
-      WHERE created_at >= ?
-    `).bind(todayTimestamp).first();
+      todayStats = await env.DB.prepare(`
+        SELECT 
+          COUNT(DISTINCT user_id) as active_users_today,
+          COUNT(*) as calculations_today
+        FROM user_calculations
+        WHERE created_at >= ?
+      `).bind(todayTimestamp).first();
+    }
 
     // Buscar estatísticas de map runs (se existir tabela)
     let mapStats = { total_map_runs: 0, total_tokens_farmed: 0 };
@@ -80,7 +96,22 @@ export async function onRequestGet({ env }: { env: Env }) {
       console.log('Giveaways table not found, using default values');
     }
 
-    const stats: GlobalStats = {
+    // Dados de demonstração para desenvolvimento
+    const isDevelopment = !tableExists || (userStats?.total_calculations || 0) === 0;
+    
+    const stats: GlobalStats = isDevelopment ? {
+      // Dados de demonstração realistas
+      totalUsers: 1247,
+      totalCalculations: 15689,
+      totalProfit: 45678.90,
+      averageROI: 187.5,
+      successRate: 89.2,
+      activeUsersToday: 156,
+      calculationsToday: 234,
+      bestProfit: 1250.75,
+      averageEfficiency: 4.2,
+    } : {
+      // Dados reais do banco
       totalUsers: userStats?.total_users || 0,
       totalCalculations: userStats?.total_calculations || 0,
       totalProfit: userStats?.total_profit || 0,
@@ -105,7 +136,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       success: true,
       data: extendedStats,
       timestamp: new Date().toISOString(),
-      period: '30_days'
+      period: '30_days',
+      isDemo: isDevelopment
     }), {
       status: 200,
       headers: { 
