@@ -60,8 +60,7 @@ export default function Profile() {
 			item.results && 
 			typeof item.results.finalProfit === 'number' &&
 			item.formData &&
-			typeof item.formData.investment === 'number' &&
-			typeof item.formData.gemsConsumed === 'number' &&
+			typeof item.results.gemsCost === 'number' &&
 			typeof item.timestamp === 'number'
 		);
 		
@@ -280,13 +279,13 @@ export default function Profile() {
 																	{/* Detalhes do cálculo */}
 																	<div className="grid grid-cols-2 gap-4 text-base text-muted-foreground bg-muted/50 p-3 rounded-lg">
 																		<div>
-																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData && typeof item.formData.investment === 'number' ? item.formData.investment.toFixed(2) : '0.00'}
+																			<span className="font-medium">Custo das Gems:</span> ${item.results && typeof item.results.gemsCost === 'number' ? item.results.gemsCost.toFixed(2) : '0.00'}
 																		</div>
 																		<div>
 																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
 																		</div>
 																		<div>
-																			<span className="font-medium">{t('profile.history.gems')}:</span> {item.formData && typeof item.formData.gemsConsumed === 'number' ? item.formData.gemsConsumed : 0}
+																			<span className="font-medium">Tokens Utilizados:</span> {item.results && typeof item.results.tokensEquipment === 'number' ? item.results.tokensEquipment.toLocaleString() : '0'}
 																		</div>
 																		<div>
 																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results && typeof item.results.efficiency === 'number' ? item.results.efficiency.toFixed(1) : '0.0'}/load

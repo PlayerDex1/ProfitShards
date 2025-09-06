@@ -26,12 +26,14 @@ async function syncStatistics(action: 'add' | 'delete' | 'clear', item?: History
         userId: getUserId(),
         timestamp: item.timestamp,
         data: {
-          investment: item.formData.investment,
+          // investment removido - não é mais usado
+          gemsCost: item.results.gemsCost,
           finalProfit: item.results.finalProfit,
           roi: item.results.roi,
           efficiency: item.results.efficiency,
-          tokensEquipment: item.formData.tokensEquipment,
-          tokensFarmed: item.formData.tokensFarmed
+          tokensEquipment: item.results.tokensEquipment,
+          tokensFarmed: item.formData.tokensFarmed,
+          totalTokens: item.results.totalTokens
         }
       })
     });
@@ -68,8 +70,7 @@ export function forceCleanCorruptedHistory(): void {
         typeof item?.results?.finalProfit === 'number' &&
         item?.formData && 
         typeof item.formData === 'object' &&
-        typeof item?.formData?.investment === 'number' &&
-        typeof item?.formData?.gemsConsumed === 'number'
+        typeof item?.results?.gemsCost === 'number'
       );
     });
     
@@ -102,7 +103,7 @@ export function getHistoryCached(): HistoryItem[] {
       item.results && 
       typeof item.results.finalProfit === 'number' &&
       item.formData &&
-      typeof item.formData.investment === 'number'
+      typeof item.results.gemsCost === 'number'
     );
     
     // Se removemos itens inválidos, salvar a versão limpa
