@@ -22,13 +22,14 @@ import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
+import { GiveawaySection } from "@/components/GiveawaySection";
 
 export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 	// Removido: useEquipment - simplificando interface
 	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
-	const { currentGiveaway, participateInGiveaway, isParticipating, isLoading } = useGiveaway();
+	// Hook useGiveaway removido - usando GiveawaySection isolado
 	const [activeTab, setActiveTab] = useState('calculator');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
@@ -358,39 +359,8 @@ export default function Profile() {
 									</CardContent>
 								</Card>
 
-								{/* Giveaway Section - Compacta */}
-								<Card className="bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20">
-									<CardContent className="p-6">
-										<div className="text-center mb-6">
-											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-full mb-4 border border-green-500/30">
-												<Gift className="h-6 w-6 text-green-600" />
-											</div>
-											<h3 className="text-2xl font-bold text-foreground mb-2">
-												🎁 <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">Giveaway</span>
-											</h3>
-											<p className="text-muted-foreground">
-												Participe dos sorteios e ganhe recompensas
-											</p>
-										</div>
-										
-										{currentGiveaway ? (
-											<div className="space-y-4">
-												<GiveawayBanner 
-													giveaway={currentGiveaway}
-													onParticipate={() => participateInGiveaway(currentGiveaway.id)}
-													isParticipating={isParticipating}
-													isLoading={isLoading}
-												/>
-											</div>
-										) : (
-											<div className="text-center py-6">
-												<p className="text-muted-foreground">
-													Nenhum giveaway ativo no momento
-												</p>
-											</div>
-										)}
-									</CardContent>
-								</Card>
+								{/* Novo Sistema de Giveaway - MELHORADO */}
+								<GiveawaySection />
 							</div>
 						</div>
 					)}
