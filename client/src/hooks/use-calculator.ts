@@ -149,31 +149,32 @@ export function useCalculator() {
 			}
 		};
 
-		// Tokens efetivamente farmados líquidos (subtrai os tokens gastos na aceleração)
+		// LÓGICA CORRETA: Tokens líquidos = Tokens farmados - Tokens utilizados nos equipamentos
 		const netFarmedTokens = Math.max(0, tokensFarmed - totalEquipmentTokens);
 		const totalTokens = netFarmedTokens;
-		const totalTokenValue = totalTokens * tokenPrice * luckMultiplier;
 		
-		// Custo total = Gems + Tokens utilizados nos equipamentos
+		// Valor dos tokens líquidos (lucro real)
+		const netTokenValue = netFarmedTokens * tokenPrice * luckMultiplier;
+		
+		// Custo apenas das gems (investimento inicial)
 		const gemsCost = totalEquipmentGems * gemPrice;
-		const tokensCost = totalEquipmentTokens * tokenPrice;
-		const totalEquipmentCost = gemsCost + tokensCost;
 		
-		const grossProfit = totalTokenValue;
+		// LUCRO REAL = Valor dos tokens líquidos - Custo das gems
+		const grossProfit = netTokenValue;
 		const rebuyCost = 0;
-		const finalProfit = grossProfit - totalEquipmentCost;
+		const finalProfit = grossProfit - gemsCost;
 		const netProfit = finalProfit;
 		
-		// NOVA LÓGICA: ROI baseado no custo total (gems + tokens)
-		const roi = totalEquipmentCost > 0 ? (finalProfit / totalEquipmentCost) * 100 : 0;
+		// ROI baseado apenas no custo das gems (investimento inicial)
+		const roi = gemsCost > 0 ? (finalProfit / gemsCost) * 100 : 0;
 		const efficiency = loadsUsed > 0 ? netFarmedTokens / loadsUsed : 0;
 
 		return {
 			totalTokens,
 			tokensEquipment: totalEquipmentTokens, // Para compatibilidade
 			tokensFarmed,
-			totalTokenValue,
-			gemsCost: totalEquipmentCost, // Custo total (gems + tokens)
+			totalTokenValue: netTokenValue, // Valor dos tokens líquidos
+			gemsCost, // Apenas custo das gems
 			grossProfit,
 			rebuyCost,
 			finalProfit,

@@ -183,8 +183,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
 					const totalTokensUsed = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
 					const gemsCost = totalGemsUsed * (formData.gemPrice || 0.00714);
-					const tokensCost = totalTokensUsed * (formData.tokenPrice || 0);
-					const totalCost = gemsCost + tokensCost;
 					
 					if (totalGemsUsed > 0 || totalTokensUsed > 0) {
 						return (
@@ -199,17 +197,22 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 												💎 {totalGemsUsed.toLocaleString()} gemas
 											</p>
 											<p className="text-blue-600 dark:text-blue-300">
-												💰 {totalTokensUsed.toLocaleString()} tokens
+												💰 {totalTokensUsed.toLocaleString()} tokens utilizados
 											</p>
 										</div>
 										<div className="text-right">
 											<p className="text-lg font-bold text-blue-800 dark:text-blue-200">
-												${totalCost.toFixed(2)}
+												${gemsCost.toFixed(2)}
 											</p>
 											<p className="text-xs text-blue-600 dark:text-blue-300">
-												Custo total
+												Custo das gems
 											</p>
 										</div>
+									</div>
+									<div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+										<p className="text-xs text-blue-600 dark:text-blue-300">
+											💡 Os tokens utilizados serão descontados dos tokens farmados
+										</p>
 									</div>
 								</div>
 							</div>
