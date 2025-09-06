@@ -14,6 +14,7 @@ import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
 import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Activity, Crown } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
+import { ModernHistoryDisplay } from "@/components/ModernHistoryDisplay";
 import { MetricsDashboard } from "@/components/MetricsDashboard";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 import { ActivityStream } from "@/components/ActivityStream";
@@ -51,6 +52,61 @@ export default function Profile() {
 
 	const clearAllHistory = () => {
 		clearHistoryRemote();
+	};
+
+	const toggleFavorite = (idx: number) => {
+		const item = history[idx];
+		if (item) {
+			const updatedItem = { ...item, isFavorite: !item.isFavorite };
+			const updatedHistory = [...history];
+			updatedHistory[idx] = updatedItem;
+			
+			// Salvar no localStorage
+			localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+			window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+		}
+	};
+
+	const addTag = (idx: number, tag: string) => {
+		const item = history[idx];
+		if (item) {
+			const currentTags = item.tags || [];
+			if (!currentTags.includes(tag)) {
+				const updatedItem = { ...item, tags: [...currentTags, tag] };
+				const updatedHistory = [...history];
+				updatedHistory[idx] = updatedItem;
+				
+				// Salvar no localStorage
+				localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+				window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+			}
+		}
+	};
+
+	const removeTag = (idx: number, tag: string) => {
+		const item = history[idx];
+		if (item && item.tags) {
+			const updatedItem = { ...item, tags: item.tags.filter(t => t !== tag) };
+			const updatedHistory = [...history];
+			updatedHistory[idx] = updatedItem;
+			
+			// Salvar no localStorage
+			localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+			window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+		}
+	};
+
+	const addNote = (idx: number, note: string) => {
+		const item = history[idx];
+		if (item) {
+			const updatedItem = { ...item, notes: note };
+			const updatedHistory = [...history];
+			updatedHistory[idx] = updatedItem;
+			
+			// Salvar no localStorage
+			localStorage.setItem('worldshards-history', JSON.stringify(updatedHistory));
+			window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+		}
 	};
 
 	const cleanCorruptedHistory = () => {
@@ -180,145 +236,16 @@ export default function Profile() {
 								/>
 							)}
 
-							{/* History */}
-							<Card>
-								<CardHeader className="flex flex-row items-center justify-between">
-									<CardTitle className="text-foreground">
-										Histórico de Cálculos ({history.length})
-									</CardTitle>
-									{history.length > 0 && (
-										<Button
-											variant="destructive"
-											size="sm"
-											onClick={clearAllHistory}
-											className="flex items-center space-x-1"
-										>
-											<Trash2 className="h-4 w-4" />
-											<span>{t('profile.history.clear')}</span>
-										</Button>
-									)}
-								</CardHeader>
-								<CardContent>
-									{history.length === 0 ? (
-										<div className="text-center py-8">
-											<Calculator className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
-											<p className="text-muted-foreground">{t('results.no_history')}</p>
-											<p className="text-sm text-muted-foreground mt-1">
-												{t('profile.history.empty')}
-											</p>
-										</div>
-									) : (
-										<>
-											{/* Estatísticas Resumidas */}
-											<div className="mb-6 p-4 bg-gradient-to-r from-primary/5 to-primary/10 rounded-lg border border-primary/20">
-												<h3 className="text-lg font-semibold text-foreground mb-3">📊 {t('profile.history.stats.title')}</h3>
-												<div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-													<div className="text-center">
-														<div className="text-2xl font-bold text-foreground">
-															{history.length}
-														</div>
-														<div className="text-base text-muted-foreground">{t('profile.history.stats.calculations')}</div>
-													</div>
-													<div className="text-center">
-														<div className={`text-2xl font-bold ${history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length > history.length / 2 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-															${(history.reduce((sum, h) => sum + (h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0), 0) / history.length).toFixed(2)}
-														</div>
-														<div className="text-base text-muted-foreground">{t('profile.history.stats.avgProfit')}</div>
-													</div>
-													<div className="text-center">
-														<div className="text-2xl font-bold text-green-600 dark:text-green-400">
-															${Math.max(...history.map(h => h.results && typeof h.results.finalProfit === 'number' ? h.results.finalProfit : 0)).toFixed(2)}
-														</div>
-														<div className="text-base text-muted-foreground">{t('profile.history.stats.bestProfit')}</div>
-													</div>
-													<div className="text-center">
-														<div className="text-2xl font-bold text-foreground">
-															{((history.filter(h => h.results && typeof h.results.finalProfit === 'number' && h.results.finalProfit > 0).length / history.length) * 100).toFixed(0)}%
-														</div>
-														<div className="text-base text-muted-foreground">{t('profile.history.stats.successRate')}</div>
-													</div>
-												</div>
-											</div>
-
-											{/* Lista do Histórico */}
-											<div className="space-y-3 max-h-96 overflow-auto">
-											{history.slice().reverse().map((item, revIndex) => {
-												const idx = history.length - 1 - revIndex;
-												const isProfit = item.results && typeof item.results.finalProfit === 'number' && item.results.finalProfit > 0;
-												const date = new Date(item.timestamp);
-												const dateStr = date.toLocaleDateString('pt-BR');
-												const timeStr = date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-												
-												return (
-													<Card key={idx} className="border-border hover:bg-muted/30 transition-colors">
-														<CardContent className="p-4">
-															<div className="flex justify-between items-start">
-																<div className="flex-1 space-y-2">
-																	{/* Profit destacado */}
-																	<div className="flex items-center justify-between">
-																		<div className={`text-2xl font-bold font-mono ${isProfit ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-																			{isProfit ? '+' : ''}${item.results && typeof item.results.finalProfit === 'number' ? item.results.finalProfit.toFixed(2) : '0.00'}
-																		</div>
-																		<div className={`text-sm px-2 py-1 rounded-full font-medium ${isProfit ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300'}`}>
-																			ROI: {item.results && typeof item.results.roi === 'number' ? item.results.roi.toFixed(1) : '0.0'}%
-																		</div>
-																	</div>
-																	
-																	{/* Data e hora destacadas */}
-																	<div className="flex items-center space-x-4 text-base">
-																		<div className="flex items-center space-x-2 text-foreground font-medium">
-																			<span>📅</span>
-																			<span>{dateStr}</span>
-																		</div>
-																		<div className="flex items-center space-x-2 text-foreground font-medium">
-																			<span>🕒</span>
-																			<span>{timeStr}</span>
-																		</div>
-																	</div>
-																	
-																	{/* Detalhes do cálculo */}
-																	<div className="grid grid-cols-2 gap-4 text-base text-muted-foreground bg-muted/50 p-3 rounded-lg">
-																		<div>
-																			<span className="font-medium">Custo das Gems:</span> ${item.results && typeof item.results.gemsCost === 'number' ? item.results.gemsCost.toFixed(2) : '0.00'}
-																		</div>
-																		<div>
-																			<span className="font-medium">Custo dos Tokens:</span> ${item.results && typeof item.results.tokensCost === 'number' ? item.results.tokensCost.toFixed(2) : '0.00'}
-																		</div>
-																		<div>
-																			<span className="font-medium">Custo Total:</span> ${item.results && typeof item.results.totalCost === 'number' ? item.results.totalCost.toFixed(2) : '0.00'}
-																		</div>
-																		<div>
-																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
-																		</div>
-																		<div>
-																			<span className="font-medium">Tokens Utilizados:</span> {item.results && typeof item.results.tokensEquipment === 'number' ? item.results.tokensEquipment.toLocaleString() : '0'}
-																		</div>
-																		<div>
-																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results && typeof item.results.efficiency === 'number' ? item.results.efficiency.toFixed(1) : '0.0'}/load
-																		</div>
-																	</div>
-																</div>
-																
-																{/* Botão de deletar */}
-																<Button
-																	variant="ghost"
-																	size="sm"
-																	onClick={() => removeHistoryItem(idx)}
-																	className="text-muted-foreground hover:text-destructive ml-4"
-																	title={t('profile.history.removeTitle')}
-																>
-																	<Trash2 className="h-4 w-4" />
-																</Button>
-															</div>
-														</CardContent>
-													</Card>
-												);
-											})}
-											</div>
-										</>
-									)}
-								</CardContent>
-							</Card>
+							{/* Modern History Display */}
+							<ModernHistoryDisplay
+								history={history}
+								onDeleteItem={removeHistoryItem}
+								onClearAll={clearAllHistory}
+								onToggleFavorite={toggleFavorite}
+								onAddTag={addTag}
+								onRemoveTag={removeTag}
+								onAddNote={addNote}
+							/>
 						</>
 					)}
 

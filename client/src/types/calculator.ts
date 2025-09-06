@@ -55,6 +55,9 @@ export interface HistoryItem {
   timestamp: number;
   formData: CalculatorFormData;
   results: CalculationResults;
+  tags?: string[]; // Tags personalizadas
+  notes?: string; // Notas do usuário
+  isFavorite?: boolean; // Favorito
 }
 
 export interface Equipment {
