@@ -42,7 +42,12 @@ export function useCalculator() {
 			const key = storageKeyForUser(getCurrentUsername());
 			try {
 				const raw = localStorage.getItem(key);
-				setFormData(raw ? JSON.parse(raw) : DEFAULT_FORM);
+				const loadedData = raw ? JSON.parse(raw) : DEFAULT_FORM;
+				// Garantir que o valor padrão da gema seja aplicado se for 0
+				if (loadedData.gemPrice === 0) {
+					loadedData.gemPrice = 0.00714;
+				}
+				setFormData(loadedData);
 			} catch {
 				setFormData(DEFAULT_FORM);
 			}
