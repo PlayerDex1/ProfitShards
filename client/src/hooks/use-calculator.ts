@@ -5,7 +5,7 @@ import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
-	investment: 0,
+	// Removido: investment - não é mais necessário
 	gemsPurchased: 0,
 	gemsRemaining: 0,
 	gemsConsumed: 0, // Calculado automaticamente
@@ -113,12 +113,11 @@ export function useCalculator() {
 
 	const results = useMemo((): CalculationResults | null => {
 		// Only require that at least some meaningful data is provided
-		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0 && formData.investment <= 0) {
+		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0) {
 			return null;
 		}
 
 		// Use defaults for missing values
-		const investment = formData.investment || 0;
 		const tokenPrice = formData.tokenPrice || 0;
 		const gemPrice = formData.gemPrice || 0.00714; // default gem price
 		const tokensFarmed = formData.tokensFarmed || 0;
@@ -161,7 +160,9 @@ export function useCalculator() {
 		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
 		const finalProfit = grossProfit - gemsCost;
 		const netProfit = finalProfit;
-		const roi = investment > 0 ? (finalProfit / investment) * 100 : 0;
+		
+		// NOVA LÓGICA: ROI baseado no custo das gems (não mais no investimento)
+		const roi = gemsCost > 0 ? (finalProfit / gemsCost) * 100 : 0;
 		const efficiency = loadsUsed > 0 ? netFarmedTokens / loadsUsed : 0;
 
 		return {
