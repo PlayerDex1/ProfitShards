@@ -25,6 +25,8 @@ export interface CalculationResults {
   tokensFarmed: number;
   totalTokenValue: number;
   gemsCost: number;
+  tokensCost: number; // Custo dos tokens utilizados
+  totalCost: number; // Custo total (gems + tokens)
   grossProfit: number;
   rebuyCost: number;
   finalProfit: number;

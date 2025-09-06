@@ -183,11 +183,13 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
 					const totalTokensUsed = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
 					const gemsCost = totalGemsUsed * (formData.gemPrice || 0.00714);
+				const tokensCost = totalTokensUsed * (formData.tokenPrice || 0);
+				const totalCost = gemsCost + tokensCost;
 					
 					if (totalGemsUsed > 0 || totalTokensUsed > 0) {
 						return (
 							<div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-								<div className="space-y-2">
+								<div className="space-y-3">
 									<h4 className="font-medium text-blue-800 dark:text-blue-200">
 										📊 Resumo dos Gastos
 									</h4>
@@ -200,20 +202,38 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 												💰 {totalTokensUsed.toLocaleString()} tokens utilizados
 											</p>
 										</div>
-										<div className="text-right">
-											<p className="text-lg font-bold text-blue-800 dark:text-blue-200">
-												${gemsCost.toFixed(2)}
-											</p>
-											<p className="text-xs text-blue-600 dark:text-blue-300">
-												Custo das gems
-											</p>
-										</div>
-									</div>
-									<div className="mt-2 pt-2 border-t border-blue-200 dark:border-blue-700">
+								<div className="text-right space-y-1">
+									<div>
+										<p className="text-sm font-bold text-blue-800 dark:text-blue-200">
+											${gemsCost.toFixed(2)}
+										</p>
 										<p className="text-xs text-blue-600 dark:text-blue-300">
-											💡 Os tokens utilizados serão descontados dos tokens farmados
+											Custo das gems
 										</p>
 									</div>
+									<div>
+										<p className="text-sm font-bold text-blue-800 dark:text-blue-200">
+											${tokensCost.toFixed(2)}
+										</p>
+										<p className="text-xs text-blue-600 dark:text-blue-300">
+											Custo dos tokens
+										</p>
+									</div>
+								</div>
+									</div>
+							<div className="border-t border-blue-200 dark:border-blue-700 pt-2">
+								<div className="flex justify-between items-center">
+									<span className="text-sm font-medium text-blue-800 dark:text-blue-200">
+										💸 Custo Total:
+									</span>
+									<span className="text-lg font-bold text-blue-900 dark:text-blue-100">
+										${totalCost.toFixed(2)}
+									</span>
+								</div>
+							</div>
+							<div className="text-xs text-blue-600 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30 p-2 rounded">
+								💡 Os tokens utilizados serão descontados dos tokens farmados
+							</div>
 								</div>
 							</div>
 						);

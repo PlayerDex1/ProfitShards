@@ -159,6 +159,12 @@ export function useCalculator() {
 		// Custo apenas das gems (investimento inicial)
 		const gemsCost = totalEquipmentGems * gemPrice;
 		
+		// Custo dos tokens utilizados nos equipamentos
+		const tokensCost = totalEquipmentTokens * tokenPrice;
+		
+		// Custo total (gems + tokens)
+		const totalCost = gemsCost + tokensCost;
+		
 		// LUCRO REAL = Valor dos tokens líquidos - Custo das gems
 		const grossProfit = netTokenValue;
 		const rebuyCost = 0;
@@ -175,6 +181,8 @@ export function useCalculator() {
 			tokensFarmed,
 			totalTokenValue: netTokenValue, // Valor dos tokens líquidos
 			gemsCost, // Apenas custo das gems
+			tokensCost, // Custo dos tokens utilizados
+			totalCost, // Custo total (gems + tokens)
 			grossProfit,
 			rebuyCost,
 			finalProfit,

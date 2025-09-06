@@ -28,6 +28,8 @@ async function syncStatistics(action: 'add' | 'delete' | 'clear', item?: History
         data: {
           // investment removido - não é mais usado
           gemsCost: item.results.gemsCost,
+          tokensCost: item.results.tokensCost,
+          totalCost: item.results.totalCost,
           finalProfit: item.results.finalProfit,
           roi: item.results.roi,
           efficiency: item.results.efficiency,

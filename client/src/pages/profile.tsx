@@ -282,6 +282,12 @@ export default function Profile() {
 																			<span className="font-medium">Custo das Gems:</span> ${item.results && typeof item.results.gemsCost === 'number' ? item.results.gemsCost.toFixed(2) : '0.00'}
 																		</div>
 																		<div>
+																			<span className="font-medium">Custo dos Tokens:</span> ${item.results && typeof item.results.tokensCost === 'number' ? item.results.tokensCost.toFixed(2) : '0.00'}
+																		</div>
+																		<div>
+																			<span className="font-medium">Custo Total:</span> ${item.results && typeof item.results.totalCost === 'number' ? item.results.totalCost.toFixed(2) : '0.00'}
+																		</div>
+																		<div>
 																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
 																		</div>
 																		<div>
