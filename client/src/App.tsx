@@ -31,6 +31,14 @@ function AnalyticsRedirect() {
   return null;
 }
 
+function GiveawayJoinRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=activity");
+  }, [setLocation]);
+  return null;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

@@ -27,6 +27,16 @@ export default function Home() {
 	const { activeGiveaway } = useGiveaway();
 	const { checkForWinnerNotification } = usePushNotifications();
 	const [showGiveaway, setShowGiveaway] = useState(false);
+	const [, setLocation] = useLocation();
+
+	// Redirecionar ?join=giveaway para Hub de Atividade
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		if (urlParams.get('join') === 'giveaway') {
+			console.log('🎯 [HOME] Redirecionando ?join=giveaway para Hub de Atividade');
+			setLocation('/perfil?tab=activity');
+		}
+	}, [setLocation]);
 
 	// Função para abrir giveaway e atualizar URL
 	const openGiveaway = () => {

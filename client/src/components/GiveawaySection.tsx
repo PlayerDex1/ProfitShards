@@ -257,25 +257,25 @@ export function GiveawaySection({ className }: GiveawaySectionProps) {
   return (
     <div className={`space-y-6 ${className || ''}`}>
       {/* Giveaway Principal */}
-      <Card className="bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20 shadow-lg">
+      <Card className="bg-gradient-to-br from-slate-50/50 to-gray-50/50 dark:from-slate-800/30 dark:to-gray-800/30 border border-slate-200/50 dark:border-slate-700/50 shadow-sm">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="p-2 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-lg">
-                <Gift className="h-6 w-6 text-green-600" />
+              <div className="p-2 bg-slate-100 dark:bg-slate-700 rounded-lg">
+                <Gift className="h-5 w-5 text-slate-600 dark:text-slate-300" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold text-green-900 dark:text-green-100">
+                <CardTitle className="text-lg font-semibold text-slate-800 dark:text-slate-200">
                   🎁 {giveaway.title}
                 </CardTitle>
-                <p className="text-sm text-green-600 dark:text-green-400">
+                <p className="text-sm text-slate-600 dark:text-slate-400">
                   {giveaway.description}
                 </p>
               </div>
             </div>
             <Badge 
               variant={isExpired ? "secondary" : "default"}
-              className={isExpired ? "bg-gray-500" : "bg-green-600"}
+              className={isExpired ? "bg-gray-500" : "bg-emerald-500"}
             >
               {isExpired ? "Finalizado" : "Ativo"}
             </Badge>
@@ -284,45 +284,45 @@ export function GiveawaySection({ className }: GiveawaySectionProps) {
         
         <CardContent className="space-y-4">
           {/* Informações do Prêmio */}
-          <div className="bg-green-50 dark:bg-green-900/20 p-4 rounded-lg border border-green-200 dark:border-green-800">
+          <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-lg border border-slate-200 dark:border-slate-700">
             <div className="flex items-center space-x-2 mb-2">
-              <Trophy className="h-5 w-5 text-green-600" />
-              <span className="font-semibold text-green-900 dark:text-green-100">Prêmio:</span>
+              <Trophy className="h-4 w-4 text-slate-600 dark:text-slate-400" />
+              <span className="font-medium text-slate-700 dark:text-slate-300">Prêmio:</span>
             </div>
-            <p className="text-green-700 dark:text-green-300 font-medium">
+            <p className="text-slate-800 dark:text-slate-200 font-medium">
               {giveaway.prize}
             </p>
           </div>
 
           {/* Estatísticas */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border">
-              <Users className="h-5 w-5 text-blue-600 mx-auto mb-1" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">Participantes</p>
-              <p className="font-semibold text-blue-600">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="text-center p-3 bg-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Users className="h-4 w-4 text-slate-600 dark:text-slate-400 mx-auto mb-1" />
+              <p className="text-xs text-slate-500 dark:text-slate-500">Participantes</p>
+              <p className="font-medium text-slate-700 dark:text-slate-300 text-sm">
                 {giveaway.currentParticipants}
                 {giveaway.maxParticipants && ` / ${giveaway.maxParticipants}`}
               </p>
             </div>
             
-            <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border">
-              <Clock className="h-5 w-5 text-orange-600 mx-auto mb-1" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">Tempo Restante</p>
-              <p className="font-semibold text-orange-600">{timeLeft}</p>
+            <div className="text-center p-3 bg-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Clock className="h-4 w-4 text-slate-600 dark:text-slate-400 mx-auto mb-1" />
+              <p className="text-xs text-slate-500 dark:text-slate-500">Tempo Restante</p>
+              <p className="font-medium text-slate-700 dark:text-slate-300 text-sm">{timeLeft}</p>
             </div>
             
-            <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border">
-              <Calendar className="h-5 w-5 text-purple-600 mx-auto mb-1" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">Início</p>
-              <p className="font-semibold text-purple-600 text-xs">
+            <div className="text-center p-3 bg-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Calendar className="h-4 w-4 text-slate-600 dark:text-slate-400 mx-auto mb-1" />
+              <p className="text-xs text-slate-500 dark:text-slate-500">Início</p>
+              <p className="font-medium text-slate-700 dark:text-slate-300 text-xs">
                 {new Date(giveaway.startDate).toLocaleDateString('pt-BR')}
               </p>
             </div>
             
-            <div className="text-center p-3 bg-white dark:bg-gray-800 rounded-lg border">
-              <Target className="h-5 w-5 text-red-600 mx-auto mb-1" />
-              <p className="text-sm text-gray-600 dark:text-gray-400">Fim</p>
-              <p className="font-semibold text-red-600 text-xs">
+            <div className="text-center p-3 bg-white dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+              <Target className="h-4 w-4 text-slate-600 dark:text-slate-400 mx-auto mb-1" />
+              <p className="text-xs text-slate-500 dark:text-slate-500">Fim</p>
+              <p className="font-medium text-slate-700 dark:text-slate-300 text-xs">
                 {new Date(giveaway.endDate).toLocaleDateString('pt-BR')}
               </p>
             </div>
@@ -331,7 +331,7 @@ export function GiveawaySection({ className }: GiveawaySectionProps) {
           {/* Botão de Participação */}
           {canParticipate ? (
             <Button 
-              className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3"
+              className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2"
               onClick={() => participateInGiveaway(giveaway.id)}
               disabled={participating}
             >
