@@ -96,8 +96,8 @@ export async function onRequestGet({ env }: { env: Env }) {
       console.log('Giveaways table not found, using default values');
     }
 
-    // Dados de demonstração para desenvolvimento
-    const isDevelopment = !tableExists || (userStats?.total_calculations || 0) === 0;
+    // Dados de demonstração apenas para desenvolvimento (dev.profitshards.online)
+    const isDevelopment = false; // Sempre usar dados reais na main
     
     const stats: GlobalStats = isDevelopment ? {
       // Dados de demonstração realistas
