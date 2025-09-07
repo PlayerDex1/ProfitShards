@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
+import { AndroidPWAInstaller } from "@/components/AndroidPWAInstaller";
 import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { forceCleanCorruptedHistory } from "@/lib/historyApi";
@@ -83,9 +84,10 @@ export default function App() {
           <Route path="/analytics" component={AnalyticsRedirect} />
           <Route component={NotFoundPage} />
         </Switch>
-        <Toaster />
-        <PWAInstallPrompt />
-        </div>
+               <Toaster />
+               <PWAInstallPrompt />
+               <AndroidPWAInstaller />
+               </div>
       </ToastProvider>
     </QueryClientProvider>
   );
