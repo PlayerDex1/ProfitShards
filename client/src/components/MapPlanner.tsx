@@ -55,12 +55,19 @@ export function MapPlanner({}: MapPlannerProps) {
     }
   });
 
-  // Carregar dados do servidor para usuários autenticados
+  // Carregar dados do servidor para usuários autenticados (apenas na primeira vez)
   useEffect(() => {
     const loadServerMapDrops = async () => {
       if (isAuthenticated) {
         try {
-          console.log('🔄 Carregando map drops do servidor...');
+          // Verificar se já carregou dados do servidor antes
+          const hasLoadedServerData = localStorage.getItem('has-loaded-server-mapdrops');
+          if (hasLoadedServerData) {
+            console.log('ℹ️ Dados do servidor já carregados anteriormente, respeitando exclusões locais');
+            return;
+          }
+
+          console.log('🔄 Carregando map drops do servidor pela primeira vez...');
           const serverData = await loadServerData();
           console.log('🔍 DEBUG: Dados do servidor:', serverData);
           
@@ -81,12 +88,15 @@ export function MapPlanner({}: MapPlannerProps) {
               setHistory(mapDrops);
               // Atualizar localStorage com dados do servidor
               localStorage.setItem('worldshards-map-drops', JSON.stringify(mapDrops));
+              localStorage.setItem('has-loaded-server-mapdrops', 'true');
               window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
             } else {
               console.log('⚠️ Nenhum map drop encontrado no servidor');
+              localStorage.setItem('has-loaded-server-mapdrops', 'true');
             }
           } else {
             console.log('⚠️ Nenhum dado de cálculos encontrado no servidor');
+            localStorage.setItem('has-loaded-server-mapdrops', 'true');
           }
         } catch (error) {
           console.warn('⚠️ Falha ao carregar map drops do servidor:', error);
@@ -602,7 +612,11 @@ export function MapPlanner({}: MapPlannerProps) {
             {history.length > 0 && (
               <Button 
                 variant="outline" 
-                onClick={() => clearMapDropsHistory()}
+                onClick={() => {
+                  clearMapDropsHistory();
+                  // Limpar flag para permitir recarregar dados do servidor
+                  localStorage.removeItem('has-loaded-server-mapdrops');
+                }}
                 className="hover:bg-red-500/10 hover:border-red-500/20 hover:text-red-500 transition-all duration-300"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
