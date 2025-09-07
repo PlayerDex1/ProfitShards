@@ -118,11 +118,39 @@ export function useCalculator() {
 	}, [formData, isAuthenticated, savePreferencesToServer]);
 
 
-	// Load history on mount and when updated
+	// Load history on mount and when updated - priorizar servidor para usuários autenticados
 	useEffect(() => {
-		const loadedHistory = getHistoryCached();
-		console.log('🔍 DEBUG: Carregando histórico inicial:', loadedHistory);
-		setHistory(loadedHistory);
+		const loadHistory = async () => {
+			if (isAuthenticated) {
+				// Para usuários autenticados, tentar carregar do servidor primeiro
+				try {
+					const serverData = await loadServerData();
+					if (serverData?.calculations && serverData.calculations.length > 0) {
+						// Converter dados do servidor para formato do histórico
+						const serverHistory: HistoryItem[] = serverData.calculations
+							.filter((calc: any) => calc.type === 'profit')
+							.map((calc: any) => ({
+								timestamp: calc.createdAt,
+								formData: calc.data,
+								results: calc.results
+							}));
+						
+						console.log('✅ Histórico carregado do servidor:', serverHistory.length, 'itens');
+						setHistory(serverHistory);
+						return;
+					}
+				} catch (error) {
+					console.warn('⚠️ Falha ao carregar histórico do servidor, usando localStorage:', error);
+				}
+			}
+			
+			// Fallback para localStorage
+			const loadedHistory = getHistoryCached();
+			console.log('🔍 DEBUG: Carregando histórico do localStorage:', loadedHistory);
+			setHistory(loadedHistory);
+		};
+		
+		loadHistory();
 		
 		const handleHistoryUpdate = () => {
 			const updatedHistory = getHistoryCached();
@@ -132,7 +160,7 @@ export function useCalculator() {
 		
 		window.addEventListener('worldshards-history-updated', handleHistoryUpdate);
 		return () => window.removeEventListener('worldshards-history-updated', handleHistoryUpdate);
-	}, []);
+	}, [isAuthenticated, loadServerData]);
 
 	const updateFormData = useCallback((field: keyof CalculatorFormData, value: number) => {
 		setFormData(prev => ({

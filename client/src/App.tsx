@@ -6,6 +6,7 @@ import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { forceCleanCorruptedHistory } from "@/lib/historyApi";
+import { useDataSync } from "@/hooks/use-data-sync";
 import "@/lib/cleanTestGiveaways"; // Limpar giveaways de teste
 
 // Pages
@@ -53,12 +54,27 @@ function ThemeInitializer() {
   return null;
 }
 
+function DataSyncInitializer() {
+  const { isLoading, lastSync } = useDataSync();
+  
+  useEffect(() => {
+    if (isLoading) {
+      console.log('🔄 [APP] Data sync in progress...');
+    } else if (lastSync) {
+      console.log('✅ [APP] Data sync completed at:', new Date(lastSync).toLocaleString());
+    }
+  }, [isLoading, lastSync]);
+  
+  return null;
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ToastProvider>
         <div className="min-h-screen bg-background text-foreground">
           <ThemeInitializer />
+          <DataSyncInitializer />
         <Switch>
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />

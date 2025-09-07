@@ -7,6 +7,7 @@ import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "../lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
+import { useDataSync } from "@/hooks/use-data-sync";
 import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
 
 interface MapPlannerProps {}
@@ -17,6 +18,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save, isLoading } = usePreferences();
   const { t } = useI18n();
   const { isAuthenticated, userProfile } = useAuth();
+  const { loadServerData } = useDataSync();
   const [mapSize, setMapSize] = useState<SizeKey>(() => {
     try {
       return (prefs?.mapSize as SizeKey) || 'medium';
@@ -43,6 +45,35 @@ export function MapPlanner({}: MapPlannerProps) {
       return [];
     }
   });
+
+  // Carregar dados do servidor para usuários autenticados
+  useEffect(() => {
+    const loadServerMapDrops = async () => {
+      if (isAuthenticated) {
+        try {
+          const serverData = await loadServerData();
+          if (serverData?.calculations) {
+            // Filtrar apenas map drops
+            const mapDrops = serverData.calculations
+              .filter((calc: any) => calc.type === 'mapdrops')
+              .map((calc: any) => calc.data);
+            
+            if (mapDrops.length > 0) {
+              console.log('✅ Map drops carregados do servidor:', mapDrops.length, 'itens');
+              setHistory(mapDrops);
+              // Atualizar localStorage com dados do servidor
+              localStorage.setItem('worldshards-map-drops', JSON.stringify(mapDrops));
+              window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+            }
+          }
+        } catch (error) {
+          console.warn('⚠️ Falha ao carregar map drops do servidor:', error);
+        }
+      }
+    };
+    
+    loadServerMapDrops();
+  }, [isAuthenticated, loadServerData]);
 
   // 🔧 FIX: Implementar funções inline já que imports não funcionam
   useEffect(() => {
