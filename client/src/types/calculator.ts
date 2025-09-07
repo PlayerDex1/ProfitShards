@@ -25,6 +25,8 @@ export interface CalculationResults {
   tokensFarmed: number;
   totalTokenValue: number;
   gemsCost: number;
+  tokensCost: number; // Custo dos tokens utilizados
+  totalCost: number; // Custo total (gems + tokens)
   grossProfit: number;
   rebuyCost: number;
   finalProfit: number;
@@ -53,6 +55,9 @@ export interface HistoryItem {
   timestamp: number;
   formData: CalculatorFormData;
   results: CalculationResults;
+  tags?: string[]; // Tags personalizadas
+  notes?: string; // Notas do usuário
+  isFavorite?: boolean; // Favorito
 }
 
 export interface Equipment {
