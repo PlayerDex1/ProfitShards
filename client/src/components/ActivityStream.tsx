@@ -279,43 +279,22 @@ export function ActivityStream() {
 
   return (
     <Card id="activity-stream" className="w-full shadow-xl border border-border/60 bg-gradient-to-br from-background via-background to-muted/20">
-      <CardHeader className="pb-6 bg-gradient-to-r from-orange-500/10 via-red-500/10 to-pink-500/10 border-b border-border/50">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="p-3 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-xl shadow-lg">
-              <Activity className="h-6 w-6 text-orange-600" />
-            </div>
-            <div>
-              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
-                🔥 Feed da Comunidade
-              </CardTitle>
-              <div className="flex items-center space-x-4 mt-2">
-                <p className="text-muted-foreground text-sm">
-                  Últimas atividades em tempo real • {totalRuns} runs disponíveis
-                  {lastUpdate && (
-                    <span className="ml-2 text-xs">
-                      • {lastUpdate}
-                      {isCached && <span className="text-orange-500"> (cache)</span>}
-                    </span>
-                  )}
-                </p>
-                <CompactStats />
-              </div>
-            </div>
-          </div>
+          <CardTitle className="text-xl font-semibold text-foreground">
+            Feed da Comunidade
+          </CardTitle>
           
-          <div className="flex items-center space-x-2">
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={refreshFeed}
-              disabled={isRefreshing}
-              className="gap-2 min-h-[44px] px-4 hover:shadow-sm transition-all duration-200"
-            >
-              <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
-              Atualizar
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={refreshFeed}
+            disabled={isRefreshing}
+            className="gap-2"
+          >
+            <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+            Atualizar
+          </Button>
         </div>
       </CardHeader>
 
