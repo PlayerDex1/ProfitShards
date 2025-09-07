@@ -867,6 +867,49 @@ export function EnhancedAdminDashboard() {
                 </Button>
                 
                 <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/admin/database-status');
+                      const result = await response.json();
+                      console.log('📊 Database Status:', result);
+                      alert(`Status: ${result.success ? 'OK' : 'ERRO'}\nTotal: ${result.database?.totalRecords || 0} registros\nÚltimas 24h: ${result.data?.activity?.last24h || 0} runs`);
+                    } catch (error) {
+                      console.error('Erro ao verificar status:', error);
+                      alert('Erro ao verificar status do banco');
+                    }
+                  }}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Database className="h-4 w-4" />
+                  Verificar Status DB
+                </Button>
+                
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/admin/seed-feed-data', { method: 'POST' });
+                      const result = await response.json();
+                      console.log('🌱 Seed Result:', result);
+                      if (result.success) {
+                        alert(`Seed concluído!\nInseridos: ${result.data?.inserted || 0} registros\nTotal: ${result.data?.total || 0} registros`);
+                        loadMapAnalytics(); // Recarregar dados
+                      } else {
+                        alert(`Erro: ${result.error}`);
+                      }
+                    } catch (error) {
+                      console.error('Erro ao fazer seed:', error);
+                      alert('Erro ao popular feed');
+                    }
+                  }}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Plus className="h-4 w-4" />
+                  Popular Feed (Seed)
+                </Button>
+                
+                <Button 
                   onClick={() => fetch('/api/admin/reset-metrics', { method: 'POST' })}
                   className="w-full gap-2"
                   variant="outline"
