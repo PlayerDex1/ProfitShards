@@ -62,13 +62,19 @@ export function MapPlanner({}: MapPlannerProps) {
         try {
           console.log('🔄 Carregando map drops do servidor...');
           const serverData = await loadServerData();
+          console.log('🔍 DEBUG: Dados do servidor:', serverData);
+          
           if (serverData?.calculations) {
+            console.log('🔍 DEBUG: Cálculos encontrados:', serverData.calculations.length);
+            console.log('🔍 DEBUG: Tipos de cálculos:', serverData.calculations.map((c: any) => c.type));
+            
             // Filtrar apenas map drops
             const mapDrops = serverData.calculations
               .filter((calc: any) => calc.type === 'mapdrops')
               .map((calc: any) => calc.data);
             
             console.log('📊 Map drops encontrados no servidor:', mapDrops.length);
+            console.log('🔍 DEBUG: Map drops detalhados:', mapDrops);
             
             if (mapDrops.length > 0) {
               console.log('✅ Map drops carregados do servidor:', mapDrops.length, 'itens');
@@ -244,24 +250,19 @@ export function MapPlanner({}: MapPlannerProps) {
       // Save preferences
       save({ mapSize });
       
-      // Save to history (inline implementation)
+      // Save to history using the proper function with smart sync
       try {
-        const currentHistory = JSON.parse(localStorage.getItem('worldshards-map-drops') || '[]');
-        const newEntry = { ...entry, timestamp: entry.timestamp || Date.now() };
-        currentHistory.unshift(newEntry);
+        await appendMapDropEntry(entry);
+        console.log('✅ Map drop salvo com sucesso via sistema inteligente');
         
-        // Keep only last 1000 entries
-        if (currentHistory.length > 1000) {
-          currentHistory.splice(1000);
-        }
-        
-        localStorage.setItem('worldshards-map-drops', JSON.stringify(currentHistory));
-
+        // Atualizar estado local
+        setHistory(getMapDropsHistory());
+        setGroupedHistory(getMapDropsHistoryGroupedByDay());
         
         // Disparar evento para atualizar UI
         window.dispatchEvent(new Event('worldshards-history-updated'));
       } catch (error) {
-        console.error('❌ Error saving map drop (inline):', error);
+        console.error('❌ Error saving map drop:', error);
       }
       
       // Salvar métricas anônimas se usuário autenticado
