@@ -5,7 +5,6 @@ import { useAuth } from '../hooks/use-auth';
 import { useI18n } from '../i18n';
 import { HybridDashboard } from './HybridDashboard';
 import { AdminDashboardV2 } from './AdminDashboardV2';
-import { ActivityStream } from './ActivityStream';
 import { DataAnalysis } from './DataAnalysis';
 
 
@@ -227,10 +226,12 @@ Digite "RESET" para confirmar:`;
         </div>
       )}
 
-      {/* Feed Tab */}
+      {/* Feed Tab - Removido */}
       {activeTab === 'feed' && (
         <div className="space-y-4">
-          <ActivityStream />
+          <div className="text-center text-muted-foreground py-8">
+            Feed da Comunidade removido
+          </div>
         </div>
       )}
 
