@@ -103,12 +103,34 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const userEmail = userResult?.email || 'anonymous@feed.com';
         const playerName = createPlayerNameFromEmail(userEmail);
         
+        // Verificar se já existe uma run recente para este usuário (evitar duplicação)
+        const recentRuns = await env.DB.prepare(`
+          SELECT COUNT(*) as count FROM feed_runs 
+          WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
+        `).bind(
+          userEmail,
+          now - 60000, // Últimos 60 segundos
+          formatMapName(runData.mapSize || 'medium'),
+          tokens
+        ).first();
+        
+        if (recentRuns && recentRuns.count > 0) {
+          console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail}, ignorando...`);
+          return Response.json({ 
+            success: true, 
+            message: 'Run duplicada ignorada',
+            duplicate: true 
+          });
+        }
+        
         // Inserir na tabela feed_runs com ID mais único
         const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;
         
         console.log('🔍 DEBUG: Tentando inserir run no feed:', {
           feedRunId,
           userEmail,
+          playerName,
+          userId: session.user_id,
           type: body.type,
           timestamp: now
         });
