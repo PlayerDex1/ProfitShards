@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useI18n } from "@/i18n";
 import { useEffect, useState } from "react";
 import { getCurrentUsername, useAuth } from "@/hooks/use-auth";
+import { useLocation } from "wouter";
 import { HistoryItem } from "@/types/calculator";
 // Removido: useEquipment e EquipmentPanel - simplificando interface
 import { MapPlanner } from "@/components/MapPlanner";
@@ -25,10 +26,22 @@ import { useGiveaway } from "@/hooks/use-giveaway";
 export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
+	const [location] = useLocation();
 	// Removido: useEquipment - simplificando interface
 	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
 	// Hook useGiveaway removido - usando GiveawaySection isolado
 	const [activeTab, setActiveTab] = useState('calculator');
+
+	// Processar parâmetros de URL para definir tab ativa
+	useEffect(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const tabParam = urlParams.get('tab');
+		
+		if (tabParam && ['calculator', 'history', 'planner', 'activity', 'admin-dashboard'].includes(tabParam)) {
+			setActiveTab(tabParam);
+			console.log('🎯 Tab ativa definida pela URL:', tabParam);
+		}
+	}, [location]);
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
 		distribution: true,
