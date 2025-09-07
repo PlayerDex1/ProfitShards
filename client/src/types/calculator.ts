@@ -1,7 +1,5 @@
 export interface CalculatorFormData {
-  investment: number;
-  gemsPurchased: number;
-  gemsRemaining: number;
+  // Removido: investment, gemsPurchased, gemsRemaining - não são mais necessários
   gemsConsumed: number; // Mantido para compatibilidade - será calculado automaticamente
   tokensEquipment: number; // Mantido para compatibilidade - será calculado automaticamente
   

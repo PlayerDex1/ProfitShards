@@ -5,9 +5,7 @@ import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
-	investment: 0,
-	gemsPurchased: 0,
-	gemsRemaining: 0,
+	// Removido: investment, gemsPurchased, gemsRemaining - não são mais necessários
 	gemsConsumed: 0, // Calculado automaticamente
 	tokensEquipment: 0, // Calculado automaticamente
 	
@@ -37,6 +35,7 @@ export function useCalculator() {
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
+
 	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
 
 	// Restaurar do localStorage ao montar e quando auth mudar
@@ -92,13 +91,13 @@ export function useCalculator() {
 		const loadedHistory = getHistoryCached();
 		console.log('🔍 DEBUG: Carregando histórico inicial:', loadedHistory);
 		setHistory(loadedHistory);
-
+		
 		const handleHistoryUpdate = () => {
 			const updatedHistory = getHistoryCached();
 			console.log('🔍 DEBUG: Histórico atualizado:', updatedHistory);
 			setHistory(updatedHistory);
 		};
-
+		
 		window.addEventListener('worldshards-history-updated', handleHistoryUpdate);
 		return () => window.removeEventListener('worldshards-history-updated', handleHistoryUpdate);
 	}, []);
@@ -112,12 +111,11 @@ export function useCalculator() {
 
 	const results = useMemo((): CalculationResults | null => {
 		// Only require that at least some meaningful data is provided
-		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0 && formData.investment <= 0) {
+		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0) {
 			return null;
 		}
 
 		// Use defaults for missing values
-		const investment = formData.investment || 0;
 		const tokenPrice = formData.tokenPrice || 0;
 		const gemPrice = formData.gemPrice || 0.00714; // default gem price
 		const tokensFarmed = formData.tokensFarmed || 0;
@@ -155,12 +153,19 @@ export function useCalculator() {
 		const netFarmedTokens = Math.max(0, tokensFarmed - totalEquipmentTokens);
 		const totalTokens = netFarmedTokens;
 		const totalTokenValue = totalTokens * tokenPrice * luckMultiplier;
+		
+		// Custo total = Gems + Tokens utilizados nos equipamentos
 		const gemsCost = totalEquipmentGems * gemPrice;
-		const grossProfit = totalTokenValue; // já não somamos tokens gastos
-		const rebuyCost = 0; // remover duplicidade: custo de gemas já está em gemsCost
-		const finalProfit = grossProfit - gemsCost;
+		const tokensCost = totalEquipmentTokens * tokenPrice;
+		const totalEquipmentCost = gemsCost + tokensCost;
+		
+		const grossProfit = totalTokenValue;
+		const rebuyCost = 0;
+		const finalProfit = grossProfit - totalEquipmentCost;
 		const netProfit = finalProfit;
-		const roi = investment > 0 ? (finalProfit / investment) * 100 : 0;
+		
+		// NOVA LÓGICA: ROI baseado no custo total (gems + tokens)
+		const roi = totalEquipmentCost > 0 ? (finalProfit / totalEquipmentCost) * 100 : 0;
 		const efficiency = loadsUsed > 0 ? netFarmedTokens / loadsUsed : 0;
 
 		return {
@@ -168,7 +173,7 @@ export function useCalculator() {
 			tokensEquipment: totalEquipmentTokens, // Para compatibilidade
 			tokensFarmed,
 			totalTokenValue,
-			gemsCost,
+			gemsCost: totalEquipmentCost, // Custo total (gems + tokens)
 			grossProfit,
 			rebuyCost,
 			finalProfit,
@@ -181,7 +186,7 @@ export function useCalculator() {
 
 	const breakdown = useMemo((): CalculationBreakdown[] => {
 		if (!results) return [];
-
+		
 		return [
 			{
 				metric: 'Lucro Final',
@@ -211,14 +216,14 @@ export function useCalculator() {
 		console.log('🔍 DEBUG: Salvando no histórico:', historyItem);
 		appendHistoryItem(historyItem);
 		console.log('🔍 DEBUG: Histórico após salvar:', getHistoryCached());
-
+		
 		// Disparar evento para tracking de missões
 		if (typeof window !== 'undefined') {
 			window.dispatchEvent(new CustomEvent('calculation-completed', {
 				detail: { historyItem }
 			}));
 		}
-
+		
 		// Salvar métricas anônimas se usuário autenticado
 		if (isAuthenticated && results.finalProfit !== undefined) {
 			try {
