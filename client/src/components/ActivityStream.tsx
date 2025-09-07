@@ -272,8 +272,8 @@ export function ActivityStream() {
 
   useEffect(() => {
     loadFeed();
-    // Auto-refresh a cada 1 minuto para dados mais atuais
-    const interval = setInterval(loadFeed, 1 * 60 * 1000);
+    // Auto-refresh a cada 30 segundos para dados mais atuais
+    const interval = setInterval(loadFeed, 30 * 1000);
     return () => clearInterval(interval);
   }, []);
 
