@@ -15,7 +15,6 @@ import { Calculator as CalculatorComponent } from "@/components/Calculator";
 import { Trash2, Download, Upload, User, Calculator, Map, Gift, Activity, Crown } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { ModernHistoryDisplay } from "@/components/ModernHistoryDisplay";
-import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
@@ -144,7 +143,6 @@ export default function Profile() {
 		// Removido: aba de equipamentos - simplificando interface
 		// Abas Admin só aparecem para admins
 		...(isAdmin ? [
-			{ id: 'giveaways', label: 'Giveaways Admin', icon: Gift },
 			{ id: 'admin-dashboard', label: 'Dashboard Admin', icon: Crown }
 		] : []),
 	];
@@ -290,12 +288,6 @@ export default function Profile() {
 						</div>
 					)}
 
-					{/* Giveaways Admin - (Apenas Admin) */}
-					{activeTab === 'giveaways' && isAdmin && (
-						<div data-section="giveaway">
-							<GiveawayAdmin />
-						</div>
-					)}
 
 					{/* Enhanced Admin Dashboard - (Apenas Admin) */}
 					{activeTab === 'admin-dashboard' && isAdmin && (
