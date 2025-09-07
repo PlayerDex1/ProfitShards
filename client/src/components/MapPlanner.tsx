@@ -51,6 +51,7 @@ export function MapPlanner({}: MapPlannerProps) {
     const loadServerMapDrops = async () => {
       if (isAuthenticated) {
         try {
+          console.log('🔄 Carregando map drops do servidor...');
           const serverData = await loadServerData();
           if (serverData?.calculations) {
             // Filtrar apenas map drops
@@ -58,17 +59,25 @@ export function MapPlanner({}: MapPlannerProps) {
               .filter((calc: any) => calc.type === 'mapdrops')
               .map((calc: any) => calc.data);
             
+            console.log('📊 Map drops encontrados no servidor:', mapDrops.length);
+            
             if (mapDrops.length > 0) {
               console.log('✅ Map drops carregados do servidor:', mapDrops.length, 'itens');
               setHistory(mapDrops);
               // Atualizar localStorage com dados do servidor
               localStorage.setItem('worldshards-map-drops', JSON.stringify(mapDrops));
               window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+            } else {
+              console.log('⚠️ Nenhum map drop encontrado no servidor');
             }
+          } else {
+            console.log('⚠️ Nenhum dado de cálculos encontrado no servidor');
           }
         } catch (error) {
           console.warn('⚠️ Falha ao carregar map drops do servidor:', error);
         }
+      } else {
+        console.log('ℹ️ Usuário não autenticado, usando dados locais');
       }
     };
     

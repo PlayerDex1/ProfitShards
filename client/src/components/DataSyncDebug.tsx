@@ -75,6 +75,53 @@ export function DataSyncDebug() {
     console.log('- Equipment Builds:', equipmentBuilds ? JSON.parse(equipmentBuilds).length + ' itens' : 'vazio');
   };
 
+  const forceSync = async () => {
+    if (!isAuthenticated) {
+      setTestResult('❌ Usuário não autenticado');
+      return;
+    }
+
+    try {
+      setTestResult('🔄 Forçando sincronização...');
+      
+      // Recarregar dados do servidor
+      const data = await loadServerData();
+      setServerData(data);
+      
+      if (data?.calculations) {
+        // Atualizar localStorage com dados do servidor
+        const mapDrops = data.calculations
+          .filter((calc: any) => calc.type === 'mapdrops')
+          .map((calc: any) => calc.data);
+        
+        const profitCalculations = data.calculations
+          .filter((calc: any) => calc.type === 'profit')
+          .map((calc: any) => ({
+            timestamp: calc.createdAt,
+            formData: calc.data,
+            results: calc.results
+          }));
+        
+        if (mapDrops.length > 0) {
+          localStorage.setItem('worldshards-map-drops', JSON.stringify(mapDrops));
+          window.dispatchEvent(new CustomEvent('worldshards-mapdrops-updated'));
+        }
+        
+        if (profitCalculations.length > 0) {
+          localStorage.setItem('worldshards-history', JSON.stringify(profitCalculations));
+          window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+        }
+        
+        setTestResult(`✅ Sincronização forçada: ${mapDrops.length} map drops, ${profitCalculations.length} cálculos`);
+      } else {
+        setTestResult('⚠️ Nenhum dado encontrado no servidor');
+      }
+      
+    } catch (error) {
+      setTestResult(`❌ Erro na sincronização: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
     checkLocalStorage();
   }, []);
@@ -107,6 +154,9 @@ export function DataSyncDebug() {
         <div className="space-y-2">
           <Button onClick={testServerConnection} disabled={isLoading}>
             🧪 Testar Conexão com Servidor
+          </Button>
+          <Button onClick={forceSync} disabled={isLoading} className="bg-green-600 hover:bg-green-700">
+            🔄 Forçar Sincronização
           </Button>
           <Button onClick={checkLocalStorage} variant="outline">
             📊 Verificar LocalStorage

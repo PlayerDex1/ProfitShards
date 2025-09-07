@@ -124,6 +124,7 @@ export function useCalculator() {
 			if (isAuthenticated) {
 				// Para usuários autenticados, tentar carregar do servidor primeiro
 				try {
+					console.log('🔄 Carregando histórico do servidor...');
 					const serverData = await loadServerData();
 					if (serverData?.calculations && serverData.calculations.length > 0) {
 						// Converter dados do servidor para formato do histórico
@@ -135,13 +136,26 @@ export function useCalculator() {
 								results: calc.results
 							}));
 						
-						console.log('✅ Histórico carregado do servidor:', serverHistory.length, 'itens');
-						setHistory(serverHistory);
-						return;
+						console.log('📊 Cálculos de profit encontrados no servidor:', serverHistory.length);
+						
+						if (serverHistory.length > 0) {
+							console.log('✅ Histórico carregado do servidor:', serverHistory.length, 'itens');
+							setHistory(serverHistory);
+							// Atualizar localStorage com dados do servidor
+							localStorage.setItem('worldshards-history', JSON.stringify(serverHistory));
+							window.dispatchEvent(new CustomEvent('worldshards-history-updated'));
+							return;
+						} else {
+							console.log('⚠️ Nenhum cálculo de profit encontrado no servidor');
+						}
+					} else {
+						console.log('⚠️ Nenhum dado de cálculos encontrado no servidor');
 					}
 				} catch (error) {
 					console.warn('⚠️ Falha ao carregar histórico do servidor, usando localStorage:', error);
 				}
+			} else {
+				console.log('ℹ️ Usuário não autenticado, usando dados locais');
 			}
 			
 			// Fallback para localStorage
