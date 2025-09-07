@@ -90,22 +90,42 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
         console.log('✅ Map drop salvo no servidor via sistema inteligente');
       } catch (error) {
         console.warn('⚠️ Falha ao salvar map drop no servidor:', error);
+        // Se o sistema inteligente falhar, tentar fallback direto
+        try {
+          await fetch('/api/user/save-calculation', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              type: 'mapdrops',
+              data: newEntry
+            })
+          });
+          console.log('✅ Map drop salvo no servidor via fallback direto');
+        } catch (fallbackError) {
+          console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', fallbackError);
+        }
       }
     } else if (user && user !== 'guest' && !saveMapDropToServer) {
       // Fallback para chamada direta se o sistema inteligente não estiver disponível
-      fetch('/api/user/save-calculation', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          type: 'mapdrops',
-          data: newEntry
-        })
-      }).catch(error => {
+      try {
+        await fetch('/api/user/save-calculation', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            type: 'mapdrops',
+            data: newEntry
+          })
+        });
+        console.log('✅ Map drop salvo no servidor via fallback direto');
+      } catch (error) {
         console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', error);
-      });
+      }
     }
     
     // Disparar evento para tracking de missões do planejador

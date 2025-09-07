@@ -95,8 +95,15 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const userEmail = userResult?.email || 'anonymous@feed.com';
         const playerName = createPlayerNameFromEmail(userEmail);
         
-        // Inserir na tabela feed_runs
-        const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 6)}`;
+        // Inserir na tabela feed_runs com ID mais único
+        const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;
+        
+        console.log('🔍 DEBUG: Tentando inserir run no feed:', {
+          feedRunId,
+          userEmail,
+          type: body.type,
+          timestamp: now
+        });
         
         await env.DB.prepare(`
           INSERT INTO feed_runs (
