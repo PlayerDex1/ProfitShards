@@ -59,7 +59,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
 
     // Parâmetros de paginação
     const page = parseInt(url.searchParams.get('page') || '1');
-    const limit = parseInt(url.searchParams.get('limit') || '20');
+    const limit = parseInt(url.searchParams.get('limit') || '100');
     const offset = (page - 1) * limit;
 
     if (env.DB) {

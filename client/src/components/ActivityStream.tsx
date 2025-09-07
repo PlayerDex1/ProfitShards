@@ -211,7 +211,7 @@ export function ActivityStream() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalRuns, setTotalRuns] = useState(0);
-  const ITEMS_PER_PAGE = 6; // Reduzido para ter mais páginas
+  const ITEMS_PER_PAGE = 12; // Aumentado para mostrar mais runs por página
 
   const loadFeed = async (forceRefresh = false) => {
     setLoading(true);

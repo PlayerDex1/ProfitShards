@@ -45,7 +45,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       return returnErrorResponse('Database not available', 500);
     }
 
-    // Buscar últimas 15 runs das últimas 24 horas
+    // Buscar últimas 100 runs das últimas 24 horas
     const twentyFourHoursAgo = Date.now() - (24 * 60 * 60 * 1000);
     
     const result = await env.DB.prepare(`
@@ -63,7 +63,7 @@ export async function onRequestGet({ env }: { env: Env }) {
       FROM feed_runs 
       WHERE created_at > ? 
       ORDER BY created_at DESC 
-      LIMIT 15
+      LIMIT 100
     `).bind(twentyFourHoursAgo).all();
 
     console.log(`📊 Encontradas ${result.results?.length || 0} runs`);
@@ -176,13 +176,13 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
 
     console.log('📋 Resultado INSERT:', insertResult);
 
-    // Limpeza automática - manter apenas últimas 50 runs
+    // Limpeza automática - manter apenas últimas 200 runs
     await env.DB.prepare(`
       DELETE FROM feed_runs 
       WHERE id NOT IN (
         SELECT id FROM feed_runs 
         ORDER BY created_at DESC 
-        LIMIT 50
+        LIMIT 200
       )
     `).run();
 
