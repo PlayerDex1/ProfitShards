@@ -42,8 +42,9 @@ to = "/perfil?tab=activity"
 status = 301
 force = true
 
-# SPA routing - deve ser o último
+# SPA routing - deve ser o último (exclui APIs)
 [[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200
+exclude = "/api/*"
