@@ -255,8 +255,20 @@ export function useCalculator() {
 		};
 
 		console.log('🔍 DEBUG: Salvando no histórico:', historyItem);
+		
+		// Sempre salvar no localStorage (fallback)
 		appendHistoryItem(historyItem);
 		console.log('🔍 DEBUG: Histórico após salvar:', getHistoryCached());
+		
+		// Para usuários autenticados, também salvar no servidor
+		if (isAuthenticated) {
+			const serverSaved = await saveCalculationToServer(formData, results);
+			if (serverSaved) {
+				console.log('✅ Cálculo salvo no servidor');
+			} else {
+				console.warn('⚠️ Falha ao salvar cálculo no servidor, mantido apenas no localStorage');
+			}
+		}
 		
 		// Disparar evento para tracking de missões
 		if (typeof window !== 'undefined') {
@@ -284,7 +296,7 @@ export function useCalculator() {
 				console.log('Metrics save failed (non-critical):', error);
 			}
 		}
-	}, [isAuthenticated]);
+	}, [isAuthenticated, saveCalculationToServer]);
 
 	return {
 		formData,

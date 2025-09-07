@@ -1,4 +1,6 @@
 // WorldShards Map Drops History Management
+import { getCurrentUsername } from '@/hooks/use-auth';
+
 export type MapSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 export interface MapDrop {
@@ -69,8 +71,27 @@ export function appendMapDropEntry(drop: MapDrop): void {
       history.splice(1000);
     }
     
+    // Sempre salvar no localStorage (fallback)
     saveMapDropsHistory(history);
     console.log('✅ Map drop saved:', newEntry);
+    
+    // Para usuários autenticados, também salvar no servidor
+    const user = getCurrentUsername();
+    if (user && user !== 'guest') {
+      fetch('/api/user/save-calculation', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'mapdrops',
+          data: newEntry
+        })
+      }).catch(error => {
+        console.warn('⚠️ Falha ao salvar map drop no servidor:', error);
+      });
+    }
     
     // Disparar evento para tracking de missões do planejador
     if (typeof window !== 'undefined') {

@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { EquipmentSession } from '@/types/equipment';
-import { getCurrentUsername } from '@/hooks/use-auth';
+import { getCurrentUsername, useAuth } from '@/hooks/use-auth';
 
 export interface EquipmentBuild {
   id: string;
@@ -27,8 +27,33 @@ export function saveBuild(name: string, session: EquipmentSession): EquipmentBui
   const builds = getBuilds();
   const build: EquipmentBuild = { id: nanoid(8), name: name.trim() || 'Build', session, createdAt: Date.now() };
   const next = [...builds, build].slice(-50);
+  
+  // Sempre salvar no localStorage (fallback)
   localStorage.setItem(keyForUser(getCurrentUsername()), JSON.stringify(next));
   window.dispatchEvent(new CustomEvent('worldshards-equip-builds-updated'));
+  
+  // Para usuários autenticados, também salvar no servidor
+  const user = getCurrentUsername();
+  if (user && user !== 'guest') {
+    fetch('/api/user/save-calculation', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        type: 'equipment',
+        data: {
+          buildName: build.name,
+          equipmentData: build.session,
+          createdAt: build.createdAt
+        }
+      })
+    }).catch(error => {
+      console.warn('⚠️ Falha ao salvar build no servidor:', error);
+    });
+  }
+  
   return build;
 }
 

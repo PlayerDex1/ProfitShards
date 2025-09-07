@@ -22,10 +22,13 @@ export function useDataSync() {
 
     setIsLoading(true);
     try {
+      console.log('🔄 Iniciando migração completa de dados...');
+
       // 1. Migrar histórico de cálculos
       const localHistory = localStorage.getItem('worldshards-history');
       if (localHistory) {
         const historyItems: HistoryItem[] = JSON.parse(localHistory);
+        console.log(`📊 Migrando ${historyItems.length} cálculos...`);
         
         for (const item of historyItems) {
           try {
@@ -68,7 +71,63 @@ export function useDataSync() {
         });
       }
 
-      console.log('✅ Dados migrados do localStorage para o servidor');
+      // 3. Migrar builds de equipamentos
+      const equipmentKey = `worldshards-equip-builds-${user}`;
+      const localEquipmentBuilds = localStorage.getItem(equipmentKey);
+      if (localEquipmentBuilds) {
+        const builds = JSON.parse(localEquipmentBuilds);
+        console.log(`⚔️ Migrando ${builds.length} builds de equipamentos...`);
+        
+        for (const build of builds) {
+          try {
+            await fetch('/api/user/save-calculation', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'equipment',
+                data: {
+                  buildName: build.name,
+                  equipmentData: build.session,
+                  createdAt: build.createdAt
+                }
+              })
+            });
+          } catch (error) {
+            console.warn('Failed to migrate equipment build:', error);
+          }
+        }
+      }
+
+      // 4. Migrar histórico de map drops
+      const mapDropsKey = 'worldshards-map-drops';
+      const localMapDrops = localStorage.getItem(mapDropsKey);
+      if (localMapDrops) {
+        const mapDrops = JSON.parse(localMapDrops);
+        console.log(`🗺️ Migrando ${mapDrops.length} map drops...`);
+        
+        for (const drop of mapDrops) {
+          try {
+            await fetch('/api/user/save-calculation', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'mapdrops',
+                data: drop
+              })
+            });
+          } catch (error) {
+            console.warn('Failed to migrate map drop:', error);
+          }
+        }
+      }
+
+      console.log('✅ Migração completa finalizada!');
       setLastSync(Date.now());
       
     } catch (error) {
@@ -158,6 +217,64 @@ export function useDataSync() {
     }
   }, [isAuthenticated]);
 
+  // Salvar build de equipamento no servidor
+  const saveEquipmentBuildToServer = useCallback(async (buildData: any) => {
+    if (!isAuthenticated) return false;
+
+    try {
+      const response = await fetch('/api/user/save-calculation', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'equipment',
+          data: buildData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save equipment build');
+      }
+
+      console.log('✅ Build de equipamento salvo no servidor');
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao salvar build de equipamento no servidor:', error);
+      return false;
+    }
+  }, [isAuthenticated]);
+
+  // Salvar map drop no servidor
+  const saveMapDropToServer = useCallback(async (mapDropData: any) => {
+    if (!isAuthenticated) return false;
+
+    try {
+      const response = await fetch('/api/user/save-calculation', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'mapdrops',
+          data: mapDropData
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save map drop');
+      }
+
+      console.log('✅ Map drop salvo no servidor');
+      return true;
+    } catch (error) {
+      console.error('❌ Erro ao salvar map drop no servidor:', error);
+      return false;
+    }
+  }, [isAuthenticated]);
+
   // Executar migração quando usuário faz login
   useEffect(() => {
     if (isAuthenticated && user) {
@@ -180,6 +297,8 @@ export function useDataSync() {
     migrateLocalDataToServer,
     loadServerData,
     saveCalculationToServer,
-    savePreferencesToServer
+    savePreferencesToServer,
+    saveEquipmentBuildToServer,
+    saveMapDropToServer
   };
 }
