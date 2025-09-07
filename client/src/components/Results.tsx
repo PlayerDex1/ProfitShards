@@ -5,7 +5,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TokenDistributionChart } from '@/components/charts/TokenDistributionChart';
-import { ProfitSensitivityChart } from '@/components/charts/ProfitSensitivityChart';
 import { CalculationResults, CalculationBreakdown, HistoryItem } from "@/types/calculator";
 import { getHistoryCached } from "@/lib/historyApi";
 import { useI18n } from "@/i18n";
@@ -19,11 +18,10 @@ interface ResultsProps {
     summary?: boolean;
     distribution?: boolean;
     efficiency?: boolean;
-    sensitivity?: boolean;
     performance?: boolean;
     history?: boolean;
   };
-  onChangeVisibility?: (section: "summary" | "distribution" | "efficiency" | "sensitivity" | "performance", value: boolean) => void;
+  onChangeVisibility?: (section: "summary" | "distribution" | "efficiency" | "performance", value: boolean) => void;
 }
 
 export const Results = memo(function Results({ 
@@ -174,7 +172,6 @@ export const Results = memo(function Results({
     summary: visible?.summary ?? true,
     distribution: visible?.distribution ?? true,
     efficiency: visible?.efficiency ?? true,
-    sensitivity: visible?.sensitivity ?? true,
     performance: visible?.performance ?? true,
   };
 
@@ -361,39 +358,6 @@ export const Results = memo(function Results({
         </Card>
       )}
 
-      {/* Sensitivity Analysis */}
-      {show.sensitivity ? (
-        <Card>
-          <CardHeader className="py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <BarChart3 className="w-4 h-4" />
-                <CardTitle className="text-base font-semibold">Análise de Sensibilidade (Preço do Token)</CardTitle>
-              </div>
-              <Button variant="ghost" size="sm" onClick={() => onChangeVisibility?.("sensitivity", false)} aria-label="Ocultar seção">
-                <EyeOff className="w-4 h-4" />
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="h-56">
-              <ProfitSensitivityChart currentTokenPrice={formData?.tokenPrice || 0} results={results} />
-            </div>
-            <p className="text-muted-foreground text-xs mt-2">Variação do lucro entre 50% e 150% do preço atual.</p>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="bg-muted/30">
-          <CardHeader className="py-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Sensibilidade (oculto)</CardTitle>
-              <Button variant="ghost" size="sm" onClick={() => onChangeVisibility?.("sensitivity", true)} aria-label="Mostrar seção">
-                <Eye className="w-4 h-4" />
-              </Button>
-            </div>
-          </CardHeader>
-        </Card>
-      )}
 
       {/* Performance Chart */}
       {history.length > 1 && show.performance ? (

@@ -1,7 +1,6 @@
 import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername, useAuth } from '@/hooks/use-auth';
-import { calculateLuckEffectFromArray } from '@/lib/luckEffect';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
 
 const DEFAULT_FORM: CalculatorFormData = {
@@ -36,7 +35,6 @@ export function useCalculator() {
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 
-	const [luckMultiplier, setLuckMultiplier] = useState<number>(1);
 
 	// Restaurar do localStorage ao montar e quando auth mudar
 	useEffect(() => {
@@ -75,16 +73,6 @@ export function useCalculator() {
 		} catch {}
 	}, [formData]);
 
-	useEffect(() => {
-		const onWhatIf = (e: Event) => {
-			const custom = e as CustomEvent<{ targetLuck: number; history: number[] }>;
-			const { targetLuck, history } = custom.detail || { targetLuck: 0, history: [] };
-			const m = calculateLuckEffectFromArray(history || [], targetLuck || 0);
-			setLuckMultiplier(m > 0 ? m : 1);
-		};
-		window.addEventListener('worldshards-whatif-luck', onWhatIf);
-		return () => window.removeEventListener('worldshards-whatif-luck', onWhatIf);
-	}, []);
 
 	// Load history on mount and when updated
 	useEffect(() => {
@@ -154,10 +142,16 @@ export function useCalculator() {
 		const totalTokens = netFarmedTokens;
 		
 		// Valor dos tokens líquidos (lucro real)
-		const netTokenValue = netFarmedTokens * tokenPrice * luckMultiplier;
+		const netTokenValue = netFarmedTokens * tokenPrice;
 		
 		// Custo apenas das gems (investimento inicial)
 		const gemsCost = totalEquipmentGems * gemPrice;
+		
+		// Custo dos tokens utilizados nos equipamentos
+		const tokensCost = totalEquipmentTokens * tokenPrice;
+		
+		// Custo total (gems + tokens)
+		const totalCost = gemsCost + tokensCost;
 		
 		// LUCRO REAL = Valor dos tokens líquidos - Custo das gems
 		const grossProfit = netTokenValue;
@@ -175,6 +169,8 @@ export function useCalculator() {
 			tokensFarmed,
 			totalTokenValue: netTokenValue, // Valor dos tokens líquidos
 			gemsCost, // Apenas custo das gems
+			tokensCost, // Custo dos tokens utilizados
+			totalCost, // Custo total (gems + tokens)
 			grossProfit,
 			rebuyCost,
 			finalProfit,
@@ -183,7 +179,7 @@ export function useCalculator() {
 			efficiency,
 			equipmentBreakdown,
 		};
-	}, [formData, luckMultiplier]);
+	}, [formData]);
 
 	const breakdown = useMemo((): CalculationBreakdown[] => {
 		if (!results) return [];
