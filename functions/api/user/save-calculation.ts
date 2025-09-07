@@ -10,6 +10,15 @@ interface CalculationData {
 
 export async function onRequestPost({ env, request }: { env: Env; request: Request }) {
   try {
+    const body = await request.json();
+    const requestId = Math.random().toString(36).substr(2, 9);
+    console.log(`📥 [${requestId}] Recebido cálculo para salvar:`, { 
+      type: body.type, 
+      timestamp: Date.now(),
+      hasData: !!body.data,
+      hasResults: !!body.results
+    });
+    
     // Get user from session
     const cookie = request.headers.get('Cookie');
     if (!cookie) {
@@ -124,12 +133,13 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           playerName
         ).run();
         
-        console.log('🔥 Run adicionada ao feed da comunidade:', {
+        console.log(`🔥 [${requestId}] Run adicionada ao feed da comunidade:`, {
           type: body.type,
           playerName,
           map: formatMapName(runData.mapSize || 'medium'),
           tokens,
-          luck
+          luck,
+          feedRunId
         });
         
       } catch (feedError) {
