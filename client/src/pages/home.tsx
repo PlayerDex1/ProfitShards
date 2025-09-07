@@ -141,8 +141,8 @@ export default function Home() {
 			{isAuthenticated && (
 				<div className="w-full max-w-none px-8 pt-8">
 					<WinnerBanner 
-						userId={user?.uid} 
-						userEmail={user?.email} 
+						userId={user || undefined} 
+						userEmail={user || undefined} 
 					/>
 				</div>
 			)}

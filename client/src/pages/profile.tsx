@@ -22,7 +22,6 @@ import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
-import { GiveawaySection } from "@/components/GiveawaySection";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -210,7 +209,7 @@ export default function Profile() {
 				{/* Tab Content */}
 				<div className="space-y-6">
 					{/* Calculadora */}
-					{activeTab === 'calculator' && (
+					{activeTab === 'calculator' && results && (
 						<CalculatorComponent
 							formData={formData}
 							results={results}
@@ -286,7 +285,7 @@ export default function Profile() {
 								</Card>
 
 								{/* Novo Sistema de Giveaway - MELHORADO */}
-								<GiveawaySection />
+								{/* GiveawaySection removido - componente não existe */}
 							</div>
 						</div>
 					)}
