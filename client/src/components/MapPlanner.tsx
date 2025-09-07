@@ -7,7 +7,8 @@ import { useI18n } from "@/i18n";
 import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "../lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
-import { useDataSync } from "@/hooks/use-data-sync";
+import { useSmartSync } from "@/hooks/use-smart-sync";
+import { DataMerger } from "@/lib/data-merge";
 import { Calculator, TrendingUp, TrendingDown, Minus, MapPin, Trash2, Edit2, Save, X } from "lucide-react";
 
 interface MapPlannerProps {}
@@ -18,7 +19,7 @@ export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save, isLoading } = usePreferences();
   const { t } = useI18n();
   const { isAuthenticated, userProfile } = useAuth();
-  const { loadServerData } = useDataSync();
+  const { loadServerData } = useSmartSync();
   const [mapSize, setMapSize] = useState<SizeKey>(() => {
     try {
       return (prefs?.mapSize as SizeKey) || 'medium';

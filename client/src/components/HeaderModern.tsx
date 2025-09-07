@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/hooks/use-auth';
 import { useI18n } from '@/i18n';
 import { AuthModal } from '@/components/AuthModal';
+import { SyncIndicator } from '@/components/SyncIndicator';
 import { 
   Calculator, 
   Map, 
@@ -82,6 +83,7 @@ export function HeaderModern() {
 
           {/* Right Side */}
           <div className="flex items-center space-x-2">
+            <SyncIndicator />
             <ThemeToggle />
             
             {isAuthenticated ? (

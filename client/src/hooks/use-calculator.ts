@@ -2,7 +2,8 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername, useAuth } from '@/hooks/use-auth';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
-import { useDataSync } from '@/hooks/use-data-sync';
+import { useSmartSync } from '@/hooks/use-smart-sync';
+import { DataMerger } from '@/lib/data-merge';
 
 const DEFAULT_FORM: CalculatorFormData = {
 	// Removido: investment, gemsPurchased, gemsRemaining - não são mais necessários
@@ -32,7 +33,7 @@ function storageKeyForUser(user: string | null) {
 export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { isAuthenticated } = useAuth();
-	const { saveCalculationToServer, savePreferencesToServer, loadServerData } = useDataSync();
+	const { saveCalculationToServer, savePreferencesToServer, loadServerData } = useSmartSync();
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
