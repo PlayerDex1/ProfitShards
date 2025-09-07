@@ -1,6 +1,13 @@
 // WorldShards Map Drops History Management
 import { getCurrentUsername } from '@/hooks/use-auth';
 
+// Função para salvar map drop no servidor (será injetada pelo componente)
+let saveMapDropToServer: ((data: any) => Promise<boolean>) | null = null;
+
+export function setMapDropServerSaver(saver: (data: any) => Promise<boolean>) {
+  saveMapDropToServer = saver;
+}
+
 export type MapSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 export interface MapDrop {
@@ -55,7 +62,7 @@ function saveMapDropsHistory(drops: MapDrop[]): void {
 }
 
 // Add new map drop entry
-export function appendMapDropEntry(drop: MapDrop): void {
+export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
   try {
     const history = getMapDropsHistory();
     
@@ -75,9 +82,17 @@ export function appendMapDropEntry(drop: MapDrop): void {
     saveMapDropsHistory(history);
     console.log('✅ Map drop saved:', newEntry);
     
-    // Para usuários autenticados, também salvar no servidor
+    // Para usuários autenticados, também salvar no servidor usando o sistema inteligente
     const user = getCurrentUsername();
-    if (user && user !== 'guest') {
+    if (user && user !== 'guest' && saveMapDropToServer) {
+      try {
+        await saveMapDropToServer(newEntry);
+        console.log('✅ Map drop salvo no servidor via sistema inteligente');
+      } catch (error) {
+        console.warn('⚠️ Falha ao salvar map drop no servidor:', error);
+      }
+    } else if (user && user !== 'guest' && !saveMapDropToServer) {
+      // Fallback para chamada direta se o sistema inteligente não estiver disponível
       fetch('/api/user/save-calculation', {
         method: 'POST',
         credentials: 'include',
@@ -89,7 +104,7 @@ export function appendMapDropEntry(drop: MapDrop): void {
           data: newEntry
         })
       }).catch(error => {
-        console.warn('⚠️ Falha ao salvar map drop no servidor:', error);
+        console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', error);
       });
     }
     

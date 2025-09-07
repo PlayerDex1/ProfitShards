@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "../hooks/usePreferences";
 import { useI18n } from "@/i18n";
-import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats } from "../lib/mapDropsHistory";
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats, setMapDropServerSaver } from "../lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
 import { useSmartSync } from "@/hooks/use-smart-sync";
@@ -19,7 +19,15 @@ export function MapPlanner({}: MapPlannerProps) {
   const { prefs, save, isLoading } = usePreferences();
   const { t } = useI18n();
   const { isAuthenticated, userProfile } = useAuth();
-  const { loadServerData } = useSmartSync();
+  const { loadServerData, saveMapDropToServer } = useSmartSync();
+  
+  // Injetar a função de salvamento no sistema de map drops
+  useEffect(() => {
+    if (saveMapDropToServer) {
+      setMapDropServerSaver(saveMapDropToServer);
+    }
+  }, [saveMapDropToServer]);
+  
   const [mapSize, setMapSize] = useState<SizeKey>(() => {
     try {
       return (prefs?.mapSize as SizeKey) || 'medium';
