@@ -27,7 +27,7 @@ export function HeaderModern() {
   const [showAuth, setShowAuth] = useState(false);
 
   const navigation = [
-    { name: 'Calculator', href: '/', icon: Calculator },
+    { name: 'Calculator', href: '/calculator', icon: Calculator },
     { name: 'Map Planner', href: '/planner', icon: Map },
     { name: 'Analytics', href: '/analytics', icon: BarChart3 },
   ];

@@ -83,13 +83,13 @@ export function HeroModern() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Link href={isAuthenticated ? "/profile" : "/auth"}>
+            <Link href="/calculator">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-xl hover:shadow-2xl transition-all duration-300 group"
               >
                 <Calculator className="h-5 w-5 mr-2" />
-                Start Calculating
+                Calculator
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
@@ -101,7 +101,19 @@ export function HeroModern() {
                 className="border-2 hover:bg-muted/50 transition-all duration-300 group"
               >
                 <Map className="h-5 w-5 mr-2" />
-                Plan Strategy
+                Map Planner
+                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
+            
+            <Link href="/analytics">
+              <Button 
+                variant="outline" 
+                size="lg"
+                className="border-2 hover:bg-muted/50 transition-all duration-300 group"
+              >
+                <BarChart3 className="h-5 w-5 mr-2" />
+                Analytics
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>

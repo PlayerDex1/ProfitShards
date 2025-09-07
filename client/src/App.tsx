@@ -17,6 +17,14 @@ import TestPage from "@/pages/test";
 import NotFoundPage from "@/pages/not-found";
 
 // Redirect components
+function CalculatorRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=calculator");
+  }, [setLocation]);
+  return null;
+}
+
 function PlannerRedirect() {
   const [, setLocation] = useLocation();
   useEffect(() => {
@@ -80,6 +88,7 @@ export default function App() {
           <Route path="/" component={HomePage} />
           <Route path="/perfil" component={ProfilePage} />
           <Route path="/test" component={TestPage} />
+          <Route path="/calculator" component={CalculatorRedirect} />
           <Route path="/planner" component={PlannerRedirect} />
           <Route path="/analytics" component={AnalyticsRedirect} />
           <Route component={NotFoundPage} />
