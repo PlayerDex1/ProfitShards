@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useAuth } from '@/hooks/use-auth';
 import { useI18n } from '@/i18n';
+import { AuthModal } from '@/components/AuthModal';
 import { 
   Calculator, 
   Map, 
@@ -22,6 +23,7 @@ export function HeaderModern() {
   const { user, isAuthenticated, logout } = useAuth();
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showAuth, setShowAuth] = useState(false);
 
   const navigation = [
     { name: 'Calculator', href: '/', icon: Calculator },
@@ -32,6 +34,7 @@ export function HeaderModern() {
   const isActive = (path: string) => location === path;
 
   return (
+    <>
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
@@ -99,12 +102,14 @@ export function HeaderModern() {
                 </Button>
               </div>
             ) : (
-              <Link href="/auth">
-                <Button size="sm" className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  <span className="hidden sm:inline">Login</span>
-                </Button>
-              </Link>
+              <Button 
+                size="sm" 
+                onClick={() => setShowAuth(true)}
+                className="bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                <LogIn className="h-4 w-4 mr-2" />
+                <span className="hidden sm:inline">Login</span>
+              </Button>
             )}
 
             {/* Mobile Menu Button */}
@@ -161,12 +166,16 @@ export function HeaderModern() {
                 </div>
               ) : (
                 <div className="pt-2 border-t">
-                  <Link href="/auth">
-                    <Button className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white" onClick={() => setMobileMenuOpen(false)}>
-                      <LogIn className="h-4 w-4 mr-3" />
-                      Login
-                    </Button>
-                  </Link>
+                  <Button 
+                    className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white" 
+                    onClick={() => {
+                      setShowAuth(true);
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <LogIn className="h-4 w-4 mr-3" />
+                    Login
+                  </Button>
                 </div>
               )}
             </div>
@@ -174,5 +183,8 @@ export function HeaderModern() {
         )}
       </div>
     </header>
+    
+    {showAuth && <AuthModal onClose={() => setShowAuth(false)} />}
+  </>
   );
 }
