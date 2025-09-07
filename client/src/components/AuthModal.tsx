@@ -13,7 +13,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
 
   const googleLogin = () => {
     setLoading(true);
-    window.location.href = '/api/auth/google/start';
+    window.location.href = '/api/google-auth';
   };
 
   return (
