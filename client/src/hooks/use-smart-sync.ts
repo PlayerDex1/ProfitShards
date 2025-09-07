@@ -289,17 +289,18 @@ export function useSmartSync() {
         }
       }
 
-      // 2. Migrar map drops
-      const localMapDrops = localStorage.getItem('worldshards-map-drops');
-      if (localMapDrops) {
-        const mapDrops = JSON.parse(localMapDrops);
-        console.log(`🗺️ Migrando ${mapDrops.length} map drops...`);
-        
-        for (const drop of mapDrops) {
-          await saveMapDropToServer(drop);
-          await new Promise(resolve => setTimeout(resolve, 100)); // Rate limiting
-        }
-      }
+      // 2. Migrar map drops (DESABILITADO para evitar duplicação)
+      // const localMapDrops = localStorage.getItem('worldshards-map-drops');
+      // if (localMapDrops) {
+      //   const mapDrops = JSON.parse(localMapDrops);
+      //   console.log(`🗺️ Migrando ${mapDrops.length} map drops...`);
+      //   
+      //   for (const drop of mapDrops) {
+      //     await saveMapDropToServer(drop);
+      //     await new Promise(resolve => setTimeout(resolve, 100)); // Rate limiting
+      //   }
+      // }
+      console.log('🗺️ Migração de map drops desabilitada para evitar duplicação');
 
       // 3. Migrar preferências
       const formKey = `worldshards-form-${user}`;
