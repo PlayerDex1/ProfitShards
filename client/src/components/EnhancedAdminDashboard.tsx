@@ -533,6 +533,319 @@ export function EnhancedAdminDashboard() {
           </div>
         </TabsContent>
 
+        {/* Analytics de Mapas */}
+        <TabsContent value="maps" className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Map className="h-6 w-6 text-blue-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  🗺️ Analytics de Mapas
+                </h2>
+                <p className="text-sm text-blue-600 dark:text-blue-300">
+                  Estatísticas detalhadas sobre uso de mapas e eficiência
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {mapAnalytics ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {/* Estatísticas por Tamanho de Mapa */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MapPin className="h-5 w-5" />
+                    Por Tamanho de Mapa
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mapAnalytics.mapSizeStats.map((stat, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <div className="font-medium">{stat.mapSize}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {stat.totalRuns} runs • {stat.avgTokens} tokens médios
+                          </div>
+                        </div>
+                        <Badge variant="secondary">
+                          {stat.avgEfficiency.toFixed(2)} eff
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Estatísticas por Level/Tier */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" />
+                    Por Level/Tier
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {mapAnalytics.levelTierStats.slice(0, 5).map((stat, index) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div>
+                          <div className="font-medium">Level {stat.level} - Tier {stat.tier}</div>
+                          <div className="text-sm text-muted-foreground">
+                            {stat.runs} runs • {stat.popularMapSize}
+                          </div>
+                        </div>
+                        <Badge variant="outline">
+                          {stat.avgTokens} tokens
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Atividade Recente */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5" />
+                    Atividade Recente
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                      <div>
+                        <div className="font-medium text-green-700 dark:text-green-300">Últimas 24h</div>
+                        <div className="text-sm text-green-600 dark:text-green-400">
+                          {mapAnalytics.recentActivity.last24h} runs
+                        </div>
+                      </div>
+                      <TrendingUp className="h-5 w-5 text-green-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                      <div>
+                        <div className="font-medium text-blue-700 dark:text-blue-300">Últimos 7 dias</div>
+                        <div className="text-sm text-blue-600 dark:text-blue-400">
+                          {mapAnalytics.recentActivity.last7d} runs
+                        </div>
+                      </div>
+                      <BarChart3 className="h-5 w-5 text-blue-600" />
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                      <div>
+                        <div className="font-medium text-purple-700 dark:text-purple-300">Últimos 30 dias</div>
+                        <div className="text-sm text-purple-600 dark:text-purple-400">
+                          {mapAnalytics.recentActivity.last30d} runs
+                        </div>
+                      </div>
+                      <Users className="h-5 w-5 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="pt-6 text-center">
+                <Map className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
+                <div className="text-lg font-semibold text-muted-foreground mb-2">
+                  Nenhum dado de mapa disponível
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Os dados de mapas aparecerão aqui quando usuários começarem a usar o planejador.
+                </p>
+                <Button 
+                  onClick={loadMapAnalytics}
+                  variant="outline"
+                  className="gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Recarregar Dados
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Feed de Atividade */}
+        <TabsContent value="feed" className="space-y-6">
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 p-6 rounded-lg border border-orange-200 dark:border-orange-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="h-6 w-6 text-orange-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-orange-900 dark:text-orange-100">
+                  🔥 Feed de Atividade
+                </h2>
+                <p className="text-sm text-orange-600 dark:text-orange-300">
+                  Monitoramento em tempo real das atividades dos usuários
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Estatísticas do Feed */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <BarChart3 className="h-5 w-5" />
+                  Estatísticas do Feed
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                      <div className="font-medium">Total de Runs</div>
+                      <div className="text-sm text-muted-foreground">
+                        Registros no feed
+                      </div>
+                    </div>
+                    <Badge variant="secondary">
+                      {mapAnalytics?.recentActivity.last30d || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                      <div className="font-medium">Usuários Únicos</div>
+                      <div className="text-sm text-muted-foreground">
+                        Players ativos
+                      </div>
+                    </div>
+                    <Badge variant="outline">
+                      {mapAnalytics?.userBehaviorPatterns.totalUniqueUsers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                    <div>
+                      <div className="font-medium">Média por Usuário</div>
+                      <div className="text-sm text-muted-foreground">
+                        Runs por player
+                      </div>
+                    </div>
+                    <Badge variant="outline">
+                      {mapAnalytics?.userBehaviorPatterns.avgRunsPerUser || 0}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Comportamento dos Usuários */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  Comportamento dos Usuários
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                    <div>
+                      <div className="font-medium text-green-700 dark:text-green-300">Usuários Casuais</div>
+                      <div className="text-sm text-green-600 dark:text-green-400">
+                        &lt; 5 runs
+                      </div>
+                    </div>
+                    <Badge className="bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100">
+                      {mapAnalytics?.userBehaviorPatterns.casualUsers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                    <div>
+                      <div className="font-medium text-blue-700 dark:text-blue-300">Usuários Regulares</div>
+                      <div className="text-sm text-blue-600 dark:text-blue-400">
+                        5-20 runs
+                      </div>
+                    </div>
+                    <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-800 dark:text-blue-100">
+                      {mapAnalytics?.userBehaviorPatterns.regularUsers || 0}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center justify-between p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
+                    <div>
+                      <div className="font-medium text-purple-700 dark:text-purple-300">Power Users</div>
+                      <div className="text-sm text-purple-600 dark:text-purple-400">
+                        &gt; 20 runs
+                      </div>
+                    </div>
+                    <Badge className="bg-purple-100 text-purple-800 dark:bg-purple-800 dark:text-purple-100">
+                      {mapAnalytics?.userBehaviorPatterns.powerUsers || 0}
+                    </Badge>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Ações do Feed */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                Ações do Feed
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/admin/database-status');
+                      const result = await response.json();
+                      console.log('📊 Feed Status:', result);
+                      alert(`Feed Status:\nTotal: ${result.database?.totalRecords || 0} registros\nÚltimas 24h: ${result.data?.activity?.last24h || 0} runs\nÚltimos 7d: ${result.data?.activity?.last7d || 0} runs`);
+                    } catch (error) {
+                      console.error('Erro ao verificar feed:', error);
+                      alert('Erro ao verificar status do feed');
+                    }
+                  }}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Database className="h-4 w-4" />
+                  Verificar Status
+                </Button>
+                
+                <Button 
+                  onClick={async () => {
+                    try {
+                      const response = await fetch('/api/admin/seed-feed-data', { method: 'POST' });
+                      const result = await response.json();
+                      if (result.success) {
+                        alert(`Feed populado!\nInseridos: ${result.data?.inserted || 0} registros`);
+                        loadMapAnalytics(); // Recarregar dados
+                      } else {
+                        alert(`Erro: ${result.error}`);
+                      }
+                    } catch (error) {
+                      console.error('Erro ao popular feed:', error);
+                      alert('Erro ao popular feed');
+                    }
+                  }}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Plus className="h-4 w-4" />
+                  Popular Feed
+                </Button>
+                
+                <Button 
+                  onClick={() => fetch('/api/admin/clear-feed', { method: 'POST' })}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Limpar Feed
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
         {/* Gestão de Giveaways - Sistema Completo */}
         <TabsContent value="giveaways" className="space-y-6">
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
