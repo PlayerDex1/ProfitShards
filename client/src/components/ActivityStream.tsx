@@ -429,24 +429,6 @@ export function ActivityStream() {
           </>
         )}
 
-        {/* Call-to-action para incentivar participação */}
-        {runs.length > 0 && (
-          <Card className="mt-6 bg-gradient-to-r from-primary/10 to-blue-500/10 border-primary/30">
-            <CardContent className="pt-6 text-center">
-              <div className="flex items-center justify-center space-x-2 mb-3">
-                <Target className="h-5 w-5 text-primary" />
-                <span className="font-semibold text-primary">{t('home.resources.yourTurn')}</span>
-              </div>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t('home.resources.makeRun')}
-              </p>
-              <Button className="bg-primary/20 hover:bg-primary/30 text-primary">
-                <Zap className="mr-2 h-4 w-4" />
-                {t('home.resources.startCalculating')}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
       </CardContent>
     </Card>
   );
