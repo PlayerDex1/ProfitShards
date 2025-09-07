@@ -207,7 +207,7 @@ export default function Profile() {
 				{/* Tab Content */}
 				<div className="space-y-6">
 					{/* Calculadora */}
-					{activeTab === 'calculator' && results && (
+					{activeTab === 'calculator' && (
 						<CalculatorComponent
 							formData={formData}
 							results={results}

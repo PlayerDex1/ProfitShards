@@ -103,10 +103,10 @@ export function useCalculator() {
 	}, []);
 
 	const results = useMemo((): CalculationResults | null => {
-		// Only require that at least some meaningful data is provided
-		if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0) {
-			return null;
-		}
+		// Always return results, even with zero values - let users see the calculator
+		// if (formData.tokenPrice <= 0 && formData.tokensFarmed <= 0) {
+		//	return null;
+		// }
 
 		// Use defaults for missing values
 		const tokenPrice = formData.tokenPrice || 0;
