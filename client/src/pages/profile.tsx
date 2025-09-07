@@ -12,10 +12,9 @@ import { MapMetrics } from "@/components/MapMetrics";
 import { Results } from "@/components/Results";
 import { useCalculator } from "@/hooks/use-calculator";
 import { Calculator as CalculatorComponent } from "@/components/Calculator";
-import { Trash2, Download, Upload, User, Calculator, Map, TestTube, Gift, Activity, Crown } from "lucide-react";
+import { Trash2, Download, Upload, User, Calculator, Map, Gift, Activity, Crown } from "lucide-react";
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { ModernHistoryDisplay } from "@/components/ModernHistoryDisplay";
-import { MetricsDashboard } from "@/components/MetricsDashboard";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
 import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
@@ -144,9 +143,8 @@ export default function Profile() {
 		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
 		{ id: 'activity', label: 'Hub de Atividade', icon: Activity },
 		// Removido: aba de equipamentos - simplificando interface
-		// Abas Test só aparecem para admins
+		// Abas Admin só aparecem para admins
 		...(isAdmin ? [
-			{ id: 'test', label: t('profile.tabs.test'), icon: TestTube },
 			{ id: 'giveaways', label: 'Giveaways Admin', icon: Gift },
 			{ id: 'admin-dashboard', label: 'Dashboard Admin', icon: Crown }
 		] : []),
@@ -259,10 +257,6 @@ export default function Profile() {
 
 					{/* Removido: seção de equipamentos - simplificando interface */}
 
-					{/* Test - Métricas de Farming (Apenas Admin) */}
-					{activeTab === 'test' && isAdmin && (
-						<MetricsDashboard />
-					)}
 
 					{/* Hub de Atividade */}
 					{activeTab === 'activity' && (
