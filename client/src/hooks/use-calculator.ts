@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { CalculatorFormData, CalculationResults, HistoryItem, CalculationBreakdown } from '@/types/calculator';
 import { getCurrentUsername, useAuth } from '@/hooks/use-auth';
 import { appendHistoryItem, refreshHistory, getHistoryCached } from '@/lib/historyApi';
+import { useDataSync } from '@/hooks/use-data-sync';
 
 const DEFAULT_FORM: CalculatorFormData = {
 	// Removido: investment, gemsPurchased, gemsRemaining - não são mais necessários
@@ -31,15 +32,38 @@ function storageKeyForUser(user: string | null) {
 export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { isAuthenticated } = useAuth();
+	const { saveCalculationToServer, savePreferencesToServer, loadServerData } = useDataSync();
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
 
 
-	// Restaurar do localStorage ao montar e quando auth mudar
+	// Restaurar dados - priorizar servidor para usuários autenticados
 	useEffect(() => {
-		const load = () => {
-			const key = storageKeyForUser(getCurrentUsername());
+		const load = async () => {
+			const user = getCurrentUsername();
+			
+			if (user && isAuthenticated) {
+				// Para usuários autenticados, tentar carregar do servidor primeiro
+				try {
+					const serverData = await loadServerData();
+					if (serverData?.preferences?.data?.calculatorFormData) {
+						const serverFormData = serverData.preferences.data.calculatorFormData;
+						// Garantir que o valor padrão da gema seja aplicado se for 0
+						if (serverFormData.gemPrice === 0) {
+							serverFormData.gemPrice = 0.00714;
+						}
+						setFormData(serverFormData);
+						console.log('✅ Dados carregados do servidor');
+						return;
+					}
+				} catch (error) {
+					console.warn('⚠️ Falha ao carregar dados do servidor, usando localStorage:', error);
+				}
+			}
+			
+			// Fallback para localStorage
+			const key = storageKeyForUser(user);
 			try {
 				const raw = localStorage.getItem(key);
 				const loadedData = raw ? JSON.parse(raw) : DEFAULT_FORM;
@@ -51,32 +75,47 @@ export function useCalculator() {
 			} catch {
 				setFormData(DEFAULT_FORM);
 			}
-			// warm history cache from server
-			refreshHistory().catch(() => {});
 		};
+		
 		load();
-		const onAuth = () => {
+		
+		const onAuth = async () => {
 			const user = getCurrentUsername();
 			if (!user) {
 				// logout (inclusive AFK): limpar e voltar ao padrão
 				try { localStorage.removeItem(storageKeyForUser(null)); } catch {}
 				setFormData(DEFAULT_FORM);
 			} else {
-				load();
+				await load();
 			}
 		};
+		
 		window.addEventListener('worldshards-auth-updated', onAuth);
 		return () => window.removeEventListener('worldshards-auth-updated', onAuth);
-	}, []);
+	}, [isAuthenticated, loadServerData]);
 
-	// Salvar automaticamente o formulário por usuário (apenas logado)
+	// Salvar automaticamente o formulário - localStorage + servidor para usuários autenticados
 	useEffect(() => {
 		const user = getCurrentUsername();
 		if (!user) return;
+		
+		// Sempre salvar no localStorage (fallback)
 		try {
 			localStorage.setItem(storageKeyForUser(user), JSON.stringify(formData));
 		} catch {}
-	}, [formData]);
+		
+		// Para usuários autenticados, também salvar no servidor
+		if (isAuthenticated) {
+			savePreferencesToServer({
+				data: {
+					calculatorFormData: formData,
+					lastUpdated: Date.now()
+				}
+			}).catch(error => {
+				console.warn('⚠️ Falha ao salvar preferências no servidor:', error);
+			});
+		}
+	}, [formData, isAuthenticated, savePreferencesToServer]);
 
 
 	// Load history on mount and when updated
