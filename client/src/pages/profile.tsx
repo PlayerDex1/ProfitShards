@@ -21,7 +21,6 @@ import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
-import { DataSyncDebug } from "@/components/DataSyncDebug";
 
 export default function Profile() {
 	const { t } = useI18n();
@@ -141,7 +140,6 @@ export default function Profile() {
 		{ id: 'history', label: t('profile.tabs.history'), icon: Calculator },
 		{ id: 'planner', label: t('profile.tabs.planner'), icon: Map },
 		{ id: 'activity', label: 'Hub de Atividade', icon: Activity },
-		{ id: 'debug', label: '🔧 Debug Sync', icon: Calculator },
 		// Removido: aba de equipamentos - simplificando interface
 		// Abas Admin só aparecem para admins
 		...(isAdmin ? [
@@ -291,10 +289,6 @@ export default function Profile() {
 					)}
 
 
-					{/* Debug de Sincronização */}
-					{activeTab === 'debug' && (
-						<DataSyncDebug />
-					)}
 
 					{/* Enhanced Admin Dashboard - (Apenas Admin) */}
 					{activeTab === 'admin-dashboard' && isAdmin && (
