@@ -622,9 +622,9 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				<CalculatorChartsSimple 
 					calculations={calculations}
 					currentData={{
-						gemsSpent: formData.gemsSpent || 0,
-						tokensEarned: formData.tokensEarned || 0,
-						profit: results.profit || 0,
+						gemsSpent: results.gemsCost || 0,
+						tokensEarned: results.tokensFarmed || 0,
+						profit: results.finalProfit || 0,
 						roi: results.roi || 0,
 					}}
 				/>

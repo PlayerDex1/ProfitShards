@@ -89,7 +89,7 @@ export function HeaderModern() {
                 <Link href="/perfil">
                   <Button variant="outline" size="sm" className="group">
                     <User className="h-4 w-4 mr-2" />
-                    <span className="hidden sm:inline">{user?.username || 'Profile'}</span>
+                    <span className="hidden sm:inline">Profile</span>
                   </Button>
                 </Link>
                 <Button 

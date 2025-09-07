@@ -334,7 +334,7 @@ export function ActivityStream() {
               <Button 
                 variant="outline" 
                 size="sm" 
-                onClick={loadFeed}
+                onClick={() => loadFeed()}
                 className="mt-3"
               >
                 Tentar Novamente
