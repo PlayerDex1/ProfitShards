@@ -22,13 +22,14 @@ import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
 import { GiveawayModal } from "@/components/GiveawayModal";
 import { useGiveaway } from "@/hooks/use-giveaway";
+import { GiveawaySection } from "@/components/GiveawaySection";
 
 export default function Profile() {
 	const { t } = useI18n();
 	const { user, userProfile, isAuthenticated } = useAuth();
 	// Removido: useEquipment - simplificando interface
 	const { formData, results, breakdown, updateFormData, saveToHistory, history } = useCalculator();
-	const { currentGiveaway, participateInGiveaway, isParticipating, isLoading } = useGiveaway();
+	// Hook useGiveaway removido - usando GiveawaySection isolado
 	const [activeTab, setActiveTab] = useState('calculator');
 	const [resultsVisible, setResultsVisible] = useState({
 		summary: true,
@@ -59,8 +60,7 @@ export default function Profile() {
 			item.results && 
 			typeof item.results.finalProfit === 'number' &&
 			item.formData &&
-			typeof item.formData.investment === 'number' &&
-			typeof item.formData.gemsConsumed === 'number' &&
+			typeof item.results.gemsCost === 'number' &&
 			typeof item.timestamp === 'number'
 		);
 		
@@ -279,13 +279,13 @@ export default function Profile() {
 																	{/* Detalhes do cálculo */}
 																	<div className="grid grid-cols-2 gap-4 text-base text-muted-foreground bg-muted/50 p-3 rounded-lg">
 																		<div>
-																			<span className="font-medium">{t('profile.history.investment')}:</span> ${item.formData && typeof item.formData.investment === 'number' ? item.formData.investment.toFixed(2) : '0.00'}
+																			<span className="font-medium">Custo das Gems:</span> ${item.results && typeof item.results.gemsCost === 'number' ? item.results.gemsCost.toFixed(2) : '0.00'}
 																		</div>
 																		<div>
 																			<span className="font-medium">{t('profile.history.tokens')}:</span> {item.results && typeof item.results.totalTokens === 'number' ? item.results.totalTokens.toLocaleString() : '0'}
 																		</div>
 																		<div>
-																			<span className="font-medium">{t('profile.history.gems')}:</span> {item.formData && typeof item.formData.gemsConsumed === 'number' ? item.formData.gemsConsumed : 0}
+																			<span className="font-medium">Tokens Utilizados:</span> {item.results && typeof item.results.tokensEquipment === 'number' ? item.results.tokensEquipment.toLocaleString() : '0'}
 																		</div>
 																		<div>
 																			<span className="font-medium">{t('profile.history.efficiency')}:</span> {item.results && typeof item.results.efficiency === 'number' ? item.results.efficiency.toFixed(1) : '0.0'}/load
@@ -358,39 +358,8 @@ export default function Profile() {
 									</CardContent>
 								</Card>
 
-								{/* Giveaway Section - Compacta */}
-								<Card className="bg-gradient-to-br from-green-500/5 to-blue-500/5 border border-green-500/20">
-									<CardContent className="p-6">
-										<div className="text-center mb-6">
-											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-green-500/20 to-blue-500/20 rounded-full mb-4 border border-green-500/30">
-												<Gift className="h-6 w-6 text-green-600" />
-											</div>
-											<h3 className="text-2xl font-bold text-foreground mb-2">
-												🎁 <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">Giveaway</span>
-											</h3>
-											<p className="text-muted-foreground">
-												Participe dos sorteios e ganhe recompensas
-											</p>
-										</div>
-										
-										{currentGiveaway ? (
-											<div className="space-y-4">
-												<GiveawayBanner 
-													giveaway={currentGiveaway}
-													onParticipate={() => participateInGiveaway(currentGiveaway.id)}
-													isParticipating={isParticipating}
-													isLoading={isLoading}
-												/>
-											</div>
-										) : (
-											<div className="text-center py-6">
-												<p className="text-muted-foreground">
-													Nenhum giveaway ativo no momento
-												</p>
-											</div>
-										)}
-									</CardContent>
-								</Card>
+								{/* Novo Sistema de Giveaway - MELHORADO */}
+								<GiveawaySection />
 							</div>
 						</div>
 					)}
