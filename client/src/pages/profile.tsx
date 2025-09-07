@@ -16,6 +16,7 @@ import { Trash2, Download, Upload, User, Calculator, Map, Gift, Activity, Crown 
 import { getHistoryCached, deleteHistoryItem, clearHistoryRemote } from "@/lib/historyApi";
 import { ModernHistoryDisplay } from "@/components/ModernHistoryDisplay";
 import { GiveawayAdmin } from "@/components/GiveawayAdmin";
+import { ActivityStream } from "@/components/ActivityStream";
 import { GiveawayBanner } from "@/components/GiveawayBanner";
 import { UltimateAdminDashboard } from "@/components/UltimateAdminDashboard";
 import { EnhancedAdminDashboard } from "@/components/EnhancedAdminDashboard";
@@ -260,8 +261,29 @@ export default function Profile() {
 					{activeTab === 'activity' && (
 						<div className="space-y-8">
 
-							{/* Layout simplificado */}
+							{/* Layout com Feed em Destaque */}
 							<div className="space-y-8">
+								{/* Feed de Atividade - Seção Principal */}
+								<Card className="bg-gradient-to-br from-orange-500/5 via-red-500/5 to-pink-500/5 border border-orange-500/20">
+									<CardContent className="p-6">
+										<div className="text-center mb-6">
+											<div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-full mb-4 border border-orange-500/30">
+												<Activity className="h-6 w-6 text-orange-600" />
+											</div>
+											<h3 className="text-2xl font-bold text-foreground mb-2">
+												📊 <span className="bg-gradient-to-r from-orange-500 via-red-500 to-pink-500 bg-clip-text text-transparent">Feed da Comunidade</span>
+											</h3>
+											<p className="text-sm text-muted-foreground">
+												Últimas atividades e conquistas dos jogadores em tempo real
+											</p>
+										</div>
+										
+										<div className="max-h-[600px] overflow-y-auto">
+											<ActivityStream />
+										</div>
+									</CardContent>
+								</Card>
+
 								{/* Novo Sistema de Giveaway - MELHORADO */}
 								{/* GiveawaySection removido - componente não existe */}
 							</div>
