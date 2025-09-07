@@ -41,8 +41,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       return Response.json({ error: 'Session expired' }, { status: 401 });
     }
 
-    // Parse request body
-    const body = await request.json() as CalculationData;
+    // Parse request body (já foi feito acima)
     
     if (!body.type || !body.data) {
       return Response.json({ error: 'Invalid calculation data' }, { status: 400 });
