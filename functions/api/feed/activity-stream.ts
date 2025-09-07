@@ -89,7 +89,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         console.log('🔍 SAMPLE: Primeiras runs do banco:', dbResult.results?.slice(0, 3).map(r => ({
           id: r.id,
           map_name: r.map_name,
-          tokens_earned: r.tokens_earned,
+          tokens: r.tokens,
           created_at: r.created_at,
           created_at_date: new Date(r.created_at).toISOString()
         })));
@@ -139,11 +139,13 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
     }
 
     // 3. FALLBACK: GERAR DADOS DE EXEMPLO SE NÃO HOUVER ATIVIDADE REAL SUFICIENTE
-    if (activityRuns.length < 100) {
-      console.log('📝 Poucos dados reais encontrados - gerando dados de exemplo para demonstração');
+    if (activityRuns.length < 10) { // Reduzido de 100 para 10
+      console.log(`📝 Apenas ${activityRuns.length} dados reais encontrados - gerando dados de exemplo para demonstração`);
       const exampleRuns = generateRealisticRuns();
       activityRuns = [...activityRuns, ...exampleRuns];
       console.log(`📊 Total de runs após geração: ${activityRuns.length}`);
+    } else {
+      console.log(`✅ ${activityRuns.length} dados reais encontrados - usando apenas dados reais`);
     }
 
     // 4. SALVAR NO CACHE PARA PRÓXIMAS REQUESTS
