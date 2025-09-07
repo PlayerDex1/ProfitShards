@@ -67,6 +67,70 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       now
     ).run();
 
+    // 🔥 ADICIONAR AO FEED DA COMUNIDADE
+    if ((body.type === 'profit' && body.data && body.results) || (body.type === 'mapdrops' && body.data)) {
+      try {
+        // Extrair dados da run para o feed
+        const runData = body.data;
+        const runResults = body.results;
+        
+        // Calcular eficiência e tokens baseado no tipo
+        let tokens, luck, efficiency;
+        
+        if (body.type === 'profit') {
+          tokens = runResults.tokensFarmed || 0;
+          luck = runData.luck || 0;
+          efficiency = luck > 0 ? tokens / luck : 0;
+        } else if (body.type === 'mapdrops') {
+          tokens = runData.tokensDropped || 0;
+          luck = runData.totalLuck || runData.charges * 4 || 0; // Fallback para charges * 4
+          efficiency = luck > 0 ? tokens / luck : 0;
+        }
+        
+        // Obter nome do usuário
+        const userResult = await env.DB.prepare(
+          'SELECT email FROM users WHERE id = ?'
+        ).bind(session.user_id).first();
+        
+        const userEmail = userResult?.email || 'anonymous@feed.com';
+        const playerName = createPlayerNameFromEmail(userEmail);
+        
+        // Inserir na tabela feed_runs
+        const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 6)}`;
+        
+        await env.DB.prepare(`
+          INSERT INTO feed_runs (
+            id, user_email, map_name, luck, tokens, efficiency, 
+            created_at, level, tier, charge, player_name
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          feedRunId,
+          userEmail,
+          formatMapName(runData.mapSize || 'medium'),
+          luck,
+          tokens,
+          efficiency,
+          now,
+          runData.level || 'I',
+          runData.tier || 'I',
+          runData.charge || runData.charges || 4,
+          playerName
+        ).run();
+        
+        console.log('🔥 Run adicionada ao feed da comunidade:', {
+          type: body.type,
+          playerName,
+          map: formatMapName(runData.mapSize || 'medium'),
+          tokens,
+          luck
+        });
+        
+      } catch (feedError) {
+        console.error('❌ Erro ao adicionar run ao feed:', feedError);
+        // Não falhar o save principal por causa do feed
+      }
+    }
+
     console.log('Calculation saved for user:', session.user_id);
 
     return Response.json({ 
@@ -81,5 +145,43 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       error: 'Failed to save calculation',
       details: error.message 
     }, { status: 500 });
+  }
+}
+
+// Funções auxiliares para o feed
+function formatMapName(mapSize: string): string {
+  const mapNames: Record<string, string> = {
+    'small': 'Small Map',
+    'medium': 'Medium Map',
+    'large': 'Large Map', 
+    'xlarge': 'XLarge Map'
+  };
+  return mapNames[mapSize.toLowerCase()] || mapSize;
+}
+
+function createPlayerNameFromEmail(email: string): string {
+  console.log('🎯 Criando nome do player para email:', email);
+  
+  // Se é anônimo, usar "Player"
+  if (email === 'anonymous@feed.com') {
+    return 'Player';
+  }
+  
+  try {
+    // Extrair parte antes do @
+    const localPart = email.split('@')[0];
+    
+    // Se tem ponto, pegar primeira parte (ex: "joao.silva" -> "joao")
+    const firstName = localPart.split('.')[0];
+    
+    // Capitalizar primeira letra
+    const playerName = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
+    
+    console.log(`🎯 Email: ${email} -> Nome: ${playerName}`);
+    return playerName;
+    
+  } catch (error) {
+    console.log('⚠️ Erro ao processar email, usando Player:', error);
+    return 'Player';
   }
 }
