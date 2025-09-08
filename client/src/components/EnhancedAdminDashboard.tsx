@@ -138,87 +138,43 @@ export function EnhancedAdminDashboard() {
 
   const loadUsers = async () => {
     try {
-      const response = await fetch('/api/admin/analytics', {
+      console.log('👥 Carregando usuários reais do banco...');
+      const response = await fetch('/api/admin/get-users', {
         credentials: 'include'
       });
       const result = await response.json();
+      
       if (result.success) {
-        // Usar dados reais da API analytics
-        const userData: UserData[] = [];
-        
-        // Processar dados reais se disponíveis
-        if (result.hourlyActivity && result.mapEfficiency) {
-          // Criar dados de usuários baseados nos analytics reais
-          const totalRuns = result.hourlyActivity.reduce((sum: number, hour: any) => sum + hour.runs, 0);
-          const totalTokens = result.hourlyActivity.reduce((sum: number, hour: any) => sum + hour.tokens, 0);
-          const avgEfficiency = result.mapEfficiency.length > 0 
-            ? result.mapEfficiency.reduce((sum: number, map: any) => sum + map.avgEfficiency, 0) / result.mapEfficiency.length
-            : 0;
-
-          // Adicionar usuário admin
-          userData.push({
+        console.log('✅ Usuários reais carregados:', result.users.length);
+        console.log('📊 Ativos:', result.activeUsers, 'Inativos:', result.inactiveUsers);
+        setUsers(result.users);
+      } else {
+        console.error('❌ Erro ao carregar usuários:', result.error);
+        // Fallback para dados simulados apenas se a API falhar
+        setUsers([
+          {
             email: 'holdboy01@gmail.com',
-            totalRuns: Math.max(totalRuns, 156), // Garantir que admin tenha dados
-            totalProfit: Math.max(totalTokens, 45600),
-            efficiency: Math.max(avgEfficiency, 94.2),
+            totalRuns: 156,
+            totalProfit: 45600,
+            efficiency: 94.2,
             lastActivity: new Date().toISOString(),
             status: 'active'
-          });
-
-          // Adicionar usuários baseados nos dados reais
-          if (result.weeklyTrends && result.weeklyTrends.length > 0) {
-            const recentWeek = result.weeklyTrends[result.weeklyTrends.length - 1];
-            if (recentWeek.users > 1) {
-              // Simular usuários baseados nos dados reais
-              for (let i = 1; i <= Math.min(recentWeek.users - 1, 5); i++) {
-                userData.push({
-                  email: `user${i}@profitshards.com`,
-                  totalRuns: Math.floor(recentWeek.runs / recentWeek.users) + Math.floor(Math.random() * 20),
-                  totalProfit: Math.floor(recentWeek.tokens / recentWeek.users) + Math.floor(Math.random() * 5000),
-                  efficiency: avgEfficiency + (Math.random() - 0.5) * 20,
-                  lastActivity: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-                  status: 'active'
-                });
-              }
-            }
           }
-        }
-
-        // Fallback para dados simulados se não houver dados reais
-        if (userData.length === 0) {
-          userData.push(
-            {
-              email: 'holdboy01@gmail.com',
-              totalRuns: 156,
-              totalProfit: 45600,
-              efficiency: 94.2,
-              lastActivity: new Date().toISOString(),
-              status: 'active'
-            },
-            {
-              email: 'user1@profitshards.com',
-              totalRuns: 45,
-              totalProfit: 12500,
-              efficiency: 87.5,
-              lastActivity: new Date().toISOString(),
-              status: 'active'
-            },
-            {
-              email: 'user2@profitshards.com',
-              totalRuns: 32,
-              totalProfit: 8900,
-              efficiency: 82.1,
-              lastActivity: new Date(Date.now() - 86400000).toISOString(),
-              status: 'active'
-            }
-          );
-        }
-
-        setUsers(userData);
-        console.log('✅ Dados de usuários carregados:', userData.length, 'usuários');
+        ]);
       }
     } catch (error) {
-      console.error('Erro ao carregar users:', error);
+      console.error('❌ Erro ao carregar users:', error);
+      // Fallback para dados simulados apenas se a API falhar
+      setUsers([
+        {
+          email: 'holdboy01@gmail.com',
+          totalRuns: 156,
+          totalProfit: 45600,
+          efficiency: 94.2,
+          lastActivity: new Date().toISOString(),
+          status: 'active'
+        }
+      ]);
     }
   };
 
