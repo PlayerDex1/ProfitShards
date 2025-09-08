@@ -92,7 +92,7 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system' | 'profits' | 'community'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'analytics' | 'alerts' | 'system' | 'profits' | 'community'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
@@ -288,7 +288,7 @@ export function EnhancedAdminDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     
-    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'settings', 'analytics', 'alerts', 'system', 'profits', 'community'].includes(tabParam)) {
+    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'analytics', 'alerts', 'system', 'profits', 'community'].includes(tabParam)) {
       setActiveTab(tabParam as any);
       console.log('🎯 Admin Tab ativa definida pela URL:', tabParam);
     }
@@ -369,7 +369,7 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-12">
+        <TabsList className="grid w-full grid-cols-11">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
@@ -413,10 +413,6 @@ export function EnhancedAdminDashboard() {
           <TabsTrigger value="system" className="gap-2">
             <Cpu className="h-4 w-4" />
             Sistema
-          </TabsTrigger>
-          <TabsTrigger value="settings" className="gap-2">
-            <Settings className="h-4 w-4" />
-            Configurações
           </TabsTrigger>
         </TabsList>
 
@@ -1449,115 +1445,6 @@ export function EnhancedAdminDashboard() {
           </Card>
         </TabsContent>
 
-        {/* Configurações */}
-        <TabsContent value="settings" className="space-y-6">
-          <h2 className="text-2xl font-bold">Configurações Administrativas</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Relatórios por Email */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Mail className="h-5 w-5" />
-                  Relatórios por Email
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-sm text-muted-foreground">
-                  Email configurado: <strong>Rafaeelmcontato@gmail.com</strong>
-                </div>
-                <div className="space-y-2">
-                  <Button onClick={sendEmailReport} className="w-full gap-2">
-                    <Mail className="h-4 w-4" />
-                    Enviar Relatório Diário
-                  </Button>
-                  <Button variant="outline" className="w-full gap-2">
-                    <Bell className="h-4 w-4" />
-                    Configurar Relatórios Automáticos
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Ações Administrativas */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Ações Administrativas</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button 
-                  onClick={() => fetch('/api/admin/force-map-runs-today?force=true', { method: 'POST' })}
-                  className="w-full gap-2"
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4" />
-                  Forçar Map Runs de Hoje
-                </Button>
-                
-                <Button 
-                  onClick={() => fetch('/api/admin/clear-feed', { method: 'POST' })}
-                  className="w-full gap-2"
-                  variant="outline"
-                >
-                  <Trash2 className="h-4 w-4" />
-                  Limpar Feed
-                </Button>
-                
-                <Button 
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/admin/database-status');
-                      const result = await response.json();
-                      console.log('📊 Database Status:', result);
-                      alert(`Status: ${result.success ? 'OK' : 'ERRO'}\nTotal: ${result.database?.totalRecords || 0} registros\nÚltimas 24h: ${result.data?.activity?.last24h || 0} runs`);
-                    } catch (error) {
-                      console.error('Erro ao verificar status:', error);
-                      alert('Erro ao verificar status do banco');
-                    }
-                  }}
-                  className="w-full gap-2"
-                  variant="outline"
-                >
-                  <Database className="h-4 w-4" />
-                  Verificar Status DB
-                </Button>
-                
-                <Button 
-                  onClick={async () => {
-                    try {
-                      const response = await fetch('/api/admin/seed-feed-data', { method: 'POST' });
-                      const result = await response.json();
-                      console.log('🌱 Seed Result:', result);
-                      if (result.success) {
-                        alert(`Seed concluído!\nInseridos: ${result.data?.inserted || 0} registros\nTotal: ${result.data?.total || 0} registros`);
-                        loadMapAnalytics(); // Recarregar dados
-                      } else {
-                        alert(`Erro: ${result.error}`);
-                      }
-                    } catch (error) {
-                      console.error('Erro ao fazer seed:', error);
-                      alert('Erro ao popular feed');
-                    }
-                  }}
-                  className="w-full gap-2"
-                  variant="outline"
-                >
-                  <Plus className="h-4 w-4" />
-                  Popular Feed (Seed)
-                </Button>
-                
-                <Button 
-                  onClick={() => fetch('/api/admin/reset-metrics', { method: 'POST' })}
-                  className="w-full gap-2"
-                  variant="outline"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  Resetar Métricas
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
 
 
         {/* Alertas em Tempo Real */}
