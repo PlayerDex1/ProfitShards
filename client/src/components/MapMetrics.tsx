@@ -1,17 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { getMapDropsHistory, MapSize } from "@/lib/mapDropsHistory";
+import { getMapDropsHistory, MapSize, getTotalStats } from "@/lib/mapDropsHistory";
 import { useI18n } from "@/i18n";
 import { useEffect, useMemo, useState } from "react";
 
-function getReset5am(ts: number) {
+function getReset3amUTC(ts: number) {
   const d = new Date(ts);
-  const dayStart = new Date(d.getFullYear(), d.getMonth(), d.getDate(), 5, 0, 0, 0).getTime();
-  if (ts < dayStart) {
-    // before 05:00, use previous day's 05:00
-    const prev = new Date(dayStart - 24 * 60 * 60 * 1000);
-    return new Date(prev.getFullYear(), prev.getMonth(), prev.getDate(), 5, 0, 0, 0).getTime();
+  const resetHour = 3;
+  
+  if (d.getUTCHours() >= resetHour) {
+    // After 03:00 UTC - current day starts at 03:00 UTC
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), resetHour, 0, 0, 0)).getTime();
+  } else {
+    // Before 03:00 UTC - still previous day (starts at 03:00 UTC yesterday)
+    const yesterday = new Date(d);
+    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+    return new Date(Date.UTC(yesterday.getUTCFullYear(), yesterday.getUTCMonth(), yesterday.getUTCDate(), resetHour, 0, 0, 0)).getTime();
   }
-  return dayStart;
 }
 
 export function MapMetrics() {
@@ -24,14 +28,19 @@ export function MapMetrics() {
     return () => window.removeEventListener('worldshards-mapdrops-updated', onUpd);
   }, []);
 
-  const { avgPerMapToday, totalToday, totalPrev, bestHourToday } = useMemo(() => {
+  const { avgPerMapToday, totalToday, totalPrev, bestHourToday, stats7d, stats14d, stats30d } = useMemo(() => {
     const sizes: MapSize[] = ['small', 'medium', 'large', 'xlarge'];
     const now = Date.now();
-    const todayStart = getReset5am(now);
+    const todayStart = getReset3amUTC(now);
     const prevStart = todayStart - 24 * 60 * 60 * 1000;
 
     const today = data.filter(e => e.timestamp >= todayStart && e.timestamp < todayStart + 24 * 60 * 60 * 1000);
     const prev = data.filter(e => e.timestamp >= prevStart && e.timestamp < todayStart);
+    
+    // Get period stats
+    const stats7d = getTotalStats(7);
+    const stats14d = getTotalStats(14);
+    const stats30d = getTotalStats(30);
 
     const sumsToday: Record<MapSize, { tokens: number; loads: number }> = {
       small: { tokens: 0, loads: 0 },
