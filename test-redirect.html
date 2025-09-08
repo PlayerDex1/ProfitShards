@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Redirecionamento - Dashboard Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .test-links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .test-link {
+            display: block;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            transition: transform 0.2s;
+        }
+        .test-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .test-link.community {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        .test-link.profits {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        .test-link.analytics {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+        .instructions {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #2196f3;
+        }
+        .instructions h3 {
+            margin-top: 0;
+            color: #1976d2;
+        }
+        .instructions ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .instructions li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Teste de Redirecionamento - Dashboard Admin</h1>
+        
+        <div class="instructions">
+            <h3>📋 Instruções:</h3>
+            <ol>
+                <li>Clique em um dos links abaixo</li>
+                <li>Você será redirecionado diretamente para a aba específica</li>
+                <li>Verifique se o conteúdo da aba aparece</li>
+                <li>Me diga qual aba funcionou e qual não funcionou</li>
+            </ol>
+        </div>
+
+        <div class="test-links">
+            <a href="/perfil?tab=community" class="test-link community" target="_blank">
+                📊 Aba Community
+            </a>
+            
+            <a href="/perfil?tab=profits" class="test-link profits" target="_blank">
+                💰 Aba Lucros
+            </a>
+            
+            <a href="/perfil?tab=analytics" class="test-link analytics" target="_blank">
+                📈 Aba Analytics
+            </a>
+            
+            <a href="/perfil?tab=maps" class="test-link" target="_blank">
+                🗺️ Aba Maps (Funciona)
+            </a>
+            
+            <a href="/perfil?tab=users" class="test-link" target="_blank">
+                👥 Aba Users (Funciona)
+            </a>
+        </div>
+
+        <div class="instructions">
+            <h3>🎯 Objetivo do Teste:</h3>
+            <p>Identificar se o problema é:</p>
+            <ul>
+                <li><strong>Navegação entre abas:</strong> Se as abas não funcionam quando clicadas</li>
+                <li><strong>Componentes específicos:</strong> Se as abas não renderizam conteúdo</li>
+                <li><strong>URLs específicas:</strong> Se o redirecionamento direto funciona</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Log quando a página carrega
+        console.log('🔍 Página de teste de redirecionamento carregada');
+        
+        // Adicionar event listeners para os links
+        document.querySelectorAll('.test-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const aba = this.textContent.trim();
+                console.log(`🔗 Redirecionando para: ${aba}`);
+                console.log(`📍 URL: ${this.href}`);
+            });
+        });
+    </script>
+</body>
+</html>
