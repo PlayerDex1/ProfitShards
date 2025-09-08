@@ -174,11 +174,21 @@ export function useSmartSync() {
 
   // Salvar map drop no servidor com retry
   const saveMapDropToServer = useCallback(async (mapDropData: any, retryCount = 0): Promise<boolean> => {
-    if (!isAuthenticated) return false;
+    if (!isAuthenticated) {
+      console.log('❌ Usuário não autenticado, não salvando no servidor');
+      return false;
+    }
 
     const maxRetries = 3;
     
+    console.log(`🔄 [SMART SYNC] Iniciando salvamento no servidor (tentativa ${retryCount + 1}):`, {
+      mapDropData,
+      retryAttempt: retryCount
+    });
+    
     try {
+      console.log(`🌐 [SMART SYNC] Fazendo chamada para /api/user/save-calculation...`);
+      
       const response = await fetch('/api/user/save-calculation', {
         method: 'POST',
         credentials: 'include',
@@ -192,26 +202,32 @@ export function useSmartSync() {
         })
       });
 
+      console.log(`📡 [SMART SYNC] Resposta recebida:`, {
+        status: response.status,
+        ok: response.ok,
+        statusText: response.statusText
+      });
+
       if (!response.ok) {
-        throw new Error('Failed to save map drop');
+        throw new Error(`Failed to save map drop: ${response.status} ${response.statusText}`);
       }
 
       // Invalidar cache após salvar
       cacheRef.current.delete(`server-data-${user}`);
       
-      console.log(`✅ Map drop salvo no servidor (tentativa ${retryCount + 1})`);
+      console.log(`✅ [SMART SYNC] Map drop salvo no servidor (tentativa ${retryCount + 1})`);
       return true;
     } catch (error) {
-      console.error(`❌ Erro ao salvar map drop (tentativa ${retryCount + 1}):`, error);
+      console.error(`❌ [SMART SYNC] Erro ao salvar map drop (tentativa ${retryCount + 1}):`, error);
       
       if (retryCount < maxRetries) {
         const delay = Math.pow(2, retryCount) * 1000;
-        console.log(`🔄 Tentando novamente em ${delay}ms...`);
+        console.log(`🔄 [SMART SYNC] Tentando novamente em ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return saveMapDropToServer(mapDropData, retryCount + 1);
       }
       
-      console.error('❌ Todas as tentativas de salvar map drop falharam');
+      console.error('❌ [SMART SYNC] Todas as tentativas de salvar map drop falharam');
       return false;
     }
   }, [isAuthenticated, user]);
