@@ -50,6 +50,14 @@ export function HeroModern() {
     return num.toString();
   };
 
+  // Função para formatar lucro
+  const formatProfit = (profit: number): string => {
+    if (profit >= 1000000000) return `$${(profit / 1000000000).toFixed(1)}B`;
+    if (profit >= 1000000) return `$${(profit / 1000000).toFixed(1)}M`;
+    if (profit >= 1000) return `$${(profit / 1000).toFixed(1)}K`;
+    return `$${profit.toFixed(0)}`;
+  };
+
   const stats = [
     { 
       label: "Active Users", 
@@ -67,9 +75,9 @@ export function HeroModern() {
       icon: Target 
     },
     { 
-      label: "Satisfaction", 
-      value: statsLoading ? "..." : (communityStats ? `${communityStats.satisfaction}★` : "4.9★"), 
-      icon: Star 
+      label: "Total Profit", 
+      value: statsLoading ? "..." : (communityStats ? formatProfit(communityStats.totalProfit) : "$1M+"), 
+      icon: TrendingUp 
     }
   ];
 
