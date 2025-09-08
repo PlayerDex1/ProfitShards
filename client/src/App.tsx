@@ -41,6 +41,31 @@ function AnalyticsRedirect() {
   return null;
 }
 
+// Redirect components for admin dashboard tabs
+function CommunityRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=community");
+  }, [setLocation]);
+  return null;
+}
+
+function ProfitsRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=profits");
+  }, [setLocation]);
+  return null;
+}
+
+function AnalyticsAdminRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/perfil?tab=analytics");
+  }, [setLocation]);
+  return null;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -78,6 +103,10 @@ export default function App() {
           <Route path="/calculator" component={CalculatorRedirect} />
           <Route path="/planner" component={PlannerRedirect} />
           <Route path="/analytics" component={AnalyticsRedirect} />
+          {/* Admin Dashboard Routes */}
+          <Route path="/comunidade" component={CommunityRedirect} />
+          <Route path="/lucros" component={ProfitsRedirect} />
+          <Route path="/admin-analytics" component={AnalyticsAdminRedirect} />
           <Route component={NotFoundPage} />
         </Switch>
                <Toaster />
