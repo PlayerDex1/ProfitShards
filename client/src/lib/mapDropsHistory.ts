@@ -7,6 +7,9 @@ let saveMapDropToServer: ((data: any) => Promise<boolean>) | null = null;
 // Sistema de debounce para evitar múltiplas chamadas simultâneas
 const pendingSaves = new Map<string, Promise<boolean>>();
 
+// Sistema de lock global para evitar qualquer duplicação
+let globalSaveLock = false;
+
 export function setMapDropServerSaver(saver: (data: any) => Promise<boolean>) {
   saveMapDropToServer = saver;
 }
