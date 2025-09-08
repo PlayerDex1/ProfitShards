@@ -101,8 +101,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       totalCalculations: totalCalculations,
       successRate: successRate,
       satisfaction: Math.round(satisfaction * 10) / 10, // Arredondar para 1 casa decimal
-      totalProfit: 0, // Zerado - contabilização a partir de agora
-      totalTokens: totalTokens,
+      totalProfit: 0, // Zerado - contabilização a partir de 09/09/2025
+      totalTokens: 0, // Zerado - contabilização a partir de 09/09/2025
       totalMaps: calculationStats.map_calculations || 0,
       avgEfficiency: avgEfficiency,
       lastUpdated: Date.now()
