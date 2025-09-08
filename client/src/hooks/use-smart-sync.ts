@@ -212,6 +212,13 @@ export function useSmartSync() {
         throw new Error(`Failed to save map drop: ${response.status} ${response.statusText}`);
       }
 
+      // Verificar se a resposta indica duplicação
+      const responseData = await response.json();
+      if (responseData.duplicate) {
+        console.log(`⚠️ [SMART SYNC] Duplicação detectada pelo servidor - não fazendo retry`);
+        return true; // Considerar como sucesso para não fazer retry
+      }
+
       // Invalidar cache após salvar
       cacheRef.current.delete(`server-data-${user}`);
       
