@@ -92,7 +92,7 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'analytics' | 'alerts' | 'system' | 'profits' | 'community'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'analytics' | 'alerts' | 'profits' | 'community'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
@@ -288,7 +288,7 @@ export function EnhancedAdminDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     
-    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'analytics', 'alerts', 'system', 'profits', 'community'].includes(tabParam)) {
+    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'analytics', 'alerts', 'profits', 'community'].includes(tabParam)) {
       setActiveTab(tabParam as any);
       console.log('🎯 Admin Tab ativa definida pela URL:', tabParam);
     }
@@ -369,7 +369,7 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="grid w-full grid-cols-10">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
@@ -409,10 +409,6 @@ export function EnhancedAdminDashboard() {
           <TabsTrigger value="monitoring" className="gap-2">
             <Server className="h-4 w-4" />
             Monitoramento
-          </TabsTrigger>
-          <TabsTrigger value="system" className="gap-2">
-            <Cpu className="h-4 w-4" />
-            Sistema
           </TabsTrigger>
         </TabsList>
 
@@ -1574,151 +1570,6 @@ export function EnhancedAdminDashboard() {
           </Card>
         </TabsContent>
 
-        {/* Sistema Avançado */}
-        <TabsContent value="system" className="space-y-6">
-          <div className="bg-gradient-to-r from-gray-50 to-slate-50 dark:from-gray-900/20 dark:to-slate-900/20 p-6 rounded-lg border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center gap-3 mb-4">
-              <Cpu className="h-6 w-6 text-gray-600" />
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                  ⚙️ Sistema Avançado
-                </h2>
-                <p className="text-sm text-gray-600 dark:text-gray-300">
-                  Controle total do sistema e infraestrutura
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Status do Sistema */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">CPU Usage</CardTitle>
-                <Cpu className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">23%</div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: '23%' }}></div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Memory</CardTitle>
-                <HardDrive className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">67%</div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-green-600 h-2 rounded-full" style={{ width: '67%' }}></div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Network</CardTitle>
-                <Wifi className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">45%</div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-yellow-600 h-2 rounded-full" style={{ width: '45%' }}></div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Storage</CardTitle>
-                <Database className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">34%</div>
-                <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                  <div className="bg-purple-600 h-2 rounded-full" style={{ width: '34%' }}></div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Ações do Sistema */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <RefreshCw className="h-5 w-5" />
-                  Manutenção do Sistema
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <Button className="w-full gap-2" variant="outline">
-                  <RefreshCw className="h-4 w-4" />
-                  Reiniciar Serviços
-                </Button>
-                
-                <Button className="w-full gap-2" variant="outline">
-                  <Database className="h-4 w-4" />
-                  Otimizar Banco de Dados
-                </Button>
-                
-                <Button className="w-full gap-2" variant="outline">
-                  <Download className="h-4 w-4" />
-                  Backup Completo
-                </Button>
-                
-                <Button className="w-full gap-2" variant="outline">
-                  <Upload className="h-4 w-4" />
-                  Restaurar Backup
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Settings className="h-5 w-5" />
-                  Configurações Avançadas
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Auto-refresh</span>
-                  <Button 
-                    size="sm" 
-                    variant={autoRefresh ? "default" : "outline"}
-                    onClick={() => setAutoRefresh(!autoRefresh)}
-                  >
-                    {autoRefresh ? "ON" : "OFF"}
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Intervalo de Refresh (segundos)</label>
-                  <Select value={refreshInterval.toString()} onValueChange={(value) => setRefreshInterval(parseInt(value))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="10">10s</SelectItem>
-                      <SelectItem value="30">30s</SelectItem>
-                      <SelectItem value="60">1min</SelectItem>
-                      <SelectItem value="300">5min</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button className="w-full gap-2">
-                  <Save className="h-4 w-4" />
-                  Salvar Configurações
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );
