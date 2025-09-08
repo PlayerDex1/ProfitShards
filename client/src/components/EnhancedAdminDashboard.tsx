@@ -244,6 +244,26 @@ export function EnhancedAdminDashboard() {
     }
   };
 
+  const debugProfitRaw = async () => {
+    try {
+      console.log('🔍 Debugando dados brutos de lucros...');
+      const response = await fetch('/api/admin/debug-profit-raw', {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('🔍 DADOS BRUTOS:', result);
+        alert(`🔍 DEBUG RAW DATA:\n\nTotal encontrado: ${result.total_found}\n\nDados:\n${JSON.stringify(result.debug_data, null, 2)}`);
+      } else {
+        alert(`❌ Erro: ${result.error}`);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao debuggar dados brutos:', error);
+      alert(`❌ Erro: ${error.message}`);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       // Simular dados de saúde do sistema
@@ -976,6 +996,17 @@ export function EnhancedAdminDashboard() {
                     size="sm"
                   >
                     🔍 Debug
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      console.log('🔍 Botão Raw Data clicado!');
+                      debugProfitRaw();
+                    }} 
+                    variant="outline" 
+                    size="sm"
+                    className="ml-2"
+                  >
+                    🔍 Raw Data
                   </Button>
                 </div>
               </div>
