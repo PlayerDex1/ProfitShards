@@ -727,7 +727,6 @@ export function MapPlanner({}: MapPlannerProps) {
                       {/* Runs do Dia - Layout Clean Horizontal */}
                       <div className="p-3 space-y-2">
                         {dayEntries.map((h, i) => {
-                          console.log('🔍 DEBUG - Renderizando run:', h);
                           return (
                           <div 
                             key={h.timestamp} 
