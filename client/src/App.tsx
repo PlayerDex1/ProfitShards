@@ -8,7 +8,6 @@ import { useTheme } from "@/hooks/useTheme";
 import { useEffect } from "react";
 import { forceCleanCorruptedHistory } from "@/lib/historyApi";
 // Removido: useDataSync - usando apenas useSmartSync
-import "@/lib/cleanTestGiveaways"; // Limpar giveaways de teste
 
 // Pages
 import HomePage from "@/pages/home";

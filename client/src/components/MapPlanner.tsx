@@ -69,11 +69,8 @@ export function MapPlanner({}: MapPlannerProps) {
 
           console.log('🔄 Carregando map drops do servidor pela primeira vez...');
           const serverData = await loadServerData();
-          console.log('🔍 DEBUG: Dados do servidor:', serverData);
           
           if (serverData?.calculations) {
-            console.log('🔍 DEBUG: Cálculos encontrados:', serverData.calculations.length);
-            console.log('🔍 DEBUG: Tipos de cálculos:', serverData.calculations.map((c: any) => c.type));
             
             // Filtrar apenas map drops
             const mapDrops = serverData.calculations
@@ -81,7 +78,6 @@ export function MapPlanner({}: MapPlannerProps) {
               .map((calc: any) => calc.data);
             
             console.log('📊 Map drops encontrados no servidor:', mapDrops.length);
-            console.log('🔍 DEBUG: Map drops detalhados:', mapDrops);
             
             if (mapDrops.length > 0) {
               console.log('✅ Map drops carregados do servidor:', mapDrops.length, 'itens');
@@ -277,7 +273,7 @@ export function MapPlanner({}: MapPlannerProps) {
       
       // Salvar métricas anônimas se usuário autenticado
       if (isAuthenticated && tokensDropped > 0) {
-        console.log('%c🔍 DEBUG: Tentando salvar métricas no D1', 'color: #3B82F6; font-weight: bold; font-size: 14px;', {
+        console.log('💾 Salvando métricas no servidor...', {
           isAuthenticated,
           tokensDropped,
           mapSize,

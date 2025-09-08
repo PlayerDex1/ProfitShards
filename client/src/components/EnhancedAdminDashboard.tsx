@@ -212,7 +212,6 @@ export function EnhancedAdminDashboard() {
       
       if (result.success) {
         console.log('✅ Estatísticas de lucros carregadas:', result.stats.totalCalculations, 'cálculos');
-        console.log('🔍 DEBUG - Estrutura completa dos dados:', result.stats);
         setProfitStats(result.stats);
       } else {
         console.error('❌ Erro ao carregar estatísticas de lucros:', result.error);
@@ -224,54 +223,6 @@ export function EnhancedAdminDashboard() {
     }
   };
 
-  const debugProfitData = async () => {
-    try {
-      console.log('🔍 Debugando dados de lucros...');
-      const response = await fetch('/api/admin/debug-profit-data', {
-        credentials: 'include'
-      });
-      const result = await response.json();
-      
-      if (result.success) {
-        console.log('🔍 Debug de dados de lucros:', result.debug);
-        alert(`Debug: ${JSON.stringify(result.debug, null, 2)}`);
-      } else {
-        console.error('❌ Erro no debug:', result.error);
-        alert('Erro no debug: ' + result.error);
-      }
-    } catch (error) {
-      console.error('❌ Erro no debug:', error);
-      alert('Erro no debug: ' + error);
-    }
-  };
-
-  const debugProfitRaw = async () => {
-    try {
-      console.log('🔍 DEBUG RAW: Função chamada!');
-      console.log('🔍 DEBUG RAW: Fazendo fetch para /api/admin/debug-profit-raw');
-      
-      const response = await fetch('/api/admin/debug-profit-raw', {
-        credentials: 'include'
-      });
-      
-      console.log('🔍 DEBUG RAW: Response status:', response.status);
-      console.log('🔍 DEBUG RAW: Response ok:', response.ok);
-      
-      const result = await response.json();
-      console.log('🔍 DEBUG RAW: Result recebido:', result);
-      
-      if (result.success) {
-        console.log('🔍 DADOS BRUTOS:', result);
-        alert(`🔍 DEBUG RAW DATA:\n\nTotal encontrado: ${result.total_found}\n\nDados:\n${JSON.stringify(result.debug_data, null, 2)}`);
-      } else {
-        console.log('🔍 DEBUG RAW: Erro na resposta:', result.error);
-        alert(`❌ Erro: ${result.error}`);
-      }
-    } catch (error) {
-      console.error('❌ Erro ao debuggar dados brutos:', error);
-      alert(`❌ Erro: ${error.message}`);
-    }
-  };
 
   const loadSystemHealth = async () => {
     try {
@@ -1043,32 +994,6 @@ export function EnhancedAdminDashboard() {
               📊 <strong>Análises e Estatísticas:</strong> Dados em tempo real
             </p>
             
-            <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                🔍 <strong>Status:</strong> Analytics funcionando
-              </p>
-            </div>
-
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => {
-                  console.log('🔍 Teste Analytics clicado!');
-                  alert('Analytics funcionando!');
-                }}
-              >
-                Teste Analytics
-              </Button>
-              <Button 
-                onClick={() => {
-                  console.log('🔍 Carregando dados...');
-                  loadUsers();
-                  loadTrends();
-                }} 
-                variant="outline"
-              >
-                🔄 Carregar Dados
-              </Button>
-            </div>
           </div>
         </TabsContent>
 
@@ -1094,66 +1019,9 @@ export function EnhancedAdminDashboard() {
               📊 <strong>Estatísticas de Lucros:</strong> Dados dos últimos 30 dias
             </p>
             
-            <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-              <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
-                {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
-              </p>
-              {profitStats && (
-                <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                  <p>📊 Dados disponíveis:</p>
-                  <p>• Total: {profitStats.totalCalculations}</p>
-                  <p>• Lucro Total: {profitStats.totalProfit}</p>
-                  <p>• Lucro Médio: {profitStats.avgProfit}</p>
-                  <p>• Eficiência: {profitStats.avgEfficiency}%</p>
-                </div>
-              )}
-            </div>
 
-            <div className="flex gap-2">
-              <Button 
-                onClick={() => {
-                  console.log('🔍 Teste Lucros clicado!');
-                  alert('Lucros funcionando!');
-                }}
-              >
-                Teste Lucros
-              </Button>
-              <Button 
-                onClick={() => {
-                  console.log('🔍 Botão Debug clicado!');
-                  debugProfitData();
-                }} 
-                variant="outline"
-              >
-                🔍 Debug
-              </Button>
-            </div>
           </div>
 
-          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <p className="text-sm text-blue-700 dark:text-blue-300">
-              🔍 <strong>Teste:</strong> Se você está vendo esta mensagem, a aba Lucros está funcionando!
-            </p>
-          </div>
-
-          <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
-              🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
-              {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
-            </p>
-            {profitStats && (
-              <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                <p>📊 Dados disponíveis:</p>
-                <p>• Total: {profitStats.totalCalculations}</p>
-                <p>• Lucro Total: {profitStats.totalProfit}</p>
-                <p>• Lucro Médio: {profitStats.avgProfit}</p>
-                <p>• Eficiência: {profitStats.avgEfficiency}%</p>
-                <p>• Levels: {profitStats.levelStats?.length || 0}</p>
-                <p>• Tiers: {profitStats.tierStats?.length || 0}</p>
-              </div>
-            )}
-          </div>
 
           {profitStats ? (
             <>

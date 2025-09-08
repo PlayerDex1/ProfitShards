@@ -28,10 +28,6 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
 	
-	// Debug logs
-	console.log('🔍 Calculator - formData:', formData);
-	console.log('🔍 Calculator - results:', results);
-	console.log('🔍 Calculator - calculations:', calculations);
 
 	// Atualizar preço do token quando disponível
 	useEffect(() => {

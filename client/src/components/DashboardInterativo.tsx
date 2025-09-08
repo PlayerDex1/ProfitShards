@@ -8,8 +8,6 @@ interface DashboardInterativoProps {
 }
 
 export function DashboardInterativo({ formData, results }: DashboardInterativoProps) {
-  console.log('🔍 DashboardInterativo - formData:', formData);
-  console.log('🔍 DashboardInterativo - results:', results);
   
   // Dados de teste se não houver dados reais
   const testFormData = formData || {

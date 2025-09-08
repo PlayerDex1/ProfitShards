@@ -199,7 +199,6 @@ export function useCalculator() {
 			
 			// Fallback para localStorage
 			const loadedHistory = getHistoryCached();
-			console.log('🔍 DEBUG: Carregando histórico do localStorage:', loadedHistory);
 			setHistory(loadedHistory);
 		};
 		
@@ -207,7 +206,6 @@ export function useCalculator() {
 		
 		const handleHistoryUpdate = () => {
 			const updatedHistory = getHistoryCached();
-			console.log('🔍 DEBUG: Histórico atualizado:', updatedHistory);
 			setHistory(updatedHistory);
 		};
 		
@@ -335,11 +333,9 @@ export function useCalculator() {
 			results,
 		};
 
-		console.log('🔍 DEBUG: Salvando no histórico:', historyItem);
 		
 		// Sempre salvar no localStorage (fallback)
 		appendHistoryItem(historyItem);
-		console.log('🔍 DEBUG: Histórico após salvar:', getHistoryCached());
 		
 		// Para usuários autenticados, também salvar no servidor
 		if (isAuthenticated) {
