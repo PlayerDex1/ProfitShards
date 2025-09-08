@@ -91,12 +91,13 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system' | 'profits'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
   const [users, setUsers] = useState<UserData[]>([]);
   const [trends, setTrends] = useState<any[]>([]);
+  const [profitStats, setProfitStats] = useState<any>(null);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   
   // Filtros Avançados
@@ -200,6 +201,27 @@ export function EnhancedAdminDashboard() {
     }
   };
 
+  const loadProfitStats = async () => {
+    try {
+      console.log('💰 Carregando estatísticas de lucros...');
+      const response = await fetch('/api/admin/get-profit-stats', {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Estatísticas de lucros carregadas:', result.stats.totalCalculations, 'cálculos');
+        setProfitStats(result.stats);
+      } else {
+        console.error('❌ Erro ao carregar estatísticas de lucros:', result.error);
+        setProfitStats(null);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar estatísticas de lucros:', error);
+      setProfitStats(null);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       // Simular dados de saúde do sistema
@@ -224,6 +246,7 @@ export function EnhancedAdminDashboard() {
         loadMapAnalytics(),
         loadUsers(),
         loadTrends(),
+        loadProfitStats(),
         loadSystemHealth()
       ]);
     } finally {
@@ -333,7 +356,7 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-10">
+        <TabsList className="grid w-full grid-cols-11">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
@@ -357,6 +380,10 @@ export function EnhancedAdminDashboard() {
           <TabsTrigger value="feed" className="gap-2">
             <Activity className="h-4 w-4" />
             Feed
+          </TabsTrigger>
+          <TabsTrigger value="profits" className="gap-2">
+            <DollarSign className="h-4 w-4" />
+            Lucros
           </TabsTrigger>
           <TabsTrigger value="alerts" className="gap-2">
             <Bell className="h-4 w-4" />
@@ -908,6 +935,240 @@ export function EnhancedAdminDashboard() {
             {/* Aba Analytics */}
             <TabsContent value="analytics" className="space-y-6">
               <GiveawayAnalytics />
+            </TabsContent>
+
+            {/* Aba Lucros */}
+            <TabsContent value="profits" className="space-y-6">
+              <div className="flex justify-between items-center">
+                <h2 className="text-2xl font-bold">Análise de Lucros da Calculadora</h2>
+                <div className="text-sm text-muted-foreground">
+                  Dados dos últimos 30 dias
+                </div>
+              </div>
+
+              {profitStats ? (
+                <>
+                  {/* Cards de Estatísticas Gerais */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Total de Cálculos</CardTitle>
+                        <Calculator className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {profitStats.totalCalculations.toLocaleString()}
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Últimos 30 dias
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {profitStats.totalProfit.toLocaleString()} tokens
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Soma de todos os lucros
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Lucro Médio</CardTitle>
+                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {profitStats.avgProfit.toLocaleString()} tokens
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Por cálculo
+                        </p>
+                      </CardContent>
+                    </Card>
+
+                    <Card>
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">Eficiência Média</CardTitle>
+                        <Target className="h-4 w-4 text-muted-foreground" />
+                      </CardHeader>
+                      <CardContent>
+                        <div className="text-2xl font-bold">
+                          {profitStats.avgEfficiency}%
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          Performance geral
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Estatísticas por Level */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5" />
+                        Estatísticas por Level
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {profitStats.levelStats.map((level: any, index: number) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Badge variant="outline">Level {level.level}</Badge>
+                              <span className="text-sm text-muted-foreground">
+                                {level.count} cálculos
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">
+                                {level.avgProfit.toLocaleString()} tokens
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {level.avgEfficiency}% eficiência
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Estatísticas por Tier */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Star className="h-5 w-5" />
+                        Estatísticas por Tier
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-4">
+                        {profitStats.tierStats.map((tier: any, index: number) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Badge variant="outline">Tier {tier.tier}</Badge>
+                              <span className="text-sm text-muted-foreground">
+                                {tier.count} cálculos
+                              </span>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">
+                                {tier.avgProfit.toLocaleString()} tokens
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {tier.avgEfficiency}% eficiência
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Faixas de Eficiência */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Gauge className="h-5 w-5" />
+                        Distribuição por Eficiência
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {profitStats.efficiencyRanges.map((range: any, index: number) => (
+                          <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
+                            <div className="text-lg font-semibold">{range.range}</div>
+                            <div className="text-2xl font-bold text-primary">
+                              {range.count}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {range.avgProfit.toLocaleString()} tokens médios
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Faixas de Lucro */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <TrendingUp className="h-5 w-5" />
+                        Distribuição por Lucro
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {profitStats.profitRanges.map((range: any, index: number) => (
+                          <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
+                            <div className="text-lg font-semibold">{range.range} tokens</div>
+                            <div className="text-2xl font-bold text-primary">
+                              {range.count}
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {range.avgEfficiency}% eficiência média
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Atividade Recente */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2">
+                        <Calendar className="h-5 w-5" />
+                        Atividade Recente (7 dias)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {profitStats.recentActivity.map((day: any, index: number) => (
+                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Calendar className="h-4 w-4 text-muted-foreground" />
+                              <span className="font-medium">
+                                {new Date(day.date).toLocaleDateString('pt-BR')}
+                              </span>
+                              <Badge variant="outline">
+                                {day.calculations} cálculos
+                              </Badge>
+                            </div>
+                            <div className="text-right">
+                              <div className="font-semibold">
+                                {day.totalProfit.toLocaleString()} tokens
+                              </div>
+                              <div className="text-xs text-muted-foreground">
+                                {day.avgProfit.toLocaleString()} tokens médios
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </>
+              ) : (
+                <Card className="p-8 text-center">
+                  <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold mb-2">Nenhum Dado de Lucro Disponível</h3>
+                  <p className="text-muted-foreground">
+                    Os dados de lucro da calculadora aparecerão aqui conforme os usuários fizerem cálculos.
+                  </p>
+                </Card>
+              )}
             </TabsContent>
           </Tabs>
         </TabsContent>
