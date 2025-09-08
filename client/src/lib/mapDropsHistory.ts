@@ -4,6 +4,9 @@ import { getCurrentUsername } from '@/hooks/use-auth';
 // Função para salvar map drop no servidor (será injetada pelo componente)
 let saveMapDropToServer: ((data: any) => Promise<boolean>) | null = null;
 
+// Sistema de debounce para evitar múltiplas chamadas simultâneas
+const pendingSaves = new Map<string, Promise<boolean>>();
+
 export function setMapDropServerSaver(saver: (data: any) => Promise<boolean>) {
   saveMapDropToServer = saver;
 }
@@ -103,17 +106,51 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
     
     if (user && user !== 'guest' && saveMapDropToServer) {
+      // Criar chave única para este save baseada no timestamp e dados
+      const saveKey = `${newEntry.timestamp}_${newEntry.mapSize}_${newEntry.tokensDropped}`;
+      
+      // Verificar se já há um save pendente para esta entrada
+      if (pendingSaves.has(saveKey)) {
+        console.log('⚠️ DUPLICAÇÃO PREVENIDA: Save já está em andamento para esta entrada');
+        return;
+      }
+      
       console.log('🔄 Tentando salvar via sistema inteligente...');
-      try {
-        const success = await saveMapDropToServer(newEntry);
-        if (success) {
-          console.log('✅ Map drop salvo no servidor via sistema inteligente');
-        } else {
-          console.warn('⚠️ Sistema inteligente retornou false, tentando fallback...');
-          // Apenas tentar fallback se o sistema inteligente retornar false
+      
+      // Criar promise de save e adicionar ao mapa de pendentes
+      const savePromise = (async () => {
+        try {
+          const success = await saveMapDropToServer(newEntry);
+          if (success) {
+            console.log('✅ Map drop salvo no servidor via sistema inteligente');
+          } else {
+            console.warn('⚠️ Sistema inteligente retornou false, tentando fallback...');
+            // Apenas tentar fallback se o sistema inteligente retornar false
+            try {
+              console.log('🔄 Executando fallback direto...');
+              const response = await fetch('/api/user/save-calculation', {
+                method: 'POST',
+                credentials: 'include',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  type: 'mapdrops',
+                  data: newEntry
+                })
+              });
+              console.log('✅ Map drop salvo no servidor via fallback direto, status:', response.status);
+            } catch (fallbackError) {
+              console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', fallbackError);
+            }
+          }
+          return success;
+        } catch (error) {
+          console.warn('⚠️ Falha ao salvar map drop no servidor via sistema inteligente:', error);
+          // Apenas tentar fallback se o sistema inteligente falhar completamente
           try {
-            console.log('🔄 Executando fallback direto...');
-            await fetch('/api/user/save-calculation', {
+            console.log('🔄 Executando fallback após erro...');
+            const response = await fetch('/api/user/save-calculation', {
               method: 'POST',
               credentials: 'include',
               headers: {
@@ -124,37 +161,29 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
                 data: newEntry
               })
             });
-            console.log('✅ Map drop salvo no servidor via fallback direto');
+            console.log('✅ Map drop salvo no servidor via fallback direto, status:', response.status);
+            return true;
           } catch (fallbackError) {
             console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', fallbackError);
+            return false;
           }
+        } finally {
+          // Remover do mapa de pendentes
+          pendingSaves.delete(saveKey);
         }
-      } catch (error) {
-        console.warn('⚠️ Falha ao salvar map drop no servidor via sistema inteligente:', error);
-        // Apenas tentar fallback se o sistema inteligente falhar completamente
-        try {
-          console.log('🔄 Executando fallback após erro...');
-          await fetch('/api/user/save-calculation', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              type: 'mapdrops',
-              data: newEntry
-            })
-          });
-          console.log('✅ Map drop salvo no servidor via fallback direto');
-        } catch (fallbackError) {
-          console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', fallbackError);
-        }
-      }
+      })();
+      
+      // Adicionar ao mapa de pendentes
+      pendingSaves.set(saveKey, savePromise);
+      
+      // Aguardar o resultado
+      await savePromise;
+      
     } else if (user && user !== 'guest' && !saveMapDropToServer) {
       // Fallback para chamada direta se o sistema inteligente não estiver disponível
       console.log('🔄 Sistema inteligente não disponível, usando fallback direto...');
       try {
-        await fetch('/api/user/save-calculation', {
+        const response = await fetch('/api/user/save-calculation', {
           method: 'POST',
           credentials: 'include',
           headers: {
@@ -165,7 +194,7 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
             data: newEntry
           })
         });
-        console.log('✅ Map drop salvo no servidor via fallback direto');
+        console.log('✅ Map drop salvo no servidor via fallback direto, status:', response.status);
       } catch (error) {
         console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', error);
       }
