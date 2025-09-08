@@ -141,25 +141,27 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const userEmail = userResult?.email || 'anonymous@feed.com';
         const playerName = createPlayerNameFromEmail(userEmail);
         
-        // Verificar se já existe uma run recente para este usuário (evitar duplicação)
-        // Verificação mais robusta: mesmo usuário, mesmo mapa, dentro de 30 segundos
-        const recentRuns = await env.DB.prepare(`
-          SELECT COUNT(*) as count FROM feed_runs 
-          WHERE user_email = ? AND created_at > ? AND map_name = ?
-        `).bind(
-          userEmail,
-          now - 30000, // Últimos 30 segundos (mais restritivo)
-          formatMapName(runData.mapSize || 'medium')
-        ).first();
-        
-        if (recentRuns && recentRuns.count > 0) {
-          console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail} (${recentRuns.count} runs recentes), ignorando...`);
-          return Response.json({ 
-            success: true, 
-            message: 'Run duplicada ignorada',
-            duplicate: true 
-          });
-        }
+      // Verificar se já existe uma run recente para este usuário (evitar duplicação)
+      // Verificação mais robusta: mesmo usuário, mesmo mapa, mesmo tokens, dentro de 30 segundos
+      const recentRuns = await env.DB.prepare(`
+        SELECT COUNT(*) as count FROM feed_runs 
+        WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
+      `).bind(
+        userEmail,
+        now - 30000, // Últimos 30 segundos
+        formatMapName(runData.mapSize || 'medium'),
+        runData.tokensDropped || 0
+      ).first();
+      
+      if (recentRuns && recentRuns.count > 0) {
+        console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail} (${recentRuns.count} runs idênticas recentes), ignorando...`);
+        return Response.json({ 
+          success: true, 
+          message: 'Run duplicada ignorada - dados idênticos detectados',
+          duplicate: true,
+          reason: 'identical_data_within_30s'
+        });
+      }
         
         // Inserir na tabela feed_runs com ID mais único
         const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;

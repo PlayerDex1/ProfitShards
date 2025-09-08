@@ -1,5 +1,8 @@
 // WorldShards Map Drops History Management
 import { getCurrentUsername } from '@/hooks/use-auth';
+import { checkForDuplication, duplicationMonitor } from './duplication-monitor';
+import { logInfo, logWarn, logError } from './structured-logger';
+import { validateBeforeServerSave, validateServerResponse } from './integrity-validator';
 
 // Função para salvar map drop no servidor (será injetada pelo componente)
 let saveMapDropToServer: ((data: any) => Promise<boolean>) | null = null;
@@ -118,16 +121,41 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     
     // Sempre salvar no localStorage (fallback)
     saveMapDropsHistory(history);
-    console.log('✅ Map drop saved to localStorage:', newEntry);
+    logInfo('mapDrops', 'Map drop saved to localStorage', { 
+      mapSize: newEntry.mapSize, 
+      tokens: newEntry.tokensDropped,
+      timestamp: newEntry.timestamp 
+    }, user);
     
     // Para usuários autenticados, também salvar no servidor usando o sistema inteligente
     const user = getCurrentUsername();
     console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
     
     if (user && user !== 'guest' && saveMapDropToServer) {
+      // Validar dados antes de prosseguir
+      const validation = validateBeforeServerSave(newEntry, user);
+      if (!validation.isValid) {
+        logError('mapDrops', 'Dados inválidos - salvamento bloqueado', validation.errors, user);
+        return;
+      }
+      
+      if (validation.warnings.length > 0) {
+        logWarn('mapDrops', 'Avisos de validação', validation.warnings, user);
+      }
+
+      // Verificar duplicação antes de prosseguir
+      if (checkForDuplication(user, newEntry.mapSize, newEntry.tokensDropped, 'mapDropsHistory')) {
+        logWarn('mapDrops', 'Duplicação detectada - tentativa bloqueada', { 
+          mapSize: newEntry.mapSize, 
+          tokens: newEntry.tokensDropped 
+        }, user);
+        return;
+      }
+
       // Sistema de lock global para evitar qualquer duplicação
       if (globalSaveLock) {
         console.log('⚠️ LOCK GLOBAL ATIVO: Aguardando save anterior terminar...');
+        duplicationMonitor.logDuplicationAttempt(user, newEntry.mapSize, newEntry.tokensDropped, 'mapDropsHistory', 'global_lock_active');
         return;
       }
       
