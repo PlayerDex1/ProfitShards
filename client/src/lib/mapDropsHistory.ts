@@ -271,6 +271,58 @@ export function getMapDropsHistoryGroupedByDay(): Array<[string, MapDrop[]]> {
   }
 }
 
+// Get total statistics (all time or last N days)
+export function getTotalStats(days?: number): any {
+  try {
+    const history = getMapDropsHistory();
+    let targetDrops = history;
+    
+    if (days) {
+      const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
+      targetDrops = history.filter(drop => drop.timestamp >= cutoffTime);
+    }
+    
+    const totalTokens = targetDrops.reduce((sum, drop) => sum + (drop.tokensDropped || 0), 0);
+    const totalLoads = targetDrops.reduce((sum, drop) => sum + (drop.loads || drop.charges || 0), 0);
+    const totalRuns = targetDrops.length;
+    const avgTokensPerLoad = totalLoads > 0 ? totalTokens / totalLoads : 0;
+    const avgTokensPerRun = totalRuns > 0 ? totalTokens / totalRuns : 0;
+    
+    // Group by map size
+    const bySize = targetDrops.reduce((acc, drop) => {
+      const size = drop.mapSize || 'unknown';
+      if (!acc[size]) {
+        acc[size] = { tokens: 0, loads: 0, count: 0 };
+      }
+      acc[size].tokens += drop.tokensDropped || 0;
+      acc[size].loads += drop.loads || drop.charges || 0;
+      acc[size].count += 1;
+      return acc;
+    }, {} as Record<string, any>);
+    
+    return {
+      totalTokens,
+      totalLoads,
+      totalRuns,
+      avgTokensPerLoad,
+      avgTokensPerRun,
+      bySize,
+      period: days ? `últimos ${days} dias` : 'todos os tempos'
+    };
+  } catch (error) {
+    console.error('Error calculating total stats:', error);
+    return {
+      totalTokens: 0,
+      totalLoads: 0,
+      totalRuns: 0,
+      avgTokensPerLoad: 0,
+      avgTokensPerRun: 0,
+      bySize: {},
+      period: 'erro'
+    };
+  }
+}
+
 // Get day statistics
 export function getDayStats(day?: string): any {
   try {

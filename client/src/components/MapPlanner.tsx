@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "../hooks/usePreferences";
 import { useI18n } from "@/i18n";
-import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats, setMapDropServerSaver } from "../lib/mapDropsHistory";
+import { appendMapDropEntry, getMapDropsHistory, deleteMapDropEntry, clearMapDropsHistory, getMapDropsHistoryGroupedByDay, getDayStats, getTotalStats, setMapDropServerSaver } from "../lib/mapDropsHistory";
 import { useEquipment } from "@/hooks/useEquipment";
 import { useAuth } from "@/hooks/use-auth";
 import { useSmartSync } from "@/hooks/use-smart-sync";
@@ -667,11 +667,37 @@ export function MapPlanner({}: MapPlannerProps) {
             
             const groupedArray = Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
             
+            // Calcular totais gerais
+            const totalStats = getTotalStats(30); // Últimos 30 dias
+            
             return (
             <div className="space-y-4 max-h-96 overflow-auto">
+              {/* 📊 Resumo de Totais */}
+              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                <div className="text-sm font-bold text-primary mb-2">📊 Resumo dos Últimos 30 Dias</div>
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <div className="text-muted-foreground">Total de Runs:</div>
+                    <div className="font-bold text-foreground">{totalStats.totalRuns.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Total de Tokens:</div>
+                    <div className="font-bold text-foreground">{totalStats.totalTokens.toLocaleString()}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Média por Run:</div>
+                    <div className="font-bold text-foreground">{totalStats.avgTokensPerRun.toFixed(1)}</div>
+                  </div>
+                  <div>
+                    <div className="text-muted-foreground">Média por Carga:</div>
+                    <div className="font-bold text-foreground">{totalStats.avgTokensPerLoad.toFixed(1)}</div>
+                  </div>
+                </div>
+              </div>
+              
               {/* 🗓️ Agrupar por dias */}
               {groupedArray
-                .slice(0, 7) // Últimos 7 dias
+                .slice(0, 30) // Últimos 30 dias (igual ao feed)
                 .map(([day, dayEntries]) => {
                   const stats = getDayStats(day);
                   const isToday = day === new Date().toISOString().split('T')[0];
