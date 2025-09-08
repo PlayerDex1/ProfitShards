@@ -28,7 +28,12 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       timestamp: Date.now(),
       hasData: !!body.data,
       hasResults: !!body.results,
-      retryAttempt: body.retryAttempt || 0
+      retryAttempt: body.retryAttempt || 0,
+      dataPreview: body.data ? {
+        mapSize: body.data.mapSize,
+        tokensDropped: body.data.tokensDropped,
+        timestamp: body.data.timestamp
+      } : null
     });
     
     // Get user from session
@@ -181,7 +186,14 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           map: formatMapName(runData.mapSize || 'medium'),
           tokens,
           luck,
-          feedRunId
+          feedRunId,
+          userEmail,
+          timestamp: now,
+          dataPreview: {
+            mapSize: runData.mapSize,
+            tokensDropped: runData.tokensDropped,
+            originalTimestamp: runData.timestamp
+          }
         });
         
       } catch (feedError) {

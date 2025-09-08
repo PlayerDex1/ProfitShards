@@ -71,6 +71,22 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
       timestamp: drop.timestamp || Date.now()
     };
     
+    // 🔍 DEBUG: Verificar se já existe uma entrada similar
+    const existingEntry = history.find(item => 
+      item.timestamp === newEntry.timestamp ||
+      (Math.abs(item.timestamp - newEntry.timestamp) < 1000 && 
+       item.mapSize === newEntry.mapSize && 
+       item.tokensDropped === newEntry.tokensDropped)
+    );
+    
+    if (existingEntry) {
+      console.warn('⚠️ DUPLICAÇÃO DETECTADA: Entrada similar já existe no localStorage:', {
+        existing: existingEntry,
+        new: newEntry
+      });
+      return; // Não adicionar duplicata
+    }
+    
     history.unshift(newEntry);
     
     // Keep only last 1000 entries to prevent storage overflow
@@ -80,11 +96,14 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     
     // Sempre salvar no localStorage (fallback)
     saveMapDropsHistory(history);
-    console.log('✅ Map drop saved:', newEntry);
+    console.log('✅ Map drop saved to localStorage:', newEntry);
     
     // Para usuários autenticados, também salvar no servidor usando o sistema inteligente
     const user = getCurrentUsername();
+    console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
+    
     if (user && user !== 'guest' && saveMapDropToServer) {
+      console.log('🔄 Tentando salvar via sistema inteligente...');
       try {
         const success = await saveMapDropToServer(newEntry);
         if (success) {
@@ -93,6 +112,7 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
           console.warn('⚠️ Sistema inteligente retornou false, tentando fallback...');
           // Apenas tentar fallback se o sistema inteligente retornar false
           try {
+            console.log('🔄 Executando fallback direto...');
             await fetch('/api/user/save-calculation', {
               method: 'POST',
               credentials: 'include',
@@ -113,6 +133,7 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
         console.warn('⚠️ Falha ao salvar map drop no servidor via sistema inteligente:', error);
         // Apenas tentar fallback se o sistema inteligente falhar completamente
         try {
+          console.log('🔄 Executando fallback após erro...');
           await fetch('/api/user/save-calculation', {
             method: 'POST',
             credentials: 'include',
@@ -131,6 +152,7 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
       }
     } else if (user && user !== 'guest' && !saveMapDropToServer) {
       // Fallback para chamada direta se o sistema inteligente não estiver disponível
+      console.log('🔄 Sistema inteligente não disponível, usando fallback direto...');
       try {
         await fetch('/api/user/save-calculation', {
           method: 'POST',
@@ -147,6 +169,8 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
       } catch (error) {
         console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', error);
       }
+    } else {
+      console.log('ℹ️ Usuário não autenticado ou guest, apenas localStorage usado');
     }
     
     // Disparar evento para tracking de missões do planejador
