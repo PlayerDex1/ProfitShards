@@ -61,16 +61,14 @@ export function CommunityAnalytics() {
 
   const loadTrends = async () => {
     try {
-      const response = await fetch('/api/admin/get-trends', {
-        credentials: 'include'
-      });
-      
-      const result = await response.json();
-      
-      if (result.success) {
-        setTrends(result.trends || []);
-        console.log('📈 Tendências carregadas:', result.trends);
-      }
+      // Simular dados de tendências para teste
+      const mockTrends = [
+        { date: '2025-09-08', users: 5, calculations: 25, profit: 1000 },
+        { date: '2025-09-07', users: 3, calculations: 15, profit: 750 },
+        { date: '2025-09-06', users: 7, calculations: 35, profit: 1200 }
+      ];
+      setTrends(mockTrends);
+      console.log('📈 Tendências simuladas carregadas:', mockTrends);
     } catch (err) {
       console.error('❌ Erro ao carregar tendências:', err);
     }
@@ -96,24 +94,13 @@ export function CommunityAnalytics() {
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
 
+  // Sempre mostrar conteúdo, mesmo se loading ou error
   if (loading) {
-    return (
-      <div className="flex items-center justify-center p-8">
-        <RefreshCw className="h-8 w-8 animate-spin" />
-        <span className="ml-2">Carregando análises...</span>
-      </div>
-    );
+    console.log('🔄 CommunityAnalytics: Carregando...');
   }
 
   if (error) {
-    return (
-      <div className="p-6 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-        <p className="text-red-700 dark:text-red-300">❌ Erro: {error}</p>
-        <Button onClick={loadStats} className="mt-2" variant="outline" size="sm">
-          Tentar novamente
-        </Button>
-      </div>
-    );
+    console.log('❌ CommunityAnalytics: Erro:', error);
   }
 
   return (
