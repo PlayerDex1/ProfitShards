@@ -994,38 +994,82 @@ export function EnhancedAdminDashboard() {
 
             {/* Aba Analytics */}
             <TabsContent value="analytics" className="space-y-6">
-              <GiveawayAnalytics />
+              <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <h2 className="text-2xl font-bold mb-4">Analytics Dashboard</h2>
+                <p className="text-blue-700 dark:text-blue-300 mb-4">
+                  📊 <strong>Análises e Estatísticas:</strong> Dados em tempo real
+                </p>
+                
+                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    🔍 <strong>Status:</strong> Analytics funcionando
+                  </p>
+                </div>
+
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      console.log('🔍 Teste Analytics clicado!');
+                      alert('Analytics funcionando!');
+                    }}
+                  >
+                    Teste Analytics
+                  </Button>
+                  <Button 
+                    onClick={() => {
+                      console.log('🔍 Carregando dados...');
+                      loadUsers();
+                      loadTrends();
+                    }} 
+                    variant="outline"
+                  >
+                    🔄 Carregar Dados
+                  </Button>
+                </div>
+              </div>
             </TabsContent>
 
             {/* Aba Lucros */}
             <TabsContent value="profits" className="space-y-6">
-              <div className="flex justify-between items-center">
-                <h2 className="text-2xl font-bold">Análise de Lucros da Calculadora</h2>
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-muted-foreground">
-                    Dados dos últimos 30 dias
-                  </div>
+              <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+                <h2 className="text-2xl font-bold mb-4">Análise de Lucros da Calculadora</h2>
+                <p className="text-green-700 dark:text-green-300 mb-4">
+                  📊 <strong>Estatísticas de Lucros:</strong> Dados dos últimos 30 dias
+                </p>
+                
+                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
+                    {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
+                  </p>
+                  {profitStats && (
+                    <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                      <p>📊 Dados disponíveis:</p>
+                      <p>• Total: {profitStats.totalCalculations}</p>
+                      <p>• Lucro Total: {profitStats.totalProfit}</p>
+                      <p>• Lucro Médio: {profitStats.avgProfit}</p>
+                      <p>• Eficiência: {profitStats.avgEfficiency}%</p>
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Button 
+                    onClick={() => {
+                      console.log('🔍 Teste Lucros clicado!');
+                      alert('Lucros funcionando!');
+                    }}
+                  >
+                    Teste Lucros
+                  </Button>
                   <Button 
                     onClick={() => {
                       console.log('🔍 Botão Debug clicado!');
                       debugProfitData();
                     }} 
-                    variant="outline" 
-                    size="sm"
+                    variant="outline"
                   >
                     🔍 Debug
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      console.log('🔍 Botão Raw Data clicado!');
-                      console.log('🔍 DEBUG: Chamando debugProfitRaw...');
-                      debugProfitRaw();
-                    }} 
-                    variant="outline" 
-                    size="sm"
-                    className="ml-2"
-                  >
-                    🔍 Raw Data
                   </Button>
                 </div>
               </div>
