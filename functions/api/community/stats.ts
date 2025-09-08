@@ -101,7 +101,7 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       totalCalculations: totalCalculations,
       successRate: successRate,
       satisfaction: Math.round(satisfaction * 10) / 10, // Arredondar para 1 casa decimal
-      totalProfit: Math.abs(Math.round(totalProfit)), // Valor absoluto (sem sinal negativo)
+      totalProfit: 0, // Zerado - contabilização a partir de agora
       totalTokens: totalTokens,
       totalMaps: calculationStats.map_calculations || 0,
       avgEfficiency: avgEfficiency,
