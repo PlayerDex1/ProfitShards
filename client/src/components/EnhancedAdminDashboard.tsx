@@ -92,7 +92,7 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'analytics' | 'alerts' | 'profits' | 'community'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'analytics' | 'alerts' | 'profits' | 'community'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
@@ -288,7 +288,7 @@ export function EnhancedAdminDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     
-    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'analytics', 'alerts', 'profits', 'community'].includes(tabParam)) {
+    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'analytics', 'alerts', 'profits', 'community'].includes(tabParam)) {
       setActiveTab(tabParam as any);
       console.log('🎯 Admin Tab ativa definida pela URL:', tabParam);
     }
@@ -369,7 +369,7 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-10">
+        <TabsList className="grid w-full grid-cols-9">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
@@ -405,10 +405,6 @@ export function EnhancedAdminDashboard() {
           <TabsTrigger value="alerts" className="gap-2">
             <Bell className="h-4 w-4" />
             Alertas
-          </TabsTrigger>
-          <TabsTrigger value="monitoring" className="gap-2">
-            <Server className="h-4 w-4" />
-            Monitoramento
           </TabsTrigger>
         </TabsList>
 
@@ -1361,85 +1357,6 @@ export function EnhancedAdminDashboard() {
           </Card>
         </TabsContent>
 
-        {/* Monitoramento do Sistema */}
-        <TabsContent value="monitoring" className="space-y-6">
-          <h2 className="text-2xl font-bold">Monitoramento do Sistema</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Status da API</CardTitle>
-                <Server className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    systemHealth?.apiStatus === 'healthy' ? 'bg-green-500' : 
-                    systemHealth?.apiStatus === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
-                  }`} />
-                  <span className="font-medium capitalize">{systemHealth?.apiStatus || 'Unknown'}</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Banco de Dados</CardTitle>
-                <Database className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <div className={`w-3 h-3 rounded-full ${
-                    systemHealth?.databaseStatus === 'healthy' ? 'bg-green-500' : 
-                    systemHealth?.databaseStatus === 'warning' ? 'bg-yellow-500' : 'bg-red-500'
-                  }`} />
-                  <span className="font-medium capitalize">{systemHealth?.databaseStatus || 'Unknown'}</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Uptime</CardTitle>
-                <Clock className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{systemHealth?.uptime || 0}%</div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Tempo de Resposta</CardTitle>
-                <Timer className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{systemHealth?.responseTime || 0}ms</div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Gráfico de Performance */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Performance do Sistema (24h)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64 flex items-end justify-between gap-1">
-                {Array.from({ length: 24 }, (_, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1">
-                    <div 
-                      className="bg-blue-500 rounded-t w-4 transition-all hover:bg-blue-600"
-                      style={{ height: `${Math.random() * 200 + 50}px` }}
-                      title={`${i}:00 - ${Math.floor(Math.random() * 100 + 50)}ms`}
-                    />
-                    <span className="text-xs text-muted-foreground">{i}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
 
 
