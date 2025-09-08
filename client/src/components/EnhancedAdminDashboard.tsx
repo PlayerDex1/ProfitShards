@@ -246,16 +246,24 @@ export function EnhancedAdminDashboard() {
 
   const debugProfitRaw = async () => {
     try {
-      console.log('🔍 Debugando dados brutos de lucros...');
+      console.log('🔍 DEBUG RAW: Função chamada!');
+      console.log('🔍 DEBUG RAW: Fazendo fetch para /api/admin/debug-profit-raw');
+      
       const response = await fetch('/api/admin/debug-profit-raw', {
         credentials: 'include'
       });
+      
+      console.log('🔍 DEBUG RAW: Response status:', response.status);
+      console.log('🔍 DEBUG RAW: Response ok:', response.ok);
+      
       const result = await response.json();
+      console.log('🔍 DEBUG RAW: Result recebido:', result);
       
       if (result.success) {
         console.log('🔍 DADOS BRUTOS:', result);
         alert(`🔍 DEBUG RAW DATA:\n\nTotal encontrado: ${result.total_found}\n\nDados:\n${JSON.stringify(result.debug_data, null, 2)}`);
       } else {
+        console.log('🔍 DEBUG RAW: Erro na resposta:', result.error);
         alert(`❌ Erro: ${result.error}`);
       }
     } catch (error) {
@@ -1000,6 +1008,7 @@ export function EnhancedAdminDashboard() {
                   <Button 
                     onClick={() => {
                       console.log('🔍 Botão Raw Data clicado!');
+                      console.log('🔍 DEBUG: Chamando debugProfitRaw...');
                       debugProfitRaw();
                     }} 
                     variant="outline" 
