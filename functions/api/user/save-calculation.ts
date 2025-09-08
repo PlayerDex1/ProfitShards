@@ -13,6 +13,8 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     const body = await request.json();
     const requestId = Math.random().toString(36).substr(2, 9);
     
+    console.log(`🚀 [${requestId}] API CHAMADA - Início da função save-calculation`);
+    
     // Verificar se é uma tentativa de retry
     if (body.retryAttempt && body.retryAttempt > 0) {
       console.log(`⚠️ [${requestId}] Tentativa de retry detectada (${body.retryAttempt}), ignorando para evitar duplicação`);
