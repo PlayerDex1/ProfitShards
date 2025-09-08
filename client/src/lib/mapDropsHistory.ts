@@ -14,6 +14,22 @@ export function setMapDropServerSaver(saver: (data: any) => Promise<boolean>) {
   saveMapDropToServer = saver;
 }
 
+// Função para limpar dados antigos e forçar sincronização limpa
+export function clearOldDataAndForceSync() {
+  console.log('🧹 Limpando dados antigos e forçando sincronização limpa...');
+  
+  // Limpar localStorage
+  localStorage.removeItem('worldshards-map-drops');
+  localStorage.removeItem('has-loaded-server-mapdrops');
+  localStorage.removeItem('last-data-migration');
+  
+  // Limpar locks
+  globalSaveLock = false;
+  pendingSaves.clear();
+  
+  console.log('✅ Dados antigos limpos, sincronização forçada');
+}
+
 export type MapSize = 'small' | 'medium' | 'large' | 'xlarge';
 
 export interface MapDrop {
@@ -109,6 +125,12 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
     
     if (user && user !== 'guest' && saveMapDropToServer) {
+      // Sistema de lock global para evitar qualquer duplicação
+      if (globalSaveLock) {
+        console.log('⚠️ LOCK GLOBAL ATIVO: Aguardando save anterior terminar...');
+        return;
+      }
+      
       // Criar chave única para este save baseada no timestamp e dados
       const saveKey = `${newEntry.timestamp}_${newEntry.mapSize}_${newEntry.tokensDropped}`;
       
@@ -117,6 +139,10 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
         console.log('⚠️ DUPLICAÇÃO PREVENIDA: Save já está em andamento para esta entrada');
         return;
       }
+      
+      // Ativar lock global
+      globalSaveLock = true;
+      console.log('🔒 LOCK GLOBAL ATIVADO para usuário:', user);
       
       console.log('🔄 Tentando salvar via sistema inteligente...');
       
@@ -173,6 +199,9 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
         } finally {
           // Remover do mapa de pendentes
           pendingSaves.delete(saveKey);
+          // Liberar lock global
+          globalSaveLock = false;
+          console.log('🔓 LOCK GLOBAL LIBERADO para usuário:', user);
         }
       })();
       
