@@ -228,6 +228,12 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
       const data = JSON.parse(calc.calculation_data);
       const results = JSON.parse(calc.result_data);
       
+      console.log('🔍 DEBUG - Dados brutos:', {
+        calculation_data: data,
+        result_data: results,
+        total_profit: results.totalProfit
+      });
+      
       return {
         token_price: data.tokenPrice || 0,
         tokens_farmed: data.tokensFarmed || 0,
@@ -242,6 +248,8 @@ export async function onRequestGet({ env, request }: { env: Env; request: Reques
         user_email: calc.email
       };
     });
+
+    console.log('🔍 DEBUG - Cálculos processados:', calculations.slice(0, 3));
 
     // Calcular estatísticas gerais
     const totalCalculations = calculations.length;
