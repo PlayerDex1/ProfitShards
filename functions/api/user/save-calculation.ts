@@ -142,16 +142,24 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const playerName = createPlayerNameFromEmail(userEmail);
         
       // Verificar se já existe uma run recente para este usuário (evitar duplicação)
-      // Verificação mais robusta: mesmo usuário, mesmo mapa, mesmo tokens, dentro de 30 segundos
+      // Verificação mais robusta: mesmo usuário, mesmo mapa, mesmo tokens, dentro de 60 segundos
       const recentRuns = await env.DB.prepare(`
         SELECT COUNT(*) as count FROM feed_runs 
         WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
       `).bind(
         userEmail,
-        now - 30000, // Últimos 30 segundos
+        now - 60000, // Últimos 60 segundos (mais restritivo)
         formatMapName(runData.mapSize || 'medium'),
         runData.tokensDropped || 0
       ).first();
+      
+      console.log(`🔍 [${requestId}] Verificação de duplicação:`, {
+        userEmail,
+        timeWindow: '60s',
+        mapName: formatMapName(runData.mapSize || 'medium'),
+        tokens: runData.tokensDropped || 0,
+        recentRuns: recentRuns?.count || 0
+      });
       
       if (recentRuns && recentRuns.count > 0) {
         console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail} (${recentRuns.count} runs idênticas recentes), ignorando...`);
@@ -173,15 +181,26 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         // Inserir na tabela feed_runs com ID mais único
         const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;
         
-        // Verificar se este ID específico já existe (proteção adicional)
-        const existingRun = await env.DB.prepare(`
-          SELECT id FROM feed_runs WHERE id = ?
-        `).bind(feedRunId).first();
+        // Verificação adicional: verificar se há run idêntica nos últimos 5 segundos
+        const veryRecentRun = await env.DB.prepare(`
+          SELECT id FROM feed_runs 
+          WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
+          ORDER BY created_at DESC LIMIT 1
+        `).bind(
+          userEmail,
+          now - 5000, // Últimos 5 segundos
+          formatMapName(runData.mapSize || 'medium'),
+          runData.tokensDropped || 0
+        ).first();
         
-        if (existingRun) {
-          console.log(`⚠️ [${requestId}] ID de run já existe, gerando novo ID...`);
-          const newFeedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;
-          console.log(`🔄 Novo ID gerado: ${newFeedRunId}`);
+        if (veryRecentRun) {
+          console.log(`⚠️ [${requestId}] Run muito recente detectada (últimos 5s), ignorando para evitar duplicação`);
+          return Response.json({ 
+            success: true, 
+            message: 'Run muito recente ignorada',
+            duplicate: true,
+            reason: 'very_recent_run'
+          });
         }
         
         console.log('🔍 DEBUG: Tentando inserir run no feed:', {
