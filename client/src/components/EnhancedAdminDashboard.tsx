@@ -222,6 +222,27 @@ export function EnhancedAdminDashboard() {
     }
   };
 
+  const debugProfitData = async () => {
+    try {
+      console.log('🔍 Debugando dados de lucros...');
+      const response = await fetch('/api/admin/debug-profit-data', {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('🔍 Debug de dados de lucros:', result.debug);
+        alert(`Debug: ${JSON.stringify(result.debug, null, 2)}`);
+      } else {
+        console.error('❌ Erro no debug:', result.error);
+        alert('Erro no debug: ' + result.error);
+      }
+    } catch (error) {
+      console.error('❌ Erro no debug:', error);
+      alert('Erro no debug: ' + error);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       // Simular dados de saúde do sistema
@@ -941,8 +962,13 @@ export function EnhancedAdminDashboard() {
             <TabsContent value="profits" className="space-y-6">
               <div className="flex justify-between items-center">
                 <h2 className="text-2xl font-bold">Análise de Lucros da Calculadora</h2>
-                <div className="text-sm text-muted-foreground">
-                  Dados dos últimos 30 dias
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-muted-foreground">
+                    Dados dos últimos 30 dias
+                  </div>
+                  <Button onClick={debugProfitData} variant="outline" size="sm">
+                    🔍 Debug
+                  </Button>
                 </div>
               </div>
 
