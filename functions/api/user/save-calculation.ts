@@ -155,11 +155,18 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       
       if (recentRuns && recentRuns.count > 0) {
         console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail} (${recentRuns.count} runs idênticas recentes), ignorando...`);
+        console.log(`🔍 [${requestId}] DEBUG - Email: ${userEmail}, Map: ${formatMapName(runData.mapSize || 'medium')}, Tokens: ${runData.tokensDropped || 0}`);
         return Response.json({ 
           success: true, 
           message: 'Run duplicada ignorada - dados idênticos detectados',
           duplicate: true,
-          reason: 'identical_data_within_30s'
+          reason: 'identical_data_within_30s',
+          userEmail: userEmail,
+          debug: {
+            mapName: formatMapName(runData.mapSize || 'medium'),
+            tokens: runData.tokensDropped || 0,
+            recentRuns: recentRuns.count
+          }
         });
       }
         
