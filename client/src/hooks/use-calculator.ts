@@ -34,6 +34,44 @@ export function useCalculator() {
 	const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { isAuthenticated } = useAuth();
 	const { saveCalculationToServer, savePreferencesToServer, loadServerData } = useSmartSync();
+
+	// Função para salvar dados de lucro para análise
+	const saveProfitDataToServer = useCallback(async (formData: CalculatorFormData, results: CalculationResults) => {
+		try {
+			const profitData = {
+				token_price: formData.tokenPrice,
+				tokens_farmed: formData.tokensFarmed,
+				total_profit: results.totalProfit,
+				efficiency: results.efficiency,
+				level: formData.level || 'Unknown',
+				tier: formData.tier || 'Unknown',
+				luck: formData.luck || 0,
+				charge: formData.charge || 0,
+				map_size: formData.mapSize || 'Unknown',
+				timestamp: Date.now()
+			};
+
+			const response = await fetch('/api/admin/save-profit-data', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				credentials: 'include',
+				body: JSON.stringify({ profitData })
+			});
+
+			if (response.ok) {
+				console.log('💰 Dados de lucro salvos para análise');
+				return true;
+			} else {
+				console.warn('⚠️ Falha ao salvar dados de lucro');
+				return false;
+			}
+		} catch (error) {
+			console.error('❌ Erro ao salvar dados de lucro:', error);
+			return false;
+		}
+	}, []);
 	
 	const [formData, setFormData] = useState<CalculatorFormData>(DEFAULT_FORM);
 	const [history, setHistory] = useState<HistoryItem[]>([]);
@@ -310,6 +348,13 @@ export function useCalculator() {
 				console.log('✅ Cálculo salvo no servidor');
 			} else {
 				console.warn('⚠️ Falha ao salvar cálculo no servidor, mantido apenas no localStorage');
+			}
+
+			// Salvar dados de lucro para análise (sem expor nick do usuário)
+			try {
+				await saveProfitDataToServer(formData, results);
+			} catch (error) {
+				console.log('Profit data save failed (non-critical):', error);
 			}
 		}
 		
