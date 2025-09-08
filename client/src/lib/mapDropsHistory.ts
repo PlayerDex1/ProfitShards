@@ -132,25 +132,29 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
     
     if (user && user !== 'guest' && saveMapDropToServer) {
-      // Validar dados antes de prosseguir
+      // Validar dados antes de prosseguir (APENAS LOGS, NÃO BLOQUEIA)
       const validation = validateBeforeServerSave(newEntry, user);
       if (!validation.isValid) {
-        logError('mapDrops', 'Dados inválidos - salvamento bloqueado', validation.errors, user);
-        return;
+        logError('mapDrops', 'Dados inválidos detectados (mas não bloqueando)', validation.errors, user);
+        // NÃO RETORNAR - permitir salvamento mesmo com dados "inválidos"
       }
       
       if (validation.warnings.length > 0) {
         logWarn('mapDrops', 'Avisos de validação', validation.warnings, user);
       }
 
-      // Verificar duplicação antes de prosseguir
-      if (checkForDuplication(user, newEntry.mapSize, newEntry.tokensDropped, 'mapDropsHistory')) {
-        logWarn('mapDrops', 'Duplicação detectada - tentativa bloqueada', { 
-          mapSize: newEntry.mapSize, 
-          tokens: newEntry.tokensDropped 
-        }, user);
-        return;
-      }
+      // Verificar duplicação antes de prosseguir (TEMPORARIAMENTE DESABILITADO)
+      // if (checkForDuplication(user, newEntry.mapSize, newEntry.tokensDropped, 'mapDropsHistory')) {
+      //   logWarn('mapDrops', 'Duplicação detectada - tentativa bloqueada', { 
+      //     mapSize: newEntry.mapSize, 
+      //     tokens: newEntry.tokensDropped 
+      //   }, user);
+      //   return;
+      // }
+      logInfo('mapDrops', 'Monitor de duplicação temporariamente desabilitado', { 
+        mapSize: newEntry.mapSize, 
+        tokens: newEntry.tokensDropped 
+      }, user);
 
       // Sistema de lock global para evitar qualquer duplicação
       if (globalSaveLock) {
