@@ -211,6 +211,7 @@ export function EnhancedAdminDashboard() {
       
       if (result.success) {
         console.log('✅ Estatísticas de lucros carregadas:', result.stats.totalCalculations, 'cálculos');
+        console.log('🔍 DEBUG - Estrutura completa dos dados:', result.stats);
         setProfitStats(result.stats);
       } else {
         console.error('❌ Erro ao carregar estatísticas de lucros:', result.error);
@@ -990,6 +991,17 @@ export function EnhancedAdminDashboard() {
                   🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
                   {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
                 </p>
+                {profitStats && (
+                  <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                    <p>📊 Dados disponíveis:</p>
+                    <p>• Total: {profitStats.totalCalculations}</p>
+                    <p>• Lucro Total: {profitStats.totalProfit}</p>
+                    <p>• Lucro Médio: {profitStats.avgProfit}</p>
+                    <p>• Eficiência: {profitStats.avgEfficiency}%</p>
+                    <p>• Levels: {profitStats.levelStats?.length || 0}</p>
+                    <p>• Tiers: {profitStats.tierStats?.length || 0}</p>
+                  </div>
+                )}
               </div>
 
               {profitStats ? (
