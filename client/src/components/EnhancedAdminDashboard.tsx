@@ -998,342 +998,386 @@ export function EnhancedAdminDashboard() {
               <WinnerManager />
             </TabsContent>
 
-            {/* Aba Community */}
-            <TabsContent value="community" className="space-y-6">
-              <CommunityAnalytics />
-            </TabsContent>
 
-            {/* Aba Analytics */}
-            <TabsContent value="analytics" className="space-y-6">
-              <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <h2 className="text-2xl font-bold mb-4">Analytics Dashboard</h2>
-                <p className="text-blue-700 dark:text-blue-300 mb-4">
-                  📊 <strong>Análises e Estatísticas:</strong> Dados em tempo real
-                </p>
-                
-                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                    🔍 <strong>Status:</strong> Analytics funcionando
-                  </p>
-                </div>
-
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => {
-                      console.log('🔍 Teste Analytics clicado!');
-                      alert('Analytics funcionando!');
-                    }}
-                  >
-                    Teste Analytics
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      console.log('🔍 Carregando dados...');
-                      loadUsers();
-                      loadTrends();
-                    }} 
-                    variant="outline"
-                  >
-                    🔄 Carregar Dados
-                  </Button>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Aba Lucros */}
-            <TabsContent value="profits" className="space-y-6">
-              <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                <h2 className="text-2xl font-bold mb-4">Análise de Lucros da Calculadora</h2>
-                <p className="text-green-700 dark:text-green-300 mb-4">
-                  📊 <strong>Estatísticas de Lucros:</strong> Dados dos últimos 30 dias
-                </p>
-                
-                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                    🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
-                    {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
-                  </p>
-                  {profitStats && (
-                    <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                      <p>📊 Dados disponíveis:</p>
-                      <p>• Total: {profitStats.totalCalculations}</p>
-                      <p>• Lucro Total: {profitStats.totalProfit}</p>
-                      <p>• Lucro Médio: {profitStats.avgProfit}</p>
-                      <p>• Eficiência: {profitStats.avgEfficiency}%</p>
-                    </div>
-                  )}
-                </div>
-
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => {
-                      console.log('🔍 Teste Lucros clicado!');
-                      alert('Lucros funcionando!');
-                    }}
-                  >
-                    Teste Lucros
-                  </Button>
-                  <Button 
-                    onClick={() => {
-                      console.log('🔍 Botão Debug clicado!');
-                      debugProfitData();
-                    }} 
-                    variant="outline"
-                  >
-                    🔍 Debug
-                  </Button>
-                </div>
-              </div>
-
-              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                <p className="text-sm text-blue-700 dark:text-blue-300">
-                  🔍 <strong>Teste:</strong> Se você está vendo esta mensagem, a aba Lucros está funcionando!
-                </p>
-              </div>
-
-              <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                <p className="text-sm text-yellow-700 dark:text-yellow-300">
-                  🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
-                  {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
-                </p>
-                {profitStats && (
-                  <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
-                    <p>📊 Dados disponíveis:</p>
-                    <p>• Total: {profitStats.totalCalculations}</p>
-                    <p>• Lucro Total: {profitStats.totalProfit}</p>
-                    <p>• Lucro Médio: {profitStats.avgProfit}</p>
-                    <p>• Eficiência: {profitStats.avgEfficiency}%</p>
-                    <p>• Levels: {profitStats.levelStats?.length || 0}</p>
-                    <p>• Tiers: {profitStats.tierStats?.length || 0}</p>
-                  </div>
-                )}
-              </div>
-
-              {profitStats ? (
-                <>
-                  {/* Cards de Estatísticas Gerais */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total de Cálculos</CardTitle>
-                        <Calculator className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {profitStats.totalCalculations.toLocaleString()}
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Últimos 30 dias
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {profitStats.totalProfit.toLocaleString()} tokens
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Soma de todos os lucros
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Lucro Médio</CardTitle>
-                        <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {profitStats.avgProfit.toLocaleString()} tokens
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Por cálculo
-                        </p>
-                      </CardContent>
-                    </Card>
-
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Eficiência Média</CardTitle>
-                        <Target className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">
-                          {profitStats.avgEfficiency}%
-                        </div>
-                        <p className="text-xs text-muted-foreground">
-                          Performance geral
-                        </p>
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  {/* Estatísticas por Level */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5" />
-                        Estatísticas por Level
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {profitStats.levelStats.map((level: any, index: number) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline">Level {level.level}</Badge>
-                              <span className="text-sm text-muted-foreground">
-                                {level.count} cálculos
-                              </span>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">
-                                {level.avgProfit.toLocaleString()} tokens
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {level.avgEfficiency}% eficiência
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Estatísticas por Tier */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Star className="h-5 w-5" />
-                        Estatísticas por Tier
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-4">
-                        {profitStats.tierStats.map((tier: any, index: number) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Badge variant="outline">Tier {tier.tier}</Badge>
-                              <span className="text-sm text-muted-foreground">
-                                {tier.count} cálculos
-                              </span>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">
-                                {tier.avgProfit.toLocaleString()} tokens
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {tier.avgEfficiency}% eficiência
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Faixas de Eficiência */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Gauge className="h-5 w-5" />
-                        Distribuição por Eficiência
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {profitStats.efficiencyRanges.map((range: any, index: number) => (
-                          <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
-                            <div className="text-lg font-semibold">{range.range}</div>
-                            <div className="text-2xl font-bold text-primary">
-                              {range.count}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {range.avgProfit.toLocaleString()} tokens médios
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Faixas de Lucro */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5" />
-                        Distribuição por Lucro
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {profitStats.profitRanges.map((range: any, index: number) => (
-                          <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
-                            <div className="text-lg font-semibold">{range.range} tokens</div>
-                            <div className="text-2xl font-bold text-primary">
-                              {range.count}
-                            </div>
-                            <div className="text-sm text-muted-foreground">
-                              {range.avgEfficiency}% eficiência média
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  {/* Atividade Recente */}
-                  <Card>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Calendar className="h-5 w-5" />
-                        Atividade Recente (7 dias)
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-3">
-                        {profitStats.recentActivity.map((day: any, index: number) => (
-                          <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                            <div className="flex items-center gap-3">
-                              <Calendar className="h-4 w-4 text-muted-foreground" />
-                              <span className="font-medium">
-                                {new Date(day.date).toLocaleDateString('pt-BR')}
-                              </span>
-                              <Badge variant="outline">
-                                {day.calculations} cálculos
-                              </Badge>
-                            </div>
-                            <div className="text-right">
-                              <div className="font-semibold">
-                                {day.totalProfit.toLocaleString()} tokens
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {day.avgProfit.toLocaleString()} tokens médios
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </>
-              ) : (
-                <Card className="p-8 text-center">
-                  <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Nenhum Dado de Lucro Disponível</h3>
-                  <p className="text-muted-foreground">
-                    Os dados de lucro da calculadora aparecerão aqui conforme os usuários fizerem cálculos.
-                  </p>
-                </Card>
-              )}
-            </TabsContent>
           </Tabs>
+        </TabsContent>
+
+        {/* Aba Community */}
+        <TabsContent value="community" className="space-y-6">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-900/20 dark:to-cyan-900/20 p-6 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="flex items-center gap-3 mb-4">
+              <Users className="h-6 w-6 text-blue-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                  👥 Analytics da Comunidade
+                </h2>
+                <p className="text-sm text-blue-600 dark:text-blue-300">
+                  Estatísticas e insights da comunidade de usuários
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <CommunityAnalytics />
+        </TabsContent>
+
+        {/* Aba Analytics */}
+        <TabsContent value="analytics" className="space-y-6">
+          <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 p-6 rounded-lg border border-purple-200 dark:border-purple-800">
+            <div className="flex items-center gap-3 mb-4">
+              <LineChart className="h-6 w-6 text-purple-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                  📊 Analytics Dashboard
+                </h2>
+                <p className="text-sm text-purple-600 dark:text-purple-300">
+                  Análises e estatísticas em tempo real
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <h2 className="text-2xl font-bold mb-4">Analytics Dashboard</h2>
+            <p className="text-blue-700 dark:text-blue-300 mb-4">
+              📊 <strong>Análises e Estatísticas:</strong> Dados em tempo real
+            </p>
+            
+            <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                🔍 <strong>Status:</strong> Analytics funcionando
+              </p>
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => {
+                  console.log('🔍 Teste Analytics clicado!');
+                  alert('Analytics funcionando!');
+                }}
+              >
+                Teste Analytics
+              </Button>
+              <Button 
+                onClick={() => {
+                  console.log('🔍 Carregando dados...');
+                  loadUsers();
+                  loadTrends();
+                }} 
+                variant="outline"
+              >
+                🔄 Carregar Dados
+              </Button>
+            </div>
+          </div>
+        </TabsContent>
+
+        {/* Aba Profits */}
+        <TabsContent value="profits" className="space-y-6">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 p-6 rounded-lg border border-green-200 dark:border-green-800">
+            <div className="flex items-center gap-3 mb-4">
+              <DollarSign className="h-6 w-6 text-green-600" />
+              <div>
+                <h2 className="text-2xl font-bold text-green-900 dark:text-green-100">
+                  💰 Análise de Lucros da Calculadora
+                </h2>
+                <p className="text-sm text-green-600 dark:text-green-300">
+                  Estatísticas detalhadas de lucros e eficiência
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="p-6 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+            <h2 className="text-2xl font-bold mb-4">Análise de Lucros da Calculadora</h2>
+            <p className="text-green-700 dark:text-green-300 mb-4">
+              📊 <strong>Estatísticas de Lucros:</strong> Dados dos últimos 30 dias
+            </p>
+            
+            <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
+                {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
+              </p>
+              {profitStats && (
+                <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                  <p>📊 Dados disponíveis:</p>
+                  <p>• Total: {profitStats.totalCalculations}</p>
+                  <p>• Lucro Total: {profitStats.totalProfit}</p>
+                  <p>• Lucro Médio: {profitStats.avgProfit}</p>
+                  <p>• Eficiência: {profitStats.avgEfficiency}%</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <Button 
+                onClick={() => {
+                  console.log('🔍 Teste Lucros clicado!');
+                  alert('Lucros funcionando!');
+                }}
+              >
+                Teste Lucros
+              </Button>
+              <Button 
+                onClick={() => {
+                  console.log('🔍 Botão Debug clicado!');
+                  debugProfitData();
+                }} 
+                variant="outline"
+              >
+                🔍 Debug
+              </Button>
+            </div>
+          </div>
+
+          <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <p className="text-sm text-blue-700 dark:text-blue-300">
+              🔍 <strong>Teste:</strong> Se você está vendo esta mensagem, a aba Lucros está funcionando!
+            </p>
+          </div>
+
+          <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+            <p className="text-sm text-yellow-700 dark:text-yellow-300">
+              🔍 <strong>Debug:</strong> profitStats = {profitStats ? 'EXISTE' : 'NULL'} | 
+              {profitStats ? ` Total: ${profitStats.totalCalculations}` : ' Sem dados'}
+            </p>
+            {profitStats && (
+              <div className="mt-2 text-xs text-yellow-600 dark:text-yellow-400">
+                <p>📊 Dados disponíveis:</p>
+                <p>• Total: {profitStats.totalCalculations}</p>
+                <p>• Lucro Total: {profitStats.totalProfit}</p>
+                <p>• Lucro Médio: {profitStats.avgProfit}</p>
+                <p>• Eficiência: {profitStats.avgEfficiency}%</p>
+                <p>• Levels: {profitStats.levelStats?.length || 0}</p>
+                <p>• Tiers: {profitStats.tierStats?.length || 0}</p>
+              </div>
+            )}
+          </div>
+
+          {profitStats ? (
+            <>
+              {/* Cards de Estatísticas Gerais */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Total de Cálculos</CardTitle>
+                    <Calculator className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {profitStats.totalCalculations.toLocaleString()}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Últimos 30 dias
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Lucro Total</CardTitle>
+                    <DollarSign className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {profitStats.totalProfit.toLocaleString()} tokens
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Soma de todos os lucros
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Lucro Médio</CardTitle>
+                    <TrendingUp className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {profitStats.avgProfit.toLocaleString()} tokens
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Por cálculo
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                    <CardTitle className="text-sm font-medium">Eficiência Média</CardTitle>
+                    <Target className="h-4 w-4 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold">
+                      {profitStats.avgEfficiency}%
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Performance geral
+                    </p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Estatísticas por Level */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Trophy className="h-5 w-5" />
+                    Estatísticas por Level
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {profitStats.levelStats.map((level: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline">Level {level.level}</Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {level.count} cálculos
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">
+                            {level.avgProfit.toLocaleString()} tokens
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {level.avgEfficiency}% eficiência
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Estatísticas por Tier */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Star className="h-5 w-5" />
+                    Estatísticas por Tier
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {profitStats.tierStats.map((tier: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Badge variant="outline">Tier {tier.tier}</Badge>
+                          <span className="text-sm text-muted-foreground">
+                            {tier.count} cálculos
+                          </span>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">
+                            {tier.avgProfit.toLocaleString()} tokens
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {tier.avgEfficiency}% eficiência
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Faixas de Eficiência */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Gauge className="h-5 w-5" />
+                    Distribuição por Eficiência
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {profitStats.efficiencyRanges.map((range: any, index: number) => (
+                      <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
+                        <div className="text-lg font-semibold">{range.range}</div>
+                        <div className="text-2xl font-bold text-primary">
+                          {range.count}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {range.avgProfit.toLocaleString()} tokens médios
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Faixas de Lucro */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <TrendingUp className="h-5 w-5" />
+                    Distribuição por Lucro
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {profitStats.profitRanges.map((range: any, index: number) => (
+                      <div key={index} className="p-4 bg-muted/50 rounded-lg text-center">
+                        <div className="text-lg font-semibold">{range.range} tokens</div>
+                        <div className="text-2xl font-bold text-primary">
+                          {range.count}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {range.avgEfficiency}% eficiência média
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Atividade Recente */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Calendar className="h-5 w-5" />
+                    Atividade Recente (7 dias)
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {profitStats.recentActivity.map((day: any, index: number) => (
+                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          <span className="font-medium">
+                            {new Date(day.date).toLocaleDateString('pt-BR')}
+                          </span>
+                          <Badge variant="outline">
+                            {day.calculations} cálculos
+                          </Badge>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold">
+                            {day.totalProfit.toLocaleString()} tokens
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {day.avgProfit.toLocaleString()} tokens médios
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card className="p-8 text-center">
+              <DollarSign className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">Nenhum Dado de Lucro Disponível</h3>
+              <p className="text-muted-foreground">
+                Os dados de lucro da calculadora aparecerão aqui conforme os usuários fizerem cálculos.
+              </p>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Gestão de Usuários */}
