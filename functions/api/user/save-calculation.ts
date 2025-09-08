@@ -12,30 +12,11 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
   try {
     const body = await request.json();
     const requestId = Math.random().toString(36).substr(2, 9);
-    
-    console.log(`🚀 [${requestId}] API CHAMADA - Início da função save-calculation`);
-    
-    // Verificar se é uma tentativa de retry
-    if (body.retryAttempt && body.retryAttempt > 0) {
-      console.log(`⚠️ [${requestId}] Tentativa de retry detectada (${body.retryAttempt}), ignorando para evitar duplicação`);
-      return Response.json({ 
-        success: true, 
-        message: 'Retry ignorado para evitar duplicação',
-        retryIgnored: true 
-      });
-    }
-    
     console.log(`📥 [${requestId}] Recebido cálculo para salvar:`, { 
       type: body.type, 
       timestamp: Date.now(),
       hasData: !!body.data,
-      hasResults: !!body.results,
-      retryAttempt: body.retryAttempt || 0,
-      dataPreview: body.data ? {
-        mapSize: body.data.mapSize,
-        tokensDropped: body.data.tokensDropped,
-        timestamp: body.data.timestamp
-      } : null
+      hasResults: !!body.results
     });
     
     // Get user from session
@@ -60,6 +41,8 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
       return Response.json({ error: 'Session expired' }, { status: 401 });
     }
 
+    // Parse request body (já foi feito acima)
+    
     if (!body.type || !body.data) {
       return Response.json({ error: 'Invalid calculation data' }, { status: 400 });
     }
@@ -93,19 +76,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     ).run();
 
     // 🔥 ADICIONAR AO FEED DA COMUNIDADE
-    console.log(`🔍 DEBUG [${requestId}] Verificando condições para feed:`, {
-      type: body.type,
-      hasData: !!body.data,
-      hasResults: !!body.results,
-      isProfit: body.type === 'profit',
-      isMapdrops: body.type === 'mapdrops',
-      profitCondition: body.type === 'profit' && body.data && body.results,
-      mapdropsCondition: body.type === 'mapdrops' && body.data,
-      shouldAddToFeed: (body.type === 'profit' && body.data && body.results) || (body.type === 'mapdrops' && body.data)
-    });
-    
     if ((body.type === 'profit' && body.data && body.results) || (body.type === 'mapdrops' && body.data)) {
-      console.log(`🔥 [${requestId}] Condições atendidas, adicionando ao feed...`);
       try {
         // Extrair dados da run para o feed
         const runData = body.data;
@@ -122,15 +93,6 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           tokens = runData.tokensDropped || 0;
           luck = runData.totalLuck || runData.charges * 4 || 0; // Fallback para charges * 4
           efficiency = luck > 0 ? tokens / luck : 0;
-          
-          console.log(`🔍 DEBUG [${requestId}] Map drops calculation:`, {
-            tokensDropped: runData.tokensDropped,
-            totalLuck: runData.totalLuck,
-            charges: runData.charges,
-            calculatedLuck: luck,
-            calculatedTokens: tokens,
-            efficiency
-          });
         }
         
         // Obter nome do usuário
@@ -141,48 +103,28 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
         const userEmail = userResult?.email || 'anonymous@feed.com';
         const playerName = createPlayerNameFromEmail(userEmail);
         
-      // Verificar se já existe uma run recente para este usuário (evitar duplicação)
-      // Verificação mais robusta: mesmo usuário, mesmo mapa, mesmo tokens, dentro de 10 segundos
-      const recentRuns = await env.DB.prepare(`
-        SELECT COUNT(*) as count FROM feed_runs 
-        WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
-      `).bind(
-        userEmail,
-        now - 10000, // Últimos 10 segundos (menos restritivo)
-        formatMapName(runData.mapSize || 'medium'),
-        runData.tokensDropped || 0
-      ).first();
-      
-      console.log(`🔍 [${requestId}] Verificação de duplicação:`, {
-        userEmail,
-        timeWindow: '10s',
-        mapName: formatMapName(runData.mapSize || 'medium'),
-        tokens: runData.tokensDropped || 0,
-        recentRuns: recentRuns?.count || 0
-      });
-      
-      if (recentRuns && recentRuns.count > 0) {
-        console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail} (${recentRuns.count} runs idênticas recentes), ignorando...`);
-        console.log(`🔍 [${requestId}] DEBUG - Email: ${userEmail}, Map: ${formatMapName(runData.mapSize || 'medium')}, Tokens: ${runData.tokensDropped || 0}`);
-        return Response.json({ 
-          success: true, 
-          message: 'Run duplicada ignorada - dados idênticos detectados',
-          duplicate: true,
-          reason: 'identical_data_within_30s',
-          userEmail: userEmail,
-          debug: {
-            mapName: formatMapName(runData.mapSize || 'medium'),
-            tokens: runData.tokensDropped || 0,
-            recentRuns: recentRuns.count
-          }
-        });
-      }
+        // Verificar se já existe uma run recente para este usuário (evitar duplicação)
+        const recentRuns = await env.DB.prepare(`
+          SELECT COUNT(*) as count FROM feed_runs 
+          WHERE user_email = ? AND created_at > ? AND map_name = ? AND tokens = ?
+        `).bind(
+          userEmail,
+          now - 60000, // Últimos 60 segundos
+          formatMapName(runData.mapSize || 'medium'),
+          tokens
+        ).first();
+        
+        if (recentRuns && recentRuns.count > 0) {
+          console.log(`⚠️ [${requestId}] Run duplicada detectada para ${userEmail}, ignorando...`);
+          return Response.json({ 
+            success: true, 
+            message: 'Run duplicada ignorada',
+            duplicate: true 
+          });
+        }
         
         // Inserir na tabela feed_runs com ID mais único
         const feedRunId = `feed_${now}_${Math.random().toString(36).substr(2, 9)}_${session.user_id}`;
-        
-        // Verificação adicional REMOVIDA - estava bloqueando todas as entradas
-        console.log(`✅ [${requestId}] Prosseguindo com inserção no feed`);
         
         console.log('🔍 DEBUG: Tentando inserir run no feed:', {
           feedRunId,
@@ -218,14 +160,7 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           map: formatMapName(runData.mapSize || 'medium'),
           tokens,
           luck,
-          feedRunId,
-          userEmail,
-          timestamp: now,
-          dataPreview: {
-            mapSize: runData.mapSize,
-            tokensDropped: runData.tokensDropped,
-            originalTimestamp: runData.timestamp
-          }
+          feedRunId
         });
         
       } catch (feedError) {
