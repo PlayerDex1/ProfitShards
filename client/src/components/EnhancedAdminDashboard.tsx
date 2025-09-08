@@ -96,6 +96,7 @@ export function EnhancedAdminDashboard() {
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
   const [users, setUsers] = useState<UserData[]>([]);
+  const [trends, setTrends] = useState<any[]>([]);
   const [systemHealth, setSystemHealth] = useState<SystemHealth | null>(null);
   
   // Filtros Avançados
@@ -178,6 +179,27 @@ export function EnhancedAdminDashboard() {
     }
   };
 
+  const loadTrends = async () => {
+    try {
+      console.log('📈 Carregando tendências reais do banco...');
+      const response = await fetch('/api/admin/get-trends', {
+        credentials: 'include'
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        console.log('✅ Tendências reais carregadas:', result.trends.length, 'dias');
+        setTrends(result.trends);
+      } else {
+        console.error('❌ Erro ao carregar tendências:', result.error);
+        setTrends([]);
+      }
+    } catch (error) {
+      console.error('❌ Erro ao carregar tendências:', error);
+      setTrends([]);
+    }
+  };
+
   const loadSystemHealth = async () => {
     try {
       // Simular dados de saúde do sistema
@@ -201,6 +223,7 @@ export function EnhancedAdminDashboard() {
       await Promise.all([
         loadMapAnalytics(),
         loadUsers(),
+        loadTrends(),
         loadSystemHealth()
       ]);
     } finally {
@@ -258,23 +281,8 @@ export function EnhancedAdminDashboard() {
     user.email.toLowerCase().includes(userSearch.toLowerCase())
   );
 
-  // Dados para gráfico de linha (simulado)
-  const generateTrendData = (days: number) => {
-    const data = [];
-    for (let i = days - 1; i >= 0; i--) {
-      const date = new Date();
-      date.setDate(date.getDate() - i);
-      data.push({
-        date: date.toISOString().split('T')[0],
-        runs: Math.floor(Math.random() * 50) + 20,
-        users: Math.floor(Math.random() * 10) + 5,
-        profit: Math.floor(Math.random() * 10000) + 5000
-      });
-    }
-    return data;
-  };
-
-  const trendData = generateTrendData(30);
+  // Usar dados reais de tendências do banco
+  const trendData = trends.length > 0 ? trends : [];
 
   return (
     <div className="space-y-6">
@@ -445,18 +453,30 @@ export function EnhancedAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="h-64 flex items-end justify-between gap-1">
-                  {trendData.slice(-14).map((day, index) => (
-                    <div key={index} className="flex flex-col items-center gap-1">
-                      <div 
-                        className="bg-blue-500 rounded-t w-6 transition-all hover:bg-blue-600"
-                        style={{ height: `${(day.runs / Math.max(...trendData.map(d => d.runs))) * 200}px` }}
-                        title={`${day.date}: ${day.runs} runs`}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(day.date).getDate()}
-                      </span>
+                  {trendData.length > 0 ? (
+                    trendData.slice(-14).map((day, index) => {
+                      const maxRuns = Math.max(...trendData.map(d => d.runs));
+                      return (
+                        <div key={index} className="flex flex-col items-center gap-1">
+                          <div 
+                            className="bg-blue-500 rounded-t w-6 transition-all hover:bg-blue-600"
+                            style={{ height: `${maxRuns > 0 ? (day.runs / maxRuns) * 200 : 0}px` }}
+                            title={`${day.date}: ${day.runs} runs`}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(day.date).getDate()}
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full text-muted-foreground">
+                      <div className="text-center">
+                        <BarChart3 className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Nenhum dado de tendência disponível</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -471,18 +491,30 @@ export function EnhancedAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="h-64 flex items-end justify-between gap-1">
-                  {trendData.slice(-14).map((day, index) => (
-                    <div key={index} className="flex flex-col items-center gap-1">
-                      <div 
-                        className="bg-green-500 rounded-t w-6 transition-all hover:bg-green-600"
-                        style={{ height: `${(day.users / Math.max(...trendData.map(d => d.users))) * 200}px` }}
-                        title={`${day.date}: ${day.users} usuários`}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(day.date).getDate()}
-                      </span>
+                  {trendData.length > 0 ? (
+                    trendData.slice(-14).map((day, index) => {
+                      const maxUsers = Math.max(...trendData.map(d => d.users));
+                      return (
+                        <div key={index} className="flex flex-col items-center gap-1">
+                          <div 
+                            className="bg-green-500 rounded-t w-6 transition-all hover:bg-green-600"
+                            style={{ height: `${maxUsers > 0 ? (day.users / maxUsers) * 200 : 0}px` }}
+                            title={`${day.date}: ${day.users} usuários`}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(day.date).getDate()}
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full text-muted-foreground">
+                      <div className="text-center">
+                        <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Nenhum dado de usuários disponível</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -1253,18 +1285,30 @@ export function EnhancedAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="h-80 flex items-end justify-between gap-1">
-                  {trendData.map((day, index) => (
-                    <div key={index} className="flex flex-col items-center gap-1">
-                      <div 
-                        className="bg-gradient-to-t from-blue-500 to-blue-300 rounded-t w-4 transition-all hover:from-blue-600 hover:to-blue-400"
-                        style={{ height: `${(day.runs / Math.max(...trendData.map(d => d.runs))) * 300}px` }}
-                        title={`${day.date}: ${day.runs} runs`}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(day.date).getDate()}
-                      </span>
+                  {trendData.length > 0 ? (
+                    trendData.map((day, index) => {
+                      const maxRuns = Math.max(...trendData.map(d => d.runs));
+                      return (
+                        <div key={index} className="flex flex-col items-center gap-1">
+                          <div 
+                            className="bg-gradient-to-t from-blue-500 to-blue-300 rounded-t w-4 transition-all hover:from-blue-600 hover:to-blue-400"
+                            style={{ height: `${maxRuns > 0 ? (day.runs / maxRuns) * 300 : 0}px` }}
+                            title={`${day.date}: ${day.runs} runs`}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(day.date).getDate()}
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full text-muted-foreground">
+                      <div className="text-center">
+                        <LineChart className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Nenhum dado de crescimento disponível</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -1278,18 +1322,30 @@ export function EnhancedAdminDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="h-80 flex items-end justify-between gap-1">
-                  {trendData.map((day, index) => (
-                    <div key={index} className="flex flex-col items-center gap-1">
-                      <div 
-                        className="bg-gradient-to-t from-green-500 to-green-300 rounded-t w-4 transition-all hover:from-green-600 hover:to-green-400"
-                        style={{ height: `${(day.users / Math.max(...trendData.map(d => d.users))) * 300}px` }}
-                        title={`${day.date}: ${day.users} usuários`}
-                      />
-                      <span className="text-xs text-muted-foreground">
-                        {new Date(day.date).getDate()}
-                      </span>
+                  {trendData.length > 0 ? (
+                    trendData.map((day, index) => {
+                      const maxUsers = Math.max(...trendData.map(d => d.users));
+                      return (
+                        <div key={index} className="flex flex-col items-center gap-1">
+                          <div 
+                            className="bg-gradient-to-t from-green-500 to-green-300 rounded-t w-4 transition-all hover:from-green-600 hover:to-green-400"
+                            style={{ height: `${maxUsers > 0 ? (day.users / maxUsers) * 300 : 0}px` }}
+                            title={`${day.date}: ${day.users} usuários`}
+                          />
+                          <span className="text-xs text-muted-foreground">
+                            {new Date(day.date).getDate()}
+                          </span>
+                        </div>
+                      );
+                    })
+                  ) : (
+                    <div className="flex items-center justify-center h-full w-full text-muted-foreground">
+                      <div className="text-center">
+                        <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                        <p className="text-sm">Nenhum dado de engajamento disponível</p>
+                      </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </CardContent>
             </Card>
