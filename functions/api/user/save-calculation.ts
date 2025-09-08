@@ -91,7 +91,19 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
     ).run();
 
     // 🔥 ADICIONAR AO FEED DA COMUNIDADE
+    console.log(`🔍 DEBUG [${requestId}] Verificando condições para feed:`, {
+      type: body.type,
+      hasData: !!body.data,
+      hasResults: !!body.results,
+      isProfit: body.type === 'profit',
+      isMapdrops: body.type === 'mapdrops',
+      profitCondition: body.type === 'profit' && body.data && body.results,
+      mapdropsCondition: body.type === 'mapdrops' && body.data,
+      shouldAddToFeed: (body.type === 'profit' && body.data && body.results) || (body.type === 'mapdrops' && body.data)
+    });
+    
     if ((body.type === 'profit' && body.data && body.results) || (body.type === 'mapdrops' && body.data)) {
+      console.log(`🔥 [${requestId}] Condições atendidas, adicionando ao feed...`);
       try {
         // Extrair dados da run para o feed
         const runData = body.data;
@@ -108,6 +120,15 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
           tokens = runData.tokensDropped || 0;
           luck = runData.totalLuck || runData.charges * 4 || 0; // Fallback para charges * 4
           efficiency = luck > 0 ? tokens / luck : 0;
+          
+          console.log(`🔍 DEBUG [${requestId}] Map drops calculation:`, {
+            tokensDropped: runData.tokensDropped,
+            totalLuck: runData.totalLuck,
+            charges: runData.charges,
+            calculatedLuck: luck,
+            calculatedTokens: tokens,
+            efficiency
+          });
         }
         
         // Obter nome do usuário
