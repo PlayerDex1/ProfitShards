@@ -254,7 +254,20 @@ export function getMapDropsHistoryGroupedByDay(): Array<[string, MapDrop[]]> {
       if (!drop.timestamp) return;
       
       const date = new Date(drop.timestamp);
-      const dayKey = date.toISOString().split('T')[0]; // YYYY-MM-DD
+      
+      // Adjust for 03:00 UTC reset
+      const resetHour = 3;
+      let dayKey;
+      
+      if (date.getUTCHours() >= resetHour) {
+        // After 03:00 UTC - belongs to current day
+        dayKey = date.toISOString().split('T')[0];
+      } else {
+        // Before 03:00 UTC - belongs to previous day
+        const prevDay = new Date(date);
+        prevDay.setUTCDate(prevDay.getUTCDate() - 1);
+        dayKey = prevDay.toISOString().split('T')[0];
+      }
       
       if (!grouped.has(dayKey)) {
         grouped.set(dayKey, []);
@@ -278,7 +291,22 @@ export function getTotalStats(days?: number): any {
     let targetDrops = history;
     
     if (days) {
-      const cutoffTime = Date.now() - (days * 24 * 60 * 60 * 1000);
+      // Calculate cutoff time with 03:00 UTC reset
+      const now = new Date();
+      const resetHour = 3;
+      
+      // Get current day start (03:00 UTC)
+      let currentDayStart;
+      if (now.getUTCHours() >= resetHour) {
+        currentDayStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), resetHour, 0, 0, 0));
+      } else {
+        const yesterday = new Date(now);
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+        currentDayStart = new Date(Date.UTC(yesterday.getUTCFullYear(), yesterday.getUTCMonth(), yesterday.getUTCDate(), resetHour, 0, 0, 0));
+      }
+      
+      // Calculate cutoff time (days * 24 hours from current day start)
+      const cutoffTime = currentDayStart.getTime() - (days * 24 * 60 * 60 * 1000);
       targetDrops = history.filter(drop => drop.timestamp >= cutoffTime);
     }
     
@@ -338,10 +366,25 @@ export function getDayStats(day?: string): any {
         drop.timestamp >= dayStart && drop.timestamp <= dayEnd
       );
     } else {
-      // Use today
-      const today = new Date();
-      const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-      const endOfDay = startOfDay + (24 * 60 * 60 * 1000) - 1;
+      // Use today with 03:00 UTC reset
+      const now = new Date();
+      const today = new Date(now.getTime() + (now.getTimezoneOffset() * 60000)); // Convert to UTC
+      
+      // Reset at 03:00 UTC
+      const resetHour = 3;
+      let startOfDay, endOfDay;
+      
+      if (today.getUTCHours() >= resetHour) {
+        // After 03:00 UTC - current day starts at 03:00 UTC
+        startOfDay = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), resetHour, 0, 0, 0)).getTime();
+        endOfDay = startOfDay + (24 * 60 * 60 * 1000) - 1;
+      } else {
+        // Before 03:00 UTC - still previous day (starts at 03:00 UTC yesterday)
+        const yesterday = new Date(today);
+        yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+        startOfDay = new Date(Date.UTC(yesterday.getUTCFullYear(), yesterday.getUTCMonth(), yesterday.getUTCDate(), resetHour, 0, 0, 0)).getTime();
+        endOfDay = startOfDay + (24 * 60 * 60 * 1000) - 1;
+      }
       
       const history = getMapDropsHistory();
       targetDrops = history.filter(drop => 

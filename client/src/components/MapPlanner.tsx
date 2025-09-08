@@ -675,6 +675,7 @@ export function MapPlanner({}: MapPlannerProps) {
               {/* 📊 Resumo de Totais */}
               <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
                 <div className="text-sm font-bold text-primary mb-2">📊 Resumo dos Últimos 30 Dias</div>
+                <div className="text-xs text-muted-foreground mb-3">🕐 Reset diário às 03:00 UTC</div>
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <div className="text-muted-foreground">Total de Runs:</div>
@@ -700,7 +701,22 @@ export function MapPlanner({}: MapPlannerProps) {
                 .slice(0, 30) // Últimos 30 dias (igual ao feed)
                 .map(([day, dayEntries]) => {
                   const stats = getDayStats(day);
-                  const isToday = day === new Date().toISOString().split('T')[0];
+                  // Check if it's today with 03:00 UTC reset
+                  const now = new Date();
+                  const resetHour = 3;
+                  let todayKey;
+                  
+                  if (now.getUTCHours() >= resetHour) {
+                    // After 03:00 UTC - current day
+                    todayKey = now.toISOString().split('T')[0];
+                  } else {
+                    // Before 03:00 UTC - still previous day
+                    const yesterday = new Date(now);
+                    yesterday.setUTCDate(yesterday.getUTCDate() - 1);
+                    todayKey = yesterday.toISOString().split('T')[0];
+                  }
+                  
+                  const isToday = day === todayKey;
                   
                   return (
                     <div key={day} className="border rounded-lg bg-muted/20">
