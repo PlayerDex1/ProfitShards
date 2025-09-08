@@ -84,7 +84,7 @@ export function MapMetrics() {
       if (!bestHourToday || score > bestHourToday.score) bestHourToday = { hour: h, score };
     }
 
-    return { avgPerMapToday, totalToday, totalPrev, bestHourToday };
+    return { avgPerMapToday, totalToday, totalPrev, bestHourToday, stats7d, stats14d, stats30d };
   }, [data]);
 
   return (
@@ -128,6 +128,79 @@ export function MapMetrics() {
           ) : (
             <div className="text-white/60 text-xs">{t('metrics.noData')}</div>
           )}
+        </div>
+        
+        {/* 📊 Métricas de Performance por Período */}
+        <div>
+          <div className="text-white/80 text-xs mb-2">📊 Performance por Período</div>
+          <div className="grid grid-cols-3 gap-2 text-xs">
+            {/* 7 Dias */}
+            <div className="bg-white/5 rounded p-2">
+              <div className="font-bold text-white mb-1">7 Dias</div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-white/80">Runs:</span>
+                  <span className="text-white font-mono">{stats7d.totalRuns}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Tokens:</span>
+                  <span className="text-white font-mono">{stats7d.totalTokens.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Média:</span>
+                  <span className="text-white font-mono">{stats7d.avgTokensPerRun.toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* 14 Dias */}
+            <div className="bg-white/5 rounded p-2">
+              <div className="font-bold text-white mb-1">14 Dias</div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-white/80">Runs:</span>
+                  <span className="text-white font-mono">{stats14d.totalRuns}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Tokens:</span>
+                  <span className="text-white font-mono">{stats14d.totalTokens.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Média:</span>
+                  <span className="text-white font-mono">{stats14d.avgTokensPerRun.toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+            
+            {/* 30 Dias */}
+            <div className="bg-white/5 rounded p-2">
+              <div className="font-bold text-white mb-1">30 Dias</div>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-white/80">Runs:</span>
+                  <span className="text-white font-mono">{stats30d.totalRuns}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Tokens:</span>
+                  <span className="text-white font-mono">{stats30d.totalTokens.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-white/80">Média:</span>
+                  <span className="text-white font-mono">{stats30d.avgTokensPerRun.toFixed(1)}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Tendência de Performance */}
+          <div className="mt-2 pt-2 border-t border-white/10">
+            <div className="text-xs text-white/80 mb-1">📈 Tendência Semanal</div>
+            <div className="flex justify-between text-xs">
+              <span className="text-white/80">7d: <span className="text-white font-mono">{stats7d.avgTokensPerRun.toFixed(1)}</span></span>
+              <span className="text-white/80">14d: <span className="text-white font-mono">{stats14d.avgTokensPerRun.toFixed(1)}</span></span>
+              <span className="text-white/80">30d: <span className="text-white font-mono">{stats30d.avgTokensPerRun.toFixed(1)}</span></span>
+            </div>
+          </div>
         </div>
       </CardContent>
     </Card>
