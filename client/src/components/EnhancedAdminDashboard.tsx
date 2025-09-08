@@ -92,7 +92,7 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'analytics' | 'alerts' | 'profits' | 'community'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'analytics' | 'profits' | 'community'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
@@ -288,7 +288,7 @@ export function EnhancedAdminDashboard() {
     const urlParams = new URLSearchParams(window.location.search);
     const tabParam = urlParams.get('tab');
     
-    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'analytics', 'alerts', 'profits', 'community'].includes(tabParam)) {
+    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'analytics', 'profits', 'community'].includes(tabParam)) {
       setActiveTab(tabParam as any);
       console.log('🎯 Admin Tab ativa definida pela URL:', tabParam);
     }
@@ -369,7 +369,7 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-9">
+        <TabsList className="grid w-full grid-cols-8">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
@@ -401,10 +401,6 @@ export function EnhancedAdminDashboard() {
           <TabsTrigger value="profits" className="gap-2">
             <DollarSign className="h-4 w-4" />
             Lucros
-          </TabsTrigger>
-          <TabsTrigger value="alerts" className="gap-2">
-            <Bell className="h-4 w-4" />
-            Alertas
           </TabsTrigger>
         </TabsList>
 
@@ -1360,132 +1356,6 @@ export function EnhancedAdminDashboard() {
 
 
 
-        {/* Alertas em Tempo Real */}
-        <TabsContent value="alerts" className="space-y-6">
-          <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 p-6 rounded-lg border border-red-200 dark:border-red-800">
-            <div className="flex items-center gap-3 mb-4">
-              <Bell className="h-6 w-6 text-red-600" />
-              <div>
-                <h2 className="text-2xl font-bold text-red-900 dark:text-red-100">
-                  🚨 Sistema de Alertas
-                </h2>
-                <p className="text-sm text-red-600 dark:text-red-300">
-                  Monitoramento em tempo real e notificações automáticas
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Configurações de Alertas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <AlertTriangle className="h-5 w-5" />
-                  Alertas Críticos
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                    <span className="font-medium">Sistema Offline</span>
-                  </div>
-                  <Badge variant="destructive">Crítico</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-yellow-500 rounded-full" />
-                    <span className="font-medium">Alta Latência</span>
-                  </div>
-                  <Badge variant="secondary">Atenção</Badge>
-                </div>
-
-                <div className="flex items-center justify-between p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <span className="font-medium">Sistema Normal</span>
-                  </div>
-                  <Badge variant="default">OK</Badge>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Bell className="h-5 w-5" />
-                  Configurações de Notificação
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Email para Alertas</label>
-                  <Input 
-                    value="Rafaeelmcontato@gmail.com" 
-                    readOnly 
-                    className="bg-muted"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Frequência de Verificação</label>
-                  <Select defaultValue="30">
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="5">5 segundos</SelectItem>
-                      <SelectItem value="15">15 segundos</SelectItem>
-                      <SelectItem value="30">30 segundos</SelectItem>
-                      <SelectItem value="60">1 minuto</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <Button className="w-full gap-2">
-                  <Bell className="h-4 w-4" />
-                  Testar Notificação
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Histórico de Alertas */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Histórico de Alertas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {[
-                  { time: '14:32', type: 'warning', message: 'Tempo de resposta acima de 2s', status: 'resolved' },
-                  { time: '12:15', type: 'info', message: 'Pico de usuários detectado', status: 'active' },
-                  { time: '09:45', type: 'error', message: 'Falha na API de preços', status: 'resolved' },
-                  { time: '08:20', type: 'success', message: 'Backup automático concluído', status: 'completed' }
-                ].map((alert, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-2 h-2 rounded-full ${
-                        alert.type === 'error' ? 'bg-red-500' :
-                        alert.type === 'warning' ? 'bg-yellow-500' :
-                        alert.type === 'info' ? 'bg-blue-500' : 'bg-green-500'
-                      }`} />
-                      <div>
-                        <p className="font-medium">{alert.message}</p>
-                        <p className="text-sm text-muted-foreground">{alert.time}</p>
-                      </div>
-                    </div>
-                    <Badge variant={alert.status === 'resolved' ? 'default' : 'secondary'}>
-                      {alert.status}
-                    </Badge>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
       </Tabs>
     </div>
