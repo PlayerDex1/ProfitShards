@@ -21,6 +21,7 @@ import { MainGiveawaysEditor } from './MainGiveawaysEditor';
 import { WinnerManager } from './WinnerManager';
 import { LotteryManager } from './LotteryManager';
 import { GiveawayAnalytics } from './GiveawayAnalytics';
+import { CommunityAnalytics } from './CommunityAnalytics';
 
 // Interfaces para os dados
 interface MapAnalytics {
@@ -406,10 +407,14 @@ export function EnhancedAdminDashboard() {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={(value) => setActiveTab(value as any)}>
-        <TabsList className="grid w-full grid-cols-11">
+        <TabsList className="grid w-full grid-cols-12">
           <TabsTrigger value="overview" className="gap-2">
             <BarChart3 className="h-4 w-4" />
             Visão Geral
+          </TabsTrigger>
+          <TabsTrigger value="community" className="gap-2">
+            <Users className="h-4 w-4" />
+            Comunidade
           </TabsTrigger>
           <TabsTrigger value="analytics" className="gap-2">
             <LineChart className="h-4 w-4" />
@@ -980,6 +985,11 @@ export function EnhancedAdminDashboard() {
             {/* Aba Ganhadores */}
             <TabsContent value="winners" className="space-y-6">
               <WinnerManager />
+            </TabsContent>
+
+            {/* Aba Community */}
+            <TabsContent value="community" className="space-y-6">
+              <CommunityAnalytics />
             </TabsContent>
 
             {/* Aba Analytics */}

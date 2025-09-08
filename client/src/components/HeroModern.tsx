@@ -65,14 +65,14 @@ export function HeroModern() {
       icon: Users 
     },
     { 
-      label: "Calculations", 
-      value: statsLoading ? "..." : (communityStats ? formatNumber(communityStats.totalCalculations) : "1M+"), 
-      icon: Calculator 
+      label: "Tokens Farmed", 
+      value: statsLoading ? "..." : (communityStats ? formatNumber(communityStats.totalTokens) : "1M+"), 
+      icon: Zap 
     },
     { 
-      label: "Success Rate", 
-      value: statsLoading ? "..." : (communityStats ? `${communityStats.successRate}%` : "98%"), 
-      icon: Target 
+      label: "Maps Planned", 
+      value: statsLoading ? "..." : (communityStats ? formatNumber(communityStats.totalMaps) : "10K+"), 
+      icon: Map 
     },
     { 
       label: "Total Profit", 
