@@ -187,7 +187,8 @@ export function useSmartSync() {
         },
         body: JSON.stringify({
           type: 'mapdrops',
-          data: mapDropData
+          data: mapDropData,
+          retryAttempt: retryCount // Adicionar flag de retry
         })
       });
 
@@ -198,17 +199,19 @@ export function useSmartSync() {
       // Invalidar cache após salvar
       cacheRef.current.delete(`server-data-${user}`);
       
-      console.log('✅ Map drop salvo no servidor');
+      console.log(`✅ Map drop salvo no servidor (tentativa ${retryCount + 1})`);
       return true;
     } catch (error) {
       console.error(`❌ Erro ao salvar map drop (tentativa ${retryCount + 1}):`, error);
       
       if (retryCount < maxRetries) {
         const delay = Math.pow(2, retryCount) * 1000;
+        console.log(`🔄 Tentando novamente em ${delay}ms...`);
         await new Promise(resolve => setTimeout(resolve, delay));
         return saveMapDropToServer(mapDropData, retryCount + 1);
       }
       
+      console.error('❌ Todas as tentativas de salvar map drop falharam');
       return false;
     }
   }, [isAuthenticated, user]);

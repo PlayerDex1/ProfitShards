@@ -86,8 +86,29 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     const user = getCurrentUsername();
     if (user && user !== 'guest' && saveMapDropToServer) {
       try {
-        await saveMapDropToServer(newEntry);
-        console.log('✅ Map drop salvo no servidor via sistema inteligente');
+        const success = await saveMapDropToServer(newEntry);
+        if (success) {
+          console.log('✅ Map drop salvo no servidor via sistema inteligente');
+        } else {
+          console.warn('⚠️ Sistema inteligente retornou false, tentando fallback...');
+          // Apenas tentar fallback se o sistema inteligente retornar false
+          try {
+            await fetch('/api/user/save-calculation', {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'mapdrops',
+                data: newEntry
+              })
+            });
+            console.log('✅ Map drop salvo no servidor via fallback direto');
+          } catch (fallbackError) {
+            console.warn('⚠️ Falha ao salvar map drop no servidor (fallback):', fallbackError);
+          }
+        }
       } catch (error) {
         console.warn('⚠️ Falha ao salvar map drop no servidor via sistema inteligente:', error);
         // Apenas tentar fallback se o sistema inteligente falhar completamente

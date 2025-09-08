@@ -12,11 +12,23 @@ export async function onRequestPost({ env, request }: { env: Env; request: Reque
   try {
     const body = await request.json();
     const requestId = Math.random().toString(36).substr(2, 9);
+    
+    // Verificar se é uma tentativa de retry
+    if (body.retryAttempt && body.retryAttempt > 0) {
+      console.log(`⚠️ [${requestId}] Tentativa de retry detectada (${body.retryAttempt}), ignorando para evitar duplicação`);
+      return Response.json({ 
+        success: true, 
+        message: 'Retry ignorado para evitar duplicação',
+        retryIgnored: true 
+      });
+    }
+    
     console.log(`📥 [${requestId}] Recebido cálculo para salvar:`, { 
       type: body.type, 
       timestamp: Date.now(),
       hasData: !!body.data,
-      hasResults: !!body.results
+      hasResults: !!body.results,
+      retryAttempt: body.retryAttempt || 0
     });
     
     // Get user from session
