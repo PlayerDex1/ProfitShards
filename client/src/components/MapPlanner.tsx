@@ -667,31 +667,87 @@ export function MapPlanner({}: MapPlannerProps) {
             
             const groupedArray = Array.from(grouped.entries()).sort(([a], [b]) => b.localeCompare(a));
             
-            // Calcular totais gerais
-            const totalStats = getTotalStats(30); // Últimos 30 dias
+            // Calcular estatísticas para diferentes períodos
+            const stats7d = getTotalStats(7);
+            const stats14d = getTotalStats(14);
+            const stats30d = getTotalStats(30);
             
             return (
             <div className="space-y-4 max-h-96 overflow-auto">
-              {/* 📊 Resumo de Totais */}
-              <div className="p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                <div className="text-sm font-bold text-primary mb-2">📊 Resumo dos Últimos 30 Dias</div>
-                <div className="text-xs text-muted-foreground mb-3">🕐 Reset diário às 03:00 UTC</div>
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <div className="text-muted-foreground">Total de Runs:</div>
-                    <div className="font-bold text-foreground">{totalStats.totalRuns.toLocaleString()}</div>
+              {/* 📊 Métricas Compactas por Período */}
+              <div className="p-3 bg-primary/5 border border-primary/20 rounded-lg">
+                <div className="text-sm font-bold text-primary mb-3 flex items-center justify-between">
+                  <span>📊 Métricas de Performance</span>
+                  <span className="text-xs text-muted-foreground">🕐 Reset às 03:00 UTC</span>
+                </div>
+                
+                {/* Períodos */}
+                <div className="grid grid-cols-3 gap-2 text-xs">
+                  {/* 7 Dias */}
+                  <div className="bg-background/50 rounded p-2 border">
+                    <div className="font-bold text-foreground mb-1">7 Dias</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Runs:</span>
+                        <span className="font-medium">{stats7d.totalRuns}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Tokens:</span>
+                        <span className="font-medium">{stats7d.totalTokens.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Média:</span>
+                        <span className="font-medium">{stats7d.avgTokensPerRun.toFixed(1)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-muted-foreground">Total de Tokens:</div>
-                    <div className="font-bold text-foreground">{totalStats.totalTokens.toLocaleString()}</div>
+                  
+                  {/* 14 Dias */}
+                  <div className="bg-background/50 rounded p-2 border">
+                    <div className="font-bold text-foreground mb-1">14 Dias</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Runs:</span>
+                        <span className="font-medium">{stats14d.totalRuns}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Tokens:</span>
+                        <span className="font-medium">{stats14d.totalTokens.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Média:</span>
+                        <span className="font-medium">{stats14d.avgTokensPerRun.toFixed(1)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-muted-foreground">Média por Run:</div>
-                    <div className="font-bold text-foreground">{totalStats.avgTokensPerRun.toFixed(1)}</div>
+                  
+                  {/* 30 Dias */}
+                  <div className="bg-background/50 rounded p-2 border">
+                    <div className="font-bold text-foreground mb-1">30 Dias</div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Runs:</span>
+                        <span className="font-medium">{stats30d.totalRuns}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Tokens:</span>
+                        <span className="font-medium">{stats30d.totalTokens.toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Média:</span>
+                        <span className="font-medium">{stats30d.avgTokensPerRun.toFixed(1)}</span>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <div className="text-muted-foreground">Média por Carga:</div>
-                    <div className="font-bold text-foreground">{totalStats.avgTokensPerLoad.toFixed(1)}</div>
+                </div>
+                
+                {/* Tendência de Performance */}
+                <div className="mt-3 pt-2 border-t border-border/50">
+                  <div className="text-xs text-muted-foreground mb-1">📈 Tendência Semanal</div>
+                  <div className="flex justify-between text-xs">
+                    <span>7d: {stats7d.avgTokensPerRun.toFixed(1)} tokens/run</span>
+                    <span>14d: {stats14d.avgTokensPerRun.toFixed(1)} tokens/run</span>
+                    <span>30d: {stats30d.avgTokensPerRun.toFixed(1)} tokens/run</span>
                   </div>
                 </div>
               </div>
