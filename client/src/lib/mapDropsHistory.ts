@@ -1,8 +1,5 @@
 // WorldShards Map Drops History Management
 import { getCurrentUsername } from '@/hooks/use-auth';
-import { checkForDuplication, duplicationMonitor } from './duplication-monitor';
-import { logInfo, logWarn, logError } from './structured-logger';
-import { validateBeforeServerSave, validateServerResponse } from './integrity-validator';
 
 // Função para salvar map drop no servidor (será injetada pelo componente)
 let saveMapDropToServer: ((data: any) => Promise<boolean>) | null = null;
@@ -121,22 +118,31 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
     
     // Sempre salvar no localStorage (fallback)
     saveMapDropsHistory(history);
-    logInfo('mapDrops', 'Map drop saved to localStorage', { 
-      mapSize: newEntry.mapSize, 
-      tokens: newEntry.tokensDropped,
-      timestamp: newEntry.timestamp 
-    }, user);
+    console.log('✅ Map drop saved to localStorage:', newEntry);
     
     // Para usuários autenticados, também salvar no servidor usando o sistema inteligente
     const user = getCurrentUsername();
     console.log('🔍 DEBUG: Usuário autenticado:', user, 'Sistema inteligente disponível:', !!saveMapDropToServer);
     
     if (user && user !== 'guest' && saveMapDropToServer) {
-      // TODOS OS SISTEMAS DE PREVENÇÃO DESABILITADOS
-      console.log('🔄 SISTEMA SIMPLES: Salvando diretamente sem validações');
+      // Sistema de lock global para evitar qualquer duplicação
+      if (globalSaveLock) {
+        console.log('⚠️ LOCK GLOBAL ATIVO: Aguardando save anterior terminar...');
+        return;
+      }
       
-      // SISTEMA SIMPLES - SEM DEBOUNCE, SEM LOCK GLOBAL
-      console.log('🚀 SALVANDO DIRETAMENTE - Sistema simplificado');
+      // Criar chave única para este save baseada no timestamp e dados
+      const saveKey = `${newEntry.timestamp}_${newEntry.mapSize}_${newEntry.tokensDropped}`;
+      
+      // Verificar se já há um save pendente para esta entrada
+      if (pendingSaves.has(saveKey)) {
+        console.log('⚠️ DUPLICAÇÃO PREVENIDA: Save já está em andamento para esta entrada');
+        return;
+      }
+      
+      // Ativar lock global
+      globalSaveLock = true;
+      console.log('🔒 LOCK GLOBAL ATIVADO para usuário:', user);
       
       console.log('🔄 Tentando salvar via sistema inteligente...');
       
