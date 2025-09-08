@@ -966,10 +966,23 @@ export function EnhancedAdminDashboard() {
                   <div className="text-sm text-muted-foreground">
                     Dados dos últimos 30 dias
                   </div>
-                  <Button onClick={debugProfitData} variant="outline" size="sm">
+                  <Button 
+                    onClick={() => {
+                      console.log('🔍 Botão Debug clicado!');
+                      debugProfitData();
+                    }} 
+                    variant="outline" 
+                    size="sm"
+                  >
                     🔍 Debug
                   </Button>
                 </div>
+              </div>
+
+              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  🔍 <strong>Teste:</strong> Se você está vendo esta mensagem, a aba Lucros está funcionando!
+                </p>
               </div>
 
               {profitStats ? (
