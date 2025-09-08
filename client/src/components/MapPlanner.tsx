@@ -324,27 +324,8 @@ export function MapPlanner({}: MapPlannerProps) {
           console.log('%c❌ ERROR: Falha salvando para dashboard', 'color: #EF4444;', error);
         }
 
-        // CHAMADA 2: Nova API para alimentar o feed
-        try {
-          const feedResponse = await fetch('/api/feed/feed-runs', {
-            method: 'POST',
-            credentials: 'include',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(runData)
-          });
-          
-          const feedResult = await feedResponse.json();
-          console.log('%c✅ FEED: Métricas salvas para feed da comunidade', 'color: #10B981; font-weight: bold;', feedResult);
-          
-          if (!feedResult.success) {
-            console.log('%c⚠️ WARNING: Falha ao salvar para feed', 'color: #F59E0B;', feedResult.error);
-          }
-          
-        } catch (error) {
-          console.log('%c❌ ERROR: Erro ao salvar para feed', 'color: #EF4444; font-weight: bold;', error);
-        }
+        // CHAMADA 2: REMOVIDA - Feed já é alimentado pelo sistema inteligente via appendMapDropEntry
+        console.log('%c⏸️ FEED: Alimentação do feed via sistema inteligente (appendMapDropEntry)', 'color: #10B981; font-weight: bold;');
 
         // CHAMADA 3: Salvar métricas anônimas para estatísticas da comunidade
         // 🚫 TEMPORARIAMENTE DESABILITADO - Tabela user_calculations sem colunas corretas
