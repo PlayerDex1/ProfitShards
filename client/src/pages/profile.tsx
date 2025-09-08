@@ -37,7 +37,7 @@ export default function Profile() {
 		const urlParams = new URLSearchParams(window.location.search);
 		const tabParam = urlParams.get('tab');
 		
-		if (tabParam && ['calculator', 'history', 'planner', 'activity', 'admin-dashboard'].includes(tabParam)) {
+		if (tabParam && ['calculator', 'history', 'planner', 'activity', 'admin-dashboard', 'community', 'profits', 'analytics'].includes(tabParam)) {
 			setActiveTab(tabParam);
 			console.log('🎯 Tab ativa definida pela URL:', tabParam);
 		}

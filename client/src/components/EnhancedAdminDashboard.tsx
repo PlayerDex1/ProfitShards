@@ -92,7 +92,7 @@ interface SystemHealth {
 export function EnhancedAdminDashboard() {
   const { user } = useAuth();
   const { t } = useI18n();
-  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system' | 'profits'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'maps' | 'giveaways' | 'users' | 'feed' | 'monitoring' | 'settings' | 'analytics' | 'alerts' | 'system' | 'profits' | 'community'>('overview');
   const [loading, setLoading] = useState(false);
   const [mapAnalytics, setMapAnalytics] = useState<MapAnalytics | null>(null);
   // Removido - usando sistema existente de giveaways
@@ -331,6 +331,17 @@ export function EnhancedAdminDashboard() {
   };
 
   // Removido - usando sistema existente de giveaways
+
+  // Processar parâmetros de URL para definir tab ativa
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    
+    if (tabParam && ['overview', 'maps', 'giveaways', 'users', 'feed', 'monitoring', 'settings', 'analytics', 'alerts', 'system', 'profits', 'community'].includes(tabParam)) {
+      setActiveTab(tabParam as any);
+      console.log('🎯 Admin Tab ativa definida pela URL:', tabParam);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAdmin) {
