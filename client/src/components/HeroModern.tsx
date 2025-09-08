@@ -3,6 +3,7 @@ import { Link } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/use-auth';
 import { useI18n } from '@/i18n';
+import { useCommunityStats } from '@/hooks/use-community-stats';
 import { 
   Calculator, 
   Map, 
@@ -19,6 +20,7 @@ import {
 export function HeroModern() {
   const { t } = useI18n();
   const { isAuthenticated } = useAuth();
+  const { stats: communityStats, loading: statsLoading } = useCommunityStats();
 
   const features = [
     {
@@ -41,11 +43,34 @@ export function HeroModern() {
     }
   ];
 
+  // Função para formatar números
+  const formatNumber = (num: number): string => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K+`;
+    return num.toString();
+  };
+
   const stats = [
-    { label: "Active Users", value: "10K+", icon: Users },
-    { label: "Calculations", value: "1M+", icon: Calculator },
-    { label: "Success Rate", value: "98%", icon: Target },
-    { label: "Satisfaction", value: "4.9★", icon: Star }
+    { 
+      label: "Active Users", 
+      value: statsLoading ? "..." : (communityStats ? formatNumber(communityStats.activeUsers) : "10K+"), 
+      icon: Users 
+    },
+    { 
+      label: "Calculations", 
+      value: statsLoading ? "..." : (communityStats ? formatNumber(communityStats.totalCalculations) : "1M+"), 
+      icon: Calculator 
+    },
+    { 
+      label: "Success Rate", 
+      value: statsLoading ? "..." : (communityStats ? `${communityStats.successRate}%` : "98%"), 
+      icon: Target 
+    },
+    { 
+      label: "Satisfaction", 
+      value: statsLoading ? "..." : (communityStats ? `${communityStats.satisfaction}★` : "4.9★"), 
+      icon: Star 
+    }
   ];
 
   return (
