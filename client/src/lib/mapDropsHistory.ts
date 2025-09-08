@@ -89,8 +89,8 @@ export async function appendMapDropEntry(drop: MapDrop): Promise<void> {
         await saveMapDropToServer(newEntry);
         console.log('✅ Map drop salvo no servidor via sistema inteligente');
       } catch (error) {
-        console.warn('⚠️ Falha ao salvar map drop no servidor:', error);
-        // Se o sistema inteligente falhar, tentar fallback direto
+        console.warn('⚠️ Falha ao salvar map drop no servidor via sistema inteligente:', error);
+        // Apenas tentar fallback se o sistema inteligente falhar completamente
         try {
           await fetch('/api/user/save-calculation', {
             method: 'POST',
