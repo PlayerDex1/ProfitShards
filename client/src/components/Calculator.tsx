@@ -22,10 +22,13 @@ interface CalculatorProps {
 }
 
 export const Calculator = memo(function Calculator({ formData, results, onUpdateFormData, onSaveToHistory }: CalculatorProps) {
+	// ===== HOOKS E ESTADO =====
 	const { t } = useI18n();
 	const { price: tokenPrice, loading: priceLoading, error: priceError, refreshPrice, isStale } = useTokenPrice();
 	const { calculations, addCalculation, clearHistory, getStats, exportHistory } = useCalculatorHistory();
 	const { success, error: showError, info } = useToastContext();
+	
+	// Estado local
 	const [showCharts, setShowCharts] = useState(false);
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
@@ -39,8 +42,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		toggleExpanded,
 		addAcceleration
 	} = useEquipmentAccelerations({ onUpdateFormData });
-	
-
+	// ===== EFEITOS =====
 	// Atualizar preço do token quando disponível
 	useEffect(() => {
 		if (tokenPrice && tokenPrice > 0) {
@@ -55,13 +57,14 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		}
 	}, [tokenPrice, priceLoading, info]);
 
+	// ===== FUNÇÕES =====
 	// Função para atualizar preço manualmente
 	const handleRefreshPrice = async () => {
 		await refreshPrice();
 	};
 
+	// Inicializar campos tocados
 	useEffect(() => {
-		// Mark fields as touched if they already have non-zero value
 		try {
 			const init: Record<string, boolean> = {};
 			(Object.keys(formData) as (keyof CalculatorFormData)[]).forEach((k) => {
@@ -78,6 +81,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
+	// ===== FUNÇÕES DE MANIPULAÇÃO =====
 	const handleInputChange = (field: keyof CalculatorFormData) => (e: React.ChangeEvent<HTMLInputElement>) => {
 		try {
 			const raw = e.target.value.replace(',', '.');
@@ -121,6 +125,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		});
 	};
 
+	// ===== RENDERIZAÇÃO DE ERRO =====
 	if (error) {
 		return (
 			<Card>
@@ -143,9 +148,10 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		);
 	}
 
+	// ===== RENDERIZAÇÃO PRINCIPAL =====
 	return (
 		<>
-		
+		{/* ===== CARD PRINCIPAL DA CALCULADORA ===== */}
 		<Card>
 			<CardHeader className="py-4">
 				<div className="flex items-center gap-3">
@@ -159,7 +165,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 				
 			</CardHeader>
 			<CardContent className="space-y-6">
-				{/* Gem Price Section */}
+				{/* ===== SEÇÃO: PREÇO DAS GEMAS ===== */}
 				<div className="space-y-4">
 					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
 						<Gem className="w-4 h-4" />
@@ -186,7 +192,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</div>
 				</div>
 
-				{/* Auto-calculated summary */}
+				{/* ===== SEÇÃO: RESUMO AUTOMÁTICO ===== */}
 				{(() => {
 					const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
 					const totalTokensUsed = (formData.weaponTokens || 0) + (formData.armorTokens || 0) + (formData.axeTokens || 0) + (formData.pickaxeTokens || 0);
@@ -229,7 +235,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					return null;
 				})()}
 
-				{/* Equipamentos Section */}
+				{/* ===== SEÇÃO: EQUIPAMENTOS ===== */}
 				<div className="space-y-4">
 					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
 						<Zap className="w-4 h-4" />
@@ -255,7 +261,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					))}
 				</div>
 
-				{/* Tokens Section */}
+				{/* ===== SEÇÃO: TOKENS FARMADOS ===== */}
 				<div className="space-y-4">
 					<h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
 						<Zap className="w-4 h-4" />
@@ -338,7 +344,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</div>
 				</div>
 
-				{/* Manual Save Button */}
+				{/* ===== SEÇÃO: BOTÃO DE SALVAR ===== */}
 				<div className="pt-4 border-t space-y-3">
 					{saveMessage && (
 						<div className="text-center text-sm p-2 rounded-lg bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-300 border border-green-200 dark:border-green-800">
@@ -363,7 +369,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			</CardContent>
 		</Card>
 
-		{/* Controles de Gráficos */}
+		{/* ===== CONTROLES DE GRÁFICOS ===== */}
 		<div className="mt-6 flex gap-4 justify-center">
 			<Button
 				onClick={() => setShowCharts(!showCharts)}
@@ -403,7 +409,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 			)}
 		</div>
 
-		{/* Breakdown por Equipamento */}
+		{/* ===== BREAKDOWN POR EQUIPAMENTO ===== */}
 		{results && results.equipmentBreakdown && (
 			<Card className="mt-6">
 				<CardHeader>
@@ -502,7 +508,7 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		)}
 
 
-		{/* Gráficos */}
+		{/* ===== GRÁFICOS ===== */}
 		{showCharts && results && (
 			<div className="mt-6">
 				<CalculatorChartsSimple 
