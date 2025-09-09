@@ -174,6 +174,106 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					</div>
 				</div>
 
+				{/* Botões de Carga de Aceleramento */}
+				<div className="space-y-4">
+					<h3 className="flex items-center gap-2 text-lg font-semibold text-foreground">
+						<Zap className="w-4 h-4" />
+						Cargas de Aceleramento
+					</h3>
+					<div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+						<p className="text-sm text-green-700 dark:text-green-300 mb-3">
+							⚡ Adicione múltiplas cargas de aceleramento rapidamente
+						</p>
+						<div className="grid grid-cols-3 gap-2">
+							<Button
+								variant="outline"
+								onClick={() => {
+									const currentGems = formData.weaponGems || 0;
+									const currentTokens = formData.weaponTokens || 0;
+									onUpdateFormData('weaponGems', currentGems + 887);
+									onUpdateFormData('weaponTokens', currentTokens + 1050);
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="h-12 flex flex-col items-center justify-center gap-1"
+							>
+								<span className="font-bold">+1 Carga</span>
+								<span className="text-xs text-muted-foreground">887 + 1050</span>
+							</Button>
+							<Button
+								variant="outline"
+								onClick={() => {
+									const currentGems = formData.weaponGems || 0;
+									const currentTokens = formData.weaponTokens || 0;
+									onUpdateFormData('weaponGems', currentGems + (887 * 2));
+									onUpdateFormData('weaponTokens', currentTokens + (1050 * 2));
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="h-12 flex flex-col items-center justify-center gap-1"
+							>
+								<span className="font-bold">+2 Cargas</span>
+								<span className="text-xs text-muted-foreground">1774 + 2100</span>
+							</Button>
+							<Button
+								variant="outline"
+								onClick={() => {
+									const currentGems = formData.weaponGems || 0;
+									const currentTokens = formData.weaponTokens || 0;
+									onUpdateFormData('weaponGems', currentGems + (887 * 3));
+									onUpdateFormData('weaponTokens', currentTokens + (1050 * 3));
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="h-12 flex flex-col items-center justify-center gap-1"
+							>
+								<span className="font-bold">+3 Cargas</span>
+								<span className="text-xs text-muted-foreground">2661 + 3150</span>
+							</Button>
+						</div>
+						<div className="mt-3 flex gap-2">
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									const currentGems = formData.weaponGems || 0;
+									const currentTokens = formData.weaponTokens || 0;
+									onUpdateFormData('weaponGems', currentGems + (887 * 5));
+									onUpdateFormData('weaponTokens', currentTokens + (1050 * 5));
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="flex-1"
+							>
+								+5 Cargas
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									const currentGems = formData.weaponGems || 0;
+									const currentTokens = formData.weaponTokens || 0;
+									onUpdateFormData('weaponGems', currentGems + (887 * 10));
+									onUpdateFormData('weaponTokens', currentTokens + (1050 * 10));
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="flex-1"
+							>
+								+10 Cargas
+							</Button>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => {
+									onUpdateFormData('weaponGems', 0);
+									onUpdateFormData('weaponTokens', 0);
+									setTouched(prev => ({ ...prev, weaponGems: true, weaponTokens: true }));
+								}}
+								className="flex-1 text-red-600 hover:text-red-700"
+							>
+								<Trash2 className="w-3 h-3 mr-1" />
+								Limpar
+							</Button>
+						</div>
+					</div>
+				</div>
+
 				{/* Auto-calculated summary */}
 				{(() => {
 					const totalGemsUsed = (formData.weaponGems || 0) + (formData.armorGems || 0) + (formData.axeGems || 0) + (formData.pickaxeGems || 0);
