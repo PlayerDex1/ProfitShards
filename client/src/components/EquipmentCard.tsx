@@ -105,8 +105,9 @@ export const EquipmentCard = memo(function EquipmentCard({
 
 					{/* Adicionar Novo Aceleramento */}
 					<div className="bg-muted/20 p-3 rounded-lg">
-						<h6 className="text-xs font-medium mb-2 text-foreground">
-							➕ Adicionar {equipmentData.accelerations.length + 1}º Aceleramento
+						<h6 className="text-xs font-medium mb-2 text-foreground flex items-center gap-1">
+							<Plus className="w-3 h-3" />
+							Adicionar {equipmentData.accelerations.length + 1}º Aceleramento
 						</h6>
 						<div className="grid grid-cols-3 gap-2">
 							<Input
