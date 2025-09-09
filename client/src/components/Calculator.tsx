@@ -60,6 +60,62 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 		gems: '',
 		tokens: ''
 	});
+
+	// Funções para gerenciar aceleramentos
+	const toggleExpanded = (equipmentKey: string) => {
+		setEquipmentAccelerations(prev => ({
+			...prev,
+			[equipmentKey]: {
+				...prev[equipmentKey as keyof typeof prev],
+				expanded: !prev[equipmentKey as keyof typeof prev].expanded
+			}
+		}));
+	};
+
+	const addAcceleration = (equipmentKey: string) => {
+		if (newAcceleration.gems === '' && newAcceleration.tokens === '') return;
+		
+		setEquipmentAccelerations(prev => ({
+			...prev,
+			[equipmentKey]: {
+				...prev[equipmentKey as keyof typeof prev],
+				accelerations: [
+					...prev[equipmentKey as keyof typeof prev].accelerations,
+					{
+						level: prev[equipmentKey as keyof typeof prev].accelerations.length + 1,
+						gems: parseFloat(newAcceleration.gems) || 0,
+						tokens: parseFloat(newAcceleration.tokens) || 0
+					}
+				]
+			}
+		}));
+		
+		setNewAcceleration({ gems: '', tokens: '' });
+	};
+
+	const calculateEquipmentTotals = (equipmentKey: string) => {
+		const equipment = equipmentAccelerations[equipmentKey as keyof typeof equipmentAccelerations];
+		const totalGems = equipment.accelerations.reduce((sum, acc) => sum + acc.gems, 0);
+		const totalTokens = equipment.accelerations.reduce((sum, acc) => sum + acc.tokens, 0);
+		return { totalGems, totalTokens };
+	};
+
+	// Atualizar formData quando aceleramentos mudarem
+	useEffect(() => {
+		const weaponTotals = calculateEquipmentTotals('weapon');
+		const armorTotals = calculateEquipmentTotals('armor');
+		const axeTotals = calculateEquipmentTotals('axe');
+		const pickaxeTotals = calculateEquipmentTotals('pickaxe');
+
+		onUpdateFormData('weaponGems', weaponTotals.totalGems);
+		onUpdateFormData('weaponTokens', weaponTotals.totalTokens);
+		onUpdateFormData('armorGems', armorTotals.totalGems);
+		onUpdateFormData('armorTokens', armorTotals.totalTokens);
+		onUpdateFormData('axeGems', axeTotals.totalGems);
+		onUpdateFormData('axeTokens', axeTotals.totalTokens);
+		onUpdateFormData('pickaxeGems', pickaxeTotals.totalGems);
+		onUpdateFormData('pickaxeTokens', pickaxeTotals.totalTokens);
+	}, [equipmentAccelerations, onUpdateFormData]);
 	
 
 	// Atualizar preço do token quando disponível
@@ -259,9 +315,23 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 					
 					{/* Arma */}
 					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
-							⚔️ Arma
-						</h4>
+						<div className="flex items-center justify-between mb-3">
+							<h4 className="text-base font-medium text-foreground flex items-center gap-2">
+								⚔️ Arma
+							</h4>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => toggleExpanded('weapon')}
+								className="p-1 h-8 w-8"
+							>
+								{equipmentAccelerations.weapon.expanded ? 
+									<ChevronDown className="w-4 h-4" /> : 
+									<ChevronRight className="w-4 h-4" />
+								}
+							</Button>
+						</div>
+						
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<Label htmlFor="weaponGems" className="text-sm font-medium text-foreground">
@@ -290,13 +360,80 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 								/>
 							</div>
 						</div>
+
+						{/* Detalhes dos Aceleramentos */}
+						{equipmentAccelerations.weapon.expanded && (
+							<div className="mt-4 pt-4 border-t border-border/30">
+								<h5 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+									🚀 Aceleramentos ({equipmentAccelerations.weapon.accelerations.length})
+								</h5>
+								
+								{/* Lista de Aceleramentos */}
+								<div className="space-y-2 mb-4">
+									{equipmentAccelerations.weapon.accelerations.map((acc, idx) => (
+										<div key={idx} className="flex items-center justify-between p-2 bg-muted/20 rounded text-sm">
+											<span className="text-muted-foreground">{idx + 1}º Aceleramento</span>
+											<div className="flex gap-4">
+												{acc.gems > 0 && <span className="text-blue-400">💎 {acc.gems.toLocaleString()}</span>}
+												{acc.tokens > 0 && <span className="text-orange-400">🔥 {acc.tokens.toLocaleString()}</span>}
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Adicionar Novo Aceleramento */}
+								<div className="bg-muted/20 p-3 rounded-lg">
+									<h6 className="text-xs font-medium mb-2 text-foreground">
+										➕ Adicionar {equipmentAccelerations.weapon.accelerations.length + 1}º Aceleramento
+									</h6>
+									<div className="grid grid-cols-3 gap-2">
+										<Input
+											type="number"
+											placeholder="Gemas"
+											value={newAcceleration.gems}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, gems: e.target.value }))}
+											className="text-sm"
+										/>
+										<Input
+											type="number"
+											placeholder="Tokens"
+											value={newAcceleration.tokens}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, tokens: e.target.value }))}
+											className="text-sm"
+										/>
+										<Button
+											onClick={() => addAcceleration('weapon')}
+											size="sm"
+											className="flex items-center justify-center"
+										>
+											<Plus className="w-3 h-3 mr-1" />
+											Add
+										</Button>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Armadura */}
 					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
-							🛡️ Armadura
-						</h4>
+						<div className="flex items-center justify-between mb-3">
+							<h4 className="text-base font-medium text-foreground flex items-center gap-2">
+								🛡️ Armadura
+							</h4>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => toggleExpanded('armor')}
+								className="p-1 h-8 w-8"
+							>
+								{equipmentAccelerations.armor.expanded ? 
+									<ChevronDown className="w-4 h-4" /> : 
+									<ChevronRight className="w-4 h-4" />
+								}
+							</Button>
+						</div>
+						
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<Label htmlFor="armorGems" className="text-sm font-medium text-foreground">
@@ -325,13 +462,80 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 								/>
 							</div>
 						</div>
+
+						{/* Detalhes dos Aceleramentos */}
+						{equipmentAccelerations.armor.expanded && (
+							<div className="mt-4 pt-4 border-t border-border/30">
+								<h5 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+									🚀 Aceleramentos ({equipmentAccelerations.armor.accelerations.length})
+								</h5>
+								
+								{/* Lista de Aceleramentos */}
+								<div className="space-y-2 mb-4">
+									{equipmentAccelerations.armor.accelerations.map((acc, idx) => (
+										<div key={idx} className="flex items-center justify-between p-2 bg-muted/20 rounded text-sm">
+											<span className="text-muted-foreground">{idx + 1}º Aceleramento</span>
+											<div className="flex gap-4">
+												{acc.gems > 0 && <span className="text-blue-400">💎 {acc.gems.toLocaleString()}</span>}
+												{acc.tokens > 0 && <span className="text-orange-400">🔥 {acc.tokens.toLocaleString()}</span>}
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Adicionar Novo Aceleramento */}
+								<div className="bg-muted/20 p-3 rounded-lg">
+									<h6 className="text-xs font-medium mb-2 text-foreground">
+										➕ Adicionar {equipmentAccelerations.armor.accelerations.length + 1}º Aceleramento
+									</h6>
+									<div className="grid grid-cols-3 gap-2">
+										<Input
+											type="number"
+											placeholder="Gemas"
+											value={newAcceleration.gems}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, gems: e.target.value }))}
+											className="text-sm"
+										/>
+										<Input
+											type="number"
+											placeholder="Tokens"
+											value={newAcceleration.tokens}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, tokens: e.target.value }))}
+											className="text-sm"
+										/>
+										<Button
+											onClick={() => addAcceleration('armor')}
+											size="sm"
+											className="flex items-center justify-center"
+										>
+											<Plus className="w-3 h-3 mr-1" />
+											Add
+										</Button>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Machado */}
 					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
-							🪓 Machado
-						</h4>
+						<div className="flex items-center justify-between mb-3">
+							<h4 className="text-base font-medium text-foreground flex items-center gap-2">
+								🪓 Machado
+							</h4>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => toggleExpanded('axe')}
+								className="p-1 h-8 w-8"
+							>
+								{equipmentAccelerations.axe.expanded ? 
+									<ChevronDown className="w-4 h-4" /> : 
+									<ChevronRight className="w-4 h-4" />
+								}
+							</Button>
+						</div>
+						
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<Label htmlFor="axeGems" className="text-sm font-medium text-foreground">
@@ -360,13 +564,80 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 								/>
 							</div>
 						</div>
+
+						{/* Detalhes dos Aceleramentos */}
+						{equipmentAccelerations.axe.expanded && (
+							<div className="mt-4 pt-4 border-t border-border/30">
+								<h5 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+									🚀 Aceleramentos ({equipmentAccelerations.axe.accelerations.length})
+								</h5>
+								
+								{/* Lista de Aceleramentos */}
+								<div className="space-y-2 mb-4">
+									{equipmentAccelerations.axe.accelerations.map((acc, idx) => (
+										<div key={idx} className="flex items-center justify-between p-2 bg-muted/20 rounded text-sm">
+											<span className="text-muted-foreground">{idx + 1}º Aceleramento</span>
+											<div className="flex gap-4">
+												{acc.gems > 0 && <span className="text-blue-400">💎 {acc.gems.toLocaleString()}</span>}
+												{acc.tokens > 0 && <span className="text-orange-400">🔥 {acc.tokens.toLocaleString()}</span>}
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Adicionar Novo Aceleramento */}
+								<div className="bg-muted/20 p-3 rounded-lg">
+									<h6 className="text-xs font-medium mb-2 text-foreground">
+										➕ Adicionar {equipmentAccelerations.axe.accelerations.length + 1}º Aceleramento
+									</h6>
+									<div className="grid grid-cols-3 gap-2">
+										<Input
+											type="number"
+											placeholder="Gemas"
+											value={newAcceleration.gems}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, gems: e.target.value }))}
+											className="text-sm"
+										/>
+										<Input
+											type="number"
+											placeholder="Tokens"
+											value={newAcceleration.tokens}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, tokens: e.target.value }))}
+											className="text-sm"
+										/>
+										<Button
+											onClick={() => addAcceleration('axe')}
+											size="sm"
+											className="flex items-center justify-center"
+										>
+											<Plus className="w-3 h-3 mr-1" />
+											Add
+										</Button>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 
 					{/* Picareta */}
 					<div className="p-4 bg-muted/30 rounded-lg border border-border/50">
-						<h4 className="text-base font-medium text-foreground mb-3 flex items-center gap-2">
-							⛏️ Picareta
-						</h4>
+						<div className="flex items-center justify-between mb-3">
+							<h4 className="text-base font-medium text-foreground flex items-center gap-2">
+								⛏️ Picareta
+							</h4>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={() => toggleExpanded('pickaxe')}
+								className="p-1 h-8 w-8"
+							>
+								{equipmentAccelerations.pickaxe.expanded ? 
+									<ChevronDown className="w-4 h-4" /> : 
+									<ChevronRight className="w-4 h-4" />
+								}
+							</Button>
+						</div>
+						
 						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 							<div>
 								<Label htmlFor="pickaxeGems" className="text-sm font-medium text-foreground">
@@ -395,6 +666,59 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 								/>
 							</div>
 						</div>
+
+						{/* Detalhes dos Aceleramentos */}
+						{equipmentAccelerations.pickaxe.expanded && (
+							<div className="mt-4 pt-4 border-t border-border/30">
+								<h5 className="text-sm font-medium text-foreground mb-3 flex items-center gap-2">
+									🚀 Aceleramentos ({equipmentAccelerations.pickaxe.accelerations.length})
+								</h5>
+								
+								{/* Lista de Aceleramentos */}
+								<div className="space-y-2 mb-4">
+									{equipmentAccelerations.pickaxe.accelerations.map((acc, idx) => (
+										<div key={idx} className="flex items-center justify-between p-2 bg-muted/20 rounded text-sm">
+											<span className="text-muted-foreground">{idx + 1}º Aceleramento</span>
+											<div className="flex gap-4">
+												{acc.gems > 0 && <span className="text-blue-400">💎 {acc.gems.toLocaleString()}</span>}
+												{acc.tokens > 0 && <span className="text-orange-400">🔥 {acc.tokens.toLocaleString()}</span>}
+											</div>
+										</div>
+									))}
+								</div>
+
+								{/* Adicionar Novo Aceleramento */}
+								<div className="bg-muted/20 p-3 rounded-lg">
+									<h6 className="text-xs font-medium mb-2 text-foreground">
+										➕ Adicionar {equipmentAccelerations.pickaxe.accelerations.length + 1}º Aceleramento
+									</h6>
+									<div className="grid grid-cols-3 gap-2">
+										<Input
+											type="number"
+											placeholder="Gemas"
+											value={newAcceleration.gems}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, gems: e.target.value }))}
+											className="text-sm"
+										/>
+										<Input
+											type="number"
+											placeholder="Tokens"
+											value={newAcceleration.tokens}
+											onChange={(e) => setNewAcceleration(prev => ({ ...prev, tokens: e.target.value }))}
+											className="text-sm"
+										/>
+										<Button
+											onClick={() => addAcceleration('pickaxe')}
+											size="sm"
+											className="flex items-center justify-center"
+										>
+											<Plus className="w-3 h-3 mr-1" />
+											Add
+										</Button>
+									</div>
+								</div>
+							</div>
+						)}
 					</div>
 				</div>
 
