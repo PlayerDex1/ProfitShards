@@ -12,7 +12,7 @@ import { CalculatorChartsSimple } from "@/components/CalculatorChartsSimple";
 import { useToastContext } from "@/contexts/ToastContext";
 import { useEquipmentAccelerations } from "@/hooks/use-equipment-accelerations";
 import { EquipmentCard } from "@/components/EquipmentCard";
-import { EQUIPMENT_CONFIGS } from "@/types/equipment";
+import { EQUIPMENT_CONFIGS } from "@/types/equipment-accelerations";
 
 interface CalculatorProps {
 	formData: CalculatorFormData;

@@ -5,7 +5,7 @@ import {
 	NewAcceleration, 
 	Acceleration,
 	DEFAULT_ACCELERATION 
-} from '@/types/equipment';
+} from '@/types/equipment-accelerations';
 import { CalculatorFormData } from '@/types/calculator';
 
 interface UseEquipmentAccelerationsProps {
