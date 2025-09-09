@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2 } from "lucide-react";
+import { DollarSign, Gem, Zap, RefreshCw, BarChart3, Download, Trash2, Plus, ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -27,6 +27,39 @@ export const Calculator = memo(function Calculator({ formData, results, onUpdate
 	const [touched, setTouched] = useState<Record<string, boolean>>({});
 	const [error, setError] = useState<string | null>(null);
 	const [saveMessage, setSaveMessage] = useState<string>('');
+	
+	// Estado para aceleramentos dinâmicos
+	const [equipmentAccelerations, setEquipmentAccelerations] = useState({
+		weapon: {
+			expanded: false,
+			accelerations: [
+				{ level: 1, gems: 887, tokens: 1050 }
+			]
+		},
+		armor: {
+			expanded: false,
+			accelerations: [
+				{ level: 1, gems: 887, tokens: 1050 }
+			]
+		},
+		axe: {
+			expanded: false,
+			accelerations: [
+				{ level: 1, gems: 887, tokens: 1050 }
+			]
+		},
+		pickaxe: {
+			expanded: false,
+			accelerations: [
+				{ level: 1, gems: 887, tokens: 1050 }
+			]
+		}
+	});
+	
+	const [newAcceleration, setNewAcceleration] = useState({
+		gems: '',
+		tokens: ''
+	});
 	
 
 	// Atualizar preço do token quando disponível
